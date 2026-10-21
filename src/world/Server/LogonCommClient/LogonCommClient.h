@@ -56,6 +56,7 @@ public:
     void HandleModifyDatabaseResult(WorldPacket& recvData);
     void HandleResultCheckAccount(WorldPacket& recvData);
     void HandleResultAllAccount(WorldPacket& recvData);
+    void HandlePendingWorldSession(WorldPacket& recvData);
 
     void CompressAndSend(ByteBuffer& uncompressed);
     uint32_t last_ping;

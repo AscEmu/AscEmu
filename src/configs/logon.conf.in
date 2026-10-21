@@ -1,6 +1,6 @@
 ################################################################################
 # AscEmu Logonserver Configuration File
-# Last edited: 09/05/2024
+# Last edited: 10/21/2026
 ################################################################################
 
 ################################################################################
@@ -104,3 +104,60 @@
 <LogonServer DisablePings   = "0"
              AllowedIPs     = "127.0.0.1/24"
              AllowedModIPs  = "127.0.0.1/24">
+
+################################################################################
+# Battle.net Login
+#
+#    The clients from 6.x on (WoD and later) log in through Battle.net: the
+#    TLS port below and the web login (WebAuth). The classic clients (1.x to
+#    5.x) keep the RealmListPort above. Their world servers register over
+#    LogonComm (ServerPort) like every other realm.
+#
+#    Enabled
+#        0 turns the Battle.net login and the web login off.
+#        Default: 1
+#
+#    Host / Port
+#        Battle.net port of the client, TLS with the certificate of <TLS>.
+#        Default: 0.0.0.0 / 1119
+#
+
+<BattleNet Enabled = "1"
+           Host    = "0.0.0.0"
+           Port    = "1119">
+
+################################################################################
+# Web Login
+#
+#    ExternalAddress
+#        Host name or address the clients open the web login at
+#        (https://<ExternalAddress>:<Port>/bnetserver/login/<build>/). It has
+#        to be reachable from the client and covered by the TLS certificate.
+#
+
+<WebAuth Host            = "0.0.0.0"
+         Port            = "8081"
+         ExternalAddress = "bnet.ascemu.local">
+
+################################################################################
+# TLS
+#
+#    CertificatesFile
+#        PEM certificate chain (.pem/.crt) or PKCS#12 archive (.pfx/.p12).
+#        When neither the PEM certificate nor its private key exist, the
+#        server creates both on its first start. Clients only trust the server
+#        after they were patched with this file:
+#            connection_patcher <client exe> <CertificatesFile>
+#        A new certificate needs the clients to be patched again.
+#
+#    PrivateKeyFile
+#        Required for PEM certificates. Leave empty for PFX/P12 because the
+#        private key is stored in the archive.
+#
+#    PrivateKeyPassword
+#        Password for an encrypted PEM private key or the PFX/P12 archive.
+#
+
+<TLS CertificatesFile   = "certs/bnetserver.cert.pem"
+     PrivateKeyFile     = "certs/bnetserver.key.pem"
+     PrivateKeyPassword = "">

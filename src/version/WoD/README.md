@@ -12,5 +12,5 @@ Pinned client:
 (`src/version/Shared/World`): connection initializer with magic, the 4 byte setup header before and the
 6 byte header after CMSG_AUTH_SESSION, and the digest key without a build seed. The shared transport does
 the RC4 on the size field, the compression of large encrypted packets and the authentication with the
-Battle.net session announced through BattleNetComm. Everything after authentication goes through the
+Battle.net session the logonserver announced over LogonComm. Everything after authentication goes through the
 central opcode table and the managed packets.

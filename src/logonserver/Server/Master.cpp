@@ -15,6 +15,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include <csignal>
 #include <Logging/Logger.hpp>
 #include "Auth/AutoPatcher.h"
+#include "BattleNet/BNetConfig.hpp"
+#include "BattleNet/BNetSocket.hpp"
+#include "BattleNet/BNetTlsContext.hpp"
+#include "BattleNet/WebAuthSocket.hpp"
 #include <Network/Network.hpp>
 
 #include "BuildInfo.hpp"
@@ -31,7 +35,7 @@ using std::chrono::milliseconds;
 std::unique_ptr<Database> sLogonSQL;
 std::atomic<bool> mrunning(true);
 
-static constexpr char REQUIRED_LOGON_DB_VERSION[] = "20260924-00_battlenet_accounts";
+static constexpr char REQUIRED_LOGON_DB_VERSION[] = "20261021-00_accounts_srp";
 
 MasterLogon& MasterLogon::getInstance()
 {
@@ -99,6 +103,18 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
 
     sRealmManager.initialize(300); // time in seconds
 
+    // the Battle.net login of the 6.x and later clients needs its TLS identity
+    const bool battleNetEnabled = AscEmu::Battlenet::bnetConfig.listen.enabled;
+    if (battleNetEnabled)
+    {
+        if (!AscEmu::Battlenet::BNetTlsContext::getInstance().initialize())
+        {
+            sLogger.failure("BNet: TLS initialization failed. Exiting.");
+            sLogger.finalize();
+            return;
+        }
+    }
+
     // Load conf settings..
     m_clientMinBuild = 5875;
     m_clientMaxBuild = 15595;
@@ -119,13 +135,24 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     auto realmlistSocket = std::make_unique<ListenSocket<AuthSocket>>(logonConfig.listen.host.c_str(), logonConfig.listen.realmListPort);
     auto logonServerSocket = std::make_unique<ListenSocket<LogonCommServerSocket>>(logonConfig.listen.interServerHost.c_str(), logonConfig.listen.port);
 
+    // the Battle.net listeners: the client login (TLS) and the web login
+    auto const& bnetConfig = AscEmu::Battlenet::bnetConfig;
+    std::unique_ptr<ListenSocket<AscEmu::Battlenet::BNetSocket>> battleNetSocket;
+    std::unique_ptr<ListenSocket<AscEmu::Battlenet::WebAuthSocket>> webAuthSocket;
+    if (battleNetEnabled)
+    {
+        battleNetSocket = std::make_unique<ListenSocket<AscEmu::Battlenet::BNetSocket>>(bnetConfig.listen.host.c_str(), bnetConfig.listen.port);
+        webAuthSocket = std::make_unique<ListenSocket<AscEmu::Battlenet::WebAuthSocket>>(bnetConfig.webAuth.host.c_str(), bnetConfig.webAuth.port);
+    }
+
     sSocketMgr.SpawnWorkerThreads();
 
     // Spawn auth listener
     // Spawn interserver listener
     const bool isAuthsockCreated = realmlistSocket->IsOpen();
     const bool isIntersockCreated = logonServerSocket->IsOpen();
-    if (isAuthsockCreated && isIntersockCreated)
+    const bool isBattleNetCreated = !battleNetEnabled || (battleNetSocket->IsOpen() && webAuthSocket->IsOpen());
+    if (isAuthsockCreated && isIntersockCreated && isBattleNetCreated)
     {
 #ifdef WIN32
         threadPool.addDedicatedThread(
@@ -143,7 +170,19 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
                 static_cast<void>(socket->runThread());
             }
         );
+
+        if (battleNetEnabled)
+        {
+            threadPool.addDedicatedThread("BNetListenSocket", [socket = battleNetSocket.get()](AscEmu::Threading::AEThread&) { static_cast<void>(socket->runThread()); });
+            threadPool.addDedicatedThread("BNetWebAuthListenSocket", [socket = webAuthSocket.get()](AscEmu::Threading::AEThread&) { static_cast<void>(socket->runThread()); });
+        }
 #endif
+        if (battleNetEnabled)
+        {
+            sLogger.info("BNet: listening on {}:{}", bnetConfig.listen.host, bnetConfig.listen.port);
+            sLogger.info("BNet WebAuth: listening on {}:{}", bnetConfig.webAuth.host, bnetConfig.webAuth.port);
+        }
+
         _HookSignals();
 
         WritePidFile();
@@ -191,6 +230,11 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
 
     realmlistSocket->Close();
     logonServerSocket->Close();
+    if (battleNetEnabled)
+    {
+        webAuthSocket->Close();
+        battleNetSocket->Close();
+    }
     sSocketMgr.CloseAll();
 
     sSocketMgr.ShutdownThreads();
@@ -204,6 +248,9 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     sLogonSQL->endThreads();
     sLogonSQL->shutdown();
     sLogonSQL = nullptr;
+
+    if (battleNetEnabled)
+        AscEmu::Battlenet::BNetTlsContext::getInstance().finalize();
 
     threadPool.shutdown();
     threadPool.join();
@@ -421,6 +468,7 @@ bool MasterLogon::LoadLogonConfiguration()
 bool MasterLogon::SetLogonConfiguration()
 {
     logonConfig.loadConfigValues();
+    AscEmu::Battlenet::bnetConfig.load();
 
     std::vector<std::string> allowedIPs = AscEmu::Util::Strings::split(logonConfig.logonServer.allowedIps, " ");
     std::vector<std::string> allowedModIPs = AscEmu::Util::Strings::split(logonConfig.logonServer.allowedModIps, " ");

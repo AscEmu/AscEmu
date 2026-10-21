@@ -22,6 +22,7 @@
 #include <sstream>
 
 #include "LogonCommDefines.hpp"
+#include "Server/LogonServerDefines.hpp"
 
 #include "Logging/Log.hpp"
 #include "Logging/Logger.hpp"
@@ -30,6 +31,7 @@
 #include "Network/Socket.hpp"
 #include "Network/WorldPacket.hpp"
 #include "Server/AccountMgr.h"
+#include "Server/AccountService.hpp"
 #include "Cryptography/Sha1.hpp"
 #include "Database/Database.hpp"
 #include "Utilities/Strings.hpp"
@@ -160,6 +162,7 @@ void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
         NULL,                                               // LRSMSG_ACCOUNT_RESULT
         &LogonCommServerSocket::HandleRequestAllAccounts,   // LRCMSG_ALL_ACCOUNT_REQUEST
         NULL,                                               // LRSMSG_ALL_ACCOUNT_RESULT
+        NULL,                                               // LRSMSG_PENDING_WORLD_SESSION
     };
 
     if (recvData.getOpcode() >= LRMSG_MAX_OPCODES || Handlers[recvData.getOpcode()] == 0)
@@ -322,6 +325,26 @@ void LogonCommServerSocket::SendPacket(WorldPacket* data)
         burstPush();
 
     burstEnd();
+}
+
+void LogonCommServerSocket::SendPendingSession(const PendingWorldSession& session)
+{
+    WorldPacket data(LRSMSG_PENDING_WORLD_SESSION, 300);
+    data << session.accountId;
+    data << session.gameAccountId;
+    data << session.realmId;
+    data << session.clientBuild;
+    data << session.region;
+    data << session.expiresAt;
+    data << session.gameAccountName;
+    data << session.realmJoinTicket;
+    data.append(session.worldAuthKeyData.data(), session.worldAuthKeyData.size());
+    data.append(session.joinSecret.data(), session.joinSecret.size());
+    data << session.gmFlags;
+    data << session.accountFlags;
+    data << session.forcedLanguage;
+    data << session.muted;
+    SendPacket(&data);
 }
 
 void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
@@ -592,40 +615,15 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             recvData >> new_password;
             recvData >> account_name;
 
-            std::string pass;
-            pass.assign(account_name);
-            pass.push_back(':');
-            pass.append(old_password);
-            auto check_oldpass_query = sLogonSQL->query("SELECT acc_name, encrypted_password FROM accounts WHERE encrypted_password = SHA(UPPER('%s')) AND acc_name = '%s'", pass.c_str(), account_name.c_str());
+            const auto changed = AscEmu::Accounts::changePassword(account_name, old_password, new_password);
+            result = static_cast<uint8_t>(changed == AscEmu::Accounts::Result::Ok ? Result_Account_Finished : Result_Account_PW_wrong);
+            if (changed != AscEmu::Accounts::Result::Ok)
+                sLogger.info("LogonComm: password change of account '{}' failed: {}", account_name, AscEmu::Accounts::describe(changed));
 
-            if (!check_oldpass_query)
-            {
-                // Send packet back... Your current password matches not your input!
-                result = Result_Account_PW_wrong;
-
-                data << uint32_t(method);     // method_id
-                data << uint8_t(result);
-                data << account_name;       // account_name
-                SendPacket(&data);
-            }
-            else
-            {
-                std::string new_pass;
-                new_pass.assign(account_name);
-                new_pass.push_back(':');
-                new_pass.append(new_password);
-
-                // Send packet back... Everything is fine!
-                result = Result_Account_Finished;
-
-                data << uint32_t(method);     // method_id
-                data << uint8_t(result);
-                data << account_name;       // account_name
-                SendPacket(&data);
-                //}
-
-                sAccountMgr.reloadAccounts(false);
-            }
+            data << uint32_t(method);     // method_id
+            data << uint8_t(result);
+            data << account_name;       // account_name
+            SendPacket(&data);
 
         }
         break;
@@ -643,42 +641,22 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             recvData >> password;
             recvData >> account_name;
 
-            std::string name_save = name;  // save original name to check
-
-            // remember we expect this in uppercase
-            AscEmu::Util::Strings::toUpperCase(name);
-
-            auto account_check = sAccountMgr.getAccountByName(name);
-
-            if (account_check != nullptr)
-            {
-                result = Result_Account_Exists;
-
-                data << uint32_t(method);     // method_id
-                data << uint8_t(result);
-                data << account_name;       // account_name
-                data << name_save;          // created account name
-                SendPacket(&data);
-            }
+            const auto created = AscEmu::Accounts::createAccount(name, password, "");
+            if (created == AscEmu::Accounts::Result::Exists)
+                result = static_cast<uint8_t>(Result_Account_Exists);
+            else if (created == AscEmu::Accounts::Result::Ok)
+                result = static_cast<uint8_t>(Result_Account_Finished);
             else
             {
-                std::string pass;
-                pass.assign(name);
-                pass.push_back(':');
-                pass.append(password);
-
-                sLogonSQL->query("INSERT INTO `accounts`(`acc_name`,`encrypted_password`,`banned`,`email`,`flags`,`banreason`) VALUES ('%s', SHA(UPPER('%s')),'0','','24','')", name_save.c_str(), pass.c_str());
-
-                result = Result_Account_Finished;
-
-                data << uint32_t(method);     // method_id
-                data << uint8_t(result);
-                data << account_name;       // account_name
-                data << name_save;          // created account name
-                SendPacket(&data);
+                sLogger.failure("LogonComm: account creation of '{}' failed: {}", name, AscEmu::Accounts::describe(created));
+                result = static_cast<uint8_t>(Result_Account_SQL_error);
             }
 
-            sAccountMgr.reloadAccounts(false);
+            data << uint32_t(method);     // method_id
+            data << uint8_t(result);
+            data << account_name;       // account_name
+            data << name;               // created account name
+            SendPacket(&data);
         }
         break;
     }

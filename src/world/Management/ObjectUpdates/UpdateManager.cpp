@@ -69,7 +69,7 @@ void UpdateManager::pushOutOfRangeGuid(const WoWGuid& guid)
 #endif
 
 #if VERSION_STRING >= WoD
-    m_outOfRangeIds << guid.toGuid128(worldConfig.battleNetComm.realmId, m_owner->GetMapId());
+    m_outOfRangeIds << guid.toGuid128(worldConfig.realm.id, m_owner->GetMapId());
 #else
     m_outOfRangeIds << guid;
 #endif

@@ -607,8 +607,8 @@ private:
             case MovementOp::WriteFloat1: data << static_cast<float>(1.0f); break;
             case MovementOp::FlushBits: data.flushBits(); break;
 
-            case MovementOp::Guid128: data << movementInfo.guid.toGuid128(worldConfig.battleNetComm.realmId, movementInfo.mapId); break;
-            case MovementOp::TGuid128: data << movementInfo.transport_guid.toGuid128(worldConfig.battleNetComm.realmId, movementInfo.mapId); break;
+            case MovementOp::Guid128: data << movementInfo.guid.toGuid128(worldConfig.realm.id, movementInfo.mapId); break;
+            case MovementOp::TGuid128: data << movementInfo.transport_guid.toGuid128(worldConfig.realm.id, movementInfo.mapId); break;
             case MovementOp::RemovedForcesCount: data << static_cast<uint32_t>(0); break;
             case MovementOp::RemovedForces: break;
             case MovementOp::Flags3:      data << uint32_t(0); break;

@@ -1,6 +1,6 @@
 ################################################################################
 # AscEmu World Configuration File
-# Last edited: 09/23/2026
+# Last edited: 10/21/2026
 ################################################################################
 
 ################################################################################
@@ -118,25 +118,6 @@
         TimeZone      = "1"
         Lock          = "0"
         ClientVersion = "2">
-
-################################################################################
-# Internal Battle.net communication
-#
-# Forever builds use this channel automatically. Legacy builds ignore these
-# settings and use LogonComm. The backend itself is selected by CMake.
-################################################################################
-
-#    Ruleset
-#        Forever realm ruleset advertised to Battle.net.
-#        Supported values: PvE, PvP, Roleplay, Hardcore
-#        Default: PvE
-#
-<BattleNetComm Host         = "127.0.0.1"
-               Port         = "1120"
-               RealmId      = "1"
-               RealmName    = "AscEmu"
-               Ruleset      = "PvE"
-               SharedSecret = "ascemu-bnetcomm">
 
 ################################################################################
 # Listen Config

@@ -10,7 +10,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Logging/Logger.hpp"
 #include "Utilities/Util.hpp"
 #include "world/Objects/Units/Players/PlayerDefines.hpp"
-#include "world/Server/BattleNetCommClient/BattleNetCommClient.hpp"
 #include "world/Server/LogonCommClient/LogonCommHandler.h"
 #include "world/Server/Opcodes.hpp"
 #include "world/Server/Packets/CmsgAuthSession.h"
@@ -384,10 +383,10 @@ void WorldSocket::handleRc4AuthSession(WorldPacket& packet)
 
     m_latency = Util::getMSTime() - m_latency;
 
-    // the Battle.net server announced the session with the realm join ticket before the client connected;
+    // the logonserver announced the Battle.net session with its realm join ticket over LogonComm before the client connected;
     // it is consumed only after the digest matched
-    AscEmu::BattlenetComm::PendingWorldSession pending;
-    if (!AscEmu::BattlenetComm::sBattleNetCommClient.getPendingSession(authSession.realmJoinTicket, pending, false))
+    PendingWorldSession pending;
+    if (!sLogonCommHandler.getPendingSession(authSession.realmJoinTicket, pending, false))
     {
         sLogger.failure("WorldSocket::{}: realm join ticket from {}:{} has no pending Battle.net session", Profile::Name, getRemoteIp(), getRemotePort());
         m_rc4WorldState = Rc4WorldState::Disabled;
@@ -432,8 +431,8 @@ void WorldSocket::handleRc4AuthSession(WorldPacket& packet)
         return;
     }
 
-    AscEmu::BattlenetComm::PendingWorldSession consumed;
-    if (!AscEmu::BattlenetComm::sBattleNetCommClient.getPendingSession(authSession.realmJoinTicket, consumed, true))
+    PendingWorldSession consumed;
+    if (!sLogonCommHandler.getPendingSession(authSession.realmJoinTicket, consumed, true))
     {
         sLogger.failure("WorldSocket::{}: pending session of game account {} expired during authentication", Profile::Name, pending.gameAccountId);
         m_rc4WorldState = Rc4WorldState::Disabled;
@@ -462,6 +461,7 @@ void WorldSocket::handleRc4AuthSession(WorldPacket& packet)
     m_addonInfoBuffer = std::move(authSession.addonInfoBuffer);
     m_rc4GameAccountId = pending.gameAccountId;
     m_rc4GameAccountName = pending.gameAccountName;
+    m_rc4Session = consumed;
 
     sLogger.debug("WorldSocket::{}: game account {} ('{}') authenticated from {}:{}", Profile::Name, pending.gameAccountId, pending.gameAccountName, getRemoteIp(), getRemotePort());
 
@@ -757,10 +757,12 @@ void WorldSocket::completeRc4Authentication()
 
     m_rc4WorldState = Rc4WorldState::Authenticated;
 
-    // Battle.net accounts own every expansion of the client
-    constexpr uint8_t accountFlags = ACCOUNT_FLAG_XPACK_01 | ACCOUNT_FLAG_XPACK_02 | ACCOUNT_FLAG_XPACK_03 | ACCOUNT_FLAG_XPACK_04;
+    // the account data the logonserver announced with the session; permissions of the realm (account_permissions) take precedence like on the classic path
+    std::string gmFlags = sLogonCommHandler.getPermissionStringForAccountId(m_rc4GameAccountId);
+    if (gmFlags.empty())
+        gmFlags = m_rc4Session.gmFlags;
 
-    completeAuthentication(m_rc4GameAccountId, m_rc4GameAccountName, sLogonCommHandler.getPermissionStringForAccountId(m_rc4GameAccountId), accountFlags, "enUS", 0);
+    completeAuthentication(m_rc4GameAccountId, m_rc4GameAccountName, gmFlags, m_rc4Session.accountFlags, m_rc4Session.forcedLanguage.empty() ? std::string("enUS") : m_rc4Session.forcedLanguage, m_rc4Session.muted);
 }
 
 bool WorldSocket::sendVersionedPacket(WorldPacket* packet)

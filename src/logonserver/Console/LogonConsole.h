@@ -99,6 +99,7 @@ class LogonConsole
         void AccountSetPassword(char* str);
         void AccountChangePassword(char* str);
 
+
         void checkAccountName(std::string name, uint8_t type);
 };
 

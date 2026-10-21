@@ -57,6 +57,8 @@ private:
     // account of the verified session until the encryption is enabled
     uint32_t m_aesGameAccountId{0};
     std::string m_aesGameAccountName;
+    // the session the logonserver announced, its account data completes the authentication
+    PendingWorldSession m_aesSession;
 
     // frames that did not fit into the send buffer, kept in order because of the packet counters
     std::vector<uint8_t> m_aesPendingOutput;

@@ -4,13 +4,18 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "BNetSocket.hpp"
-#include "BattleNetComm.hpp"
 
 #include "BNetAuthTicketStore.hpp"
 #include "BNetConfig.hpp"
 #include "BNetTlsContext.hpp"
 #include "BNetProtocol.hpp"
-#include "Master.hpp"
+#include "LogonCommDefines.hpp"
+#include "Realm/RealmManager.hpp"
+#include "Server/AccountMgr.h"
+#include "Server/AccountService.hpp"
+#include "Server/LogonServerDefines.hpp"
+#include "Server/Master.hpp"
+#include "Utilities/Strings.hpp"
 #include "Database/Database.hpp"
 #include "Logging/Logger.hpp"
 
@@ -24,6 +29,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <atomic>
 #include <chrono>
 #include <cctype>
+#include <cstdlib>
 #include <cstring>
 #include <iomanip>
 #include <limits>
@@ -33,8 +39,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Battlenet
 {
-    extern std::unique_ptr<Database> sBNetCharacterSQL;
-
     namespace
     {
         constexpr uint32_t BNET_SOCKET_BUFFER_SIZE = 64 * 1024;
@@ -352,7 +356,6 @@ namespace AscEmu::Battlenet
             return readProtobufVarInt(options, optionsSize, flagField, value) && value != 0;
         }
 
-#if AE_BNET_V1_SERVICES
         // unsigned JSON number following the given key in a raw payload
         bool extractJsonUnsigned(const uint8_t* payload, size_t payloadSize, std::string_view key, uint32_t& value)
         {
@@ -389,19 +392,18 @@ namespace AscEmu::Battlenet
             value = static_cast<uint32_t>(result);
             return true;
         }
-#endif
 
-        std::vector<uint8_t> makeGameUtilitiesStringVariantList(const std::vector<std::string>& values)
+        std::vector<uint8_t> makeGameUtilitiesStringVariantList(const Protocol::ClientServices& services, const std::vector<std::string>& values)
         {
             // bgs.protocol.game_utilities.v1.GetAllValuesForAttributeResponse:
             // repeated Variant attribute_value = field 1
-            // Variant.string_value = Protocol::VariantField::String
+            // Variant.string_value, field number of the client's Variant layout
             std::vector<uint8_t> response;
 
             for (const std::string& value : values)
             {
                 std::vector<uint8_t> variant;
-                appendStringField(variant, Protocol::VariantField::String, value);
+                appendStringField(variant, services.variant.stringValue, value);
                 appendMessageField(response, 1, variant);
             }
 
@@ -478,10 +480,10 @@ namespace AscEmu::Battlenet
             return result;
         }
 
-        void appendGameUtilitiesBlobAttribute(std::vector<uint8_t>& response, const std::string& name, const std::vector<uint8_t>& blob)
+        void appendGameUtilitiesBlobAttribute(const Protocol::ClientServices& services, std::vector<uint8_t>& response, const std::string& name, const std::vector<uint8_t>& blob)
         {
             std::vector<uint8_t> variant;
-            appendVarInt(variant, (static_cast<uint64_t>(Protocol::VariantField::Blob) << 3) | 2u);
+            appendVarInt(variant, (static_cast<uint64_t>(services.variant.blobValue) << 3) | 2u);
             appendVarInt(variant, blob.size());
             variant.insert(variant.end(), blob.begin(), blob.end());
 
@@ -491,11 +493,11 @@ namespace AscEmu::Battlenet
             appendMessageField(response, 1, attribute);
         }
 
-        void appendGameUtilitiesUInt64Attribute(std::vector<uint8_t>& response, const std::string& name, uint64_t value)
+        void appendGameUtilitiesUInt64Attribute(const Protocol::ClientServices& services, std::vector<uint8_t>& response, const std::string& name, uint64_t value)
         {
             // bgs.protocol.Variant integer value.
             std::vector<uint8_t> variant;
-            appendVarInt(variant, (static_cast<uint64_t>(Protocol::VariantField::Int) << 3) | 0u);
+            appendVarInt(variant, (static_cast<uint64_t>(services.variant.intValue) << 3) | 0u);
             appendVarInt(variant, value);
 
             std::vector<uint8_t> attribute;
@@ -504,11 +506,11 @@ namespace AscEmu::Battlenet
             appendMessageField(response, 1, attribute);
         }
 
-        void appendGameUtilitiesStringAttribute(std::vector<uint8_t>& response, const std::string& name, const std::string& value)
+        void appendGameUtilitiesStringAttribute(const Protocol::ClientServices& services, std::vector<uint8_t>& response, const std::string& name, const std::string& value)
         {
             // bgs.protocol.Variant string value.
             std::vector<uint8_t> variant;
-            appendStringField(variant, Protocol::VariantField::String, value);
+            appendStringField(variant, services.variant.stringValue, value);
 
             std::vector<uint8_t> attribute;
             appendStringField(attribute, 1, name);
@@ -631,7 +633,7 @@ namespace AscEmu::Battlenet
             return 1u;
         }
 
-        bool readGameUtilitiesBlobAttribute(const uint8_t* payload, size_t payloadSize, const std::string& wantedName, std::vector<uint8_t>& value)
+        bool readGameUtilitiesBlobAttribute(const Protocol::ClientServices& services, const uint8_t* payload, size_t payloadSize, const std::string& wantedName, std::vector<uint8_t>& value)
         {
             value.clear();
             if (payload == nullptr || payloadSize == 0)
@@ -707,7 +709,7 @@ namespace AscEmu::Battlenet
                     const uint32_t variantField = static_cast<uint32_t>(variantKey >> 3);
                     const uint32_t variantWire = static_cast<uint32_t>(variantKey & 0x07u);
                     // bgs.protocol.Variant blob_value
-                    if (variantField == Protocol::VariantField::Blob && variantWire == 2u)
+                    if (variantField == services.variant.blobValue && variantWire == 2u)
                     {
                         const uint8_t* data = nullptr;
                         size_t size = 0;
@@ -725,11 +727,11 @@ namespace AscEmu::Battlenet
             return false;
         }
 
-        bool extractRealmListIdentityGameAccountId(const uint8_t* payload, size_t payloadSize, uint32_t& gameAccountId)
+        bool extractRealmListIdentityGameAccountId(const Protocol::ClientServices& services, const uint8_t* payload, size_t payloadSize, uint32_t& gameAccountId)
         {
             gameAccountId = 0;
             std::vector<uint8_t> identity;
-            if (!readGameUtilitiesBlobAttribute(payload, payloadSize, "Param_Identity", identity) || identity.empty())
+            if (!readGameUtilitiesBlobAttribute(services, payload, payloadSize, "Param_Identity", identity) || identity.empty())
                 return false;
 
             const std::string_view text(reinterpret_cast<const char*>(identity.data()), identity.size());
@@ -770,7 +772,7 @@ namespace AscEmu::Battlenet
             return true;
         }
 
-        bool readGameUtilitiesUintAttribute(const uint8_t* payload, size_t payloadSize, const std::string& wantedName, uint64_t& value)
+        bool readGameUtilitiesUintAttribute(const Protocol::ClientServices& services, const uint8_t* payload, size_t payloadSize, const std::string& wantedName, uint64_t& value)
         {
             if (payload == nullptr || payloadSize == 0)
                 return false;
@@ -845,7 +847,7 @@ namespace AscEmu::Battlenet
                     const uint32_t variantField = static_cast<uint32_t>(variantKey >> 3);
                     const uint32_t variantWire = static_cast<uint32_t>(variantKey & 0x07u);
                     // bgs.protocol.Variant uint_value
-                    if (variantField == Protocol::VariantField::Uint && variantWire == 0u)
+                    if (variantField == services.variant.uintValue && variantWire == 0u)
                         return readVarInt(variantCursor, variantEnd, value);
 
                     if (!skipProtobufField(variantWire, variantCursor, variantEnd))
@@ -856,9 +858,9 @@ namespace AscEmu::Battlenet
             return false;
         }
 
-        std::vector<uint8_t> makeRealmJoinResponse(uint32_t clientBuild, const std::string& gameAccountName, uint32_t realmAddress, const std::string& worldHost, uint32_t worldPort, std::string& realmJoinTicket, std::array<uint8_t, 32>& joinSecret, uint32_t& localRealmId)
+        std::vector<uint8_t> makeRealmJoinResponse(const Protocol::ClientServices& services, uint32_t clientBuild, const std::string& gameAccountName, uint32_t realmAddress, std::string& realmJoinTicket, std::array<uint8_t, 32>& joinSecret, uint32_t& localRealmId)
         {
-            if (gameAccountName.empty() || worldHost.empty() || worldPort == 0u || worldPort > 65535u)
+            if (gameAccountName.empty())
                 return {};
 
             const uint8_t region = static_cast<uint8_t>((realmAddress >> 24) & 0xFFu);
@@ -875,34 +877,32 @@ namespace AscEmu::Battlenet
             if (!validRegion || site != 1u || realmId == 0u)
                 return {};
 
-            if (!sBNetLogonSQL)
-                return {};
-
             localRealmId = 0u;
 
             // The low 16 bits of the Camelot address are part of Blizzard's
             // external realm address (Normal currently arrives as 0x46010002).
-            // They are not AscEmu's local realms.id.  Route Forever joins to the
-            // first enabled local realm instead of requiring realms.id == 2.
-            std::unique_ptr<QueryResult> realmResult;
-            if (usesForever1601Transport(clientBuild) && region == 70u)
+            // They are not AscEmu's local realm id.  Route Forever joins to the
+            // first online local realm instead of requiring realm id == 2.
+            const bool firstOnlineRealm = usesForever1601Transport(clientBuild) && region == 70u;
+            std::string worldHost;
+            uint32_t worldPort = 0;
+            for (const AscEmu::Realm::RealmSummary& realm : sRealmManager.getRealmSummaries())
             {
-                realmResult = sBNetLogonSQL->query("SELECT id, status FROM realms WHERE status <> 0 ORDER BY id LIMIT 1");
+                if (!realm.online || (!firstOnlineRealm && realm.id != realmId))
+                    continue;
+
+                // the address of the world server as it registered itself over LogonComm: host:port
+                const size_t portStart = realm.address.rfind(':');
+                if (portStart == std::string::npos)
+                    return {};
+
+                worldHost = realm.address.substr(0, portStart);
+                worldPort = static_cast<uint32_t>(std::strtoul(realm.address.c_str() + portStart + 1, nullptr, 10));
+                localRealmId = realm.id;
+                break;
             }
-            else
-            {
-                realmResult = sBNetLogonSQL->query("SELECT id, status FROM realms WHERE id = %u LIMIT 1", static_cast<uint32_t>(realmId));
-            }
 
-            if (!realmResult)
-                return {};
-
-            Field* realmFields = realmResult->fetch();
-            if (realmFields == nullptr || realmFields[1].asUint8() == 0u)
-                return {};
-
-            localRealmId = realmFields[0].asUint32();
-            if (localRealmId == 0u)
+            if (localRealmId == 0u || worldHost.empty() || worldPort == 0u || worldPort > 65535u)
                 return {};
 
             std::ostringstream serverAddressesJson;
@@ -936,60 +936,39 @@ namespace AscEmu::Battlenet
             std::vector<uint8_t> serverSecretBlob(joinSecret.begin(), joinSecret.end());
 
             std::vector<uint8_t> response;
-            appendGameUtilitiesBlobAttribute(response, "Param_RealmJoinTicket", joinTicketBlob);
-            appendGameUtilitiesBlobAttribute(response, "Param_ServerAddresses", serverAddresses);
+            appendGameUtilitiesBlobAttribute(services, response, "Param_RealmJoinTicket", joinTicketBlob);
+            appendGameUtilitiesBlobAttribute(services, response, "Param_ServerAddresses", serverAddresses);
 
             // RealmJoin returns the server half of the 64-byte world-auth key as
             // Param_JoinSecret. Param_BnetSessionKey belongs to the request side
             // and contains the Battle.net/client session material; returning the
             // generated server secret under that name makes the client discard
             // the join result before opening the world TCP connection.
-            appendGameUtilitiesBlobAttribute(response, "Param_JoinSecret", serverSecretBlob);
+            appendGameUtilitiesBlobAttribute(services, response, "Param_JoinSecret", serverSecretBlob);
             return response;
         }
 
-        std::vector<uint8_t> makeRealmListResponse(uint32_t clientBuild, uint32_t accountId)
+        std::vector<uint8_t> makeRealmListResponse(const Protocol::ClientServices& services, uint32_t clientBuild, uint32_t accountId)
         {
-            struct RealmRow
-            {
-                uint32_t id = 0;
-                uint8_t status = 0;
-            };
+            // the realms as their world servers registered them over LogonComm
+            const std::vector<AscEmu::Realm::RealmSummary> realms = sRealmManager.getRealmSummaries();
 
-            std::vector<RealmRow> realms;
-            if (sBNetLogonSQL)
-            {
-                if (auto result = sBNetLogonSQL->query("SELECT id, status FROM realms ORDER BY id"))
-                {
-                    do
-                    {
-                        Field* fields = result->fetch();
-                        if (!fields)
-                            continue;
-
-                        realms.push_back({ fields[0].asUint32(), fields[1].asUint8() });
-                    } while (result->nextRow());
-                }
-            }
-
-            [[maybe_unused]] const ForeverSuperDistrictProfile foreverProfile = getForeverSuperDistrictProfile(clientBuild);
+            const ForeverSuperDistrictProfile foreverProfile = getForeverSuperDistrictProfile(clientBuild);
 
             std::ostringstream realmJson;
             realmJson << "JSONRealmListUpdates:{\"updates\":[";
 
             bool first = true;
-            for (const RealmRow& realm : realms)
+            for (const AscEmu::Realm::RealmSummary& realm : realms)
             {
                 if (!first)
                     realmJson << ',';
                 first = false;
 
                 const uint32_t address = makeRealmAddress(static_cast<uint8_t>(Protocol::WoW::EuropeRegion), 1u, static_cast<uint16_t>(realm.id));
-                const bool online = realm.status != 0;
+                const bool online = realm.online;
                 const uint32_t flags = online ? 0u : 2u;
-                const std::string name = realms.size() == 1u
-                    ? "AscEmu"
-                    : "AscEmu " + std::to_string(realm.id);
+                const std::string name = !realm.name.empty() ? realm.name : "AscEmu " + std::to_string(realm.id);
 
                 const ClientVersionParts version = getClientVersionParts(clientBuild);
 
@@ -1009,15 +988,17 @@ namespace AscEmu::Battlenet
                     << "\"flags\":" << flags << ','
                     << "\"name\":\"" << jsonEscape(name) << "\","
                     << "\"cfgConfigsID\":1,"
-#if AE_BNET_V1_SERVICES
-                    // the v1 realm entry ends with the language id; the v2 entry adds the content set and the bleep chance
-                    << "\"cfgLanguagesID\":1"
-#else
-                    << "\"cfgLanguagesID\":1,"
-                    << "\"cfgContentSetID\":" << (foreverProfile.build != 0u ? foreverProfile.currentCfgContentSetId : 0u) << ','
-                    << "\"useBleepChance\":0.0"
-#endif
-                    << "},\"deleting\":false}";
+                    << "\"cfgLanguagesID\":1";
+
+                // the v1 realm entry ends with the language id; the v2 entry adds the content set and the bleep chance
+                if (services.v2)
+                {
+                    realmJson
+                        << ",\"cfgContentSetID\":" << (foreverProfile.build != 0u ? foreverProfile.currentCfgContentSetId : 0u)
+                        << ",\"useBleepChance\":0.0";
+                }
+
+                realmJson << "},\"deleting\":false}";
             }
             realmJson << "]}";
 
@@ -1025,20 +1006,12 @@ namespace AscEmu::Battlenet
             countJson << "JSONRealmCharacterCountList:{\"counts\":[";
 
             bool firstCount = true;
-            if (accountId != 0u && sBNetCharacterSQL)
+            if (accountId != 0u)
             {
-                for (const RealmRow& realm : realms)
+                for (const AscEmu::Realm::RealmSummary& realm : realms)
                 {
-                    // AscEmu currently uses one configured character database for this
-                    // Battle.net process.  Emit a count only for realms represented by
-                    // that database.  In the normal single-realm setup this maps realm 1
-                    // to the same ascemu_char database used by world.
-                    uint32_t characterCount = 0u;
-                    if (auto countResult = sBNetCharacterSQL->query("SELECT COUNT(*) FROM characters WHERE acct = %u", accountId))
-                    {
-                        if (Field* countFields = countResult->fetch())
-                            characterCount = countFields[0].asUint32();
-                    }
+                    // the world server of the realm reports the characters of its accounts over LogonComm
+                    const uint32_t characterCount = sRealmManager.getCharacterCount(realm.id, accountId);
 
                     const uint32_t address = makeRealmAddress(static_cast<uint8_t>(Protocol::WoW::EuropeRegion), 1u, static_cast<uint16_t>(realm.id));
 
@@ -1064,17 +1037,17 @@ namespace AscEmu::Battlenet
                 return {};
 
             std::vector<uint8_t> response;
-            appendGameUtilitiesBlobAttribute(response, "Param_RealmList", realmList);
-            appendGameUtilitiesBlobAttribute(response, "Param_CharacterCountList", characterCounts);
+            appendGameUtilitiesBlobAttribute(services, response, "Param_RealmList", realmList);
+            appendGameUtilitiesBlobAttribute(services, response, "Param_CharacterCountList", characterCounts);
             return response;
         }
 
-        std::vector<uint8_t> makeGameUtilitiesBlobAttribute(const std::string& name, const std::string& blob)
+        std::vector<uint8_t> makeGameUtilitiesBlobAttribute(const Protocol::ClientServices& services, const std::string& name, const std::string& blob)
         {
             // bgs.protocol.Variant
-            // blob_value = Protocol::VariantField::Blob
+            // blob_value, field number of the client's Variant layout
             std::vector<uint8_t> variant;
-            appendStringField(variant, Protocol::VariantField::Blob, blob);
+            appendStringField(variant, services.variant.blobValue, blob);
 
             // bgs.protocol.Attribute
             // field 1 = name
@@ -1764,8 +1737,7 @@ namespace AscEmu::Battlenet
                 return handleGameUtilitiesRequest(methodId, token, payload, payloadSize);
             }
         }
-#if AE_BNET_V1_SERVICES
-        // 6.2.4 and 7.x clients use the v1 services
+        // 6.2.4 to 11.x clients use the v1 services
         else if (serviceHash == Protocol::AuthenticationServiceV1::Hash)
         {
             if (methodId == Protocol::AuthenticationServiceV1::Logon)
@@ -1786,7 +1758,6 @@ namespace AscEmu::Battlenet
             if (methodId == Protocol::GameUtilitiesServiceV1::GetAllValuesForAttribute)
                 return handleGameUtilitiesRequest(Protocol::GameUtilitiesService::GetAllValuesForAttribute, token, payload, payloadSize);
         }
-#endif
 
         logUnhandledRpc(serviceHash, methodId, token, payload, payloadSize);
         return true;
@@ -1915,6 +1886,9 @@ namespace AscEmu::Battlenet
         }
 
         m_clientBuild = request.applicationVersion;
+        m_services = &Protocol::ServicesV2;
+        if (m_clientBuild == 0)
+            sLogger.warning("BNet: connection #{} AuthenticationServiceV2.Logon without application_version, the web login gets the default form", m_connectionId);
 
         std::string title;
         title.push_back(static_cast<char>(request.titleId & 0xFFu));
@@ -1991,6 +1965,9 @@ namespace AscEmu::Battlenet
             return sendRpcErrorResponse(token, Protocol::ErrorBadLocale);
 
         m_clientBuild = static_cast<uint32_t>(applicationVersion);
+        m_services = &Protocol::ServicesV1;
+        if (m_clientBuild == 0)
+            sLogger.warning("BNet: connection #{} AuthenticationService.Logon without application_version, the web login gets the default form", m_connectionId);
 
         // the challenge goes out before the NoData reply
         if (!sendExternalChallenge(Protocol::ChallengeListenerV1::Hash, Protocol::ChallengeListenerV1::OnExternalChallenge))
@@ -2093,9 +2070,9 @@ namespace AscEmu::Battlenet
         }
 
         uint32_t banned = 0;
-        if (sBNetLogonSQL)
+        if (sLogonSQL)
         {
-            if (auto result = sBNetLogonSQL->query("SELECT banned FROM accounts WHERE id = %u LIMIT 1", gameAccountId))
+            if (auto result = sLogonSQL->query("SELECT banned FROM accounts WHERE id = %u LIMIT 1", gameAccountId))
                 banned = result->fetch()[0].asUint32();
         }
 
@@ -2141,54 +2118,22 @@ namespace AscEmu::Battlenet
 
     bool BNetSocket::loadLinkedGameAccounts(const std::string& login, std::string& battleTag, std::string& country)
     {
-        if (!sBNetLogonSQL)
+        // one account serves every client version: the Battle.net login is the account itself and the
+        // account its only game account
+        AscEmu::Accounts::BattleNetLogin account;
+        if (!AscEmu::Accounts::findBattleNetLogin(login, account))
         {
-            sLogger.failure("BNet: connection #{} cannot load the game accounts: " "logon database is unavailable", m_connectionId);
-            return false;
-        }
-
-        const std::string escapedLogin = sBNetLogonSQL->escapeString(login);
-        auto result = sBNetLogonSQL->query("SELECT ba.id, ba.email, ba.battle_tag, ba.country, a.id, a.acc_name " "FROM battlenet_accounts ba " "INNER JOIN battlenet_game_accounts bga ON bga.battlenet_account_id = ba.id " "INNER JOIN accounts a ON a.id = bga.game_account_id " "WHERE UPPER(ba.email) = UPPER('%s') " "ORDER BY a.id", escapedLogin.c_str());
-
-        if (!result)
-        {
-            sLogger.failure("BNet: connection #{} cannot load the game accounts: " "Battle.net account '{}' has no linked WoW game accounts", m_connectionId, login);
+            sLogger.failure("BNet: connection #{} cannot load the game account: no account '{}'", m_connectionId, login);
             return false;
         }
 
         m_linkedGameAccounts.clear();
+        m_linkedGameAccounts.push_back({ account.id, account.name });
         m_selectedGameAccountId = 0;
         m_selectedGameAccountName.clear();
-
-        uint32_t battleNetAccountId = 0;
-        battleTag.clear();
+        m_battleNetAccountId = account.id;
+        battleTag = account.name + "#1";
         country = "CH";
-
-        do
-        {
-            Field* fields = result->fetch();
-            if (fields == nullptr)
-                continue;
-
-            if (battleNetAccountId == 0)
-            {
-                battleNetAccountId = fields[0].asUint32();
-                battleTag = fields[2].asCString() != nullptr ? fields[2].asCString() : "";
-                if (fields[3].asCString() != nullptr && fields[3].asCString()[0] != '\0')
-                    country = fields[3].asCString();
-            }
-
-            LinkedGameAccount gameAccount;
-            gameAccount.id = fields[4].asUint32();
-            gameAccount.name = fields[5].asCString() != nullptr ? fields[5].asCString() : "";
-            if (gameAccount.id != 0)
-                m_linkedGameAccounts.push_back(std::move(gameAccount));
-        } while (result->nextRow());
-
-        if (battleNetAccountId == 0 || m_linkedGameAccounts.empty())
-            return false;
-
-        m_battleNetAccountId = battleNetAccountId;
         return true;
     }
 
@@ -2314,7 +2259,7 @@ namespace AscEmu::Battlenet
                 : std::string_view{ "2-1-0" };
 
             const std::vector<std::string> subRegions{ std::string(subRegion) };
-            const std::vector<uint8_t> response = makeGameUtilitiesStringVariantList(subRegions);
+            const std::vector<uint8_t> response = makeGameUtilitiesStringVariantList(*m_services, subRegions);
 
             sLogger.debug("BNet: connection #{} GameUtilitiesService.GetAllValuesForAttribute -> token={}, key='{}', subregion='{}', response={} byte(s)", m_connectionId, token, attributeName, subRegion, response.size());
             return sendRpcResponse(token, response);
@@ -2335,7 +2280,7 @@ namespace AscEmu::Battlenet
 
         std::vector<uint8_t> response;
         if (!blob.empty())
-            appendGameUtilitiesBlobAttribute(response, "Param_BleepProxyList", blob);
+            appendGameUtilitiesBlobAttribute(*m_services, response, "Param_BleepProxyList", blob);
 
         sLogger.debug("BNet: connection #{} FetchBleepProxies -> token={}, command='{}', proxies=0, response={} byte(s)", m_connectionId, token, commandName, response.size());
 
@@ -2371,34 +2316,14 @@ namespace AscEmu::Battlenet
         }
         else
         {
-            struct SuperDistrictRealm
-            {
-                uint32_t id = 0;
-                uint8_t status = 0;
-            };
-
-            std::vector<SuperDistrictRealm> realms;
-            if (sBNetLogonSQL)
-            {
-                if (auto result = sBNetLogonSQL->query("SELECT id, status FROM realms ORDER BY id"))
-                {
-                    do
-                    {
-                        Field* fields = result->fetch();
-                        if (!fields)
-                            continue;
-
-                        realms.push_back({ fields[0].asUint32(), fields[1].asUint8() });
-                    } while (result->nextRow());
-                }
-            }
+            const std::vector<AscEmu::Realm::RealmSummary> realms = sRealmManager.getRealmSummaries();
 
             json << "JSONSuperDistrictList:{\"superDistricts\":[";
 
             bool first = true;
-            for (const SuperDistrictRealm& realm : realms)
+            for (const AscEmu::Realm::RealmSummary& realm : realms)
             {
-                if (realm.status == 0u)
+                if (!realm.online)
                     continue;
 
                 if (!first)
@@ -2421,7 +2346,7 @@ namespace AscEmu::Battlenet
 
         std::vector<uint8_t> response;
         if (!blob.empty())
-            appendGameUtilitiesBlobAttribute(response, "Param_SuperDistrictList", blob);
+            appendGameUtilitiesBlobAttribute(*m_services, response, "Param_SuperDistrictList", blob);
 
         return sendRpcResponse(token, response);
     }
@@ -2474,21 +2399,21 @@ namespace AscEmu::Battlenet
 
             std::vector<uint8_t> response;
             if (!realmEntry.empty())
-                appendGameUtilitiesBlobAttribute(response, "Param_RealmEntry", realmEntry);
+                appendGameUtilitiesBlobAttribute(*m_services, response, "Param_RealmEntry", realmEntry);
 
             // Exact no-character shape observed in the Forever beta capture:
             //   Param_CharacterName = ""
             //   Param_CharacterGUID = blob { 0x00, 0x00 }
             //   Param_LastPlayedTime = 1
-            appendGameUtilitiesStringAttribute(response, "Param_CharacterName", "");
+            appendGameUtilitiesStringAttribute(*m_services, response, "Param_CharacterName", "");
 
             const std::vector<uint8_t> emptyCharacterGuid{ 0x00u, 0x00u };
-            appendGameUtilitiesBlobAttribute(response, "Param_CharacterGUID", emptyCharacterGuid);
+            appendGameUtilitiesBlobAttribute(*m_services, response, "Param_CharacterGUID", emptyCharacterGuid);
 
-            appendGameUtilitiesUInt64Attribute(response, "Param_LastPlayedTime", 1u);
+            appendGameUtilitiesUInt64Attribute(*m_services, response, "Param_LastPlayedTime", 1u);
 
             if (!utilityInfo.empty())
-                appendGameUtilitiesBlobAttribute(response, "Param_UtilityInfo", utilityInfo);
+                appendGameUtilitiesBlobAttribute(*m_services, response, "Param_UtilityInfo", utilityInfo);
 
 
             return sendRpcResponse(token, response);
@@ -2502,7 +2427,7 @@ namespace AscEmu::Battlenet
     bool BNetSocket::handleRealmJoinRequest(uint32_t token, const uint8_t* payload, size_t payloadSize)
     {
         uint64_t realmAddressValue = 0;
-        if (!readGameUtilitiesUintAttribute(payload, payloadSize, "Param_RealmAddress", realmAddressValue) || realmAddressValue > std::numeric_limits<uint32_t>::max())
+        if (!readGameUtilitiesUintAttribute(*m_services, payload, payloadSize, "Param_RealmAddress", realmAddressValue) || realmAddressValue > std::numeric_limits<uint32_t>::max())
         {
             sLogger.failure("BNet: connection #{} RealmJoin request is missing a valid Param_RealmAddress", m_connectionId);
             return sendRpcResponse(token, std::vector<uint8_t>{});
@@ -2528,7 +2453,7 @@ namespace AscEmu::Battlenet
         std::string realmJoinTicket;
         std::array<uint8_t, 32> joinSecret{};
         uint32_t localRealmId = 0u;
-        const std::vector<uint8_t> response = makeRealmJoinResponse(m_clientBuild, m_selectedGameAccountName, realmAddress, bnetConfig.world.host, bnetConfig.world.port, realmJoinTicket, joinSecret, localRealmId);
+        const std::vector<uint8_t> response = makeRealmJoinResponse(*m_services, m_clientBuild, m_selectedGameAccountName, realmAddress, realmJoinTicket, joinSecret, localRealmId);
 
         bool sessionQueued = false;
         if (!response.empty())
@@ -2545,10 +2470,27 @@ namespace AscEmu::Battlenet
             std::copy(m_realmListClientSecret.begin(), m_realmListClientSecret.end(), pending.worldAuthKeyData.begin());
             std::copy(joinSecret.begin(), joinSecret.end(), pending.worldAuthKeyData.begin() + m_realmListClientSecret.size());
             pending.joinSecret = joinSecret;
-            sessionQueued = sBattleNetCommManager.sendPendingSession(pending);
+
+            // the account data the session result of the classic login carries, from the account cache of the logon (keyed by upper case names)
+            std::string accountKey = m_selectedGameAccountName;
+            AscEmu::Util::Strings::toUpperCase(accountKey);
+            if (const Account* account = sAccountMgr.getAccountByName(accountKey))
+            {
+                pending.gmFlags = account->GMFlags ? account->GMFlags.get() : "";
+                pending.accountFlags = static_cast<uint8_t>(account->AccountFlags);
+                pending.forcedLanguage = account->forcedLanguage;
+                pending.muted = account->Muted;
+            }
+            else
+            {
+                pending.accountFlags = static_cast<uint8_t>(NEW_ACCOUNT_EXPANSION_FLAGS);
+                pending.forcedLanguage = "enUS";
+            }
+
+            sessionQueued = sRealmManager.sendPendingSession(pending);
         }
 
-        sLogger.debug("BNet: connection #{} RealmJoin -> token={}, realm_address=0x{:08X} (region={}, site={}, external_realm={}), local_realm={}, world={}:{}, game_account='{}', pending_session={}, response={} byte(s)", m_connectionId, token, realmAddress, region, site, realmId, localRealmId, bnetConfig.world.host, bnetConfig.world.port, m_selectedGameAccountName, sessionQueued ? "queued" : "missing-world", response.size());
+        sLogger.debug("BNet: connection #{} RealmJoin -> token={}, realm_address=0x{:08X} (region={}, site={}, external_realm={}), local_realm={}, game_account='{}', pending_session={}, response={} byte(s)", m_connectionId, token, realmAddress, region, site, realmId, localRealmId, m_selectedGameAccountName, sessionQueued ? "queued" : "missing-world", response.size());
 
         if (response.empty())
         {
@@ -2558,7 +2500,7 @@ namespace AscEmu::Battlenet
 
         if (!sessionQueued)
         {
-            sLogger.failure("BNet: connection #{} cannot complete RealmJoin: local realm {} (external realm {}) has no authenticated BattleNetComm world connection", m_connectionId, localRealmId, realmId);
+            sLogger.failure("BNet: connection #{} cannot complete RealmJoin: local realm {} (external realm {}) has no world server registered over LogonComm", m_connectionId, localRealmId, realmId);
             return sendRpcResponse(token, std::vector<uint8_t>{});
         }
 
@@ -2576,7 +2518,7 @@ namespace AscEmu::Battlenet
         // Realm list framing is shared; the advertised version must match the
         // authenticated client build instead of a fixed development build.
         const uint32_t clientBuild = m_clientBuild;
-        const std::vector<uint8_t> response = makeRealmListResponse(clientBuild, m_selectedGameAccountId);
+        const std::vector<uint8_t> response = makeRealmListResponse(*m_services, clientBuild, m_selectedGameAccountId);
 
         sLogger.debug("BNet: connection #{} RealmList -> token={}, command='{}', build={}, account={}, response={} byte(s)", m_connectionId, token, commandName, clientBuild, m_selectedGameAccountId, response.size());
 
@@ -2589,11 +2531,11 @@ namespace AscEmu::Battlenet
     bool BNetSocket::handleRealmListTicketRequest(uint32_t token, const std::string& commandName, const uint8_t* payload, size_t payloadSize)
     {
         uint32_t requestedGameAccountId = 0;
-        if (!extractRealmListIdentityGameAccountId(payload, payloadSize, requestedGameAccountId))
+        if (!extractRealmListIdentityGameAccountId(*m_services, payload, payloadSize, requestedGameAccountId))
         {
             std::vector<uint8_t> identityDiagnostic;
             std::string identityText = "<missing>";
-            if (readGameUtilitiesBlobAttribute(payload, payloadSize, "Param_Identity", identityDiagnostic) && !identityDiagnostic.empty())
+            if (readGameUtilitiesBlobAttribute(*m_services, payload, payloadSize, "Param_Identity", identityDiagnostic) && !identityDiagnostic.empty())
                 identityText.assign(reinterpret_cast<const char*>(identityDiagnostic.data()), identityDiagnostic.size());
 
             sLogger.failure("BNet: connection #{} RealmListTicket request did not contain a valid Param_Identity gameAccountID; identity='{}'", m_connectionId, identityText);
@@ -2613,19 +2555,17 @@ namespace AscEmu::Battlenet
 
         m_realmListClientSecretValid = extractRealmListClientSecret(payload, payloadSize, m_realmListClientSecret);
 
-#if AE_BNET_V1_SERVICES
-        // v1 clients name their build only in Param_ClientInfo.info.version.versionBuild
+        // v1 clients name their build in Param_ClientInfo.info.version.versionBuild, it takes precedence over the application_version of the logon
         uint32_t versionBuild = 0;
         if (extractJsonUnsigned(payload, payloadSize, "\"versionBuild\"", versionBuild) && versionBuild != 0)
             m_clientBuild = versionBuild;
-#endif
         if (!m_realmListClientSecretValid)
         {
             sLogger.failure("BNet: connection #{} RealmListTicket request did not contain a valid 32-byte client secret", m_connectionId);
             return sendRpcResponse(token, std::vector<uint8_t>{});
         }
 
-        const std::vector<uint8_t> response = makeGameUtilitiesBlobAttribute("Param_RealmListTicket", "AuthRealmListTicket");
+        const std::vector<uint8_t> response = makeGameUtilitiesBlobAttribute(*m_services, "Param_RealmListTicket", "AuthRealmListTicket");
 
         sLogger.debug("BNet: connection #{} RealmListTicket -> token={}, command='{}', battlenet_account={}, selected_game_account={} ('{}'), response={} byte(s), client_secret=32 byte(s)", m_connectionId, token, commandName, m_battleNetAccountId, m_selectedGameAccountId, m_selectedGameAccountName, response.size());
         return sendRpcResponse(token, response);
@@ -2806,7 +2746,7 @@ namespace AscEmu::Battlenet
         // bgs.protocol.challenge.v1.ChallengeExternalRequest
         // field 1 (request_token) is optional and intentionally omitted.
         appendStringField(challenge, 2, "web_auth_url");
-        const std::string webAuthUrl = bnetConfig.webAuth.loginUrl(!usesPlainWebAuth(m_clientBuild));
+        const std::string webAuthUrl = bnetConfig.webAuth.loginUrl(!usesPlainWebAuth(m_clientBuild), m_clientBuild);
         appendStringField(challenge, 3, webAuthUrl);
 
         // Server-side RPC token space. This is currently our first

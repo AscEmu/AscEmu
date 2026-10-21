@@ -14,6 +14,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 #include <mutex>
 
+#include "LogonCommDefines.hpp"
+
+#include <mutex>
+#include <string>
+#include <unordered_map>
+
 class WorldSocket;
 namespace AscEmu::Threading
 {
@@ -155,6 +161,14 @@ public:
 
     void testConsoleLogon(std::string & username, std::string & password, uint32_t requestnum);
     std::string accountResult;
+
+    // Battle.net sessions the logonserver announced for this realm, consumed with the realm join ticket of the client
+    void storePendingSession(PendingWorldSession session);
+    bool getPendingSession(const std::string& realmJoinTicket, PendingWorldSession& session, bool consume);
+
+private:
+    std::mutex pendingSessionLock;
+    std::unordered_map<std::string, PendingWorldSession> pendingSessions;
 };
 
 #define sLogonCommHandler LogonCommHandler::getInstance()

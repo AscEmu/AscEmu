@@ -21,6 +21,7 @@
 #define __LOGON_COMM_SERVER_H
 
 #include "Cryptography/RC4.hpp"
+#include "LogonCommDefines.hpp"
 #include "Network/Socket.hpp"
 #include "zlib.h"
 
@@ -37,6 +38,8 @@ public:
     void onConnect() override;
 
     void SendPacket(WorldPacket* data);
+    // announces a Battle.net session to the realm (LRSMSG_PENDING_WORLD_SESSION)
+    void SendPendingSession(const PendingWorldSession& session);
     void HandlePacket(WorldPacket& recvData);
 
     void HandleRegister(WorldPacket& recvData);

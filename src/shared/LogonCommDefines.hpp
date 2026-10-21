@@ -5,6 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <array>
+#include <cstdint>
+#include <string>
+
 //////////////////////////////////////////////////////////////////////////////////////////
 /// \brief Logon Realm communication
 ///
@@ -40,8 +44,33 @@ enum LogonRealmOpcodes
     LRSMSG_ACCOUNT_RESULT             = 0x016,  // send account information to realm
     LRCMSG_ALL_ACCOUNT_REQUEST        = 0x017,  // request all account data
     LRSMSG_ALL_ACCOUNT_RESULT         = 0x018,  // send id, name, rank of all accounts to realm
+    LRSMSG_PENDING_WORLD_SESSION      = 0x019,  // Battle.net session announced to the realm before its client connects
 
     LRMSG_MAX_OPCODES                           // max opcodes
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// A Battle.net session (6.x and later clients) the logonserver announces to the realm with
+/// LRSMSG_PENDING_WORLD_SESSION when the client joins it. The realm keeps it until the client
+/// presents the realm join ticket in its auth session or the announcement expires.
+struct PendingWorldSession
+{
+    uint32_t accountId = 0;             // accounts.id, the Battle.net login of the client
+    uint32_t gameAccountId = 0;         // accounts.id, the game account (the same account)
+    uint32_t realmId = 0;
+    uint32_t clientBuild = 0;
+    uint32_t region = 0;
+    uint64_t expiresAt = 0;             // unix time the announcement expires at
+    std::string gameAccountName;
+    std::string realmJoinTicket;
+    std::array<uint8_t, 64> worldAuthKeyData{};
+    std::array<uint8_t, 32> joinSecret{};
+
+    // account data of the game account, as the session result of the classic login carries it
+    std::string gmFlags;
+    uint8_t accountFlags = 0;
+    std::string forcedLanguage;
+    uint32_t muted = 0;
 };
 
 enum AccountDatabaseMethod

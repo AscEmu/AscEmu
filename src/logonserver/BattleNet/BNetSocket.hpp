@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "BNetProtocol.hpp"
 #include "Network/Socket.hpp"
 
 #include <array>
@@ -86,6 +87,8 @@ namespace AscEmu::Battlenet
         uint32_t m_battleNetAccountId = 0;
         uint32_t m_selectedGameAccountId = 0;
         uint32_t m_clientBuild = 0;
+        // services and Variant layout of the client, set by its logon request
+        const Protocol::ClientServices* m_services = &Protocol::ServicesV1;
         std::string m_selectedGameAccountName;
         std::vector<LinkedGameAccount> m_linkedGameAccounts;
         std::array<uint8_t, 32> m_realmListClientSecret{};

@@ -2424,7 +2424,7 @@ namespace
     //////////////////////////////////////////////////////////////////////////////////////////
     Context makeContext(Object* object, Player* target, ByteBuffer& data)
     {
-        return Context{ data, target, worldConfig.battleNetComm.realmId, target != nullptr ? target->GetMapId() : object->GetMapId(), fieldFlags(object, target) };
+        return Context{ data, target, worldConfig.realm.id, target != nullptr ? target->GetMapId() : object->GetMapId(), fieldFlags(object, target) };
     }
 }
 

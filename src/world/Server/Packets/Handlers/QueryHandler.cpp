@@ -97,10 +97,10 @@ void WorldSession::handleRealmNameQueryOpcode(WorldPacket& recvData)
     if (getClientProtocol().expansion >= WoW::Expansion::_Legion)
     {
         // 7.x and later ask with the virtual realm address, the realm id is its low part
-        if ((srlPacket.realmId & 0xFFFF) == worldConfig.battleNetComm.realmId)
+        if ((srlPacket.realmId & 0xFFFF) == worldConfig.realm.id)
         {
             response.found = true;
-            response.realmName = worldConfig.battleNetComm.realmName;
+            response.realmName = worldConfig.realm.name;
             response.isLocalRealm = true;
         }
 

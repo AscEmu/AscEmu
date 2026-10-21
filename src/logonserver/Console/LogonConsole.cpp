@@ -18,7 +18,9 @@
  */
 
 #include "LogonConsole.h"
+#include "Server/AccountService.hpp"
 #include "Server/Logon.h"
+#include "Server/LogonServerDefines.hpp"
 #include <Logging/Logger.hpp>
 #include <Server/Master.hpp>
 #include <Server/AccountMgr.h>
@@ -232,7 +234,7 @@ void LogonConsole::ProcessHelp(char* /*command*/)
     fmt::println("Console::Help");
     fmt::println("=============");
     fmt::println("Help, ?                   : Prints this help text.");
-    fmt::println("Account create            : Creates a new account.");
+    fmt::println("Account create            : Creates an account for every client version.");
     fmt::println("Account delete            : Deletes an account.");
     fmt::println("Account set password      : Sets a new password for an account.");
     fmt::println("Account change password   : Change the current password for an account.");
@@ -255,37 +257,23 @@ void LogonConsole::AccountCreate(char* str)
 {
     char name[512];
     char password[512];
-    char email[512];
+    char email[512] = {};
 
     int count = sscanf(str, "%s %s %s", name, password, email);
-    if (count != 3)
+    if (count < 2)
     {
-        fmt::println("usage: account create <name> <password> <email>");
+        fmt::println("usage: account create <name> <password> [email]");
         fmt::println("example: account create ghostcrawler Ih4t3p4l4dins greg.street@blizzard.com");
+        fmt::println("The account serves every client version; the 6.x and later clients log in with the name or the email.");
         return;
     }
 
-    checkAccountName(name, ACC_NAME_NOT_EXIST);
-
-    std::string pass;
-    pass.assign(name);
-    pass.push_back(':');
-    pass.append(password);
-
-    std::stringstream query;
-    query << "INSERT INTO `accounts`( `acc_name`,`encrypted_password`,`banned`,`email`,`flags`,`banreason`) VALUES ( '";
-    query << name << "',";
-    query << "SHA( UPPER( '" << pass << "' ) ),'0','";
-    query << email << "','";
-    query << AE_EXPANSION_VERSION << "','' );";
-
-    if (!sLogonSQL->waitExecuteNA(query.str().c_str()))
+    const auto result = AscEmu::Accounts::createAccount(name, password, email);
+    if (result != AscEmu::Accounts::Result::Ok)
     {
-        fmt::println("Couldn't save new account to database. Aborting.");
+        fmt::println("Couldn't create the account: {}.", AscEmu::Accounts::describe(result));
         return;
     }
-
-    sAccountMgr.reloadAccounts(true);
 
     fmt::println("Account created.");
 }
@@ -302,19 +290,12 @@ void LogonConsole::AccountDelete(char* str)
         return;
     }
 
-    checkAccountName(name, ACC_NAME_DO_EXIST);
-
-    std::stringstream query;
-    query << "DELETE FROM `accounts` WHERE `acc_name` = '";
-    query << name << "';";
-
-    if (!sLogonSQL->waitExecuteNA(query.str().c_str()))
+    const auto result = AscEmu::Accounts::deleteAccount(name);
+    if (result != AscEmu::Accounts::Result::Ok)
     {
-        fmt::println("Couldn't delete account. Aborting.");
+        fmt::println("Couldn't delete the account: {}.", AscEmu::Accounts::describe(result));
         return;
     }
-
-    sAccountMgr.reloadAccounts(true);
 
     fmt::println("Account deleted.");
 }
@@ -332,25 +313,12 @@ void LogonConsole::AccountSetPassword(char* str)
         return;
     }
 
-    checkAccountName(name, ACC_NAME_DO_EXIST);
-
-    std::string pass;
-    pass.assign(name);
-    pass.push_back(':');
-    pass.append(password);
-
-    std::stringstream query;
-    query << "UPDATE `accounts` SET `encrypted_password` = ";
-    query << "SHA( UPPER( '" << pass << "' ) ) WHERE `acc_name` = '";
-    query << name << "'";
-
-    if (!sLogonSQL->waitExecuteNA(query.str().c_str()))
+    const auto result = AscEmu::Accounts::setPassword(name, password);
+    if (result != AscEmu::Accounts::Result::Ok)
     {
-        fmt::println("Couldn't update password in database. Aborting.");
+        fmt::println("Couldn't update the password: {}.", AscEmu::Accounts::describe(result));
         return;
     }
-
-    sAccountMgr.reloadAccounts(true);
 
     fmt::println("Account password updated.");
 }
@@ -370,42 +338,18 @@ void LogonConsole::AccountChangePassword(char* str)
         return;
     }
 
-    checkAccountName(account_name, ACC_NAME_DO_EXIST);
-
     if (std::string(new_password_1) != std::string(new_password_2))
     {
         fmt::println("The new passwords don't match!");
         return;
     }
 
-    std::string pass;
-    pass.assign(account_name);
-    pass.push_back(':');
-    pass.append(old_password);
-
-    auto check_oldpass_query = sLogonSQL->query("SELECT acc_name, encrypted_password FROM accounts WHERE encrypted_password = SHA(UPPER('%s')) AND acc_name = '%s'", pass.c_str(), std::string(account_name).c_str());
-
-    if (!check_oldpass_query)
+    const auto result = AscEmu::Accounts::changePassword(account_name, old_password, new_password_1);
+    if (result != AscEmu::Accounts::Result::Ok)
     {
-        fmt::println("Your current password doesn't match your input.");
+        fmt::println("Couldn't change the password: {}.", AscEmu::Accounts::describe(result));
         return;
     }
-    else
-    {
-        std::string new_pass;
-        new_pass.assign(account_name);
-        new_pass.push_back(':');
-        new_pass.append(new_password_1);
-
-        auto new_pass_query = sLogonSQL->query("UPDATE accounts SET encrypted_password = SHA(UPPER('%s')) WHERE acc_name = '%s'", new_pass.c_str(), std::string(account_name).c_str());
-
-        if (!new_pass_query)
-        {
-            return;
-        }
-    }
-
-    sAccountMgr.reloadAccounts(true);
 
     fmt::println("Account password changed.");
 }

@@ -91,11 +91,11 @@ install(TARGETS ${EXECUTABLE_NAME} RUNTIME DESTINATION .)
 # Enable this if you want to use clang-tidy for static analysis in MS Visual Studio. You need to have clang-tidy installed and available in your PATH.
 #enable_clang_tidy(world)
 
-# Client-profile topology. Forever uses the Battle.net World V2/version layer;
-# legacy builds remain on the classic WorldSocket/logonserver path.
+# Client-profile topology. Forever uses the Battle.net World V2/version layer,
+# the other Battle.net profiles the versioned transport of src/version, legacy
+# builds the classic WorldSocket. Every profile registers at the logonserver.
 if (AE_USES_BATTLENET AND AE_IS_FOREVER)
     target_compile_definitions(${EXECUTABLE_NAME} PRIVATE
-        AE_BUILD_BATTLENET=1
         AE_HAS_WORLD_V2_PROFILE=1
         AE_WORLD_PROFILE_FOREVER=1
     )
@@ -109,7 +109,6 @@ elseif (AE_USES_BATTLENET)
     # WoD, Legion, BfA, Shadowlands, Dragonflight, The War Within and Midnight: Battle.net login, classic world server; the world transport
     # of the profile comes from src/version when the profile has one
     target_compile_definitions(${EXECUTABLE_NAME} PRIVATE
-        AE_BUILD_BATTLENET=1
         AE_HAS_WORLD_V2_PROFILE=0
         AE_WORLD_PROFILE_FOREVER=0
     )
@@ -119,7 +118,6 @@ elseif (AE_USES_BATTLENET)
     endif ()
 else ()
     target_compile_definitions(${EXECUTABLE_NAME} PRIVATE
-        AE_BUILD_BATTLENET=0
         AE_HAS_WORLD_V2_PROFILE=0
         AE_WORLD_PROFILE_FOREVER=0
     )

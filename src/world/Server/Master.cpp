@@ -56,7 +56,6 @@
 #include "Server/Console/ConsoleListener.h"
 #include "Server/Console/ConsoleThread.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
-#include "Server/BattleNetCommClient/BattleNetCommClient.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Storage/DayWatcherThread.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -548,16 +547,9 @@ bool Master::run(int /*argc*/, char** /*argv*/)
 
     //ThreadPool.Gobble();
 
-    /* Authentication backend is selected by CMake/client profile. Forever uses Battle.net; legacy profiles use LogonComm. */
+    // the logonserver serves every client version, the realm registers there over LogonComm
     sLogonCommHandler.initialize();
-#if AE_BUILD_BATTLENET
-    sLogonCommHandler.loadRealmsConfiguration();
-    sLogonCommHandler.loadAccountPermissions();
-    sLogger.info("LogonCommClient : Legacy logon-server connection disabled; BattleNetComm is active.");
-    AscEmu::BattlenetComm::sBattleNetCommClient.start(threadPool);
-#else
     sLogonCommHandler.startLogonCommHandler(threadPool);
-#endif
 
     // Create listener
     auto listenSocket = std::make_unique<ListenSocket<WorldSocket>>(worldConfig.listen.listenHost.c_str(), worldConfig.listen.listenPort);
@@ -605,9 +597,6 @@ bool Master::run(int /*argc*/, char** /*argv*/)
 
     sLogger.info("Network : Shutting down network subsystem.");
 
-#if AE_BUILD_BATTLENET
-    AscEmu::BattlenetComm::sBattleNetCommClient.finalize();
-#endif
     sSocketMgr.ShutdownThreads();
 
     sSocketMgr.CloseAll();

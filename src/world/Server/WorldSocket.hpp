@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "LogonCommDefines.hpp"
 #include "Cryptography/WowCrypt.hpp"
 #if AE_WORLD_PROFILE_BFA || AE_WORLD_PROFILE_SHADOWLANDS || AE_WORLD_PROFILE_DRAGONFLIGHT || AE_WORLD_PROFILE_THEWARWITHIN || AE_WORLD_PROFILE_MIDNIGHT
 #include "Cryptography/AesGcmCrypt.hpp"

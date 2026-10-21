@@ -464,7 +464,7 @@ void WorldSocket::sendAuthenticated(std::unique_ptr<WorldSession> sessionHolder)
         return;
 
     SmsgAuthResponse response(AuthOkay, ARST_ACCOUNT_DATA);
-    response.realmName = worldConfig.battleNetComm.realmName;
+    response.realmName = worldConfig.realm.name;
     sendManagedPacket(response);
 
     // 10.x and 11.x: the time zones before the glue screen status

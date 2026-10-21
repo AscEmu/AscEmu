@@ -4,6 +4,7 @@
 set(EXECUTABLE_NAME logon)
 
 file(GLOB SRC_AUTH_FILES Auth/*.cpp Auth/*.h Auth/*.hpp)
+file(GLOB SRC_BATTLENET_FILES BattleNet/*.cpp BattleNet/*.h BattleNet/*.hpp)
 file(GLOB SRC_CONSOLE_FILES Console/*.cpp Console/*.h Console/*.hpp)
 file(GLOB SRC_LOGON_COMM_SERVER_FILES LogonCommServer/*.cpp LogonCommServer/*.h LogonCommServer/*.hpp)
 file(GLOB SRC_REALM_FILES Realm/*.cpp Realm/*.h Realm/*.hpp)
@@ -19,6 +20,7 @@ ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_executable(${EXECUTABLE_NAME}
     ${SRC_AUTH_FILES}
+    ${SRC_BATTLENET_FILES}
     ${SRC_CONSOLE_FILES}
     ${SRC_LOGON_COMM_SERVER_FILES}
     ${SRC_REALM_FILES}
@@ -34,10 +36,11 @@ target_include_directories(${EXECUTABLE_NAME} PUBLIC
     ${OPENSSL_INCLUDE_DIR}
 )
 
-# include library dependencies.
+# include library dependencies (OpenSSL for the TLS of the Battle.net login, zlib for its realm list).
 target_link_libraries(${EXECUTABLE_NAME}
     shared
     ${MYSQL_LIBRARIES}
+    ${OPENSSL_LIBRARIES}
     ${ZLIB_LIBRARIES}
 )
 

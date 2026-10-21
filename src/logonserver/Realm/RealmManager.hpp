@@ -6,6 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Auth/AuthSocket.h"
+#include "LogonCommDefines.hpp"
+
+#include <vector>
 #include <chrono>
 
 namespace AscEmu::Realm
@@ -30,6 +33,15 @@ namespace AscEmu::Realm
 
         //internal
         std::chrono::high_resolution_clock::time_point lastPing;
+    };
+
+    // snapshot of a realm for the Battle.net realm list and realm join
+    struct RealmSummary
+    {
+        uint32_t id;
+        bool online;
+        std::string name;
+        std::string address;    // host:port of the world server as it registered itself
     };
 
     struct ClientIPBuild
@@ -58,6 +70,11 @@ namespace AscEmu::Realm
         void loadRealms();
 
         Realm* getRealmById(uint32_t id) const;
+        // characters of an account on a realm, as reported by its world server over LogonComm
+        uint32_t getCharacterCount(uint32_t realmId, uint32_t accountId);
+        std::vector<RealmSummary> getRealmSummaries();
+        // announces a Battle.net session to the world server that registered the realm
+        bool sendPendingSession(const PendingWorldSession& session);
 
         void setStatusForRealm(uint8_t realm_id, uint8_t status);
 

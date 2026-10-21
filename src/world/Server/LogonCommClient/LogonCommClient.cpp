@@ -129,6 +129,7 @@ void LogonCommClientSocket::HandlePacket(WorldPacket& recvData)
         &LogonCommClientSocket::HandleResultCheckAccount,       // LRSMSG_ACCOUNT_RESULT
         NULL,                                                   // LRCMSG_ALL_ACCOUNT_REQUEST
         &LogonCommClientSocket::HandleResultAllAccount,         // LRSMSG_ALL_ACCOUNT_RESULT
+        &LogonCommClientSocket::HandlePendingWorldSession,      // LRSMSG_PENDING_WORLD_SESSION
     };
 
     if (recvData.getOpcode() >= LRMSG_MAX_OPCODES || Handlers[recvData.getOpcode()] == 0)
@@ -659,4 +660,32 @@ void LogonCommClientSocket::HandleResultAllAccount(WorldPacket& recvData)
     recvData >> accountResult;
 
     sLogonCommHandler.accountResult = accountResult;
+}
+
+void LogonCommClientSocket::HandlePendingWorldSession(WorldPacket& recvData)
+{
+    PendingWorldSession session;
+    recvData >> session.accountId;
+    recvData >> session.gameAccountId;
+    recvData >> session.realmId;
+    recvData >> session.clientBuild;
+    recvData >> session.region;
+    recvData >> session.expiresAt;
+    recvData >> session.gameAccountName;
+    recvData >> session.realmJoinTicket;
+    recvData.read(session.worldAuthKeyData.data(), session.worldAuthKeyData.size());
+    recvData.read(session.joinSecret.data(), session.joinSecret.size());
+    recvData >> session.gmFlags;
+    recvData >> session.accountFlags;
+    recvData >> session.forcedLanguage;
+    recvData >> session.muted;
+
+    if (recvData.hadReadFailure() || session.realmJoinTicket.empty())
+    {
+        sLogger.failure("LogonCommClient: malformed pending world session for game account {}", session.gameAccountId);
+        return;
+    }
+
+    sLogger.debug("LogonCommClient: pending world session of game account {} ('{}'), build {}, expires at {}", session.gameAccountId, session.gameAccountName, session.clientBuild, session.expiresAt);
+    sLogonCommHandler.storePendingSession(std::move(session));
 }

@@ -5,26 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "AEVersion.hpp"
-
 #include <cstdint>
 #include <string_view>
-
-// 6.2.4, 7.x, 8.x, 9.x, 10.x and 11.x clients log in through the v1 services and the older Variant layout;
-// Forever and the 12.x clients use the v2 services and the newer Variant layout
-#if defined(AE_WOD) || defined(AE_LEGION) || defined(AE_BFA) || defined(AE_SHADOWLANDS) || defined(AE_DRAGONFLIGHT) || defined(AE_THEWARWITHIN)
-#define AE_BNET_V1_SERVICES 1
-#else
-#define AE_BNET_V1_SERVICES 0
-#endif
-
-// the web login form: clients up to 9.x post the plain password with the form, 10.x and later clients abort on a
-// form without the SRP url and log in with the SRP challenge and proof like Forever
-#if AE_BNET_V1_SERVICES && !defined(AE_DRAGONFLIGHT) && !defined(AE_THEWARWITHIN)
-#define AE_BNET_PASSWORD_WEB_LOGIN 1
-#else
-#define AE_BNET_PASSWORD_WEB_LOGIN 0
-#endif
 
 namespace AscEmu::Battlenet::Protocol
 {
@@ -317,21 +299,30 @@ namespace AscEmu::Battlenet::Protocol
 
     }
 
-    // bgs.protocol.Variant field numbers, v1 clients use the older layout
-    namespace VariantField
+    // bgs.protocol.Variant field numbers of a client; the v1 services (6.x to 11.x clients) use the older layout
+    struct VariantLayout
     {
-#if AE_BNET_V1_SERVICES
-        constexpr uint32_t Int = 3u;
-        constexpr uint32_t String = 5u;
-        constexpr uint32_t Blob = 6u;
-        constexpr uint32_t Uint = 9u;
-#else
-        constexpr uint32_t Int = 2u;
-        constexpr uint32_t String = 4u;
-        constexpr uint32_t Blob = 5u;
-        constexpr uint32_t Uint = 6u;
-#endif
-    }
+        uint32_t intValue;
+        uint32_t stringValue;
+        uint32_t blobValue;
+        uint32_t uintValue;
+    };
+
+    // The service generation a client logs on with. 6.x to 11.x clients use the v1 services, the older Variant
+    // layout and the shorter realm list entry; Forever and the 12.x clients the v2 services and the newer layout.
+    // A connection learns it from the service hash of its logon request.
+    struct ClientServices
+    {
+        bool v2;
+        VariantLayout variant;
+    };
+
+    inline constexpr ClientServices ServicesV1{ false, { 3u, 5u, 6u, 9u } };
+    inline constexpr ClientServices ServicesV2{ true, { 2u, 4u, 5u, 6u } };
+
+    // The web login form: clients up to 9.x post the plain password with the form, 10.x and later clients abort
+    // on a form without the SRP url and log in with the SRP challenge and proof. An unknown build (0) gets the SRP form.
+    [[nodiscard]] constexpr bool usesPasswordWebLogin(uint32_t clientBuild) noexcept { return clientBuild != 0u && clientBuild < 55664u; }
 
     // bgs.protocol.EntityId high parts of v1 logon results
     namespace EntityIdHigh

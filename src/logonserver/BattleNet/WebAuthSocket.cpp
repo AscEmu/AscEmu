@@ -5,12 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WebAuthSocket.hpp"
 
-#include "AEVersion.hpp"
 #include "BNetAuthTicketStore.hpp"
 #include "BNetConfig.hpp"
 #include "BNetProtocol.hpp"
 #include "BNetTlsContext.hpp"
-#include "Master.hpp"
+#include "Server/AccountService.hpp"
+#include "Server/Master.hpp"
 #include "Cryptography/BNetSrpV1.hpp"
 #include "Database/Database.hpp"
 #include "Logging/Logger.hpp"
@@ -28,6 +28,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <ctime>
 #include <mutex>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -259,7 +260,6 @@ namespace AscEmu::Battlenet
             return body.substr(valueStart, valueEnd - valueStart);
         }
 
-#if AE_BNET_PASSWORD_WEB_LOGIN
         // resolves the escapes a JSON string value may contain, \u sequences are kept as they are
         std::string unescapeJsonValue(const std::string& value)
         {
@@ -294,7 +294,63 @@ namespace AscEmu::Battlenet
 
             return result;
         }
-#endif
+
+        enum class LoginRequestMethod
+        {
+            Unknown,
+            GetForm,            // GET  /bnetserver/login/[<build>/]
+            PostLogin,          // POST /bnetserver/login/[<build>/]      the password or the SRP proof
+            PostSrpChallenge    // POST /bnetserver/login/[<build>/]srp/  the SRP challenge request
+        };
+
+        struct LoginRequestPath
+        {
+            LoginRequestMethod method = LoginRequestMethod::Unknown;
+            uint32_t build = 0;
+        };
+
+        // the login url the logon gave the client carries its build as a path segment
+        LoginRequestPath parseLoginRequestPath(const std::string& requestLine)
+        {
+            LoginRequestPath result;
+
+            const size_t methodEnd = requestLine.find(' ');
+            if (methodEnd == std::string::npos)
+                return result;
+
+            constexpr std::string_view loginPath = "/bnetserver/login/";
+            size_t cursor = methodEnd + 1;
+            if (requestLine.compare(cursor, loginPath.size(), loginPath) != 0)
+                return result;
+            cursor += loginPath.size();
+
+            size_t digitsEnd = cursor;
+            uint64_t build = 0;
+            while (digitsEnd < requestLine.size() && std::isdigit(static_cast<unsigned char>(requestLine[digitsEnd])) != 0 && build < 10000000u)
+                build = build * 10u + static_cast<uint64_t>(requestLine[digitsEnd++] - '0');
+            if (digitsEnd > cursor && digitsEnd < requestLine.size() && requestLine[digitsEnd] == '/')
+            {
+                result.build = static_cast<uint32_t>(build);
+                cursor = digitsEnd + 1;
+            }
+
+            constexpr std::string_view srpPath = "srp/";
+            const bool srp = requestLine.compare(cursor, srpPath.size(), srpPath) == 0;
+            if (srp)
+                cursor += srpPath.size();
+
+            // the path ends before the protocol version
+            if (cursor >= requestLine.size() || requestLine[cursor] != ' ')
+                return result;
+
+            const std::string_view method(requestLine.data(), methodEnd);
+            if (method == "GET" && !srp)
+                result.method = LoginRequestMethod::GetForm;
+            else if (method == "POST")
+                result.method = srp ? LoginRequestMethod::PostSrpChallenge : LoginRequestMethod::PostLogin;
+
+            return result;
+        }
     }
 
     WebAuthSocket::WebAuthSocket(SOCKET fd)
@@ -612,21 +668,23 @@ namespace AscEmu::Battlenet
             sLogger.debug("BNet WebAuth: connection #{} HTTP body ({} byte(s)):\n{}", m_connectionId, body.size(), diagnosticBody);
         }
 
-        if (requestLine.rfind("GET /bnetserver/login/ ", 0) == 0)
+        const LoginRequestPath path = parseLoginRequestPath(requestLine);
+        if (path.build != 0)
+            m_clientBuild = path.build;
+
+        if (path.method == LoginRequestMethod::GetForm)
             return sendLoginFormResponse();
 
-        if (requestLine.rfind("POST /bnetserver/login/ ", 0) == 0)
+        if (path.method == LoginRequestMethod::PostLogin)
         {
             const std::string login = extractLoginInputValue(body, "account_name");
             const std::string useSrp = extractLoginInputValue(body, "use_srp");
             const std::string publicA = extractLoginInputValue(body, "public_A");
             const std::string clientM1 = extractLoginInputValue(body, "client_evidence_M1");
 
-#if AE_BNET_PASSWORD_WEB_LOGIN
             // clients up to 9.x post the plain password over the TLS connection
             if (useSrp.empty())
                 return handlePasswordLogin(login, unescapeJsonValue(extractLoginInputValue(body, "password")));
-#endif
 
             if (login.empty() || useSrp != "true" || publicA.empty() || clientM1.empty())
             {
@@ -658,7 +716,14 @@ namespace AscEmu::Battlenet
                 return sendJsonResponse("{}", "500 Internal Server Error");
             }
 
-            storeWebAuthTicket(loginTicket, login);
+            // the ticket names the account, not the name the client typed
+            AscEmu::Accounts::BattleNetLogin account;
+            if (!AscEmu::Accounts::findBattleNetLogin(login, account))
+            {
+                sLogger.failure("BNet WebAuth: connection #{} account '{}' vanished between the SRP challenge and the proof", m_connectionId, login);
+                return sendJsonResponse("{\"authentication_state\":\"DONE\"}");
+            }
+            storeWebAuthTicket(loginTicket, account.name);
 
             const std::string response =
                 "{\"authentication_state\":\"DONE\","
@@ -670,7 +735,7 @@ namespace AscEmu::Battlenet
             return sendJsonResponse(response);
         }
 
-        if (requestLine.rfind("POST /bnetserver/login/srp/ ", 0) == 0)
+        if (path.method == LoginRequestMethod::PostSrpChallenge)
         {
             const std::string login = extractLoginInputValue(body, "account_name");
             if (login.empty())
@@ -679,31 +744,27 @@ namespace AscEmu::Battlenet
                 return sendJsonResponse("{\"authentication_state\":\"DONE\",\"error_code\":\"UNKNOWN_ACCOUNT\"}");
             }
 
-            if (!sBNetLogonSQL)
+            if (!sLogonSQL)
             {
                 sLogger.failure("BNet WebAuth: connection #{} logon database is unavailable", m_connectionId);
                 return sendJsonResponse("{}", "500 Internal Server Error");
             }
 
-            const std::string escapedLogin = sBNetLogonSQL->escapeString(login);
-            auto result = sBNetLogonSQL->query("SELECT email, srp_version, srp_salt, srp_verifier " "FROM battlenet_accounts WHERE UPPER(email) = UPPER('%s') LIMIT 1", escapedLogin.c_str());
-
-            if (!result)
+            // the account name or its email; the SRP identity is the account name
+            AscEmu::Accounts::BattleNetLogin account;
+            if (!AscEmu::Accounts::findBattleNetLogin(login, account))
             {
                 sLogger.info("BNet WebAuth: connection #{} SRP account '{}' not found", m_connectionId, login);
                 return sendJsonResponse("{\"authentication_state\":\"DONE\",\"error_code\":\"UNKNOWN_ACCOUNT\"}");
             }
 
-            Field* fields = result->fetch();
-            const std::string accountEmail = fields[0].asCString() != nullptr ? fields[0].asCString() : "";
-            const std::string srpIdentity = accountEmail;
-            const uint8_t srpVersion = fields[1].asUint8(true);
-            const std::string saltHex = fields[2].asCString() != nullptr ? fields[2].asCString() : "";
-            const std::string verifierHex = fields[3].asCString() != nullptr ? fields[3].asCString() : "";
-
-            if (srpVersion != 1 || saltHex.empty() || verifierHex.empty())
+            const std::string& accountEmail = account.name;
+            const std::string& srpIdentity = account.name;
+            const std::string& saltHex = account.saltHex;
+            const std::string& verifierHex = account.verifierHex;
+            if (saltHex.empty() || verifierHex.empty())
             {
-                sLogger.info("BNet WebAuth: connection #{} account '{}' has no Battle.net SRP v1 credentials; " "reset the account password once after applying the Stage 13 SQL update", m_connectionId, accountEmail);
+                sLogger.info("BNet WebAuth: connection #{} account '{}' has no Battle.net credential yet, set its password once (account set password)", m_connectionId, accountEmail);
                 return sendJsonResponse("{\"authentication_state\":\"DONE\",\"error_code\":\"SRP_CREDENTIALS_MISSING\"}");
             }
 
@@ -743,29 +804,24 @@ namespace AscEmu::Battlenet
             return sendJsonResponse("{\"authentication_state\":\"DONE\"}");
         }
 
-        if (!sBNetLogonSQL)
+        if (!sLogonSQL)
         {
             sLogger.failure("BNet WebAuth: connection #{} logon database is unavailable", m_connectionId);
             return sendJsonResponse("{}", "500 Internal Server Error");
         }
 
-        const std::string escapedLogin = sBNetLogonSQL->escapeString(login);
-        auto result = sBNetLogonSQL->query("SELECT email, srp_version, srp_salt, srp_verifier FROM battlenet_accounts WHERE UPPER(email) = UPPER('%s') LIMIT 1", escapedLogin.c_str());
-        if (!result)
+        // the account name or its email; the SRP identity is the account name
+        AscEmu::Accounts::BattleNetLogin account;
+        if (!AscEmu::Accounts::findBattleNetLogin(login, account))
         {
             sLogger.info("BNet WebAuth: connection #{} password login for unknown account '{}'", m_connectionId, login);
             return sendJsonResponse("{\"authentication_state\":\"DONE\"}");
         }
 
-        Field* fields = result->fetch();
-        const std::string accountEmail = fields[0].asCString() != nullptr ? fields[0].asCString() : "";
-        const uint8_t srpVersion = fields[1].asUint8(true);
-        const std::string saltHex = fields[2].asCString() != nullptr ? fields[2].asCString() : "";
-        const std::string verifierHex = fields[3].asCString() != nullptr ? fields[3].asCString() : "";
-
-        if (srpVersion != 1 || !AscEmu::Cryptography::BNetSrpV1::verifyPassword(accountEmail, password, saltHex, verifierHex))
+        const std::string& accountEmail = account.name;
+        if (account.verifierHex.empty() || !AscEmu::Cryptography::BNetSrpV1::verifyPassword(account.name, password, account.saltHex, account.verifierHex))
         {
-            sLogger.info("BNet WebAuth: connection #{} password rejected for '{}' (srp_version {})", m_connectionId, accountEmail, srpVersion);
+            sLogger.info("BNet WebAuth: connection #{} password {} for '{}'", m_connectionId, account.verifierHex.empty() ? "login without a Battle.net credential, set the password once (account set password)" : "rejected", account.name);
             return sendJsonResponse("{\"authentication_state\":\"DONE\"}");
         }
 
@@ -787,9 +843,9 @@ namespace AscEmu::Battlenet
         // Matches the Battle.net WebAuth LoginForm input contract used by current WoW clients.
         // /bnetserver/login/ endpoint. Keep the original proto field names:
         // type, inputs, input_id, max_length and srp_url.
-#if AE_BNET_PASSWORD_WEB_LOGIN
-        // clients up to 9.x send the password with the form, the SRP url is left out
-        const std::string body = std::string(
+        // clients up to 9.x post the plain password with the form, 10.x and later clients need the SRP url
+        const bool passwordForm = Protocol::usesPasswordWebLogin(m_clientBuild);
+        std::string body =
             "{"
                 "\"type\":\"LOGIN_FORM\","
                 "\"inputs\":["
@@ -803,41 +859,19 @@ namespace AscEmu::Battlenet
                         "\"input_id\":\"password\","
                         "\"type\":\"password\","
                         "\"label\":\"Password\","
-                        "\"max_length\":16"
+                        "\"max_length\":" + std::string(passwordForm ? "16" : "128") +
                     "},"
                     "{"
                         "\"input_id\":\"log_in_submit\","
                         "\"type\":\"submit\","
                         "\"label\":\"Log In\""
                     "}"
-                "]"
-            "}");
-#else
-        const std::string body = std::string(
-            "{"
-                "\"type\":\"LOGIN_FORM\","
-                "\"inputs\":["
-                    "{"
-                        "\"input_id\":\"account_name\","
-                        "\"type\":\"text\","
-                        "\"label\":\"E-mail\","
-                        "\"max_length\":320"
-                    "},"
-                    "{"
-                        "\"input_id\":\"password\","
-                        "\"type\":\"password\","
-                        "\"label\":\"Password\","
-                        "\"max_length\":128"
-                    "},"
-                    "{"
-                        "\"input_id\":\"log_in_submit\","
-                        "\"type\":\"submit\","
-                        "\"label\":\"Log In\""
-                    "}"
-                "],"
-                "\"srp_url\":\"") + bnetConfig.webAuth.loginUrl(!m_plainHttp) + "srp/\""
-            "}";
-#endif
+                "]";
+        if (!passwordForm)
+            body += ",\"srp_url\":\"" + bnetConfig.webAuth.loginUrl(!m_plainHttp, m_clientBuild) + "srp/\"";
+        body += "}";
+
+        sLogger.debug("BNet WebAuth: connection #{} login form for build {} ({})", m_connectionId, m_clientBuild, passwordForm ? "password" : "srp");
 
         const std::string response = buildHttpResponse("200 OK", body);
 

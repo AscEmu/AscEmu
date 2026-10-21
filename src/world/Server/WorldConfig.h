@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Platform/SymbolVisibility.hpp"
-#include "BattleNetCommDefines.hpp"
 
 #include <string>
 #include <cstdint>
@@ -95,16 +94,12 @@ public:
         std::string remotePassword;
     } logonServer;
 
-    // world.conf - internal Battle.net <-> world control channel
-    struct BattleNetCommSettings
+    // world.conf - Realm1, the realm this world server registers at the logonserver
+    struct RealmSettings
     {
-        std::string host;
-        int port;
-        uint32_t realmId;
-        std::string realmName;
-        AscEmu::BattlenetComm::RealmRuleset ruleset;
-        std::string sharedSecret;
-    } battleNetComm;
+        uint32_t id;
+        std::string name;
+    } realm;
 
     // world.conf - Listen Config
     struct ListenSettings

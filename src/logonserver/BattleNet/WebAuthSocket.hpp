@@ -54,6 +54,8 @@ namespace AscEmu::Battlenet
         // the first byte decides: a TLS record (0x16) or a plain http request line
         bool m_transportDecided = false;
         bool m_plainHttp = false;
+        // build of the client, taken from its login url; decides the form of the login
+        uint32_t m_clientBuild = 0;
         // HTTP/1.1 keeps the connection for the following requests unless the client asks to close it
         bool m_keepAlive = true;
         // JSESSIONID of the connection: taken from the request cookie or created with the first request,

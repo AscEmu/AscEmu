@@ -1,9 +1,10 @@
 # Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 
-# The selected client profile controls the complete server topology.
-# Legacy clients use logonserver; Forever uses Battle.net and the modern
-# version layer. Do not expose a second BUILD_BATTLENET switch to users,
-# because combinations such as Forever + legacy logonserver are invalid.
+# The selected client profile controls the server topology. The logonserver
+# serves every client version (classic realm list and Battle.net login); the
+# Battle.net profiles add the modern version layer of the world transport.
+# Do not expose a second BUILD_BATTLENET switch to users, the profile is the
+# single source of truth.
 if (NOT DEFINED ASCEMU_VERSION OR ASCEMU_VERSION STREQUAL "")
     set(ASCEMU_VERSION "WotLK" CACHE STRING "AscEmu client version")
 else ()
@@ -63,24 +64,22 @@ endif ()
 
 add_subdirectory(shared)
 
+# one logonserver for every client version: the classic realm list and the Battle.net login
+add_subdirectory(logonserver)
+
 if (AE_USES_BATTLENET)
-    message(STATUS "ASCEMU_VERSION=${ASCEMU_VERSION}: Battle.net topology enabled")
-    message(STATUS "  - logonserver: disabled")
-    message(STATUS "  - bnetserver: enabled")
+    message(STATUS "ASCEMU_VERSION=${ASCEMU_VERSION}: Battle.net login profile")
     if (AE_IS_FOREVER)
         message(STATUS "  - legacy script stack: disabled")
     endif ()
 
-    # Stage 1 already owns the topology. The version directory provides the
-    # world transport of the selected profile when it has one.
+    # The version directory provides the world transport of the selected
+    # profile when it has one.
     if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/version/CMakeLists.txt")
         add_subdirectory(version)
     endif ()
-
-    add_subdirectory(battlenet)
 else ()
-    message(STATUS "ASCEMU_VERSION=${ASCEMU_VERSION}: legacy logonserver topology enabled")
-    add_subdirectory(logonserver)
+    message(STATUS "ASCEMU_VERSION=${ASCEMU_VERSION}: classic login profile")
 endif ()
 
 add_subdirectory(world)

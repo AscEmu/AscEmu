@@ -29,7 +29,7 @@ set(INSTALL_DB_FILES ${PATH_DB_FILES})
 # install libraries for windows build (libmysql.dll)
 install(FILES ${MYSQL_DLL} DESTINATION .)
 
-# install the OpenSSL runtime next to the servers (libcrypto for all, libssl for the TLS of bnetserver)
+# install the OpenSSL runtime next to the servers (libcrypto for all, libssl for the TLS of the Battle.net login)
 get_filename_component(OPENSSL_BIN_DIR "${OPENSSL_INCLUDE_DIR}/../bin" ABSOLUTE)
 file(GLOB OPENSSL_RUNTIME_DLLS
     "${OPENSSL_BIN_DIR}/libcrypto-*-x64.dll"

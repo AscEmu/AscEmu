@@ -234,7 +234,7 @@ static std::filesystem::path patchedNameForExe(const std::filesystem::path& _pat
 }
 
 // 6.2.4, 7.3.5 and 8.3.7: Battle.net host from the portal cvar, known SMSG_CONNECT_TO key, no self update and a
-// certificate bundle that trusts the TLS certificate of our bnetserver
+// certificate bundle that trusts the TLS certificate of our logonserver
 static int patchBattleNetClient(cp::Patcher& _patcher, uint32_t _build, const std::filesystem::path& _serverCertificate)
 {
     namespace pattern = cp::patterns::bnet;
@@ -249,7 +249,7 @@ static int patchBattleNetClient(cp::Patcher& _patcher, uint32_t _build, const st
     if (_serverCertificate.empty())
     {
         std::cout << "Usage: connection_patcher <Wow-64.exe> <bnetserver.cert.pem>\n";
-        std::cout << "The certificate file is the one of the bnetserver (PEM, with its chain), the client will trust exactly its key.\n";
+        std::cout << "The certificate file is the one of the logonserver (PEM, with its chain, <TLS> in logon.conf), the client will trust exactly its key.\n";
         return 1;
     }
 
@@ -428,7 +428,7 @@ static int patchBattleNetClient(cp::Patcher& _patcher, uint32_t _build, const st
     _patcher.finish();
 
     std::cout << "Patching done, writing " << _patcher.binaryPath().string() << "\n";
-    std::cout << "Set the Battle.net host in WTF\\Config.wtf: SET portal \"<bnetserver host>\"\n";
+    std::cout << "Set the Battle.net host in WTF\\Config.wtf: SET portal \"<logonserver host>\"\n";
     return 0;
 }
 

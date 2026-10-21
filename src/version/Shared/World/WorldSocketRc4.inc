@@ -54,6 +54,8 @@ private:
     // account of the verified session until the encryption is enabled
     uint32_t m_rc4GameAccountId{0};
     std::string m_rc4GameAccountName;
+    // the session the logonserver announced, its account data completes the authentication
+    PendingWorldSession m_rc4Session;
 
     // frames that did not fit into the send buffer, kept in order because of the stream cipher
     std::vector<uint8_t> m_rc4PendingOutput;

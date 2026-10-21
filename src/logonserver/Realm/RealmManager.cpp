@@ -65,6 +65,43 @@ namespace AscEmu::Realm
         sLogger.info("[RealmManager] Loaded {} realms.", static_cast<uint32_t>(this->realms.size()));
     }
 
+    uint32_t RealmManager::getCharacterCount(uint32_t realmId, uint32_t accountId)
+    {
+        std::lock_guard lock(realmLock);
+        const Realm* realm = getRealmById(realmId);
+        if (realm == nullptr)
+            return 0;
+
+        const auto itr = realm->_characterMap.find(accountId);
+        return itr != realm->_characterMap.end() ? itr->second : 0u;
+    }
+
+    std::vector<RealmSummary> RealmManager::getRealmSummaries()
+    {
+        std::lock_guard lock(realmLock);
+        std::vector<RealmSummary> summaries;
+        summaries.reserve(this->realms.size());
+        for (const auto& realm : this->realms)
+            summaries.push_back({ realm->id, realm->status != 0, realm->name, realm->address });
+
+        return summaries;
+    }
+
+    bool RealmManager::sendPendingSession(const PendingWorldSession& session)
+    {
+        std::lock_guard lock(serverSocketLock);
+        for (LogonCommServerSocket* serverSocket : this->serverSockets)
+        {
+            if (serverSocket->authenticated == 0 || !serverSocket->server_ids.contains(session.realmId))
+                continue;
+
+            serverSocket->SendPendingSession(session);
+            return true;
+        }
+
+        return false;
+    }
+
     Realm* RealmManager::getRealmById(uint32_t id) const
     {
         for (const auto& realm : this->realms)
@@ -282,6 +319,7 @@ namespace AscEmu::Realm
         if (realm != nullptr)
         {
             realm->flags = RealmFlag::OFFLINE | RealmFlag::INVALID;
+            realm->status = 0;
             realm->_characterMap.clear();
             sLogger.info("[RealmManager] Realm {} is now offline (socket close).", realm_id);
             sLogonSQL->query("UPDATE realms SET status = 0 WHERE id = %u", uint32_t(realm->id));

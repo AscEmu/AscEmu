@@ -552,12 +552,12 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
 
     if (WoW::isServerExpansionAtLeast(WoW::Expansion::_BfA))
     {
-        *data << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, target->GetMapId());
+        *data << m_wowGuid.toGuid128(worldConfig.realm.id, target->GetMapId());
         *data << ObjectUpdateUF::wireObjectTypeId(this, target);
     }
     else if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WoD))
     {
-        *data << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, target->GetMapId());
+        *data << m_wowGuid.toGuid128(worldConfig.realm.id, target->GetMapId());
         *data << wireObjectTypeId(m_objectTypeId);
     }
     else
@@ -2291,7 +2291,7 @@ void Object::BuildFieldUpdatePacket(Player* Target, uint32_t Index, uint32_t Val
     ByteBuffer buf(500);
     buf << uint8_t(UPDATETYPE_VALUES);
 #if VERSION_STRING >= WoD
-    buf << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, Target->GetMapId());
+    buf << m_wowGuid.toGuid128(worldConfig.realm.id, Target->GetMapId());
 #else
     buf << GetNewGUID();
 #endif
@@ -2332,7 +2332,7 @@ void Object::BuildFieldUpdatePacket(ByteBuffer* buf, uint32_t Index, uint32_t Va
 {
     *buf << uint8_t(UPDATETYPE_VALUES);
 #if VERSION_STRING >= WoD
-    *buf << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, GetMapId());
+    *buf << m_wowGuid.toGuid128(worldConfig.realm.id, GetMapId());
 #else
     *buf << GetNewGUID();
 #endif
@@ -2375,7 +2375,7 @@ uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* targe
             {
                 *data << uint8_t(UPDATETYPE_VALUES);              // update type == update
 #if VERSION_STRING >= WoD
-                *data << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, target != nullptr ? target->GetMapId() : GetMapId());
+                *data << m_wowGuid.toGuid128(worldConfig.realm.id, target != nullptr ? target->GetMapId() : GetMapId());
 #else
                 *data << m_wowGuid;
 #endif
@@ -2405,7 +2405,7 @@ uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* ma
     {
         *buf << uint8_t(UPDATETYPE_VALUES);
 #if VERSION_STRING >= WoD
-        *buf << m_wowGuid.toGuid128(worldConfig.battleNetComm.realmId, GetMapId());
+        *buf << m_wowGuid.toGuid128(worldConfig.realm.id, GetMapId());
 #else
         *buf << m_wowGuid;
 #endif
@@ -3264,7 +3264,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 #if VERSION_STRING >= WoD
 void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* target)
 {
-    const uint32_t realmId = worldConfig.battleNetComm.realmId;
+    const uint32_t realmId = worldConfig.realm.id;
     const uint32_t mapId = target != nullptr ? target->GetMapId() : GetMapId();
 
     const bool living = (updateFlags & UPDATEFLAG_LIVING) != 0 && isCreatureOrPlayer();
@@ -3961,7 +3961,7 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
     // guid fields: the 64 bit guid of the server becomes the 128 bit guid of the client, four values per field
     std::unordered_map<uint32_t, uint32_t> guidValues;
     {
-        const uint32_t realmId = worldConfig.battleNetComm.realmId;
+        const uint32_t realmId = worldConfig.realm.id;
         const uint32_t mapId = target != nullptr ? target->GetMapId() : GetMapId();
 
         for (const uint16_t index : guidValueIndexes(m_objectTypeId))

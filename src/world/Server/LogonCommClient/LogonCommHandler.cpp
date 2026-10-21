@@ -25,6 +25,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Threading/ThreadPool.hpp"
 
 #include "Utilities/Strings.hpp"
+#include "Utilities/Util.hpp"
 
 LogonCommHandler& LogonCommHandler::getInstance()
 {
@@ -525,7 +526,8 @@ void LogonCommHandler::loadRealmsConfiguration()
 
             realmStructure->population = 0.0f;
             realmStructure->flags = 0;
-            realmStructure->gameBuild = WoW::getConfigBuild();
+            // the build the realm serves; the logonserver lists a realm only to the clients of its build
+            realmStructure->gameBuild = WoW::getBuildForExpansion(WoW::getServerExpansion());
 
             std::string realmType = "Normal";
             Config.MainConfig.tryGetString(realmString.str(), "Icon", &realmType);
@@ -757,4 +759,36 @@ WorldSocket* LogonCommHandler::getWorldSocketForClientRequestId(uint32_t id)
     std::map<uint32_t, WorldSocket*>::iterator itr = pending_logons.find(id);
     sock = (itr == pending_logons.end()) ? nullptr : itr->second;
     return sock;
+}
+
+void LogonCommHandler::storePendingSession(PendingWorldSession session)
+{
+    std::lock_guard lock(pendingSessionLock);
+
+    // announcements no client followed up on
+    const uint64_t now = static_cast<uint64_t>(UNIXTIME);
+    std::erase_if(pendingSessions, [now](const auto& entry) { return entry.second.expiresAt < now; });
+
+    const std::string ticket = session.realmJoinTicket;
+    pendingSessions[ticket] = std::move(session);
+}
+
+bool LogonCommHandler::getPendingSession(const std::string& realmJoinTicket, PendingWorldSession& session, bool consume)
+{
+    std::lock_guard lock(pendingSessionLock);
+    const auto itr = pendingSessions.find(realmJoinTicket);
+    if (itr == pendingSessions.end())
+        return false;
+
+    if (itr->second.expiresAt < static_cast<uint64_t>(UNIXTIME))
+    {
+        pendingSessions.erase(itr);
+        return false;
+    }
+
+    session = itr->second;
+    if (consume)
+        pendingSessions.erase(itr);
+
+    return true;
 }

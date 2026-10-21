@@ -19,7 +19,7 @@ Everything after authentication goes through the central opcode table and the ma
 Redistributed 8.3.7 clients expect the CASC build information in `.fzbuildnfo` next to the executable (the
 8.3.7 columns, including `KeyRing` and `Product` = `wow`); a `.flavor.info` next to the executable switches
 the client to the Battle.net layout with `../.fzbuildnfo` and `../Data` and must not exist in the flat layout.
-`SET portal "127.0.0.1"` in `WTF/Config.wtf` names the bnetserver, the host suffix is only appended to a
+`SET portal "127.0.0.1"` in `WTF/Config.wtf` names the logonserver, the host suffix is only appended to a
 portal value without a dot.
 
 The connection patcher (`src/tools/connection`) accepts build 35662. A client that already carries the known
