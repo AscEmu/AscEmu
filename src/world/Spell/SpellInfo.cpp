@@ -772,10 +772,9 @@ uint32_t SpellInfo::getRequiredTargetMaskForEffectTarget(uint32_t implicitTarget
         case EFF_TARGET_ALL_TARGETABLE_AROUND_LOCATION_IN_RADIUS_OVER_TIME:
             targetMask = SPELL_TARGET_REQUIRE_FRIENDLY | SPELL_TARGET_AREA;
             break;
-        // todo: confirm this
-        /*case EFF_TARGET_MINION:
-            targetMask = SPELL_TARGET_OBJECT_SELF;
-            break;*/
+        case EFF_TARGET_SUMMON_CREATURE_OR_OBJECT:
+            targetMask = SPELL_TARGET_ANY_OBJECT;
+            break;
         case EFF_TARGET_ALL_PARTY_IN_AREA:
             targetMask = SPELL_TARGET_AREA_SELF | SPELL_TARGET_AREA_PARTY;
             break;
@@ -1014,7 +1013,7 @@ int SpellInfo::aiTargetType() const
     if (hasTargetType(EFF_TARGET_SELF) ||
         hasTargetType(4) ||
         hasTargetType(EFF_TARGET_PET) ||
-        hasTargetType(EFF_TARGET_MINION))
+        hasTargetType(EFF_TARGET_SUMMON_CREATURE_OR_OBJECT))
         return TTYPE_CASTER;
 
     return TTYPE_NULL;

@@ -68,60 +68,6 @@ bool PredatoryStrikes(uint8_t effectIndex, Aura* a, bool apply)
     return true;
 }
 
-bool Tranquility(uint8_t effectIndex, Aura* a, bool apply)
-{
-    /*if (apply)
-        sEventMgr.AddEvent(a, &Aura::EventPeriodicHeal1, (uint32_t)a->getEffectDamage(effectIndex), EVENT_AURA_PERIODIC_HEAL, 2000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-    else
-        sEventMgr.RemoveEvents(a, EVENT_AURA_PERIODIC_HEAL);*/
-
-    return true;
-}
-
-bool LifeBloom(uint8_t /*effectIndex*/, Aura* a, bool apply)
-{
-    Unit* m_target = a->getOwner();
-
-    if (apply)
-        return true;
-
-    // apply ONCE only.
-    //if (a->m_ignoreunapply)
-    //    return true;
-
-    Unit* pCaster = a->getUnitCaster();
-    if (pCaster == NULL)
-        pCaster = m_target;
-
-    // Remove other Lifeblooms - but do NOT handle unapply again
-    bool expired = true;
-    for (const auto& aur : m_target->getPositiveAuraRange())
-    {
-        if (aur != nullptr)
-        {
-            if (aur->getSpellId() == a->getSpellId())
-            {
-                //aur->m_ignoreunapply = true;
-                if (aur->getTimeLeft())
-                    expired = false;
-                aur->removeAura();
-            }
-        }
-    }
-
-    // you can't do this here! Breaks unix lib load.
-    /*if (expired)
-    {
-
-        Spell* spell = sSpellMgr.newSpell(pCaster, a->getSpellInfo(), true, NULL);
-        spell->SetUnitTarget(m_target);
-        spell->Heal(a->getEffectDamage(effectIndex));
-        delete spell;
-    }*/
-
-    return true;
-}
-
 void SetupLegacyDruidSpells(ScriptMgr* mgr)
 {
     uint32_t StarfallIds[] =
@@ -142,26 +88,4 @@ void SetupLegacyDruidSpells(ScriptMgr* mgr)
         0
     };
     mgr->register_dummy_aura(predatorystrikesids, &PredatoryStrikes);
-
-    uint32_t tranquilityids[] =
-    {
-        740,
-        8918,
-        9862,
-        9863,
-        26983,
-        48446,
-        48447,
-        0
-    };
-    mgr->register_dummy_aura(tranquilityids, &Tranquility);
-
-    uint32_t lifebloomids[] =
-    {
-        33763,
-        48450,
-        48451,
-        0
-    };
-    mgr->register_dummy_aura(lifebloomids, &LifeBloom);
 }
