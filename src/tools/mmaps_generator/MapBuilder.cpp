@@ -175,67 +175,42 @@ namespace MMAP
     /**************************************************************************/
     void MapBuilder::discoverTiles()
     {
-        std::vector<std::string> files;
-        uint32_t mapID, tileX, tileY, tileID, count = 0;
-        char filter[255];
+        // Both folders are listed once; a retail client has tens of thousands of
+        // tiles, one listing per map would take hours. The file names are
+        // <map>_<y>_<x>.map and <map>_<y>_<x>.vmtile, the tile id packs them in the
+        // order the terrain loading expects (x/y for the maps, y/x for the vmaps).
+        std::vector<std::string> mapFiles;
+        std::vector<std::string> vmapTiles;
+        std::vector<std::string> vmapTrees;
+        getDirContents(mapFiles, "maps");
+        getDirContents(vmapTiles, "vmaps", "*.vmtile");
+        getDirContents(vmapTrees, "vmaps", "*.vmtree");
+
+        auto const mapIdOf = [](std::string const& file) { return uint32_t(atoi(file.substr(0, 4).c_str())); };
+        auto const tilePart = [](std::string const& file, size_t offset) { return uint32_t(atoi(file.substr(offset, 2).c_str())); };
 
         printf("Discovering maps... ");
-        getDirContents(files, "maps");
-        for (uint32_t i = 0; i < files.size(); ++i)
-        {
-            mapID = uint32_t(atoi(files[i].substr(0, 4).c_str()));
-            if (std::find(m_tiles.begin(), m_tiles.end(), mapID) == m_tiles.end())
-            {
-                m_tiles.emplace_back(MapTiles(mapID, new std::set<uint32_t>));
-                count++;
-            }
-        }
+        for (std::vector<std::string> const* names : { &mapFiles, &vmapTrees })
+            for (std::string const& file : *names)
+                getTileList(mapIdOf(file));
+        printf("found %zu.\n", m_tiles.size());
 
-        files.clear();
-        getDirContents(files, "vmaps", "*.vmtree");
-        for (uint32_t i = 0; i < files.size(); ++i)
-        {
-            mapID = uint32_t(atoi(files[i].substr(0, 4).c_str()));
-            if (std::find(m_tiles.begin(), m_tiles.end(), mapID) == m_tiles.end())
-            {
-                m_tiles.emplace_back(MapTiles(mapID, new std::set<uint32_t>));
-                count++;
-            }
-        }
-        printf("found %u.\n", count);
-
-        count = 0;
+        uint32_t count = 0;
         printf("Discovering tiles... ");
-        for (TileList::iterator itr = m_tiles.begin(); itr != m_tiles.end(); ++itr)
+        for (std::string const& file : vmapTiles)
         {
-            std::set<uint32_t>* tiles = (*itr).m_tiles;
-            mapID = (*itr).m_mapId;
-
-            sprintf(filter, "%04u*.vmtile", mapID);
-            files.clear();
-            getDirContents(files, "vmaps", filter);
-            for (uint32_t i = 0; i < files.size(); ++i)
-            {
-                tileX = uint32_t(atoi(files[i].substr(8, 2).c_str()));
-                tileY = uint32_t(atoi(files[i].substr(5, 2).c_str()));
-                tileID = StaticMapTree::packTileID(tileY, tileX);
-
-                tiles->insert(tileID);
+            uint32_t const tileY = tilePart(file, 5);
+            uint32_t const tileX = tilePart(file, 8);
+            if (getTileList(mapIdOf(file))->insert(StaticMapTree::packTileID(tileY, tileX)).second)
                 count++;
-            }
+        }
 
-            sprintf(filter, "%04u*", mapID);
-            files.clear();
-            getDirContents(files, "maps", filter);
-            for (uint32_t i = 0; i < files.size(); ++i)
-            {
-                tileY = uint32_t(atoi(files[i].substr(5, 2).c_str()));
-                tileX = uint32_t(atoi(files[i].substr(8, 2).c_str()));
-                tileID = StaticMapTree::packTileID(tileX, tileY);
-
-                if (tiles->insert(tileID).second)
-                    count++;
-            }
+        for (std::string const& file : mapFiles)
+        {
+            uint32_t const tileY = tilePart(file, 5);
+            uint32_t const tileX = tilePart(file, 8);
+            if (getTileList(mapIdOf(file))->insert(StaticMapTree::packTileID(tileX, tileY)).second)
+                count++;
         }
         printf("found %u.\n\n", count);
     }
