@@ -847,6 +847,10 @@ public:
     void removeShapeShiftSpell(uint32_t spellId);
     SpellSet const& getShapeshiftSpells() const;
 
+    void addPetAuraSpell(uint32_t spellId, bool castedByPet = false);
+    void removePetAuraSpell(uint32_t spellId);
+    void castPetAuraSpells();
+
     void sendAvailSpells(WDB::Structures::SpellShapeshiftFormEntry const* shapeshiftFormEntry, bool active);
 
     bool isInFeralForm();
@@ -957,6 +961,7 @@ private:
     SpellSet m_spellSet;
     SpellSet m_deletedSpellSet;
     SpellSet m_shapeshiftSpells;
+    std::unordered_map<uint32_t, bool> m_petAuraSpells;
 
     bool m_canDualWield2H = false;
 
@@ -1819,7 +1824,6 @@ public:
     uint8_t getStableSlotCount() const;
 
     void eventSummonPet(Pet* summonPet);
-    void eventDismissPet();
 
     Object* getSummonedObject() const;
     void setSummonedObject(Object* summonedObject);

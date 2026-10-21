@@ -419,7 +419,7 @@ public:
             aur->getOwner()->addUnitStateFlag(UNIT_STATE_POLYMORPHED);
 
             // Glyph of the Penguin
-            const auto caster = aur->GetUnitCaster();
+            const auto* caster = aur->getUnitCaster();
             if (caster != nullptr && caster->hasAurasWithId(SPELL_GLYPH_OF_THE_PENGUIN) && aur->getSpellInfo()->getSpellIconID() == ICON_POLYMORPH_SHEEP)
             {
                 // Override misc value (Sheep) with Penguin npc

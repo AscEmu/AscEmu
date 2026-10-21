@@ -1237,7 +1237,7 @@ bool ashrombeUnlockDummySpell(uint8_t /*effectIndex*/, Spell* pSpell)
 // Spell entry: 6422
 bool ashrombeTeleportDummyAura(uint8_t /*effectIndex*/, Aura* pAura, bool /*apply*/)
 {
-    Unit* target = pAura->GetUnitCaster();
+    Unit* target = pAura->getUnitCaster();
     if (!target || !target->isCreature())
         return false;
 

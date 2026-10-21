@@ -290,7 +290,7 @@ class DeathAndDecay : public SpellScript
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool /*apply*/) override
     {
-        auto* const caster = aur->GetUnitCaster();
+        auto* const caster = aur->getUnitCaster();
         if (caster == nullptr)
             return SpellScriptCheckDummy::DUMMY_OK;
 

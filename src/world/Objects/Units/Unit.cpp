@@ -309,12 +309,6 @@ void Unit::Update(unsigned long time_passed)
 
 void Unit::onAttachToWorld()
 {
-    for (const auto& aura : getAuraList())
-    {
-        if (aura != nullptr)
-            aura->RelocateEvents();
-    }
-
 #if VERSION_STRING >= WotLK
     if (isVehicle() && getVehicleKit())
     {
@@ -392,18 +386,6 @@ void Unit::onPreDetachFromWorld()
         dynamic_cast<Unit*>(object)->clearCasterFromHealthBatch(this);
     }
 
-    for (const auto& aura : m_auraList)
-    {
-        if (aura != nullptr)
-        {
-            if (aura->isDeleted())
-            {
-                aura->removeAura();
-                continue;
-            }
-            aura->RelocateEvents();
-        }
-    }
     getThreatManager().removeMeFromThreatLists();
 
     Object::onPreDetachFromWorld();
@@ -1260,7 +1242,7 @@ void Unit::setAura(Aura const* aur, bool apply)
     if (aur == nullptr)
         return;
 
-    const auto slot = aur->m_visualSlot;
+    const auto slot = aur->getVisualSlot();
     if (slot >= AuraSlots::NEGATIVE_VISUAL_SLOT_END)
         return;
 
@@ -1274,7 +1256,7 @@ void Unit::setAuraFlags(Aura const* aur, bool apply)
     if (aur == nullptr)
         return;
 
-    const auto slot = aur->m_visualSlot;
+    const auto slot = aur->getVisualSlot();
     if (slot >= AuraSlots::NEGATIVE_VISUAL_SLOT_END)
         return;
 
@@ -1298,14 +1280,14 @@ void Unit::setAuraLevel(Aura* aur)
     if (aur == nullptr)
         return;
 
-    const auto slot = aur->m_visualSlot;
+    const auto slot = aur->getVisualSlot();
     if (slot >= AuraSlots::NEGATIVE_VISUAL_SLOT_END)
         return;
 
     const uint8_t index = slot / 4;
     const uint32_t byte = (slot % 4) * 8;
 
-    const uint32_t level = aur->GetUnitCaster() != nullptr ? aur->GetUnitCaster()->getLevel() : worldConfig.player.playerLevelCap;
+    const uint32_t level = aur->getUnitCaster() != nullptr ? aur->getUnitCaster()->getLevel() : worldConfig.player.playerLevelCap;
 
     auto val = getAuraLevel(index);
     val &= ~(0xFF << byte);
@@ -1320,7 +1302,7 @@ void Unit::setAuraApplication(Aura const* aur)
     if (aur == nullptr)
         return;
 
-    const auto slot = aur->m_visualSlot;
+    const auto slot = aur->getVisualSlot();
     if (slot >= AuraSlots::NEGATIVE_VISUAL_SLOT_END)
         return;
 
@@ -2687,7 +2669,7 @@ void Unit::setFeared(bool apply)
 
         Unit* caster = nullptr;
         if (const auto fearAura = getAuraWithAuraEffect(SPELL_AURA_MOD_FEAR))
-            caster = fearAura->GetUnitCaster();
+            caster = fearAura->getUnitCaster();
 
         if (caster == nullptr)
             caster = getAIInterface()->getCurrentTarget();
@@ -3987,7 +3969,7 @@ void Unit::addAura(std::unique_ptr<Aura> auraHolder)
         return;
     }
 
-    auto* const caster = auraHolder->GetUnitCaster();
+    auto* const caster = auraHolder->getUnitCaster();
 
 #if VERSION_STRING >= WotLK
     // Check aura apply immunity (aur eff 267)
@@ -4045,7 +4027,8 @@ void Unit::addAura(std::unique_ptr<Aura> auraHolder)
     const auto spellInfo = auraHolder->getSpellInfo();
     uint16_t auraSlot = 0xFFFF;
 
-    if (!auraHolder->IsPassive())
+    // Add also passive area auras to positive/negative slots
+    if (auraHolder->isAreaAura() || !auraHolder->isPassive())
     {
         std::pair<uint16_t, uint16_t> auraSlots;
         if (auraHolder->isNegative())
@@ -4100,7 +4083,7 @@ void Unit::addAura(std::unique_ptr<Aura> auraHolder)
                 break;
             }
             // If this is a proc spell, it should not remove its mother aura
-            else if (auraHolder->pSpellId != _aura->getSpellId())
+            else if (auraHolder->getTriggeredBySpellId() != _aura->getSpellId())
             {
                 // Check for auras by specific type
                 if (auraHolder->getSpellInfo()->getMaxstack() == 0 && spellInfo->custom_BGR_one_buff_on_target > 0 && auraHolder->getSpellInfo()->custom_BGR_one_buff_on_target & spellInfo->custom_BGR_one_buff_on_target)
@@ -4153,7 +4136,7 @@ void Unit::addAura(std::unique_ptr<Aura> auraHolder)
     // Find a visual slot for aura
     const auto visualSlot = findVisualSlotForAura(auraHolder.get());
 
-    auraHolder->m_visualSlot = visualSlot;
+    auraHolder->setVisualSlot(visualSlot);
     auraHolder->setAuraSlot(auraSlot);
 
     auto* aur = auraHolder.get();
@@ -4176,7 +4159,6 @@ void Unit::addAura(std::unique_ptr<Aura> auraHolder)
     }
 
     aur->applyModifiers(true);
-    aur->RelocateEvents();
     aur->takeUsedSpellModifiers();
 
     // Call scripted aura apply hook
@@ -4190,7 +4172,7 @@ void Unit::addAura(std::unique_ptr<Aura> auraHolder)
     // Hackfix from legacy method
     if (aur->getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_INVINCIBLE)
     {
-        const auto pCaster = aur->GetUnitCaster();
+        const auto pCaster = aur->getUnitCaster();
         if (pCaster != nullptr)
         {
             pCaster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
@@ -4259,10 +4241,10 @@ uint8_t Unit::findVisualSlotForAura(Aura const* aur) const
     uint8_t visualSlot = 0xFF;
 #if VERSION_STRING < WotLK
     // Pre wotlk do not send self casted passive area auras
-    if (aur->IsPassive())
+    if (aur->isPassive() && (!aur->isAreaAura() || aur->getCasterGuid() == getGuid()))
 #else
     // Since wotlk send all passive area auras
-    if (aur->IsPassive() && !aur->IsAreaAura() && !aur->hasAuraEffect(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
+    if (aur->isPassive() && !aur->isAreaAura() && !aur->hasAuraEffect(SPELL_AURA_IGNORE_TARGET_AURA_STATE))
 #endif
         return visualSlot;
 
@@ -4298,7 +4280,7 @@ Aura* Unit::getAuraWithId(uint32_t spell_id, uint64_t casterGuid/* = 0*/) const
         return nullptr;
 
     AuraRange auraRange;
-    if (spellInfo->isPassive())
+    if (spellInfo->isPassive() && !spellInfo->hasAreaAuraEffect(false))
         auraRange = getPassiveAuraRange();
     else if (spellInfo->isNegativeAura())
         auraRange = getNegativeAuraRange();
@@ -4362,7 +4344,7 @@ Aura* Unit::getAuraWithVisualSlot(uint8_t visualSlot) const
 {
     for (const auto& aur : m_auraList)
     {
-        if (aur != nullptr && aur->m_visualSlot == visualSlot)
+        if (aur != nullptr && aur->getVisualSlot() == visualSlot)
             return aur.get();
     }
 
@@ -4587,7 +4569,7 @@ uint32_t Unit::getAuraCountForId(uint32_t auraId) const
         return 0;
 
     AuraRange auraRange;
-    if (spellInfo->isPassive())
+    if (spellInfo->isPassive() && !spellInfo->hasAreaAuraEffect(false))
         auraRange = getPassiveAuraRange();
     else if (spellInfo->isNegativeAura())
         auraRange = getNegativeAuraRange();
@@ -4647,7 +4629,7 @@ void Unit::removeAllAurasById(uint32_t auraId, uint64_t casterGuid/*= 0*/, AuraR
         return;
 
     AuraRange auraRange;
-    if (spellInfo->isPassive())
+    if (spellInfo->isPassive() && !spellInfo->hasAreaAuraEffect(false))
         auraRange = getPassiveAuraRange();
     else if (spellInfo->isNegativeAura())
         auraRange = getNegativeAuraRange();
@@ -4864,7 +4846,7 @@ void Unit::removeAuraByItemGuid(uint32_t auraId, uint64_t itemGuid) const
         return;
 
     AuraRange auraRange;
-    if (spellInfo->isPassive())
+    if (spellInfo->isPassive() && !spellInfo->hasAreaAuraEffect(false))
         auraRange = getPassiveAuraRange();
     else if (spellInfo->isNegativeAura())
         auraRange = getNegativeAuraRange();
@@ -4873,7 +4855,7 @@ void Unit::removeAuraByItemGuid(uint32_t auraId, uint64_t itemGuid) const
 
     for (const auto& aur : auraRange)
     {
-        if (aur != nullptr && aur->getSpellId() == auraId && aur->itemCasterGUID == itemGuid)
+        if (aur != nullptr && aur->getSpellId() == auraId && aur->getItemCasterGuid() == itemGuid)
             aur->removeAura();
     }
 }
@@ -4885,7 +4867,7 @@ uint32_t Unit::removeAllAurasByIdReturnCount(uint32_t auraId, AuraRemoveMode mod
         return 0;
 
     AuraRange auraRange;
-    if (spellInfo->isPassive())
+    if (spellInfo->isPassive() && !spellInfo->hasAreaAuraEffect(false))
         auraRange = getPassiveAuraRange();
     else if (spellInfo->isNegativeAura())
         auraRange = getNegativeAuraRange();
@@ -4954,12 +4936,14 @@ void Unit::clearAllAreaAuraTargets() const
 {
     for (const auto& aur : m_auraList)
     {
-        // Aura is area aura but it was not casted by this unit
-        if (aur == nullptr || aur->m_areaAura)
+        if (aur == nullptr)
             continue;
 
-        if (aur->IsAreaAura())
-            aur->ClearAATargets();
+        // Only self casted area auras
+        if (!aur->isAreaAura() || aur->getCasterGuid() != getGuid())
+            continue;
+
+        aur->clearAreaAuraTargets();
     }
 }
 
@@ -4971,7 +4955,7 @@ void Unit::removeAllAreaAurasCastedByOther() const
             continue;
 
         // Not area aura, or is area aura casted by this unit
-        if (!aur->m_areaAura)
+        if (!aur->isAreaAura() || aur->getCasterGuid() == getGuid())
             continue;
 
         aur->removeAura();
@@ -4990,33 +4974,33 @@ void Unit::setTransformAura(uint32_t auraId)
 
 void Unit::sendAuraUpdate(Aura* aur, bool remove)
 {
-    if (aur->m_visualSlot >= AuraSlots::NEGATIVE_VISUAL_SLOT_END)
+    if (aur->getVisualSlot() >= AuraSlots::NEGATIVE_VISUAL_SLOT_END)
         return;
 
 #if VERSION_STRING < WotLK
     if (!remove)
     {
 #if VERSION_STRING == Classic
-        if (isPlayer() && !aur->IsPassive())
+        if (isPlayer() && !(aur->isPassive() && (!aur->isAreaAura() || aur->getCasterGuid() == getGuid())))
         {
-            SmsgUpdateAuraDuration updateAuraDuration(aur->m_visualSlot, aur->getTimeLeft());
+            SmsgUpdateAuraDuration updateAuraDuration(aur->getVisualSlot(), aur->getTimeLeft());
             PacketBroadcast::sendToSet(*this, updateAuraDuration, true);
         }
 #else
-        if (isPlayer() && !aur->IsPassive() && !(aur->getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_HIDE_DURATION))
+        if (isPlayer() && !(aur->isPassive() && (!aur->isAreaAura() || aur->getCasterGuid() == getGuid())) && !(aur->getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_HIDE_DURATION))
         {
-            SmsgUpdateAuraDuration updateAuraDuration(aur->m_visualSlot, aur->getTimeLeft());
+            SmsgUpdateAuraDuration updateAuraDuration(aur->getVisualSlot(), aur->getTimeLeft());
             PacketBroadcast::sendToSet(*this, updateAuraDuration, true);
 
             auto guid = GetNewGUID();
-            SmsgSetExtraAuraInfo setExtraAuraInfo(guid, aur->m_visualSlot, aur->getSpellId(), aur->getMaxDuration(), aur->getTimeLeft());
+            SmsgSetExtraAuraInfo setExtraAuraInfo(guid, aur->getVisualSlot(), aur->getSpellId(), aur->getMaxDuration(), aur->getTimeLeft());
             PacketBroadcast::sendToSet(*this, setExtraAuraInfo, true);
         }
 
-        const auto caster = aur->GetUnitCaster();
+        const auto caster = aur->getUnitCaster();
         if (caster != nullptr && caster->isPlayer() && caster->getGuid() != getGuid())
         {
-            SmsgSetExtraAuraInfoNeedUpdate managedPacket(GetNewGUID(), uint8_t(aur->m_visualSlot), uint32_t(aur->getSpellId()),
+            SmsgSetExtraAuraInfoNeedUpdate managedPacket(GetNewGUID(), uint8_t(aur->getVisualSlot()), uint32_t(aur->getSpellId()),
                 uint32_t(aur->getMaxDuration()), uint32_t(aur->getTimeLeft()));
             PacketBroadcast::sendToSet(*caster, managedPacket, true);
         }
@@ -5025,7 +5009,7 @@ void Unit::sendAuraUpdate(Aura* aur, bool remove)
 #if VERSION_STRING == TBC
     else
     {
-        const auto caster = aur->GetUnitCaster();
+        const auto caster = aur->getUnitCaster();
         if (caster != nullptr && caster->isPlayer())
         {
             SmsgClearExtraAuraInfo managedPacket(getGuid(), aur->getSpellId());
@@ -5036,7 +5020,7 @@ void Unit::sendAuraUpdate(Aura* aur, bool remove)
 #else
     SmsgAuraUpdate::AuraUpdate auraUpdate;
 
-    auraUpdate.visualSlot = aur->m_visualSlot;
+    auraUpdate.visualSlot = aur->getVisualSlot();
     auraUpdate.flags = aur->getAuraFlags();
     auraUpdate.spellId = aur->getSpellId();
 #if VERSION_STRING >= WoD
@@ -5044,7 +5028,7 @@ void Unit::sendAuraUpdate(Aura* aur, bool remove)
         auraUpdate.spellVisualId = aur->getSpellInfo()->getSpellVisual(0);
 #endif
 
-    const auto casterUnit = aur->GetUnitCaster();
+    const auto casterUnit = aur->getUnitCaster();
     if (casterUnit != nullptr)
         auraUpdate.level = static_cast<uint8_t>(casterUnit->getLevel());
     else
@@ -5096,20 +5080,20 @@ void Unit::queueInitialVisiblePacketsForPlayer(Player* target)
             continue;
 
         // Update only auras with a visual slot
-        if (aur->m_visualSlot == 0xFF)
+        if (aur->getVisualSlot() == 0xFF)
             continue;
 
         SmsgAuraUpdateAll::AuraUpdate auraUpdate;
 
         auraUpdate.flags = aur->getAuraFlags();
-        auraUpdate.visualSlot = aur->m_visualSlot;
+        auraUpdate.visualSlot = aur->getVisualSlot();
         auraUpdate.spellId = aur->getSpellId();
 #if VERSION_STRING >= WoD
         if (WoW::hasOwnClientData(WoW::getServerExpansion()))
             auraUpdate.spellVisualId = aur->getSpellInfo()->getSpellVisual(0);
 #endif
 
-        const auto casterUnit = aur->GetUnitCaster();
+        const auto casterUnit = aur->getUnitCaster();
         if (casterUnit != nullptr)
             auraUpdate.level = static_cast<uint8_t>(casterUnit->getLevel());
         else
@@ -5168,20 +5152,20 @@ void Unit::sendFullAuraUpdate()
             continue;
 
         // Update only auras with a visual slot
-        if (aur->m_visualSlot == 0xFF)
+        if (aur->getVisualSlot() == 0xFF)
             continue;
 
         SmsgAuraUpdateAll::AuraUpdate auraUpdate;
 
         auraUpdate.flags = aur->getAuraFlags();
-        auraUpdate.visualSlot = aur->m_visualSlot;
+        auraUpdate.visualSlot = aur->getVisualSlot();
         auraUpdate.spellId = aur->getSpellId();
 #if VERSION_STRING >= WoD
         if (WoW::hasOwnClientData(WoW::getServerExpansion()))
             auraUpdate.spellVisualId = aur->getSpellInfo()->getSpellVisual(0);
 #endif
 
-        const auto casterUnit = aur->GetUnitCaster();
+        const auto casterUnit = aur->getUnitCaster();
         if (casterUnit != nullptr)
             auraUpdate.level = static_cast<uint8_t>(casterUnit->getLevel());
         else
@@ -16165,7 +16149,7 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
                 if (CastingSpell == NULL)
                     continue;
 
-                switch (CastingSpell->getAreaAuraEffect())
+                switch (CastingSpell->getId())
                 {
                     //SPELL_HASH_SHIELD_SLAM
                 case 8242:

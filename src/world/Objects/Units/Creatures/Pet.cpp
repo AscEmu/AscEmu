@@ -121,9 +121,6 @@ void Pet::PrepareForRemove()
     Summon::PrepareForRemove();
 
     auto* const plrOwner = getPlayerOwner();
-    if (plrOwner != nullptr)
-        plrOwner->eventDismissPet();
-
     if (!m_petExpires)
     {
         // Remove dead minions from pet cache map
@@ -918,6 +915,8 @@ bool Pet::_preparePetForPush(PetCache const* petCache)
 
     if (plrOwner != nullptr)
     {
+        plrOwner->castPetAuraSpells();
+
         // SendSpellsToOwner();
 #if VERSION_STRING == WotLK || VERSION_STRING == Cata
         // Send pet talents

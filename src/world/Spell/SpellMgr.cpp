@@ -205,7 +205,13 @@ std::unique_ptr<Aura> SpellMgr::newAura(SpellInfo const* spellInfo, int32_t dura
 
     if (spellInfo == nullptr)
     {
-        sLogger.failure("You tried to create an Aura without SpellInfo. This is not possible!");
+        sLogger.failure("SpellMgr::newAura tried to create an aura with invalid SpellInfo");
+        return nullptr;
+    }
+
+    if (target == nullptr)
+    {
+        sLogger.failure("SpellMgr::newAura tried to create an aura for invalid target");
         return nullptr;
     }
 

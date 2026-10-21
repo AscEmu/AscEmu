@@ -860,6 +860,7 @@ public:
     bool sendPeriodicAuraLog(const WoWGuid& casterGuid, const WoWGuid& targetGuid, SpellInfo const* spellInfo, uint32_t amount, uint32_t overKillOrOverHeal, uint32_t absorbed, uint32_t resisted, AuraEffect auraEffect, bool isCritical, uint32_t miscValue = 0, float gainMultiplier = 0.0f);
 
     AuraArray const& getAuraList() const;
+    // Note: passive non persistent area auras are in positive/negative aura range
     AuraRange getPassiveAuraRange() const;
     AuraRange getPositiveAuraRange() const;
     AuraRange getNegativeAuraRange() const;

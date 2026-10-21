@@ -2724,15 +2724,6 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32
         sLogger.debug("no loot owner found loot will not be filled for creature {}", getEntry());
     }
 
-    if (getCharmedByGuid())
-    {
-        //remove owner warlock soul link from caster
-        Unit* owner = getWorldMapUnit(getCharmedByGuid());
-
-        if (owner != nullptr && owner->isPlayer())
-            static_cast<Player*>(owner)->eventDismissPet();
-    }
-
     if (getCharmedByGuid() != 0)
     {
         Unit* charmer = getWorldMapUnit(getCharmedByGuid());

@@ -727,7 +727,7 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
 //////////////////////////////////////////////////////////////////////////////////////////
 bool ChampioningTabards(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
-    Player* p_caster = a->GetPlayerCaster();
+    Player* p_caster = a->getPlayerCaster();
 
     if (!p_caster)
         return true;

@@ -1064,14 +1064,14 @@ void IcehowlAI::Trample(CreatureAIFunc /*pThis*/)
 /// Spell Ride Player
 void RidePlayer::onAuraCreate(Aura* aur)
 {
-    Unit* target = aur->GetPlayerTarget();
+    Unit* target = aur->getPlayerOwner();
     if (!target->isPlayer() || !target->IsInWorld())
         return;
 
     if (!target->createVehicleKit(PLAYER_VEHICLE_ID, 0))
         return;
 
-    if (Unit* caster = aur->GetUnitCaster())
+    if (Unit* caster = aur->getUnitCaster())
     {
         if (caster->ToCreature() && caster->ToCreature()->GetScript())
             caster->ToCreature()->GetScript()->SetCreatureData64(Beasts::DATA_NEW_TARGET, target->getGuid());
@@ -1082,10 +1082,10 @@ void RidePlayer::onAuraCreate(Aura* aur)
 /// Spell Snobolled
 SpellScriptExecuteState Snobolled::onAuraPeriodicTick(Aura* aur, AuraEffectModifier* /*aurEff*/, float_t* /*damage*/)
 {
-    if (!aur->GetUnitTarget()->hasAurasWithId(Beasts::Gormok::SPELL_RIDE_PLAYER))
+    if (!aur->getOwner()->hasAurasWithId(Beasts::Gormok::SPELL_RIDE_PLAYER))
         aur->removeAura();
 
-    if (Vehicle* vehicle = aur->GetUnitTarget()->getVehicleKit())
+    if (Vehicle* vehicle = aur->getOwner()->getVehicleKit())
     {
         if (!vehicle->getPassenger(0))
             aur->removeAura();
@@ -1125,15 +1125,15 @@ void ParalyticToxin::onAuraApply(Aura* aur)
 {
     counter = -10;
 
-    Unit* caster = aur->GetUnitCaster();
+    Unit* caster = aur->getUnitCaster();
     if (caster && caster->getEntry() == NPC_ACIDMAW)
         if (Creature* acidmaw = caster->ToCreature())
-            acidmaw->GetScript()->sendDBChatMessageByIndex(Beasts::Dreadscale_Acidmaw::SAY_SPECIAL, aur->GetUnitTarget());
+            acidmaw->GetScript()->sendDBChatMessageByIndex(Beasts::Dreadscale_Acidmaw::SAY_SPECIAL, aur->getOwner());
 }
 
 void ParalyticToxin::onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/)
 {
-    aur->GetUnitTarget()->removeAllAurasById(Beasts::Dreadscale_Acidmaw::SPELL_PARALYSIS);
+    aur->getOwner()->removeAllAurasById(Beasts::Dreadscale_Acidmaw::SPELL_PARALYSIS);
 }
 
 void ParalyticToxin::onAuraRefreshOrGainNewStack(Aura* aur, uint32_t /*newStackCount*/, uint32_t /*oldStackCount*/)
@@ -1146,8 +1146,8 @@ void ParalyticToxin::onAuraRefreshOrGainNewStack(Aura* aur, uint32_t /*newStackC
 
         counter = newAmount;
 
-        if (newAmount == -100 && !aur->GetUnitTarget()->hasAurasWithId(Beasts::Dreadscale_Acidmaw::SPELL_PARALYSIS))
-            aur->GetUnitTarget()->castSpell(aur->GetUnitTarget(), Beasts::Dreadscale_Acidmaw::SPELL_PARALYSIS);
+        if (newAmount == -100 && !aur->getOwner()->hasAurasWithId(Beasts::Dreadscale_Acidmaw::SPELL_PARALYSIS))
+            aur->getOwner()->castSpell(aur->getOwner(), Beasts::Dreadscale_Acidmaw::SPELL_PARALYSIS);
     }
 }
 
@@ -1185,7 +1185,7 @@ SpellScriptExecuteState SlimePool::onAuraPeriodicTick(Aura* aur, AuraEffectModif
     [[maybe_unused]] int32_t const radius = static_cast<int32_t>(((stackCounter / 60.f) * 0.9f + 0.1f) * 10000.f * 2.f / 3.f);
 
     SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(aur->getSpellInfo()->getEffectTriggerSpell(aurEff->getEffectIndex()));
-    Unit* caster = aur->GetUnitTarget();
+    Unit* caster = aur->getOwner();
 
     // Cast Spell
     // todo spellradius should change...
@@ -1197,7 +1197,7 @@ SpellScriptExecuteState SlimePool::onAuraPeriodicTick(Aura* aur, AuraEffectModif
 /// Spell paralysis
 void Paralysis::onAuraApply(Aura* aur)
 {
-    if (Unit* caster = aur->GetUnitCaster())
+    if (Unit* caster = aur->getUnitCaster())
     {
         if (caster->IsInWorld())
         {

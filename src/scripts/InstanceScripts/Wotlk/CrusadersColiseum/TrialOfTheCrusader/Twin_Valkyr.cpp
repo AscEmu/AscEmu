@@ -556,7 +556,7 @@ SpellScriptExecuteState EssenceScript::beforeAuraEffect(Aura* aur, AuraEffectMod
                 if (uint32_t poweringUp = twins::SPELL_POWERING_UP)
                 {
                     if (Util::getRandomUInt(0, 99) < 5)
-                        aur->GetUnitTarget()->castSpell(aur->GetUnitTarget(), twins::SPELL_SURGE_OF_SPEED, true);
+                        aur->getOwner()->castSpell(aur->getOwner(), twins::SPELL_SURGE_OF_SPEED, true);
 
                     // Twin Vortex part
                     int16_t stacksCount = static_cast<int16_t>(aur->getSpellInfo()->calculateEffectValue(EFF_INDEX_0) / 1000 - 1);

@@ -335,7 +335,7 @@ bool EatenRecently(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     if (pAura == nullptr)
         return true;
 
-    auto unit_caster = pAura->GetUnitCaster();
+    auto unit_caster = pAura->getUnitCaster();
     if (unit_caster == nullptr || unit_caster->isPlayer())
         return true;
 

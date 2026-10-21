@@ -612,7 +612,7 @@ bool ImprovedLifeTap(uint8_t effectIndex, Aura* a, bool apply)
 
 bool SoulSiphon(uint8_t effectIndex, Aura* a, bool apply)
 {
-    Unit* caster = a->GetUnitCaster();
+    Unit* caster = a->getUnitCaster();
     int32_t amount = a->getEffectDamage(effectIndex);
 
     if (caster)

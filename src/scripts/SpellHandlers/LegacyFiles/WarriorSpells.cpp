@@ -242,7 +242,7 @@ bool TacticalAndStanceMastery(uint8_t effectIndex, Aura* a, bool apply)
 
 bool SecondWind(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
-    Player* caster = a->GetPlayerCaster();
+    Player* caster = a->getPlayerCaster();
 
     if (caster == NULL)
         return true;
@@ -257,7 +257,7 @@ bool SecondWind(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
 bool SecondWind2(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
-    Player* caster = a->GetPlayerCaster();
+    Player* caster = a->getPlayerCaster();
 
     if (caster == NULL)
         return true;

@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include <cstdint>
-#include <set>
+#include <unordered_map>
 
 enum AURA_INTERNAL_USAGE_FLAGS
 {
@@ -15,16 +15,6 @@ enum AURA_INTERNAL_USAGE_FLAGS
     MOD_0_RESISTED      = 1,
     MOD_1_RESISTED      = 2,
     MOD_2_RESISTED      = 4
-};
-
-enum AuraTickFlags
-{
-    FLAG_PERIODIC_NONE              = 0,
-    FLAG_PERIODIC_DAMAGE            = 2,
-    FLAG_PERIODIC_TRIGGER_SPELL     = 4,
-    FLAG_PERIODIC_HEAL              = 8,
-    FLAG_PERIODIC_LEECH             = 16,
-    FLAG_PERIODIC_ENERGIZE          = 32
 };
 
 struct ProcTriggerSpellOnSpell
@@ -49,7 +39,9 @@ struct DamageSplitTarget
     void* creator;
 };
 
-typedef std::set<uint64_t> AreaAuraList;
+// If true, skips validation of this target for next update
+using AreaAuraList = std::unordered_map<uint64_t, bool>;
+constexpr uint16_t AREA_AURA_UPDATE_INTERVAL = 500; // in ms
 
 // 4-bit flag
 enum AuraUpdateFlags : uint8_t

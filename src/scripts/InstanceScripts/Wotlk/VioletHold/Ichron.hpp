@@ -112,7 +112,7 @@ protected:
 class IchronMerge : public SpellScript
 {
 public:
-    SpellScriptCheckDummy onDummyOrScriptedEffect(Spell* spell, uint8_t effIndex);
+    SpellScriptCheckDummy onDummyOrScriptedEffect(Spell* spell, uint8_t effIndex) override;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -120,7 +120,8 @@ public:
 class IchronBubble : public SpellScript
 {
 public:
-    SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply);
+    SpellScriptExecuteState beforeAuraEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override;
+    SpellScriptExecuteState onCastProcSpell(SpellProc* spellProc, Unit* caster, Unit* victim, Spell* spellToProc) override;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

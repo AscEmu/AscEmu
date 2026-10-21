@@ -1307,6 +1307,25 @@ int32_t SpellInfo::calculateEffectValue(uint8_t effIndex, Unit* unitCaster/* = n
     return basePoints;
 }
 
+float_t SpellInfo::calculateEffectRadius(uint8_t effIndex, Unit* unitCaster/* = nullptr*/, Spell* spell/* = nullptr*/, Aura* aur/* = nullptr*/) const
+{
+    const auto radiusInfo = sSpellRadiusStore.lookupEntry(getEffectRadiusIndex(effIndex));
+    if (radiusInfo == nullptr)
+        return 0.0f;
+
+    auto radius = radiusInfo->radius_min;
+    if (unitCaster != nullptr)
+    {
+        radius += radiusInfo->radius_per_level * unitCaster->getLevel();
+        radius = std::min(radius, radiusInfo->radius_max);
+
+        // Apply radius modifiers
+        unitCaster->applySpellModifiers(SPELLMOD_RADIUS, &radius, this, spell, aur);
+    }
+
+    return radius;
+}
+
 bool SpellInfo::doesEffectApplyAura(uint8_t effIndex) const
 {
     if (effIndex >= MAX_SPELL_EFFECTS)
@@ -1315,7 +1334,7 @@ bool SpellInfo::doesEffectApplyAura(uint8_t effIndex) const
     return Effect[effIndex] == SPELL_EFFECT_APPLY_AURA || isAreaAuraEffect(effIndex);
 }
 
-bool SpellInfo::isAreaAuraEffect(uint8_t effIndex) const
+bool SpellInfo::isAreaAuraEffect(uint8_t effIndex, bool includePersistent/* = true*/) const
 {
     if (effIndex >= MAX_SPELL_EFFECTS)
         return false;
@@ -1323,6 +1342,9 @@ bool SpellInfo::isAreaAuraEffect(uint8_t effIndex) const
     switch (Effect[effIndex])
     {
         case SPELL_EFFECT_PERSISTENT_AREA_AURA:
+            if (!includePersistent)
+                break;
+            [[fallthrough]];
         case SPELL_EFFECT_APPLY_GROUP_AREA_AURA:
         case SPELL_EFFECT_APPLY_RAID_AREA_AURA:
         case SPELL_EFFECT_APPLY_PET_AREA_AURA:
@@ -1334,6 +1356,17 @@ bool SpellInfo::isAreaAuraEffect(uint8_t effIndex) const
             return true;
         default:
             break;
+    }
+
+    return false;
+}
+
+bool SpellInfo::hasAreaAuraEffect(bool includePersistent/* = true*/) const
+{
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        if (isAreaAuraEffect(i, includePersistent))
+            return true;
     }
 
     return false;
@@ -1351,17 +1384,6 @@ bool SpellInfo::appliesAreaAura(uint32_t auraType) const
     }
 
     return false;
-}
-
-uint32_t SpellInfo::getAreaAuraEffect() const
-{
-    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-    {
-        if (isAreaAuraEffect(i))
-            return Effect[i];
-    }
-
-    return 0;
 }
 
 bool SpellInfo::isTriggerSpellCastedByCaster(SpellInfo const* triggeringSpell) const

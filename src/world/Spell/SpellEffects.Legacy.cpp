@@ -136,7 +136,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectTriggerMissile,          //  32 SPELL_EFFECT_TRIGGER_MISSILE
     &Spell::SpellEffectOpenLock,                //  33 SPELL_EFFECT_OPEN_LOCK
     &Spell::SpellEffectTransformItem,           //  34 SPELL_EFFECT_TRANSFORM_ITEM
-    &Spell::SpellEffectApplyGroupAA,            //  35 SPELL_EFFECT_APPLY_GROUP_AA
+    &Spell::spellEffectApplyAreaAura,           //  35 SPELL_EFFECT_APPLY_GROUP_AA
     &Spell::SpellEffectLearnSpell,              //  36 SPELL_EFFECT_LEARN_SPELL
     &Spell::SpellEffectSpellDefense,            //  37 SPELL_EFFECT_SPELL_DEFENSE
     &Spell::SpellEffectDispel,                  //  38 SPELL_EFFECT_DISPEL
@@ -166,7 +166,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectPowerBurn,               //  62 SPELL_EFFECT_POWER_BURN
     &Spell::SpellEffectThreat,                  //  63 SPELL_EFFECT_THREAT
     &Spell::spellEffectTriggerSpell,            //  64 SPELL_EFFECT_TRIGGER_SPELL
-    &Spell::SpellEffectApplyRaidAA,             //  65 SPELL_EFFECT_APPLY_RAID_AA
+    &Spell::spellEffectApplyAreaAura,           //  65 SPELL_EFFECT_APPLY_RAID_AA
     &Spell::SpellEffectPowerFunnel,             //  66 SPELL_EFFECT_POWER_FUNNEL
     &Spell::SpellEffectHealMaxHealth,           //  67 SPELL_EFFECT_HEALMAX_HEALTH
     &Spell::SpellEffectInterruptCast,           //  68 SPELL_EFFECT_INTERRUPT_CAST
@@ -220,7 +220,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectSkinPlayerCorpse,        // 116 SPELL_EFFECT_SKIN_PLAYER_CORPSE
     &Spell::spellEffectNotImplemented,          // 117 SPELL_EFFECT_NULL_117
     &Spell::spellEffectSkill,                   // 118 SPELL_EFFECT_SKILL
-    &Spell::SpellEffectApplyPetAA,              // 119 SPELL_EFFECT_APPLY_PET_AA
+    &Spell::spellEffectApplyAreaAura,           // 119 SPELL_EFFECT_APPLY_PET_AA
     &Spell::spellEffectNotImplemented,          // 120 SPELL_EFFECT_NULL_120
     &Spell::SpellEffectDummyMelee,              // 121 SPELL_EFFECT_DUMMY_MELEE
     &Spell::spellEffectNotImplemented,          // 122 SPELL_EFFECT_NULL_122
@@ -229,8 +229,8 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectReduceThreatPercent,     // 125 SPELL_EFFECT_REDUCE_THREAT_PERCENT
     &Spell::SpellEffectSpellSteal,              // 126 SPELL_EFFECT_SPELL_STEAL
     &Spell::SpellEffectProspecting,             // 127 SPELL_EFFECT_PROSPECTING
-    &Spell::SpellEffectApplyFriendAA,           // 128 SPELL_EFFECT_APPLY_FRIEND_AA
-    &Spell::SpellEffectApplyEnemyAA,            // 129 SPELL_EFFECT_APPLY_ENEMY_AA
+    &Spell::spellEffectApplyAreaAura,           // 128 SPELL_EFFECT_APPLY_FRIEND_AA
+    &Spell::spellEffectApplyAreaAura,           // 129 SPELL_EFFECT_APPLY_ENEMY_AA
 #if VERSION_STRING >= TBC
     &Spell::SpellEffectRedirectThreat,          // 130 SPELL_EFFECT_REDIRECT_THREAT
     &Spell::spellEffectNotImplemented,          // 131 SPELL_EFFECT_NULL_131
@@ -245,7 +245,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::spellEffectForceCast,               // 140 SPELL_EFFECT_TRIGGER_SPELL
     &Spell::spellEffectNotImplemented,          // 141 SPELL_EFFECT_NULL_141
     &Spell::SpellEffectTriggerSpellWithValue,   // 142 SPELL_EFFECT_TRIGGER_SPELL_WITH_VALUE
-    &Spell::SpellEffectApplyOwnerAA,            // 143 SPELL_EFFECT_APPLY_OWNER_AA
+    &Spell::spellEffectApplyAreaAura,           // 143 SPELL_EFFECT_APPLY_OWNER_AA
     &Spell::SpellEffectKnockBack,               // 144 SPELL_EFFECT_KNOCK_BACK
     &Spell::SpellEffectPullTowardsDest,         // 145 SPELL_EFFECT_PULL_TOWARDS_DEST
     &Spell::SpellEffectActivateRunes,           // 146 SPELL_EFFECT_ACTIVATE_RUNES
@@ -594,6 +594,31 @@ void Spell::spellEffectDefense(uint8_t /*effectIndex*/)
         m_playerTarget->addSkillLine(SKILL_DEFENSE, 1, 0);
 }
 
+void Spell::spellEffectApplyAreaAura(uint8_t effectIndex)
+{
+    if (m_unitTarget == nullptr)
+        return;
+
+    // Apply effect only for caster
+    if (u_caster != m_unitTarget)
+        return;
+
+    const auto [itr, createdNew] = m_pendingAuras.try_emplace(m_unitTarget->getGuid(), Util::LazyInstanceCreator([this] {
+        return HitAuraEffect{ 0, sSpellMgr.newAura(m_spellInfo, getDuration(), m_caster, m_unitTarget) };
+    }));
+
+    auto* const aur = itr->second.aur.get();
+    if (createdNew)
+    {
+        aur->setIsAreaAura(true);
+        aur->setCastedItemId(castedItemId);
+    }
+
+    aur->addAuraEffect(static_cast<AuraEffect>(m_spellInfo->getEffectApplyAuraName(effectIndex)), damage,
+        m_spellInfo->getEffectMiscValue(effectIndex), effectPctModifier[effectIndex],
+        isEffectDamageStatic[effectIndex], effectIndex);
+}
+
 void Spell::spellEffectDualWield(uint8_t /*effectIndex*/)
 {
     if (m_unitTarget == nullptr)
@@ -768,61 +793,6 @@ void Spell::spellEffectQuestStart(uint8_t effectIndex)
 
 // MIT End
 // APGL Start
-
-void Spell::ApplyAreaAura(uint8_t effectIndex)
-{
-    if (!m_unitTarget || !m_unitTarget->isAlive()) return;
-    if (u_caster != m_unitTarget) return;
-
-    Aura* pAura = nullptr;
-    auto itr = m_pendingAuras.find(m_unitTarget->getGuid());
-    if (itr == m_pendingAuras.end())
-    {
-        auto auraHolder = sSpellMgr.newAura(getSpellInfo(), getDuration(), m_caster, m_unitTarget);
-
-        float r = getEffectRadius(effectIndex);
-
-        uint32_t eventtype = 0;
-
-        switch (m_spellInfo->getEffect(effectIndex))
-        {
-            case SPELL_EFFECT_APPLY_GROUP_AREA_AURA:
-                eventtype = EVENT_GROUP_AREA_AURA_UPDATE;
-                break;
-            case SPELL_EFFECT_APPLY_RAID_AREA_AURA:
-                eventtype = EVENT_RAID_AREA_AURA_UPDATE;
-                break;
-            case SPELL_EFFECT_APPLY_PET_AREA_AURA:
-                eventtype = EVENT_PET_AREA_AURA_UPDATE;
-                break;
-            case SPELL_EFFECT_APPLY_FRIEND_AREA_AURA:
-                eventtype = EVENT_FRIEND_AREA_AURA_UPDATE;
-                break;
-            case SPELL_EFFECT_APPLY_ENEMY_AREA_AURA:
-                eventtype = EVENT_ENEMY_AREA_AURA_UPDATE;
-                break;
-#if VERSION_STRING >= TBC
-            case SPELL_EFFECT_APPLY_OWNER_AREA_AURA:
-                eventtype = EVENT_ENEMY_AREA_AURA_UPDATE; //Zyres: The same event as SPELL_EFFECT_APPLY_ENEMY_AREA_AURA? @Appled o.O
-#endif
-                break;
-        }
-
-        auraHolder->m_castedItemId = castedItemId;
-
-        if (!sEventMgr.HasEvent(auraHolder.get(), eventtype))      /* only add it once */
-            sEventMgr.AddEvent(auraHolder.get(), &Aura::EventUpdateAreaAura, effectIndex, r * r, eventtype, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-
-        const auto [emplaceItr, isInserted] = m_pendingAuras.try_emplace(m_unitTarget->getGuid(), 0, std::move(auraHolder));
-        pAura = emplaceItr->second.aur.get();
-    }
-    else
-    {
-        pAura = itr->second.aur.get();
-    }
-
-    pAura->addAuraEffect(static_cast<AuraEffect>(getSpellInfo()->getEffectApplyAuraName(effectIndex)), damage, getSpellInfo()->getEffectMiscValue(effectIndex), effectPctModifier[effectIndex], isEffectDamageStatic[effectIndex], effectIndex);
-}
 
 void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
 {
@@ -1953,8 +1923,8 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
         else
             auraHolder = sSpellMgr.newAura(getSpellInfo(), Duration, m_caster, m_unitTarget, m_triggeredSpell, i_caster);
 
-        auraHolder->pSpellId = pSpellId; //this is required for triggered spells
-        auraHolder->m_castedItemId = castedItemId;
+        auraHolder->setTriggeredBySpellId(pSpellId); //this is required for triggered spells
+        auraHolder->setCastedItemId(castedItemId);
 
         const auto [emplaceItr, isInserted] = m_pendingAuras.try_emplace(m_unitTarget->getGuid(), 0, std::move(auraHolder));
         pAura = emplaceItr->second.aur.get();
@@ -3735,11 +3705,6 @@ void Spell::SpellEffectTransformItem(uint8_t effectIndex)
     }
 }
 
-void Spell::SpellEffectApplyGroupAA(uint8_t effectIndex)
-{
-    ApplyAreaAura(effectIndex);
-}
-
 void Spell::SpellEffectLearnSpell(uint8_t effectIndex) // Learn Spell
 {
     if (m_playerTarget == nullptr && m_unitTarget && m_unitTarget->isPet()) // something's wrong with this logic here.
@@ -3902,7 +3867,7 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
             aursp = aur->getSpellInfo();
 
             //Nothing can dispel resurrection sickness;
-            if (!aur->IsPassive() && !(aursp->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY))
+            if (!aur->isPassive() && !(aursp->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY))
             {
                 if (getSpellInfo()->getDispelType() == DISPEL_ALL)
                 {
@@ -4487,11 +4452,6 @@ void Spell::SpellEffectClearQuest(uint8_t effectIndex)
 
     m_playerTarget->clearQuest(questid1);
     m_playerTarget->clearQuest(questid2);
-}
-
-void Spell::SpellEffectApplyRaidAA(uint8_t effectIndex)
-{
-    ApplyAreaAura(effectIndex);
 }
 
 void Spell::SpellEffectPowerFunnel(uint8_t /*effectIndex*/) // Power Funnel
@@ -5601,11 +5561,6 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
     }
 }
 
-void Spell::SpellEffectApplyPetAA(uint8_t effectIndex)
-{
-    ApplyAreaAura(effectIndex);
-}
-
 void Spell::SpellEffectDummyMelee(uint8_t /*effectIndex*/)   // Normalized Weapon damage +
 {
 
@@ -5953,7 +5908,7 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
         {
             SpellInfo const* aursp = aur->getSpellInfo();
 
-            if (aursp->getId() != 15007 && !aur->IsPassive()
+            if (aursp->getId() != 15007 && !aur->isPassive()
                 //              && aur->IsPositive()    // Zack : We are only checking positive auras. There is no meaning to check again
                ) //Nothing can dispel resurrection sickness
             {
@@ -6013,16 +5968,6 @@ void Spell::SpellEffectProspecting(uint8_t /*effectIndex*/)
         sLogger.debugSpellEffect("Prospecting failed, item {} has no loot.", uint32_t(m_itemTarget->getEntry()));
         sendCastResult(SPELL_FAILED_CANT_BE_PROSPECTED);
     }
-}
-
-void Spell::SpellEffectApplyFriendAA(uint8_t effectIndex)
-{
-    ApplyAreaAura(effectIndex);
-}
-
-void Spell::SpellEffectApplyEnemyAA(uint8_t effectIndex)
-{
-    ApplyAreaAura(effectIndex);
 }
 
 void Spell::SpellEffectRedirectThreat(uint8_t /*effectIndex*/)
@@ -6132,11 +6077,6 @@ void Spell::SpellEffectTriggerSpellWithValue(uint8_t effectIndex)
 
     SpellCastTargets tgt(m_unitTarget->getGuid());
     sp->prepare(&tgt);
-}
-
-void Spell::SpellEffectApplyOwnerAA(uint8_t effectIndex)
-{
-    ApplyAreaAura(effectIndex);
 }
 
 void Spell::SpellEffectCreatePet(uint8_t effectIndex)
