@@ -251,15 +251,32 @@ namespace
         return discovered.size();
     }
 
-    bool extractSingleFileById(HANDLE storageHandle, uint32_t fileDataId, const fs::path& destinationPath)
+    // A definition entry without file data id names the table (6.x clients, whose root
+    // still carries the file names), the file is then opened as DBFilesClient\<name>.
+    bool extractSingleFileById(HANDLE storageHandle, uint32_t fileDataId, std::string_view fileName, const fs::path& destinationPath)
     {
         HANDLE fileHandle = nullptr;
-        bool opened = CascOpenFile(storageHandle, CASC_FILE_DATA_ID(fileDataId), CASC_LOCALE_NONE,
-            CASC_OPEN_BY_FILEID | CASC_OVERCOME_ENCRYPTED, &fileHandle);
-        if (!opened)
+        bool opened = false;
+        if (fileDataId != 0)
         {
-            opened = CascOpenFile(storageHandle, CASC_FILE_DATA_ID(fileDataId), CASC_LOCALE_ALL_WOW,
+            opened = CascOpenFile(storageHandle, CASC_FILE_DATA_ID(fileDataId), CASC_LOCALE_NONE,
                 CASC_OPEN_BY_FILEID | CASC_OVERCOME_ENCRYPTED, &fileHandle);
+            if (!opened)
+            {
+                opened = CascOpenFile(storageHandle, CASC_FILE_DATA_ID(fileDataId), CASC_LOCALE_ALL_WOW,
+                    CASC_OPEN_BY_FILEID | CASC_OVERCOME_ENCRYPTED, &fileHandle);
+            }
+        }
+        else
+        {
+            std::string const path = "DBFilesClient\\" + std::string(fileName);
+            opened = CascOpenFile(storageHandle, path.c_str(), CASC_LOCALE_NONE,
+                CASC_OPEN_BY_NAME | CASC_OVERCOME_ENCRYPTED, &fileHandle);
+            if (!opened)
+            {
+                opened = CascOpenFile(storageHandle, path.c_str(), CASC_LOCALE_ALL_WOW,
+                    CASC_OPEN_BY_NAME | CASC_OVERCOME_ENCRYPTED, &fileHandle);
+            }
         }
 
         if (!opened)
@@ -300,7 +317,7 @@ namespace
         for (const auto& entry : def.files)
         {
             fs::path targetPath = outputDir / entry.fileName;
-            if (extractSingleFileById(storageHandle, entry.fileDataId, targetPath))
+            if (extractSingleFileById(storageHandle, entry.fileDataId, entry.fileName, targetPath))
             {
                 ++successCount;
             }
@@ -314,7 +331,7 @@ namespace
     }
 }
 
-bool CascExtractor::run(mpqlib::CascStorage const& storage, std::string_view expansionName, uint32_t buildNumber)
+bool CascExtractor::run(mpqlib::CascStorage const& storage, std::string_view expansionName, uint32_t buildNumber, bool fullScan)
 {
     printf("Extracting DB2 files for %.*s (Build: %u)...\n",
            static_cast<int>(expansionName.length()), expansionName.data(), buildNumber);
@@ -327,7 +344,12 @@ bool CascExtractor::run(mpqlib::CascStorage const& storage, std::string_view exp
     // Check if there's a pre-indexed definition for the given build number
     const auto* buildDef = MapExtractor::DB2::findBuildDefinition(buildNumber);
 
-    if (buildDef != nullptr)
+    if (fullScan)
+    {
+        printf("Full CASC scan requested (-s 1), the indexed table list of this build is not used.\n");
+        performFullScan(storageHandle, buildNumber, dbcOutputDir);
+    }
+    else if (buildDef != nullptr)
     {
         size_t count = extractPreindexedDb2(storageHandle, *buildDef, dbcOutputDir);
         printf("Instant extraction complete: %zu / %zu DB2 files written to '%s'.\n",
@@ -336,7 +358,7 @@ bool CascExtractor::run(mpqlib::CascStorage const& storage, std::string_view exp
     else
     {
         // Unknown build, prompt user for full scan
-        std::cout << "No indexed table for Build " << buildNumber << " found. Run full CASC scan (~1-2 min)? [y/N]: ";
+        std::cout << "No indexed table for Build " << buildNumber << " found. Run full CASC scan (several minutes on a retail client)? [y/N]: ";
         char choice = 'n';
         std::cin >> choice;
 

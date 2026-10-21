@@ -16,5 +16,6 @@ namespace fs = std::filesystem;
 class CascExtractor
 {
 public:
-    static bool run(mpqlib::CascStorage const& storage, std::string_view expansionName, uint32_t buildNumber);
+    // fullScan: scan the whole archive instead of the indexed table list of the build
+    static bool run(mpqlib::CascStorage const& storage, std::string_view expansionName, uint32_t buildNumber, bool fullScan = false);
 };

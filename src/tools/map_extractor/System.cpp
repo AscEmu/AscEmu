@@ -214,6 +214,7 @@ enum Extract
 };
 
 int CONF_extract = EXTRACT_MAP | EXTRACT_DBC;
+bool CONF_fullDb2Scan = false;      // -s 1: scan the archive for DB2 files even when the build has an indexed list
 
 bool CONF_allow_height_limit = true;
 float CONF_use_minHeight = -500.0f;
@@ -275,6 +276,7 @@ void Usage(char const* prg)
         "-e extract only MAP(1)/DBC(2)/Camera(4, Cata+ only) - standard: MAP+DBC(3)\n"
         "-f height stored as int (less map size but lost some accuracy) 1 by default\n"
         "-b target build (Cata+ only)\n"
+        "-s 1: scan the whole CASC archive for DB2 files instead of using the indexed table list of the build (CASC clients only)\n"
         "Example: %s -f 0 -i \"c:\\games\\game\"", prg, MAX_PATH_LENGTH - 1, MAX_PATH_LENGTH - 1, prg);
     exit(1);
 }
@@ -325,6 +327,12 @@ void HandleArgs(int argc, char* arg[])
             case 'b':
                 if (c + 1 < argc)
                     CONF_TargetBuild = atoi(arg[c++ + 1]);
+                else
+                    Usage(arg[0]);
+                break;
+            case 's':
+                if (c + 1 < argc)
+                    CONF_fullDb2Scan = atoi(arg[c++ + 1]) != 0;
                 else
                     Usage(arg[0]);
                 break;
@@ -2131,7 +2139,7 @@ int main(int argc, char* arg[])
         if (uint32_t const storageBuild = storage->buildNumber(); storageBuild != 0)
             buildNumber = storageBuild;
 
-        if ((CONF_extract & EXTRACT_DBC) && !CascExtractor::run(*storage, versionName, buildNumber))
+        if ((CONF_extract & EXTRACT_DBC) && !CascExtractor::run(*storage, versionName, buildNumber, CONF_fullDb2Scan))
         {
             printf("Error: CASC extraction failed!\n");
             return 1;
