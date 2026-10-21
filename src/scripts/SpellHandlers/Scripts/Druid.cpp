@@ -22,6 +22,9 @@ enum DruidSpells
     SPELL_LEADER_OF_THE_PACK_AURA           = 24932,
     SPELL_LEADER_OF_THE_PACK_HEAL           = 34299,
     SPELL_LEADER_OF_THE_PACK_MANA           = 60889,
+    SPELL_LIFEBLOOM_R1                      = 33763,
+    SPELL_LIFEBLOOM_FINAL                   = 33778,
+    SPELL_LIFEBLOOM_MANA                    = 64372,
 };
 
 #if VERSION_STRING < Mop
@@ -183,6 +186,74 @@ public:
 };
 #endif
 
+#if VERSION_STRING >= TBC
+class Lifebloom : public SpellScript
+{
+    SpellScriptCheckDummy onAuraDummyEffect(Aura* /*aur*/, AuraEffectModifier* /*aurEff*/, bool /*apply*/) override
+    {
+        return SpellScriptCheckDummy::DUMMY_OK;
+    }
+
+    void onAuraRemove(Aura* aur, AuraRemoveMode mode) override
+    {
+        if (mode != AURA_REMOVE_ON_EXPIRE && mode != AURA_REMOVE_ON_DISPEL && mode != AURA_REMOVE_ON_STEAL)
+            return;
+
+        const auto* dummyAurEff = aur->getAuraEffect(EFF_INDEX_1);
+        if (dummyAurEff == nullptr)
+            return;
+
+        const auto* bloomSpellInfo = sSpellMgr.getSpellInfo(SPELL_LIFEBLOOM_FINAL);
+        if (bloomSpellInfo == nullptr)
+            return;
+
+#if VERSION_STRING == TBC
+        // In TBC bloom is unaffected by stack count
+        const auto dummyAurEffValue = dummyAurEff->getEffectFloatDamage() / aur->getStackCount();
+#else
+        const auto dummyAurEffValue = dummyAurEff->getEffectFloatDamage();
+#endif
+
+        auto* const unitCaster = aur->getUnitCaster();
+        const auto bloomValue = Util::float2int32(aur->getOwner()->applySpellHealingBonus(unitCaster,
+            aur->getSpellInfo(), EFF_INDEX_1, dummyAurEffValue, false, nullptr, dummyAurEff));
+
+        // Little bit ugly but need to set original caster before casting
+        auto* bloomSpell = sSpellMgr.newSpell(aur->getOwner(), bloomSpellInfo, true, aur);
+        bloomSpell->forced_basepoints = std::make_shared<SpellForcedBasePoints>();
+        bloomSpell->forced_basepoints->set(EFF_INDEX_0, bloomValue);
+#if VERSION_STRING >= WotLK
+        // Spell is casted by unit who owns the aura but heal effect is done by the druid
+        bloomSpell->setOriginalCasterGuid(aur->getCasterGuid());
+#endif
+        SpellCastTargets targets(aur->getOwner()->getGuid());
+        bloomSpell->prepare(&targets);
+
+#if VERSION_STRING >= WotLK
+        if (unitCaster != nullptr)
+        {
+            // Druid regains half the cost of the spell (multiplied by stack amount)
+            const auto spellManaCostPct = aur->getSpellInfo()->getManaCostPercentage();
+            const int32_t manaRefund = unitCaster->getBaseMana() * spellManaCostPct * aur->getStackCount() / 100 / 2;
+
+            SpellForcedBasePoints manaBasePoints;
+            manaBasePoints.set(EFF_INDEX_0, manaRefund);
+            unitCaster->castSpell(unitCaster, SPELL_LIFEBLOOM_MANA, manaBasePoints, true);
+        }
+#endif
+    }
+};
+
+class LifebloomFinal : public SpellScript
+{
+    SpellScriptEffectDamage doCalculateEffect(Spell* /*spell*/, uint8_t /*effIndex*/, int32_t* /*damage*/) override
+    {
+        // Calculated before cast
+        return SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
+    }
+};
+#endif
+
 void setupDruidSpells(ScriptMgr* mgr)
 {
     // Call legacy script setup
@@ -203,5 +274,10 @@ void setupDruidSpells(ScriptMgr* mgr)
     mgr->register_spell_script(SPELL_LEADER_OF_THE_PACK_HEAL, new LeaderOfThePackHeal);
 #if VERSION_STRING == WotLK
     mgr->register_spell_script(SPELL_LEADER_OF_THE_PACK_MANA, new LeaderOfThePackMana);
+#endif
+
+#if VERSION_STRING >= TBC
+    mgr->register_spell_script(SPELL_LIFEBLOOM_R1, new Lifebloom);
+    mgr->register_spell_script(SPELL_LIFEBLOOM_FINAL, new LifebloomFinal);
 #endif
 }

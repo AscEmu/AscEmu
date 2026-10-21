@@ -31,7 +31,7 @@ typedef enum
     EFF_TARGET_ALL_PARTY_IN_AREA_CHANNELED                        = 29,
     EFF_TARGET_ALL_FRIENDLY_IN_AREA                               = 30,
     EFF_TARGET_ALL_TARGETABLE_AROUND_LOCATION_IN_RADIUS_OVER_TIME = 31,
-    EFF_TARGET_MINION                                             = 32,
+    EFF_TARGET_SUMMON_CREATURE_OR_OBJECT                          = 32, // used by most summon spells
     EFF_TARGET_ALL_PARTY_IN_AREA                                  = 33,
     EFF_TARGET_SINGLE_PARTY                                       = 35,
     EFF_TARGET_PET_SUMMON_LOCATION                                = 36,

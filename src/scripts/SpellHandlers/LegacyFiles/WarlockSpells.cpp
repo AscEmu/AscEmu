@@ -33,36 +33,6 @@
 #include "Objects/GameObject.h"
 #include "Utilities/CommonTime.hpp"
 
-//////////////////////////////////////////////////////////////
- //bool SoulLinkParent( uint32_t i, Spell *s )
- //
- //Precondition(s)
- //  Caster is a Player.
- //  Target is a Unit, a warlock pet
- //
- //Effect(s)
- //  Makes the warlock pet cast the Soul Link owner aree aura
- //
- //
- /////////////////////////////////////////////////////////////
-bool SoulLinkParent(uint8_t /*effectIndex*/, Spell* s)
-{
-    if (s->getPlayerCaster() == nullptr)
-    {
-        return true;
-    }
-
-    Unit* u = s->getUnitTarget();
-    if (u == nullptr)
-    {
-        return true;
-    }
-
-    u->castSpell(u, 25228, true);
-
-    return true;
-}
-
 bool LifeTap(uint8_t effectIndex, Spell* s)
 {
     Player* playerTarget = s->getPlayerTarget();
@@ -227,289 +197,6 @@ bool FelHealthStone(uint8_t /*effectIndex*/, Spell* s)
     return true;
 }
 
-bool MasterDemonologist1(uint8_t /*effectIndex*/, Spell* s)
-{
-    Unit* unitTarget = s->getUnitTarget();
-
-    if (!s->getPlayerCaster() || !unitTarget)
-        return false; //can't imagine how this talent got to anybody else then a player casting on pet
-
-    uint32_t casted_spell_id = 0;
-    uint32_t inc_resist_by_level = 0;
-    uint32_t inc_resist_by_level_spell = 0;
-
-    if (unitTarget->getEntry() == 416) //in case it is imp
-        casted_spell_id = 23759;
-    else if (unitTarget->getEntry() == 1860) //VoidWalker
-        casted_spell_id = 23760;
-    else if (unitTarget->getEntry() == 1863) //Succubus
-        casted_spell_id = 23761;
-    else if (unitTarget->getEntry() == 417) //Felhunter
-    {
-        casted_spell_id = 0;
-        inc_resist_by_level_spell = 23762;
-        inc_resist_by_level = 20;
-    }
-    else if (unitTarget->getEntry() == 17252) //Felguard
-    {
-        casted_spell_id = 35702;
-        inc_resist_by_level_spell = 23762;
-        inc_resist_by_level = 10;
-    }
-    if (casted_spell_id)
-    {
-        //for self
-        Spell* sp = sSpellMgr.newSpell(s->getPlayerCaster(), sSpellMgr.getSpellInfo(casted_spell_id), true, NULL);
-        SpellCastTargets tgt(s->getPlayerCaster()->getGuid());
-        sp->prepare(&tgt);
-
-        //for pet
-        sp = sSpellMgr.newSpell(unitTarget, sSpellMgr.getSpellInfo(casted_spell_id), true, NULL);
-        SpellCastTargets tgt1(unitTarget->getGuid());
-        sp->prepare(&tgt1);
-    }
-
-    if (inc_resist_by_level_spell)
-    {
-        //for self
-        Spell* sp = sSpellMgr.newSpell(s->getPlayerCaster(), sSpellMgr.getSpellInfo(inc_resist_by_level_spell), true, NULL);
-        SpellCastTargets tgt(s->getPlayerCaster()->getGuid());
-        sp->prepare(&tgt);
-        //for pet
-        sp = sSpellMgr.newSpell(unitTarget, sSpellMgr.getSpellInfo(inc_resist_by_level_spell), true, NULL);
-        SpellCastTargets tgt1(unitTarget->getGuid());
-        sp->prepare(&tgt1);
-    }
-
-    return true;
-}
-
-bool MasterDemonologist2(uint8_t /*effectIndex*/, Spell* s)
-{
-    Player* p_caster = s->getPlayerCaster();
-    Unit* unitTarget = s->getUnitTarget();
-
-    if (!p_caster || !unitTarget)
-        return false; //can't imagine how this talent got to anybody else then a player casting on pet
-
-    uint32_t casted_spell_id = 0;
-    uint32_t inc_resist_by_level = 0;
-    uint32_t inc_resist_by_level_spell = 0;
-
-    if (unitTarget->getEntry() == 416) //in case it is imp
-        casted_spell_id = 23826;
-    else if (unitTarget->getEntry() == 1860) //VoidWalker
-        casted_spell_id = 23841;
-    else if (unitTarget->getEntry() == 1863) //Succubus
-        casted_spell_id = 23833;
-    else if (unitTarget->getEntry() == 417) //Felhunter
-    {
-        casted_spell_id = 1;
-        inc_resist_by_level_spell = 23837;
-        inc_resist_by_level = 40;
-    }
-    else if (unitTarget->getEntry() == 17252) //Felguard
-    {
-        casted_spell_id = 35703;
-        inc_resist_by_level_spell = 23837;
-        inc_resist_by_level = 20;
-    }
-    if (casted_spell_id)
-    {
-        //for self
-        Spell* sp = sSpellMgr.newSpell(p_caster, sSpellMgr.getSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt(p_caster->getGuid());
-        sp->prepare(&tgt);
-        //for pet
-        sp = sSpellMgr.newSpell(unitTarget, sSpellMgr.getSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt1(unitTarget->getGuid());
-        sp->prepare(&tgt1);
-    }
-    if (inc_resist_by_level_spell)
-    {
-        //for self
-        Spell* sp = sSpellMgr.newSpell(p_caster, sSpellMgr.getSpellInfo(inc_resist_by_level_spell), true, nullptr);
-        SpellCastTargets tgt(p_caster->getGuid());
-        sp->prepare(&tgt);
-
-        //for pet
-        sp = sSpellMgr.newSpell(unitTarget, sSpellMgr.getSpellInfo(inc_resist_by_level_spell), true, NULL);
-        SpellCastTargets tgt1(unitTarget->getGuid());
-        sp->prepare(&tgt1);
-    }
-
-    return true;
-}
-
-bool MasterDemonologist3(uint8_t /*effectIndex*/, Spell* s)
-{
-    Player* p_caster = s->getPlayerCaster();
-    Unit* unitTarget = s->getUnitTarget();
-
-    if (!p_caster || !unitTarget)
-        return false; //can't imagine how this talent got to anybody else then a player casting on pet
-
-    uint32_t casted_spell_id = 0;
-    uint32_t inc_resist_by_level = 0;
-    uint32_t inc_resist_by_level_spell = 0;
-
-    if (unitTarget->getEntry() == 416) //in case it is imp
-        casted_spell_id = 23827;
-    else if (unitTarget->getEntry() == 1860) //VoidWalker
-        casted_spell_id = 23842;
-    else if (unitTarget->getEntry() == 1863) //Succubus
-        casted_spell_id = 23834;
-    else if (unitTarget->getEntry() == 417) //Felhunter
-    {
-        casted_spell_id = 0;
-        inc_resist_by_level_spell = 23838;
-        inc_resist_by_level = 60;
-    }
-    else if (unitTarget->getEntry() == 17252) //Felguard
-    {
-        casted_spell_id = 35704;
-        inc_resist_by_level_spell = 23838;
-        inc_resist_by_level = 30;
-    }
-    if (casted_spell_id)
-    {
-        //for self
-        Spell* sp = sSpellMgr.newSpell(p_caster, sSpellMgr.getSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt(p_caster->getGuid());
-        sp->prepare(&tgt);
-        //for pet
-        sp = sSpellMgr.newSpell(unitTarget, sSpellMgr.getSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt1(unitTarget->getGuid());
-        sp->prepare(&tgt1);
-    }
-    if (inc_resist_by_level_spell)
-    {
-        //for self
-        Spell* sp = sSpellMgr.newSpell(p_caster, sSpellMgr.getSpellInfo(inc_resist_by_level_spell), true, nullptr);
-        SpellCastTargets tgt(p_caster->getGuid());
-        sp->prepare(&tgt);
-        //for pet
-        sp = sSpellMgr.newSpell(unitTarget, sSpellMgr.getSpellInfo(inc_resist_by_level_spell), true, nullptr);
-        SpellCastTargets tgt1(unitTarget->getGuid());
-        sp->prepare(&tgt1);
-    }
-
-    return true;
-}
-
-bool MasterDemonologist4(uint8_t /*effectIndex*/, Spell* s)
-{
-    Player* p_caster = s->getPlayerCaster();
-    Unit* unitTarget = s->getUnitTarget();
-
-    if (!p_caster || !unitTarget)
-        return false; //can't imagine how this talent got to anybody else then a player casting on pet
-
-    uint32_t casted_spell_id = 0;
-    uint32_t inc_resist_by_level = 0;
-    uint32_t inc_resist_by_level_spell = 0;
-
-    if (unitTarget->getEntry() == 416) //in case it is imp
-        casted_spell_id = 23828;
-    else if (unitTarget->getEntry() == 1860) //VoidWalker
-        casted_spell_id = 23843;
-    else if (unitTarget->getEntry() == 1863) //Succubus
-        casted_spell_id = 23835;
-    else if (unitTarget->getEntry() == 417) //Felhunter
-    {
-        casted_spell_id = 0;
-        inc_resist_by_level_spell = 23839;
-        inc_resist_by_level = 80;
-    }
-    else if (unitTarget->getEntry() == 17252) //Felguard
-    {
-        casted_spell_id = 35705;
-        inc_resist_by_level_spell = 23839;
-        inc_resist_by_level = 40;
-    }
-    if (casted_spell_id)
-    {
-        //for self
-        Spell* sp = sSpellMgr.newSpell(p_caster, sSpellMgr.getSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt(p_caster->getGuid());
-        sp->prepare(&tgt);
-        //for pet
-        sp = sSpellMgr.newSpell(unitTarget, sSpellMgr.getSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt1(unitTarget->getGuid());
-        sp->prepare(&tgt1);
-    }
-    if (inc_resist_by_level_spell)
-    {
-        //for self
-        Spell* sp = sSpellMgr.newSpell(p_caster, sSpellMgr.getSpellInfo(inc_resist_by_level_spell), true, nullptr);
-        SpellCastTargets tgt(p_caster->getGuid());
-        sp->prepare(&tgt);
-        //for pet
-        sp = sSpellMgr.newSpell(unitTarget, sSpellMgr.getSpellInfo(inc_resist_by_level_spell), true, nullptr);
-        SpellCastTargets tgt1(unitTarget->getGuid());
-        sp->prepare(&tgt1);
-    }
-
-    return true;
-}
-
-bool MasterDemonologist5(uint8_t /*effectIndex*/, Spell* s)
-{
-    Player* p_caster = s->getPlayerCaster();
-    Unit* unitTarget = s->getUnitTarget();
-
-    if (!p_caster || !unitTarget)
-        return false; //can't imagine how this talent got to anybody else then a player casting on pet
-
-    uint32_t casted_spell_id = 0;
-    uint32_t inc_resist_by_level = 0;
-    uint32_t inc_resist_by_level_spell = 0;
-
-    if (unitTarget->getEntry() == 416) //in case it is imp
-        casted_spell_id = 23829;
-    else if (unitTarget->getEntry() == 1860) //VoidWalker
-        casted_spell_id = 23844;
-    else if (unitTarget->getEntry() == 1863) //Succubus
-        casted_spell_id = 23836;
-    else if (unitTarget->getEntry() == 417) //Felhunter
-    {
-        casted_spell_id = 0;
-        inc_resist_by_level_spell = 23840;
-        inc_resist_by_level = 100;
-    }
-    else if (unitTarget->getEntry() == 17252) //Felguard
-    {
-        casted_spell_id = 35706;
-        inc_resist_by_level_spell = 23840;
-        inc_resist_by_level = 50;
-    }
-    if (casted_spell_id)
-    {
-        //for self
-        Spell* sp = sSpellMgr.newSpell(p_caster, sSpellMgr.getSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt(p_caster->getGuid());
-        sp->prepare(&tgt);
-        //for pet
-        sp = sSpellMgr.newSpell(unitTarget, sSpellMgr.getSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt1(unitTarget->getGuid());
-        sp->prepare(&tgt1);
-    }
-
-    if (inc_resist_by_level_spell)
-    {
-        //for self
-        Spell* sp = sSpellMgr.newSpell(p_caster, sSpellMgr.getSpellInfo(inc_resist_by_level_spell), true, nullptr);
-        SpellCastTargets tgt(p_caster->getGuid());
-        sp->prepare(&tgt);
-        //for pet
-        sp = sSpellMgr.newSpell(unitTarget, sSpellMgr.getSpellInfo(inc_resist_by_level_spell), true, nullptr);
-        SpellCastTargets tgt1(unitTarget->getGuid());
-        sp->prepare(&tgt1);
-    }
-
-    return true;
-}
-
 bool SummonSuccubusQuest(uint8_t /*effectIndex*/, Spell* s)
 {
     Player* p_caster = s->getPlayerCaster();
@@ -559,37 +246,6 @@ bool SummonFelHunterQuest(uint8_t /*effectIndex*/, Spell* s)
     }
 
     return false;
-}
-
-bool DemonicKnowledge(uint8_t effectIndex, Aura* a, bool apply)
-{
-    Unit* m_target = a->getOwner();
-
-    if (m_target->isPet())
-    {
-        Player* PetOwner = static_cast<Pet*>(m_target)->getPlayerOwner();
-        if (PetOwner != nullptr)
-        {
-            uint32_t val1 = m_target->getStat(STAT_STAMINA);
-            uint32_t val2 = m_target->getStat(STAT_INTELLECT);
-            uint32_t val0 = val1 + val2;
-            float dmginc = (float)(val0 * a->getEffectDamage(effectIndex)) / 100;
-
-            int32_t val;
-
-            if (apply)
-                val = (int32_t)dmginc;
-            else
-                val = (int32_t)-dmginc;
-
-            for (uint16_t x = 0; x < 7; x++)
-                PetOwner->modModDamageDonePositive(x, val);
-
-            PetOwner->calculateDamage();
-        }
-    }
-
-    return true;
 }
 
 bool ImprovedLifeTap(uint8_t effectIndex, Aura* a, bool apply)
@@ -680,8 +336,6 @@ void SetupLegacyWarlockSpells(ScriptMgr* mgr)
     //////////////////////////////////////////////////////////////////////////////////////////
     // Dummy Effect
 
-    mgr->register_dummy_spell(19028, &SoulLinkParent);
-
     mgr->register_dummy_spell(1454, &LifeTap);
     mgr->register_dummy_spell(1455, &LifeTap);
     mgr->register_dummy_spell(1456, &LifeTap);
@@ -712,16 +366,6 @@ void SetupLegacyWarlockSpells(ScriptMgr* mgr)
 
     mgr->register_script_effect(47878, &FelHealthStone);
 
-    mgr->register_script_effect(23784, &MasterDemonologist1);
-
-    mgr->register_script_effect(23830, &MasterDemonologist2);
-
-    mgr->register_script_effect(23831, &MasterDemonologist3);
-
-    mgr->register_script_effect(23832, &MasterDemonologist4);
-
-    mgr->register_script_effect(35708, &MasterDemonologist5);
-
     mgr->register_script_effect(8674, &SummonSuccubusQuest);
     mgr->register_script_effect(9223, &SummonSuccubusQuest);
     mgr->register_script_effect(9224, &SummonSuccubusQuest);
@@ -732,8 +376,6 @@ void SetupLegacyWarlockSpells(ScriptMgr* mgr)
     mgr->register_script_effect(30208, &SummonVoidWalkerQuest);
 
     mgr->register_script_effect(8712, &SummonFelHunterQuest);
-
-    mgr->register_dummy_aura(35696, &DemonicKnowledge);
 
     uint32_t improvedlifetapids[] =
     {

@@ -804,27 +804,6 @@ void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
     305 damage for 30 sec. While the shield holds, spellcasting will not be \
     interrupted by damage.*/
 
-    /*
-    Demonic Sacrifice
-
-    When activated, sacrifices your summoned demon to grant you an effect that lasts
-    30 minutes. The effect is canceled if any Demon is summoned.
-    Imp: Increases your Fire damage by 15%.
-    Voidwalker: Restores 3% of total Health every 4 sec.
-    Succubus: Increases your Shadow damage by 15%.
-    Felhunter: Restores 2% of total Mana every 4 sec.
-
-    When activated, sacrifices your summoned demon to grant you an effect that lasts $18789d.  The effect is canceled if any Demon is summoned.
-
-    Imp: Increases your Fire damage by $18789s1%.
-
-    Voidwalker: Restores $18790s1% of total Health every $18790t1 sec.
-
-    Succubus: Increases your Shadow damage by $18791s1%.
-
-    Felhunter: Restores $18792s1% of total Mana every $18792t1 sec.
-
-    */
     uint32_t spellId = getSpellInfo()->getId();
 
     switch (spellId)
@@ -835,35 +814,6 @@ void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
             return;
         }
         break;
-        case 18788: //Demonic Sacrifice (508745)
-        {
-            uint32_t DemonicSacEffectSpellId = 0;
-            switch (m_unitTarget->getEntry())
-            {
-                case 416:
-                    DemonicSacEffectSpellId = 18789;
-                    break; //Imp
-                case 417:
-                    DemonicSacEffectSpellId = 18792;
-                    break; //Felhunter
-                case 1860:
-                    DemonicSacEffectSpellId = 18790;
-                    break; //VoidWalker
-                case 1863:
-                    DemonicSacEffectSpellId = 18791;
-                    break; //Succubus
-                case 17252:
-                    DemonicSacEffectSpellId = 35701;
-                    break; //felguard
-            }
-            if (DemonicSacEffectSpellId)
-            {
-                SpellInfo const* se = sSpellMgr.getSpellInfo(DemonicSacEffectSpellId);
-                if (se && u_caster)
-                    u_caster->castSpell(u_caster, se, true);
-            }
-        } break;
-
         //SPELL_HASH_SACRIFICE
         case 1050:
         case 7812:
@@ -912,30 +862,12 @@ void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
 
     }
 
-    //SPELL_HASH_DEMONIC_SACRIFICE
-    if (getSpellInfo()->getId() == 18788)
-    {
-        if (!p_caster || !m_unitTarget || !m_unitTarget->isPet())
-            return;
-
-        //TO< Pet* >(m_unitTarget)->Dismiss(true);
-
-        SpellInfo const* se = sSpellMgr.getSpellInfo(5);
-
-        SpellCastTargets targets(m_unitTarget->getGuid());
-        Spell* sp = sSpellMgr.newSpell(p_caster, se, true, nullptr);
-        sp->prepare(&targets);
+    // moar cheaters
+    if (!p_caster || (u_caster && u_caster->isPet()))
         return;
-    }
-    else
-    {
-        // moar cheaters
-        if (!p_caster || (u_caster && u_caster->isPet()))
-            return;
 
-        if (!p_caster->getSession()->hasPermissions())
-            return;
-    }
+    if (!p_caster->getSession()->hasPermissions())
+        return;
 
     //instant kill effects don't have a log
     //m_caster->SpellNonMeleeDamageLog(m_unitTarget, GetProto()->getId(), m_unitTarget->getHealth(), true);
@@ -4278,16 +4210,6 @@ void Spell::SpellEffectSummonPet(uint8_t effectIndex) //summon - pet
     CreatureProperties const* ci = sMySQLStore.getCreatureProperties(getSpellInfo()->getEffectMiscValue(effectIndex));
     if (ci)
     {
-        if (p_caster->getClass() == WARLOCK)
-        {
-            //if demonic sacrifice auras are still active, remove them
-            p_caster->removeAllAurasById(18789);
-            p_caster->removeAllAurasById(18790);
-            p_caster->removeAllAurasById(18791);
-            p_caster->removeAllAurasById(18792);
-            p_caster->removeAllAurasById(35701);
-        }
-
         const auto pet = sObjectMgr.createPet(getSpellInfo()->getEffectMiscValue(effectIndex), nullptr);
         if (!pet->createAsSummon(ci, nullptr, u_caster, u_caster->GetPosition(), 0, m_spellInfo, effectIndex, PET_TYPE_SUMMON))
         {

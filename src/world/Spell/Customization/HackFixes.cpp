@@ -1221,54 +1221,6 @@ void SpellMgr::applyHackFixes()
 
             // Insert hunter spell fixes here
 
-            // Hunter - Spirit Bond
-            case 19578:
-            {
-                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
-                sp->setEffectTriggerSpell(19579, 0);
-            } break;
-
-            case 20895:
-            {
-                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
-                sp->setEffectTriggerSpell(24529, 0);
-            } break;
-
-            case 19579:
-            case 24529:
-            {
-                sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1); //we should do the same for player too as we did for pet
-                sp->setEffectApplyAuraName(sp->getEffectApplyAuraName(0), 1);
-                sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
-                sp->setEffectBasePoints(sp->getEffectBasePoints(0), 1);
-                sp->setEffectAmplitude(sp->getEffectAmplitude(0), 1);
-                sp->setEffectDieSides(sp->getEffectDieSides(0), 1);
-            } break;
-
-            // Hunter - Ferocious Inspiration
-            case 34455:
-            case 34459:
-            case 34460:
-            {
-                sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-                sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-                sp->setEffectTriggerSpell(34456, 0);
-                sp->setEffect(SPELL_EFFECT_NULL, 1); //remove this
-            } break;
-
-            // Hunter - Focused Fire
-            case 35029:
-            {
-                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
-                sp->setEffectTriggerSpell(35060, 0);
-            } break;
-
-            case 35030:
-            {
-                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
-                sp->setEffectTriggerSpell(35061, 0);
-            } break;
-
             // Hunter - Thrill of the Hunt
             case 34497:
             case 34498:
@@ -1675,29 +1627,6 @@ void SpellMgr::applyHackFixes()
             } break;
 #endif
 
-            // Demonic Knowledge
-            case 35691:
-            case 35692:
-            case 35693:
-            {
-                sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_DONE, 0);
-                sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 0);
-                sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
-                sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_DONE, 1);
-                sp->setEffectBasePoints(sp->getEffectBasePoints(0), 1);
-                sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
-                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 2);
-                sp->setEffectTriggerSpell(35696, 2);
-                sp->setEffectImplicitTargetA(EFF_TARGET_PET, 2);
-            } break;
-
-            case 35696:
-            {
-                sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0); //making this only for the visible effect
-                sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 0); //no effect here
-                sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-            } break;
-
             //warlock: Empowered Corruption
             case 32381:
             case 32382:
@@ -1772,76 +1701,6 @@ void SpellMgr::applyHackFixes()
                 sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
                 sp->setEffectMiscValue(SCHOOL_NORMAL, 1);
                 sp->setEffectBasePoints(sp->getEffectBasePoints(0), 1);
-            } break;
-
-            //warlock - Master Demonologist - 25 spells here
-            case 23785:
-            {
-                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
-                sp->setEffectTriggerSpell(23784, 0);
-            } break;
-            case 23822:
-            {
-                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
-                sp->setEffectTriggerSpell(23830, 0);
-            } break;
-            case 23823:
-            {
-                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
-                sp->setEffectTriggerSpell(23831, 0);
-            } break;
-            case 23824:
-            {
-                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
-                sp->setEffectTriggerSpell(23832, 0);
-            } break;
-            case 23825:
-            {
-                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
-                sp->setEffectTriggerSpell(35708, 0);
-            } break;
-
-            //and the rest
-            case 23784:
-            case 23830:
-            case 23831:
-            case 23832:
-            case 35708:
-                sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-                break;
-
-            case 23759:
-            case 23760:
-            case 23761:
-            case 23762:
-            case 23826:
-            case 23827:
-            case 23828:
-            case 23829:
-
-            case 23833:
-            case 23834:
-            case 23835:
-            case 23836:
-            case 23837:
-            case 23838:
-            case 23839:
-            case 23840:
-            case 23841:
-            case 23842:
-            case 23843:
-            case 23844:
-                sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-                break;
-
-            case 35702:
-            case 35703:
-            case 35704:
-            case 35705:
-            case 35706:
-            {
-                sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-                sp->setEffect(SPELL_EFFECT_NULL, 1); //hacks, we are handling this in another way
             } break;
 
             //warlock - Improved Drain Soul

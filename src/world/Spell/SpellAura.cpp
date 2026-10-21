@@ -252,14 +252,7 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
     sScriptMgr.callScriptedAuraOnRemove(this, mode);
     sHookInterface.OnAuraRemove(this);
 
-    if (mode != AURA_REMOVE_BY_SERVER)
-    {
-        sLogger.debug("Removing aura {} from unit {}", getSpellId(), getOwner()->getGuid());
-    }
-    else
-    {
-        sLogger.debugAura("Removing aura {} from unit {}", getSpellId(), getOwner()->getGuid());
-    }
+    sLogger.debugAura("Removing aura {} from unit {}", getSpellId(), getOwner()->getGuid());
 
     m_isGarbage = true;
 
@@ -934,7 +927,7 @@ Object* Aura::getCaster() const
         return nullptr;
     if (m_casterGuid == m_target->getGuid())
         return m_target;
-    
+
     return m_target->getWorldMapObject(m_casterGuid);
 }
 
