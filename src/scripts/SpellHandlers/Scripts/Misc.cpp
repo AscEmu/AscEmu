@@ -19,6 +19,56 @@ enum MiscSpells
     SPELL_PERMANENT_FEIGN_DEATH_5   = 70628,
     SPELL_PERMANENT_FEIGN_DEATH_6   = 74490,
     SPELL_POLYMORPH                 = 851,
+    SPELL_CORRUPTING_PLAGUE_AURA    = 40349,
+    SPELL_CORRUPTING_PLAGUE         = 40350,
+    SPELL_VENGEFUL_STORMHAMMER      = 48551,
+};
+
+enum CorruptingPlagueTargets
+{
+    NPC_APEXIS_FLAYER               = 22175,
+    NPC_SHARD_HIDE_BOAR             = 22180,
+    NPC_AETHER_RAY                  = 22181,
+};
+
+// 40349 Corrupting Plague: the carrier spreads the plague (40350) with every tick, but only while a beast that can
+// catch it stands within 15 yards without it; otherwise the tick does nothing
+class CorruptingPlagueAura : public SpellScript
+{
+public:
+    SpellScriptExecuteState onAuraPeriodicTick(Aura* aur, AuraEffectModifier* /*aurEff*/, float_t* /*damage*/) override
+    {
+        const auto owner = aur->getOwner();
+        for (const auto object : owner->getInRangeObjectsSet())
+        {
+            if (object == nullptr || !object->isCreature())
+                continue;
+
+            const auto entry = object->getEntry();
+            if (entry != NPC_APEXIS_FLAYER && entry != NPC_SHARD_HIDE_BOAR && entry != NPC_AETHER_RAY)
+                continue;
+
+            if (owner->getDistance2d(object) >= 15.0f)
+                continue;
+
+            if (static_cast<Unit*>(object)->hasAurasWithId(SPELL_CORRUPTING_PLAGUE))
+                continue;
+
+            return SpellScriptExecuteState::EXECUTE_OK;
+        }
+
+        return SpellScriptExecuteState::EXECUTE_PREVENT;
+    }
+};
+
+// scripted effects that carry no server side logic (the plague itself and the stormhammer only mark the target)
+class ScriptedEffectWithoutLogic : public SpellScript
+{
+public:
+    SpellScriptCheckDummy onDummyOrScriptedEffect(Spell* /*spell*/, uint8_t /*effIndex*/) override
+    {
+        return SpellScriptCheckDummy::DUMMY_OK;
+    }
 };
 
 // Generic feign death spells, can be added with/without dynamic flag and prevent chat emote flag
@@ -116,4 +166,12 @@ void setupMiscSpells(ScriptMgr* mgr)
 #endif
 
     mgr->register_spell_script(SPELL_POLYMORPH, new Polymorph(true, false));
+
+#if VERSION_STRING >= TBC
+    mgr->register_spell_script(SPELL_CORRUPTING_PLAGUE_AURA, new CorruptingPlagueAura);
+    mgr->register_spell_script(SPELL_CORRUPTING_PLAGUE, new ScriptedEffectWithoutLogic);
+#endif
+#if VERSION_STRING >= WotLK
+    mgr->register_spell_script(SPELL_VENGEFUL_STORMHAMMER, new ScriptedEffectWithoutLogic);
+#endif
 }
