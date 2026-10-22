@@ -599,23 +599,23 @@ namespace AscEmu::Packets
             {
                 if (midnight)
                 {
-                    packet << uint32_t(0);                      // item
+                    packet << uint32_t(data.player_items[i].itemId);
                     packet << uint32_t(0);                      // transmogrified item
-                    packet << uint8_t(0);                       // subclass
+                    packet << uint8_t(data.player_items[i].subclass);
                     packet << uint8_t(data.player_items[i].inventoryType);
                     packet << uint32_t(data.player_items[i].displayId);
                     packet << uint32_t(data.player_items[i].enchantmentId);
                     packet << int32_t(0);                       // secondary item modified appearance
-                    packet << uint8_t(0);                       // sheathe category
+                    packet << uint8_t(data.player_items[i].sheatheCategory);
                     continue;
                 }
 
                 packet << uint32_t(data.player_items[i].displayId);
                 packet << uint8_t(data.player_items[i].inventoryType);
                 packet << uint32_t(data.player_items[i].enchantmentId);
-                packet << uint8_t(0);                           // subclass
+                packet << uint8_t(data.player_items[i].subclass);
                 packet << int32_t(0);                           // secondary item modified appearance
-                packet << uint32_t(0);                          // item
+                packet << uint32_t(data.player_items[i].itemId);
                 packet << uint32_t(0);                          // transmogrified item
             }
 

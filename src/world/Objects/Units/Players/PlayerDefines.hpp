@@ -805,6 +805,9 @@ struct PlayerItem
     uint32_t displayId;
     uint8_t inventoryType;
     uint32_t enchantmentId;
+    uint32_t itemId;            // 7.x and later
+    uint8_t subclass;           // 7.x and later
+    uint8_t sheatheCategory;    // 12.x and later
 };
 
 struct CharEnum_Pet

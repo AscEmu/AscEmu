@@ -681,6 +681,39 @@ void MySQLDataStore::loadItemPropertiesTable()
     sLogger.info("MySQLDataLoads : Loaded {} item_properties in {} ms!", item_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
+// The clients since 6.x number the item display ids through their appearance tables, so an item keeps its row and
+// gets the display id and inventory type of the client build from item_properties_display on top.
+void MySQLDataStore::loadItemPropertiesDisplayTable()
+{
+    auto startTime = Util::TimeNow();
+
+    auto display_result = getWorldDBQuery("SELECT entry, displayid, inventorytype FROM item_properties_display base "
+        "WHERE build=(SELECT MAX(build) FROM item_properties_display spec WHERE base.entry = spec.entry AND build <= %u)", WoW::getConfigBuild());
+
+    if (display_result == nullptr)
+    {
+        sLogger.info("MySQLDataLoads : Table `item_properties_display` is empty!");
+        return;
+    }
+
+    uint32_t display_count = 0;
+    do
+    {
+        Field* fields = display_result->fetch();
+
+        const auto itr = _itemPropertiesStore.find(fields[0].asUint32());
+        if (itr == _itemPropertiesStore.end())
+            continue;
+
+        itr->second.DisplayInfoID = fields[1].asUint32();
+        itr->second.InventoryType = fields[2].asUint32();
+
+        ++display_count;
+    } while (display_result->nextRow());
+
+    sLogger.info("MySQLDataLoads : Loaded {} item_properties_display in {} ms!", display_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
 void MySQLDataStore::loadItemPropertiesSpellsTable()
 {
     auto startTime = Util::TimeNow();

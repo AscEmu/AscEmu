@@ -1052,11 +1052,29 @@ void WorldSession::characterEnumProc(QueryResult* result)
                 do
                 {
                     int8_t item_slot = item_db_result->fetch()[0].asInt8();
-                    const auto itemProperties = sMySQLStore.getItemProperties(item_db_result->fetch()[1].asUint32());
+                    const uint32_t itemId = item_db_result->fetch()[1].asUint32();
+                    const auto itemProperties = sMySQLStore.getItemProperties(itemId);
                     if (itemProperties)
                     {
+                        charEnum.player_items[item_slot].itemId = itemId;
                         charEnum.player_items[item_slot].displayId = itemProperties->DisplayInfoID;
                         charEnum.player_items[item_slot].inventoryType = static_cast<uint8_t>(itemProperties->InventoryType);
+                        charEnum.player_items[item_slot].subclass = static_cast<uint8_t>(itemProperties->SubClass);
+
+#if VERSION_STRING >= WoD
+                        // a client with its own item data numbers the display ids differently than the item table
+                        // (the appearance tables since 7.x), its store carries the ids the client expects
+                        if (WoW::hasOwnClientData(WoW::getServerExpansion()))
+                        {
+                            if (const auto itemEntry = sItemStore.lookupEntry(itemId); itemEntry != nullptr && itemEntry->DisplayId != 0)
+                            {
+                                charEnum.player_items[item_slot].displayId = itemEntry->DisplayId;
+                                charEnum.player_items[item_slot].inventoryType = static_cast<uint8_t>(itemEntry->InventoryType);
+                                charEnum.player_items[item_slot].subclass = static_cast<uint8_t>(itemEntry->SubClass);
+                                charEnum.player_items[item_slot].sheatheCategory = static_cast<uint8_t>(itemEntry->Sheath);
+                            }
+                        }
+#endif
 
                         std::string enchant_field = item_db_result->fetch()[2].asCString();
                         if (!enchant_field.empty())
