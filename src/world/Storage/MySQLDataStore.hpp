@@ -303,6 +303,7 @@ public:
     std::unique_ptr<QueryResult> getWorldDBQuery(const char* query, ...);
 
     // loads
+    void loadItemRandomPropertiesTables();
     void loadItemPagesTable();
     void addItemPage(uint32_t _entry, std::string _text, uint32_t _nextPage = 0);
     void loadItemPropertiesTable();

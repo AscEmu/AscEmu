@@ -26,6 +26,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStores.hpp"
 #include "WDB/WDBStructures.hpp"
 #include <cstdarg>
+#include <deque>
 
 #ifdef ASCEMU_USE_AE_DATABASE
 #include "Database/AE/RowView.hpp"
@@ -169,6 +170,103 @@ std::unique_ptr<QueryResult> MySQLDataStore::getWorldDBQuery(const char* query, 
     sLogger.debugDbTables("MySQLDataLoads : Query: '{}'.", preparedQuery);
     // no additional tables defined, just send our query
     return WorldDatabase.query(preparedQuery.c_str());
+}
+
+namespace
+{
+    // owns the names of the random property and suffix entries built from the world tables
+    std::deque<std::string> _randomPropertyNames;
+
+    char* pooledRandomPropertyName(char const* name)
+    {
+        return _randomPropertyNames.emplace_back(name).data();
+    }
+}
+
+// The random property and suffix definitions of the clients up to 8.x. A client whose data does not carry them any
+// more gets the stores filled from here, so the groups of item_randomprop_groups and item_randomsuffix_groups resolve.
+void MySQLDataStore::loadItemRandomPropertiesTables()
+{
+    if (sItemRandomPropertiesStore.getNumRows() == 0)
+    {
+        auto startTime = Util::TimeNow();
+
+        // the highest id comes first, the store is sized by it
+        auto result = WorldDatabase.query("SELECT entry, name, enchant1, enchant2, enchant3 FROM item_randomprop ORDER BY entry DESC");
+        if (result == nullptr)
+        {
+            sLogger.info("MySQLDataLoads : Table `item_randomprop` is empty!");
+        }
+        else
+        {
+            sItemRandomPropertiesStore.reserveManualEntries(result->fetch()[0].asUint32(), result->getRowCount());
+
+            uint32_t count = 0;
+            do
+            {
+                Field* fields = result->fetch();
+
+                auto* entry = sItemRandomPropertiesStore.addManualEntry(fields[0].asUint32());
+                if (entry == nullptr)
+                    continue;
+
+                entry->ID = fields[0].asUint32();
+
+                char* name = pooledRandomPropertyName(fields[1].asCString());
+                for (auto& localeName : entry->name_suffix)
+                    localeName = name;
+
+                for (uint8_t i = 0; i < MAX_ITEM_ENCHANTMENT_EFFECTS; ++i)
+                    entry->spells[i] = fields[2 + i].asUint32();
+
+                ++count;
+            } while (result->nextRow());
+
+            sLogger.info("MySQLDataLoads : Loaded {} random properties from `item_randomprop` table in {} ms!", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+        }
+    }
+
+    if (sItemRandomSuffixStore.getNumRows() == 0)
+    {
+        auto startTime = Util::TimeNow();
+
+        auto result = WorldDatabase.query("SELECT entry, name, enchant1, enchant2, enchant3, enchant4, enchant5, allocation1, allocation2, allocation3, allocation4, allocation5 FROM item_randomsuffix ORDER BY entry DESC");
+        if (result == nullptr)
+        {
+            sLogger.info("MySQLDataLoads : Table `item_randomsuffix` is empty!");
+        }
+        else
+        {
+            sItemRandomSuffixStore.reserveManualEntries(result->fetch()[0].asUint32(), result->getRowCount());
+
+            uint32_t count = 0;
+            do
+            {
+                Field* fields = result->fetch();
+
+                auto* entry = sItemRandomSuffixStore.addManualEntry(fields[0].asUint32());
+                if (entry == nullptr)
+                    continue;
+
+                entry->id = fields[0].asUint32();
+
+                char* name = pooledRandomPropertyName(fields[1].asCString());
+                for (auto& localeName : entry->name_suffix)
+                    localeName = name;
+
+                // the structure holds three slots up to WotLK and five from Cata on
+                for (std::size_t i = 0; i < std::size(entry->enchantments); ++i)
+                {
+                    entry->enchantments[i] = fields[2 + i].asUint32();
+                    entry->prefixes[i] = fields[7 + i].asUint32();
+                }
+
+                ++count;
+            } while (result->nextRow());
+
+            sLogger.info("MySQLDataLoads : Loaded {} random suffixes from `item_randomsuffix` table in {} ms!", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+        }
+    }
 }
 
 void MySQLDataStore::loadItemPagesTable()

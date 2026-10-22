@@ -935,6 +935,7 @@ void World::loadMySQLStores()
 
     sMySQLStore.loadAdditionalTableConfig();
 
+    sMySQLStore.loadItemRandomPropertiesTables();
     sMySQLStore.loadItemPagesTable();
     sMySQLStore.loadItemPropertiesTable();
     sMySQLStore.loadItemPropertiesSpellsTable();

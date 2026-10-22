@@ -1117,7 +1117,8 @@ namespace
             entry.qualityModifier = row.f32(0);
         });
 
-        // random properties and suffixes do not exist in the modern item system
+        // random properties and suffixes do not exist in the modern item system, the empty stores are
+        // filled from the world tables item_randomprop and item_randomsuffix afterwards
         sItemRandomPropertiesStore.clear();
         sItemRandomSuffixStore.clear();
 
