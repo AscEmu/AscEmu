@@ -148,7 +148,8 @@ protected:
 
 #if VERSION_STRING >= Cata
 inline void MoveSplineInit::SetFly() { args.flags.EnableFlying(); }
-inline void MoveSplineInit::SetWalk(bool enable) { args.flags.walkmode = enable; }
+// the walk argument selects the walk speed in Launch, the spline flag tells the 4.x and 5.x clients to play the walk animation
+inline void MoveSplineInit::SetWalk(bool enable) { args.flags.walkmode = enable; args.walk = enable; }
 inline void MoveSplineInit::SetSmooth() { args.flags.EnableCatmullRom(); }
 inline void MoveSplineInit::SetUncompressed() { args.flags.uncompressedPath = true; }
 inline void MoveSplineInit::SetCyclic() { args.flags.cyclic = true; }

@@ -609,14 +609,16 @@ void ObjectMgr::loadVendors()
 {
     m_vendors.clear();
 
-    auto result = sMySQLStore.getWorldDBQuery("SELECT * FROM vendors");
+    // the vendor list of the highest build up to the build of this server
+    auto result = sMySQLStore.getWorldDBQuery("SELECT entry, item, amount, max_amount, inctime, extended_cost, comment FROM vendors base "
+        "WHERE build=(SELECT MAX(build) FROM vendors buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", WoW::getConfigBuild());
     if (result != nullptr)
     {
         std::vector<CreatureItem>* items = nullptr;
 
-        if (result->getFieldCount() < 6 + 2)
+        if (result->getFieldCount() < 7)
         {
-            sLogger.failure("Invalid format in vendors ({}/8) columns, not enough data to proceed.", result->getFieldCount());
+            sLogger.failure("Invalid format in vendors ({}/7) columns, not enough data to proceed.", result->getFieldCount());
             return;
         }
 
@@ -1492,6 +1494,9 @@ void ObjectMgr::generateDatabaseGossipMenu(Object* _object, uint32_t _gossipMenu
             if (gossipMenuItem.requirementType == 1 && !_player->hasQuestInQuestLog(gossipMenuItem.requirementData))
                 continue;
 
+            if (gossipMenuItem.requirementType == 2 && !_player->hasQuestFinished(gossipMenuItem.requirementData))
+                continue;
+
             if (gossipMenuItem.requirementType == 3)
             {
                 if (_player->canGainXp())
@@ -1515,9 +1520,32 @@ void ObjectMgr::generateDatabaseGossipMenu(Object* _object, uint32_t _gossipMenu
     menu.sendGossipPacket(_player);
 }
 
+// the confirmation of a dual talent specialization purchase out of a database gossip answers with this menu id
+constexpr uint32_t DatabaseGossipDualSpecMenu = 0xFFFFFFF0;
+constexpr uint32_t DualSpecCost = 10000000;
+
 void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* _object, Player* _player, uint32_t _gossipItemId, uint32_t _gossipMenuId)
 {
     sLogger.debug("GossipId: {}  gossipItemId: {}", _gossipMenuId, _gossipItemId);
+
+    if (_gossipMenuId == DatabaseGossipDualSpecMenu)
+    {
+        GossipMenu::senGossipComplete(_player);
+
+        if (!_player->hasEnoughCoinage(DualSpecCost))
+        {
+            _player->getSession()->sendNotification(_player->getSession()->localizedWorldSrv(NOT_ENOUGH_MONEY_DTS));
+            return;
+        }
+
+        _player->modCoinage(-static_cast<int32_t>(DualSpecCost));
+        _player->m_talentSpecsCount = 2;
+        _player->castSpell(_player, 63624, true); // Show activate spec buttons
+        _player->castSpell(_player, 63706, true); // Allow primary spec to be activated
+        _player->castSpell(_player, 63707, true); // Allow secondary spec to be activated
+        _player->saveToDB(false);
+        return;
+    }
 
     // bool openSubMenu = true;
 
@@ -1532,11 +1560,27 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* _object, Player* 
             // 2 = castSpell (on_choose_data = spellId)
             // 3 = sendTaxi (on_choose_data = taxiId, on_choose_data2 = modelId)
             // 4 = required standing (on_choose_data = factionId, on_choose_data2 = standing, on_choose_data3 = broadcastTextId)
-            // 5 = close window
+            // 5 = close window (on_choose_data = poiId or 0)
             // 6 = toggleXPGain
+            // 7 = vendor list
+            // 8 = trainer list
+            // 9 = taxi menu
+            // 10 = spirit healer
+            // 11 = innkeeper bind
+            // 12 = banker
+            // 13 = charter request
+            // 14 = tabard designer
+            // 15 = battlemaster
+            // 16 = auctioneer
+            // 17 = stable master
+            // 18 = talent reset
+            // 19 = pet talent reset
+            // 20 = dual talent specialization purchase
+            // 21 = npc function without server support, closes the window
 
             // onChooseData
             // depending on Action...
+            const auto creature = _object->isCreature() ? _object->ToCreature() : nullptr;
             switch (itr.second.onChooseAction)
             {
             case 1:
@@ -1582,6 +1626,9 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* _object, Player* 
             } break;
             case 5:
             {
+                if (itr.second.onChooseData != 0)
+                    _player->sendPoiById(itr.second.onChooseData);
+
                 GossipMenu::senGossipComplete(_player);
 
             } break;
@@ -1593,6 +1640,87 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* _object, Player* 
                     _player->toggleXpGain();
                     GossipMenu::senGossipComplete(_player);
                 }
+            } break;
+            case 7:
+            {
+                if (creature != nullptr)
+                    _player->getSession()->sendInventoryList(creature);
+            } break;
+            case 8:
+            {
+                if (creature != nullptr)
+                    _player->getSession()->sendTrainerList(creature);
+            } break;
+            case 9:
+            {
+                if (creature != nullptr)
+                    _player->getSession()->sendTaxiMenu(creature);
+            } break;
+            case 10:
+            {
+                if (creature != nullptr)
+                    _player->getSession()->sendSpiritHealerRequest(creature);
+            } break;
+            case 11:
+            {
+                if (creature != nullptr)
+                    _player->getSession()->sendInnkeeperBind(creature);
+            } break;
+            case 12:
+            {
+                if (creature != nullptr)
+                    _player->getSession()->sendBankerList(creature);
+            } break;
+            case 13:
+            {
+                if (creature != nullptr)
+                    _player->getSession()->sendCharterRequest(creature);
+            } break;
+            case 14:
+            {
+                if (creature != nullptr)
+                    _player->getSession()->sendTabardHelp(creature);
+            } break;
+            case 15:
+            {
+                if (creature != nullptr)
+                    _player->getSession()->sendBattlegroundList(creature, 0);
+            } break;
+            case 16:
+            {
+                if (creature != nullptr)
+                    _player->getSession()->sendAuctionList(creature);
+            } break;
+            case 17:
+            {
+                _player->getSession()->sendStabledPetList(_object->getGuid());
+            } break;
+            case 18:
+            {
+                GossipMenu::senGossipComplete(_player);
+                _player->sendTalentResetConfirmPacket();
+            } break;
+            case 19:
+            {
+                GossipMenu::senGossipComplete(_player);
+                _player->sendPetUnlearnConfirmPacket();
+            } break;
+            case 20:
+            {
+                if (_player->m_talentSpecsCount < 2)
+                {
+                    GossipMenu confirmMenu(_object->getGuid(), TXTID_DUALSPECPURCHASE, _player->getSession()->language, DatabaseGossipDualSpecMenu);
+                    confirmMenu.addItem(GOSSIP_ICON_CHAT, 0, 1, _player->getSession()->localizedWorldSrv(PURCHASE_DTS), DualSpecCost, _player->getSession()->localizedWorldSrv(SURE_TO_PURCHASE_DTS));
+                    confirmMenu.sendGossipPacket(_player);
+                }
+                else
+                {
+                    GossipMenu::senGossipComplete(_player);
+                }
+            } break;
+            case 21:
+            {
+                GossipMenu::senGossipComplete(_player);
             } break;
             default: // action 0
             {
@@ -1708,7 +1836,9 @@ void ObjectMgr::loadTrainers()
 {
     std::string normalTalkMessage = "DMSG";
 
-    if (auto trainerResult = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_properties WHERE build <= %u;", WoW::getConfigBuild()))
+    // the trainer row of the highest build up to the build of this server
+    if (auto trainerResult = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_properties base WHERE build=(SELECT MAX(build) FROM trainer_properties buildspecific "
+        "WHERE base.entry = buildspecific.entry AND build <= %u);", WoW::getConfigBuild()))
     {
         do
         {

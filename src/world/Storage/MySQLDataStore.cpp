@@ -1085,7 +1085,8 @@ void MySQLDataStore::loadCreaturePropertiesMovementTable()
     uint32_t creature_properties_movement_count = 0;
 
     //                                                                      0          1           2             3                 4               5                  6
-    auto creature_properties_movement_result = WorldDatabase.query("SELECT CreatureId, Ground, Swim, Flight, Rooted, Chase, Random, InteractionPauseTimer FROM creature_properties_movement");
+    auto creature_properties_movement_result = getWorldDBQuery("SELECT CreatureId, Ground, Swim, Flight, Rooted, Chase, Random, InteractionPauseTimer FROM creature_properties_movement base "
+        "WHERE build=(SELECT MAX(build) FROM creature_properties_movement buildspecific WHERE base.CreatureId = buildspecific.CreatureId AND build <= %u)", WoW::getConfigBuild());
 
     if (creature_properties_movement_result == nullptr)
     {
@@ -1773,7 +1774,8 @@ void MySQLDataStore::loadCreatureDifficultyTable()
     auto startTime = Util::TimeNow();
 
     //                                                             0          1            2             3
-    auto creature_difficulty_result = WorldDatabase.query("SELECT entry, difficulty_1, difficulty_2, difficulty_3 FROM creature_difficulty");
+    auto creature_difficulty_result = getWorldDBQuery("SELECT entry, difficulty_1, difficulty_2, difficulty_3 FROM creature_difficulty base "
+        "WHERE build=(SELECT MAX(build) FROM creature_difficulty buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", WoW::getConfigBuild());
 
     if (creature_difficulty_result == nullptr)
     {
@@ -1951,7 +1953,7 @@ void MySQLDataStore::loadNpcTextTable()
     auto startTime = Util::TimeNow();
 
     //                                                          0
-    auto npc_gossip_text_result = WorldDatabase.query("SELECT entry, "
+    auto npc_gossip_text_result = getWorldDBQuery("SELECT entry, "
     //                                                     1       2        3       4          5           6            7           8            9           10
                                                         "prob0, text0_0, text0_1, lang0, EmoteDelay0_0, Emote0_0, EmoteDelay0_1, Emote0_1, EmoteDelay0_2, Emote0_2, "
     //                                                     11      12       13      14         15          16           17          18           19          20
@@ -1967,7 +1969,8 @@ void MySQLDataStore::loadNpcTextTable()
     //                                                     61      62       63      64         65          66           67          68           69          70
                                                         "prob6, text6_0, text6_1, lang6, EmoteDelay6_0, Emote6_0, EmoteDelay6_1, Emote6_1, EmoteDelay6_2, Emote6_2, "
     //                                                     71      72       73      74         75          76           77          78           79          80
-                                                        "prob7, text7_0, text7_1, lang7, EmoteDelay7_0, Emote7_0, EmoteDelay7_1, Emote7_1, EmoteDelay7_2, Emote7_2 FROM npc_gossip_texts");
+                                                        "prob7, text7_0, text7_1, lang7, EmoteDelay7_0, Emote7_0, EmoteDelay7_1, Emote7_1, EmoteDelay7_2, Emote7_2 FROM npc_gossip_texts base "
+        "WHERE build=(SELECT MAX(build) FROM npc_gossip_texts buildspecific WHERE base.entry = buildspecific.entry AND build <= %u)", WoW::getConfigBuild());
 
     if (npc_gossip_text_result == nullptr)
     {
@@ -2697,7 +2700,8 @@ void MySQLDataStore::loadCreatureInitialEquipmentTable()
     auto startTime = Util::TimeNow();
 
     //                                                                0              1           2          3
-    auto initial_equipment_result = WorldDatabase.query("SELECT creature_entry, itemslot_1, itemslot_2, itemslot_3 FROM creature_initial_equip;");
+    auto initial_equipment_result = getWorldDBQuery("SELECT creature_entry, itemslot_1, itemslot_2, itemslot_3 FROM creature_initial_equip base "
+        "WHERE build=(SELECT MAX(build) FROM creature_initial_equip buildspecific WHERE base.creature_entry = buildspecific.creature_entry AND build <= %u)", WoW::getConfigBuild());
     if (initial_equipment_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `creature_initial_equip` is empty!");
@@ -3308,7 +3312,8 @@ void MySQLDataStore::loadNpcGossipTextIdTable()
 {
     auto startTime = Util::TimeNow();
     //                                                    0         1
-    auto npc_gossip_properties_result = WorldDatabase.query("SELECT creatureid, textid FROM npc_gossip_properties");
+    auto npc_gossip_properties_result = getWorldDBQuery("SELECT creatureid, textid FROM npc_gossip_properties base "
+        "WHERE build=(SELECT MAX(build) FROM npc_gossip_properties buildspecific WHERE base.creatureid = buildspecific.creatureid AND build <= %u)", WoW::getConfigBuild());
     if (npc_gossip_properties_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `npc_gossip_properties` is empty!");
