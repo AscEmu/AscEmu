@@ -194,8 +194,9 @@ namespace WoW {
         }
     }
 
-    /// Expansion of the game data (dbc, maps, database rows) the server loads for an expansion.
-    /// WoD, Legion, BfA, Shadowlands, Dragonflight, The War Within and Midnight run on the Mop data until their own data is available.
+    /// Expansion of the client data (dbc, maps) the server loads for an expansion.
+    /// WoD, Legion, BfA, Shadowlands, Dragonflight, The War Within and Midnight run on the Mop client data until their own data is available.
+    /// The database rows are filtered with the build of the expansion itself, see getDBDataBuildExpansion().
     [[nodiscard]] constexpr Expansion getDataExpansion(Expansion const expansion) noexcept
     {
         if (expansion == Expansion::_WoD || expansion == Expansion::_Legion || expansion == Expansion::_BfA || expansion == Expansion::_Shadowlands || expansion == Expansion::_Dragonflight || expansion == Expansion::_TheWarWithin || expansion == Expansion::_Midnight)
@@ -205,19 +206,15 @@ namespace WoW {
     }
 
     /// Expansions whose own DB2 tables the server loads (data_<expansion>/dbc) instead of the Mop dbc files.
-    /// The database rows and their build filters stay on getDataExpansion().
     [[nodiscard]] constexpr bool hasOwnClientData(Expansion const expansion) noexcept
     {
         return expansion == Expansion::_Midnight;
     }
 
-    /// Build of the game data (dbc, maps, database rows) the server loads for an expansion.
-    /// WoD, Legion, BfA, Shadowlands, Dragonflight, The War Within and Midnight run on the Mop data until their own data is available.
-    [[nodiscard]] constexpr uint32_t getDataBuildForExpansion(Expansion const expansion) noexcept
+    /// Build the database rows (properties, spawns, quests, events, ...) are filtered with for an expansion:
+    /// every expansion loads the rows of its own build, the tables carry the rows per build.
+    [[nodiscard]] constexpr uint32_t getDBDataBuildExpansion(Expansion const expansion) noexcept
     {
-        if (expansion == Expansion::_WoD || expansion == Expansion::_Legion || expansion == Expansion::_BfA || expansion == Expansion::_Shadowlands || expansion == Expansion::_Dragonflight || expansion == Expansion::_TheWarWithin || expansion == Expansion::_Midnight)
-            return Build::MOP_BUILD;
-
         return getBuildForExpansion(expansion);
     }
 
@@ -295,7 +292,7 @@ namespace WoW {
     [[nodiscard]] inline Expansion getServerDataExpansion() noexcept { return getDataExpansion(getServerExpansion()); }
 
     /// Legacy wrapper: Build number used for database build filters
-    [[nodiscard]] inline uint32_t getConfigBuild() noexcept { return getDataBuildForExpansion(getServerExpansion()); }
+    [[nodiscard]] inline uint32_t getConfigBuild() noexcept { return getDBDataBuildExpansion(getServerExpansion()); }
 
     /// Returns the array index for opcode/version tables (0 = Classic ... 11 = Midnight), or -1 if unsupported
     [[nodiscard]] constexpr int32_t getOpcodeTableIndex(Expansion const expansion) noexcept

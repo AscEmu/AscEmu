@@ -993,11 +993,10 @@ constexpr ClassRaceCombination ClassRaceCombinations[] =
     {DRUID, RACE_WORGEN, Cata}
 };
 
-// Build the database rows are filtered with: the build of this server, for WoD and Legion the build of
-// the Mop data they run on.
+// Build the database rows are filtered with: the build of this server
 inline uint32_t getAEVersion()
 {
-    return WoW::getDataBuildForExpansion(WoW::COMPILED_EXPANSION);
+    return WoW::getDBDataBuildExpansion(WoW::COMPILED_EXPANSION);
 }
 
 [[nodiscard]] inline bool isClassRaceCombinationPossible(Classes _class, Races _race)
