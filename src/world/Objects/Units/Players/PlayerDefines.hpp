@@ -83,6 +83,12 @@ enum Classes
     WARLOCK = 9,
     MONK = 10,
     DRUID = 11,
+#if VERSION_STRING >= Legion
+    DEMONHUNTER = 12,
+#endif
+#if VERSION_STRING >= Dragonflight
+    EVOKER = 13,
+#endif
     MAX_PLAYER_CLASSES
 };
 

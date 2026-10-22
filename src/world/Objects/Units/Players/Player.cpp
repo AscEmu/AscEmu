@@ -5157,7 +5157,8 @@ void Player::learnSkillSpells(uint16_t skillLine, uint16_t currentValue)
     const auto skillRange = sSpellMgr.getSkillEntryRangeForSkill(skillLine);
     for (const auto& [_, skillEntry] : skillRange)
     {
-        if (skillEntry->acquireMethod != 1 && skillEntry->acquireMethod != 2)
+        // 1 = with the skill rank, 2 = with the skill, 4 = with the skill unless a player condition of the spell says otherwise (no conditions here)
+        if (skillEntry->acquireMethod != 1 && skillEntry->acquireMethod != 2 && skillEntry->acquireMethod != 4)
             continue;
 
         // Check race mask

@@ -211,7 +211,26 @@ public:
 
     uint8_t getRace() const;
     void setRace(uint8_t race);
-    uint32_t getRaceMask() const { return 1 << (getRace() - 1); }
+    // bit of a race in the race masks of the client data and the player create tables: the races added since 8.x
+    // reuse the bits of the unused race ids
+    static uint32_t getRaceMaskForRace(uint32_t race)
+    {
+        switch (race)
+        {
+            case 34: return 1u << 11;   // dark iron dwarf
+            case 35: return 1u << 12;   // vulpera
+            case 36: return 1u << 13;   // mag'har orc
+            case 37: return 1u << 14;   // mechagnome
+            case 70: return 1u << 15;   // dracthyr horde
+            case 52: return 1u << 16;   // dracthyr alliance
+            case 84: return 1u << 17;   // earthen horde
+            case 85: return 1u << 18;   // earthen alliance
+            case 86: return 1u << 19;   // haranir horde
+            case 91: return 1u << 20;   // haranir alliance
+            default: return race >= 1 && race <= 32 ? 1u << (race - 1) : 0;
+        }
+    }
+    uint32_t getRaceMask() const { return getRaceMaskForRace(getRace()); }
 
     uint8_t getClass() const;
     void setClass(uint8_t class_);

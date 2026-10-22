@@ -17,10 +17,10 @@ This file is released under the MIT license. See README-MIT for more information
 // Wrath of the Lich King = 22
 // Cataclysm = 24
 // Mists of Pandaria = 27
-// Warlords of Draenor = ??
-// Legion = ??
-// Battle for Azeroth = ??
-// Shadowlands = ??
+// Warlords of Draenor = 27
+// Legion = 31 (nightborne, highmountain tauren, void elves and lightforged draenei are the races 27 to 30)
+// Battle for Azeroth = 38 (zandalari 31, kul tirans 32, dark iron dwarves 34, vulpera 35, mag'har 36, mechagnomes 37)
+// Shadowlands = 38
 // Dragonflight = 71 (the Horde dracthyr are race 70)
 // The War Within = 88 (the earthen are the races 84 and 85)
 // Midnight = 92 (the haranir are the races 86 and 91)
@@ -39,8 +39,10 @@ This file is released under the MIT license. See README-MIT for more information
     #define DBC_NUM_RACES 27
 #elif VERSION_STRING == WoD
     #define DBC_NUM_RACES 27
-#elif VERSION_STRING == Legion || VERSION_STRING == BfA || VERSION_STRING == Shadowlands
+#elif VERSION_STRING == Legion
     #define DBC_NUM_RACES 31
+#elif VERSION_STRING == BfA || VERSION_STRING == Shadowlands
+    #define DBC_NUM_RACES 38
 #elif VERSION_STRING == Dragonflight
     #define DBC_NUM_RACES 71
 #elif VERSION_STRING == TheWarWithin

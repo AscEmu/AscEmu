@@ -2770,6 +2770,12 @@ void MySQLDataStore::loadPlayerCreateInfoTable()
 
         uint8_t _race = fields[0].asUint8();
         uint8_t _class = fields[1].asUint8();
+        if (_race >= DBC_NUM_RACES || _class >= MAX_PLAYER_CLASSES)
+        {
+            sLogger.debugDbTables("Table `playercreateinfo` race {} class {} is unknown to this version. Skipped.", _race, _class);
+            continue;
+        }
+
         _playerCreateInfoStoreNew[_race][_class] = std::make_unique<PlayerCreateInfo>();
         auto* playerCreateInfo = _playerCreateInfoStoreNew[_race][_class].get();
 
@@ -2792,7 +2798,8 @@ void MySQLDataStore::loadPlayerCreateInfoBars()
 {
 
     //                                                                 0     1      2        3      4     5
-    auto player_create_info_bars_result = WorldDatabase.query("SELECT race, class, button, action, type, misc FROM playercreateinfo_bars WHERE build = %u", WoW::getConfigBuild());
+    auto player_create_info_bars_result = WorldDatabase.query("SELECT race, class, button, action, type, misc FROM playercreateinfo_bars base "
+        "WHERE build=(SELECT MAX(build) FROM playercreateinfo_bars buildspecific WHERE base.race = buildspecific.race AND base.class = buildspecific.class AND build <= %u)", WoW::getConfigBuild());
 
     if (player_create_info_bars_result == nullptr)
     {
@@ -2806,6 +2813,8 @@ void MySQLDataStore::loadPlayerCreateInfoBars()
 
         uint8_t _race = fields[0].asUint8();
         uint8_t _class = fields[1].asUint8();
+        if (_race >= DBC_NUM_RACES || _class >= MAX_PLAYER_CLASSES)
+            continue;
 
         if (auto& playerCreateInfo = _playerCreateInfoStoreNew[_race][_class])
         {
@@ -2843,6 +2852,8 @@ void MySQLDataStore::loadPlayerCreateInfoItems()
         uint8_t _race = fields[0].asUint8();
         uint8_t _class = fields[1].asUint8();
         uint32_t item_id = fields[2].asUint32();
+        if (_race >= DBC_NUM_RACES || _class >= MAX_PLAYER_CLASSES)
+            continue;
 
         // items are validated against Item.dbc since Cata, against item_properties before
         const bool isValidItem = WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata)
@@ -2908,7 +2919,7 @@ void MySQLDataStore::loadPlayerCreateInfoSkills()
 
         for (uint32_t raceIndex = RACE_HUMAN; raceIndex < DBC_NUM_RACES; ++raceIndex)
         {
-            if (raceMask == 0 || ((1 << (raceIndex - 1)) & raceMask))
+            if (raceMask == 0 || (Unit::getRaceMaskForRace(raceIndex) & raceMask))
             {
                 for (uint32_t classIndex = WARRIOR; classIndex < MAX_PLAYER_CLASSES; ++classIndex)
                 {
@@ -2962,7 +2973,7 @@ void MySQLDataStore::loadPlayerCreateInfoSpellLearn()
 
         for (uint32_t raceIndex = RACE_HUMAN; raceIndex < DBC_NUM_RACES; ++raceIndex)
         {
-            if (raceMask == 0 || ((1 << (raceIndex - 1)) & raceMask))
+            if (raceMask == 0 || (Unit::getRaceMaskForRace(raceIndex) & raceMask))
             {
                 for (uint32_t classIndex = WARRIOR; classIndex < MAX_PLAYER_CLASSES; ++classIndex)
                 {
@@ -2988,7 +2999,8 @@ void MySQLDataStore::loadPlayerCreateInfoSpellCast()
     auto startTime = Util::TimeNow();
 
     //                                                                      0         1         2
-    auto player_create_info_spells_result = WorldDatabase.query("SELECT raceMask, classMask, spellid FROM playercreateinfo_spell_cast WHERE build = %u", WoW::getConfigBuild());
+    auto player_create_info_spells_result = WorldDatabase.query("SELECT raceMask, classMask, spellid FROM playercreateinfo_spell_cast "
+        "WHERE build=(SELECT MAX(build) FROM playercreateinfo_spell_cast WHERE build <= %u)", WoW::getConfigBuild());
 
     if (player_create_info_spells_result == nullptr)
     {
@@ -3016,7 +3028,7 @@ void MySQLDataStore::loadPlayerCreateInfoSpellCast()
 
         for (uint32_t raceIndex = RACE_HUMAN; raceIndex < DBC_NUM_RACES; ++raceIndex)
         {
-            if (raceMask == 0 || ((1 << (raceIndex - 1)) & raceMask))
+            if (raceMask == 0 || (Unit::getRaceMaskForRace(raceIndex) & raceMask))
             {
                 for (uint32_t classIndex = WARRIOR; classIndex < MAX_PLAYER_CLASSES; ++classIndex)
                 {
@@ -3042,7 +3054,10 @@ void MySQLDataStore::loadPlayerCreateInfoLevelstats()
     auto startTime = Util::TimeNow();
 
     //                                                           0     1      2          3           4            5             6             7
-    auto player_levelstats_result = WorldDatabase.query("SELECT race, class, level, BaseStrength, BaseAgility, BaseStamina, BaseIntellect, BaseSpirit FROM player_levelstats WHERE build = %u", WoW::getConfigBuild());
+    // the highest build per race, class and level comes from one grouped pass, a correlated subquery would scan the table per row
+    auto player_levelstats_result = WorldDatabase.query("SELECT base.race, base.class, base.level, BaseStrength, BaseAgility, BaseStamina, BaseIntellect, BaseSpirit FROM player_levelstats base "
+        "JOIN (SELECT race, class, level, MAX(build) build FROM player_levelstats WHERE build <= %u GROUP BY race, class, level) latest "
+        "ON latest.race = base.race AND latest.class = base.class AND latest.level = base.level AND latest.build = base.build", WoW::getConfigBuild());
 
     if (player_levelstats_result == nullptr)
     {
@@ -3060,7 +3075,8 @@ void MySQLDataStore::loadPlayerCreateInfoLevelstats()
         uint32_t _race = fields[0].asUint32();
         uint32_t _class = fields[1].asUint32();
         uint32_t level = fields[2].asUint32();
-
+        if (_race >= DBC_NUM_RACES || _class >= MAX_PLAYER_CLASSES)
+            continue;
 
         if (auto& playerCreateInfo = _playerCreateInfoStoreNew[_race][_class])
         {
@@ -3113,8 +3129,9 @@ void MySQLDataStore::loadPlayerCreateInfoClassLevelstats()
 
     // Zyres: load highest gamebuild version from table, otherwise we will have dead new characters
     //                                                                 0      1        2          3
-    auto player_classlevelstats_result = WorldDatabase.query("SELECT class, level, BaseHealth, BaseMana FROM player_classlevelstats base "
-        "WHERE build=(SELECT MAX(build) FROM player_classlevelstats buildspecific WHERE base.class = buildspecific.class AND base.level = buildspecific.level AND build <= %u)", WoW::getConfigBuild());
+    auto player_classlevelstats_result = WorldDatabase.query("SELECT base.class, base.level, BaseHealth, BaseMana FROM player_classlevelstats base "
+        "JOIN (SELECT class, level, MAX(build) build FROM player_classlevelstats WHERE build <= %u GROUP BY class, level) latest "
+        "ON latest.class = base.class AND latest.level = base.level AND latest.build = base.build", WoW::getConfigBuild());
 
     if (player_classlevelstats_result)
     {
@@ -3127,6 +3144,8 @@ void MySQLDataStore::loadPlayerCreateInfoClassLevelstats()
 
             uint32_t _class = fields[0].asUint32();
             uint32_t level = fields[1].asUint32();
+            if (_class >= MAX_PLAYER_CLASSES)
+                continue;
 
             CreateInfo_ClassLevelStats lvl{};
             lvl.health = fields[2].asUint32();
@@ -3181,6 +3200,9 @@ void MySQLDataStore::loadPlayerCreateInfoClassLevelstats()
 
 PlayerCreateInfo const* MySQLDataStore::getPlayerCreateInfo(uint8_t player_race, uint8_t player_class)
 {
+    if (player_race >= DBC_NUM_RACES || player_class >= MAX_PLAYER_CLASSES)
+        return nullptr;
+
     return _playerCreateInfoStoreNew[player_race][player_class].get();
 }
 
@@ -3200,6 +3222,9 @@ CreateInfo_Levelstats const* MySQLDataStore::getPlayerLevelstats(uint32_t level,
 
 CreateInfo_ClassLevelStats const* MySQLDataStore::getPlayerClassLevelStats(uint32_t level, uint8_t player_class)
 {
+    if (player_class >= MAX_PLAYER_CLASSES)
+        return nullptr;
+
     CreateInfo_ClassLevelStatsVector::const_iterator itr = _playerClassLevelStatsStore[player_class].find(level);
     if (itr != _playerClassLevelStatsStore[player_class].end())
         return &(itr->second);
