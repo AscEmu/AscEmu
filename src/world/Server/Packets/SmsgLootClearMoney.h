@@ -27,10 +27,17 @@ namespace AscEmu::Packets
         }
 
     protected:
-        size_t expectedSize() const override { return m_protocol.isMop() ? size_t(9) : size_t(0); }
+        size_t expectedSize() const override { return m_protocol.isMop() ? size_t(9) : size_t(16); }
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // 6.x and later (SMSG_COIN_REMOVED): the looted object
+                packet << WoWGuid(guid.getRawGuid()).toGuid128(m_protocol.realmId, m_receiverMapId);
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 packet.writeBit(guid[6]);

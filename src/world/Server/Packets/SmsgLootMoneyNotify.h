@@ -31,6 +31,25 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion())
+            {
+                // 6.x and 7.x: the money and the sole looter bit
+                packet << uint32_t(money);
+                packet.writeBit(playersNear != 0);
+                packet.flushBits();
+                return true;
+            }
+
+            if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // 8.x and later: 64 bit money, the money modifier (none here) and the sole looter bit
+                packet << uint64_t(money);
+                packet << uint64_t(0);
+                packet.writeBit(playersNear != 0);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 // playersNear here means "at most one nearby player" (matches the ctor default of 1

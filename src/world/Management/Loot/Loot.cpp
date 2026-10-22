@@ -286,8 +286,8 @@ void Loot::itemRemoved(uint8_t lootIndex)
     {
         if (const auto* player = sObjectMgr.getPlayer(playerGuid))
         {
-            // Mop identifies the loot window by the guid of the looted object
-            SmsgLootRemoved managedPacket(lootIndex, player->getLootGuid());
+            // Mop and later identify the loot window by the guid of the looted object, 6.x and later also by the looter
+            SmsgLootRemoved managedPacket(lootIndex, player->getLootGuid(), player->getGuid());
             player->getSession()->sendManagedPacket(managedPacket);
         }
         else

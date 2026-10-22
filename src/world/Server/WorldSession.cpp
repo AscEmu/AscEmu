@@ -894,12 +894,15 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_REPOP_REQUEST, &WorldSession::handleRepopRequestOpcode, true, true, true, true, true);
 
     // Loot
-    registry.registerOpcode(CMSG_AUTOSTORE_LOOT_ITEM, &WorldSession::handleAutostoreLootItemOpcode, true, true, true, true, true);
+    // 6.x and later: CMSG_AUTOSTORE_LOOT_ITEM carries the loot list ids of the client (one request per item)
+    registry.registerOpcode(CMSG_AUTOSTORE_LOOT_ITEM, &WorldSession::handleAutostoreLootItemOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     // Cata only - no Mop opcode value yet.
     registry.registerOpcode(CMSG_LOOT_CURRENCY, &WorldSession::handleLootCurrencyOpcode, false, false, false, true, false);
-    registry.registerOpcode(CMSG_LOOT_MONEY, &WorldSession::handleLootMoneyOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_LOOT_MONEY, &WorldSession::handleLootMoneyOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_LOOT, &WorldSession::handleLootOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_LOOT_RELEASE, &WorldSession::handleLootReleaseOpcode, true, true, true, true, true);
+    // 6.x and later name the loot request CMSG_LOOT_UNIT
+    registry.registerOpcode(CMSG_LOOT_UNIT, &WorldSession::handleLootOpcode, false, false, false, false, false, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_LOOT_RELEASE, &WorldSession::handleLootReleaseOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_LOOT_ROLL, &WorldSession::handleLootRollOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_LOOT_MASTER_GIVE, &WorldSession::handleLootMasterGiveOpcode, true, true, true, true, true);
 

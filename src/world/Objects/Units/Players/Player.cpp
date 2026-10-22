@@ -11399,7 +11399,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
     }
 #endif
 
-    SmsgLootResponse lootResponsePacket(guid, loot_type, pLoot->gold, std::move(lootSlots), std::move(lootCurrencies), maxItemsCount);
+    SmsgLootResponse lootResponsePacket(guid, loot_type, pLoot->gold, std::move(lootSlots), std::move(lootCurrencies), maxItemsCount, getGuid());
     m_session->sendManagedPacket(lootResponsePacket);
 
     addUnitFlags(UNIT_FLAG_LOOTING);
@@ -11449,7 +11449,7 @@ Item* Player::storeNewLootItem(uint8_t slot, Loot* _loot)
     // questitems use the blocked field for other purposes
     if (!questItem && item->is_blocked)
     {
-        SmsgLootReleaseResponse managedPacket(getLootGuid(), 1);
+        SmsgLootReleaseResponse managedPacket(getLootGuid(), 1, getGuid());
         getSession()->sendManagedPacket(managedPacket);
         return nullptr;
     }
@@ -11465,7 +11465,7 @@ Item* Player::storeNewLootItem(uint8_t slot, Loot* _loot)
         //freeforall is 1 if everyone's supposed to get the quest item.
         if (item->is_ffa || _loot->getPlayerQuestItems().size() == 1)
         {
-            SmsgLootRemoved managedPacket(slot, getLootGuid());
+            SmsgLootRemoved managedPacket(slot, getLootGuid(), getGuid());
             getSession()->sendManagedPacket(managedPacket);
         }
         else
@@ -11479,7 +11479,7 @@ Item* Player::storeNewLootItem(uint8_t slot, Loot* _loot)
         {
             //freeforall case, notify only one player of the removal
             ffaItem->is_looted = true;
-            SmsgLootRemoved managedPacket(slot, getLootGuid());
+            SmsgLootRemoved managedPacket(slot, getLootGuid(), getGuid());
             getSession()->sendManagedPacket(managedPacket);
         }
         else

@@ -36,6 +36,27 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // 6.x and later: the owner of the loot (the creature here), from 7.x on also the looted object, then
+                // the optional master looter and round robin winner
+                const auto creature = WoWGuid(creatureGuid.getRawGuid()).toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << creature;
+                if (!m_protocol.isWoD())
+                    packet << creature;
+
+                packet.writeBit(hasGroupLooter);        // master looter
+                packet.writeBit(looterGuid != uint64_t(0));   // round robin winner
+                packet.flushBits();
+
+                if (hasGroupLooter)
+                    packet << WoWGuid(groupLooterGuid.getRawGuid()).toGuid128(m_protocol.realmId, m_receiverMapId);
+                if (looterGuid)
+                    packet << WoWGuid(looterGuid.getRawGuid()).toGuid128(m_protocol.realmId, m_receiverMapId);
+
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Mop)
             {
                 packet << creatureGuid;

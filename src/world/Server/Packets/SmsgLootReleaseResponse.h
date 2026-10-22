@@ -16,15 +16,18 @@ namespace AscEmu::Packets
     public:
         uint64_t guid;
         uint8_t response;
+        // guid of the looting player, 6.x and later send it as the owner of the loot window
+        uint64_t ownerGuid;
 
         SmsgLootReleaseResponse() : SmsgLootReleaseResponse(0, 0)
         {
         }
 
-        SmsgLootReleaseResponse(uint64_t guid, uint8_t response) :
+        SmsgLootReleaseResponse(uint64_t guid, uint8_t response, uint64_t ownerGuid = 0) :
             ManagedPacket(SMSG_LOOT_RELEASE_RESPONSE, 0),
             guid(guid),
-            response(response)
+            response(response),
+            ownerGuid(ownerGuid)
         {
         }
 
@@ -33,6 +36,14 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // 6.x and later: the looted object and the owner of the loot window, no response byte
+                packet << WoWGuid(guid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << WoWGuid(ownerGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 // Mop writes the released guid twice (as two interleaved packed-guid fields) and

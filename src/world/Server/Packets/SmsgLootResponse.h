@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "QuestPacketsGuid128.h"
 
 #include <cstdint>
 #include <vector>
@@ -48,13 +49,16 @@ namespace AscEmu::Packets
         // though nothing gets written for them. Defaults to slots.size() when that quirk doesn't apply.
         uint32_t reportedItemCount = 0;
 
+        // guid of the looting player, 6.x and later send it as the owner of the loot window
+        uint64_t ownerGuid = 0;
+
         SmsgLootResponse() : SmsgLootResponse(0, 0, 0, {}, {}, 0)
         {
         }
 
-        SmsgLootResponse(uint64_t guid, uint8_t lootType, uint32_t gold, std::vector<LootSlotEntry> slots, std::vector<LootCurrencyEntry> currencies, uint32_t reportedItemCount) :
+        SmsgLootResponse(uint64_t guid, uint8_t lootType, uint32_t gold, std::vector<LootSlotEntry> slots, std::vector<LootCurrencyEntry> currencies, uint32_t reportedItemCount, uint64_t ownerGuid = 0) :
             ManagedPacket(SMSG_LOOT_RESPONSE, 0),
-            guid(guid), lootType(lootType), gold(gold), slots(std::move(slots)), currencies(std::move(currencies)), reportedItemCount(reportedItemCount)
+            guid(guid), lootType(lootType), gold(gold), slots(std::move(slots)), currencies(std::move(currencies)), reportedItemCount(reportedItemCount), ownerGuid(ownerGuid)
         {
         }
 
@@ -66,6 +70,88 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // 6.x and later: owner and looted object (6.x the other way round), failure reason (17 = none),
+                // acquire reason (the loot type), loot method, threshold, coins, the counts, then the items and
+                // currencies; the acquired/aoe bits sit between the counts and the items from 7.x to 11.x, at the
+                // end for 6.x and 12.x. Loot list ids are the slot index plus one, the client sends them back.
+                const auto owner = WoWGuid(ownerGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                const auto lootObject = WoWGuid(guid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                if (m_protocol.isWoD())
+                    packet << lootObject << owner;
+                else
+                    packet << owner << lootObject;
+
+                packet << uint8_t(17);                  // failure reason: none
+                packet << uint8_t(lootType);            // acquire reason
+                packet << uint8_t(0);                   // loot method: free for all
+                packet << uint8_t(2);                   // threshold: uncommon
+                packet << uint32_t(gold);
+                packet << uint32_t(slots.size());
+                packet << uint32_t(currencies.size());
+
+                const bool bitsBeforeItems = !m_protocol.isWoD() && !m_protocol.isMidnight();
+                if (bitsBeforeItems)
+                {
+                    packet.writeBit(true);              // acquired
+                    packet.writeBit(false);             // aoe looting
+                    if (m_protocol.isTheWarWithin())
+                        packet.writeBit(false);         // suppress error
+                    packet.flushBits();
+                }
+
+                for (const auto& slot : slots)
+                {
+                    packet.writeBits(0, 2);             // type: item
+                    packet.writeBits(slot.slotType, 3); // ui type
+                    packet.writeBit(false);             // can trade to tap list
+                    packet.flushBits();
+
+                    if (m_protocol.isMidnight())
+                    {
+                        // 12.x: the counts before the item
+                        packet << uint32_t(slot.count);
+                        packet << uint8_t(0);           // loot item type
+                        packet << uint8_t(slot.slotIndex + 1);
+                        writeEmptyItemInstance(packet, m_protocol, int32_t(slot.itemId));
+                    }
+                    else if (m_protocol.isWoD())
+                    {
+                        packet << uint32_t(slot.count);
+                        packet << uint8_t(0);           // loot item type
+                        packet << uint8_t(slot.slotIndex + 1);
+                        writeEmptyItemInstance(packet, m_protocol, int32_t(slot.itemId));
+                    }
+                    else
+                    {
+                        writeEmptyItemInstance(packet, m_protocol, int32_t(slot.itemId));
+                        packet << uint32_t(slot.count);
+                        packet << uint8_t(0);           // loot item type
+                        packet << uint8_t(slot.slotIndex + 1);
+                    }
+                }
+
+                for (const auto& currency : currencies)
+                {
+                    packet << uint32_t(currency.currencyId);
+                    packet << uint32_t(currency.count);
+                    packet << uint8_t(currency.slotIndex + 1);
+                    packet.writeBits(0, 3);             // ui type: allow loot
+                    packet.flushBits();
+                }
+
+                if (!bitsBeforeItems)
+                {
+                    packet.writeBit(true);              // acquired
+                    packet.writeBit(false);             // aoe looting
+                    packet.writeBit(false);             // 6.x personal looting, 12.x suppress error
+                    packet.flushBits();
+                }
+
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 // AscEmu has no separate "loot session" guid; the container guid is reused for both

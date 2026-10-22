@@ -401,7 +401,7 @@ void WorldSession::doLootRelease(WoWGuid lguid)
     Player* player = GetPlayer();
     Loot* loot = nullptr;
 
-    SmsgLootReleaseResponse managedPacket(lguid.getRawGuid(), 1);
+    SmsgLootReleaseResponse managedPacket(lguid.getRawGuid(), 1, player->getGuid());
     sendManagedPacket(managedPacket);
 
     _player->setLootGuid(0);

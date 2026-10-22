@@ -30,6 +30,32 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // 6.x and later (CMSG_LOOT_ITEM): a list of {looted object, loot list id}; the server tracks one loot
+                // session, so only the first entry counts. The loot list id is the slot index plus one, 0 is never sent.
+                uint32_t count = 0;
+                packet >> count;
+                if (count == 0 || count > 100)
+                    return false;
+
+                for (uint32_t i = 0; i < count; ++i)
+                {
+                    // the guid comes packed (two mask bytes plus the non-zero bytes), so the entry length varies
+                    if (packet.remaining() < 3)
+                        return false;
+
+                    WoWGuid128 object;
+                    packet >> object;
+                    uint8_t lootListId = 0;
+                    packet >> lootListId;
+                    if (i == 0)
+                        slot = lootListId > 0 ? lootListId - 1 : 0;
+                }
+                // 10.x and later append a soft interact bit, not needed
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 // Mop supports AoE looting (multiple corpses at once), so the client sends a list of

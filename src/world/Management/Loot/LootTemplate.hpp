@@ -33,6 +33,9 @@ public:
     // Can also check for given player
     bool hasQuestDrop(LootTemplateMap const& store, Player const* forPlayer = nullptr) const;
 
+    // the loot entries of the template
+    LootStoreItemList const& getEntries() const { return Entries; }
+
 private:
     // Loot entrys on our current LootTempelate
     LootStoreItemList Entries;

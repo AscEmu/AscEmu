@@ -14,17 +14,20 @@ namespace AscEmu::Packets
     {
     public:
         uint8_t slot;
-        // guid of the looted object, only the Mop client needs it to find the loot window
+        // guid of the looted object, the Mop and later clients need it to find the loot window
         WoWGuid guid;
+        // guid of the looting player, 6.x and later send it as the owner of the loot window
+        uint64_t ownerGuid;
 
         SmsgLootRemoved() : SmsgLootRemoved(0)
         {
         }
 
-        SmsgLootRemoved(uint8_t slot, WoWGuid guid = WoWGuid()) :
+        SmsgLootRemoved(uint8_t slot, WoWGuid guid = WoWGuid(), uint64_t ownerGuid = 0) :
             ManagedPacket(SMSG_LOOT_REMOVED, 1),
             slot(slot),
-            guid(guid)
+            guid(guid),
+            ownerGuid(ownerGuid)
         {
         }
 
@@ -36,6 +39,15 @@ namespace AscEmu::Packets
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << slot;
+                return true;
+            }
+
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // 6.x and later: owner, looted object and the loot list id (slot index plus one)
+                packet << WoWGuid(ownerGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << WoWGuid(guid.getRawGuid()).toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << uint8_t(slot + 1);
                 return true;
             }
             else if (m_protocol.isMop())

@@ -4,6 +4,9 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatCommandHandler.hpp"
+#include "Management/Loot/LootItem.hpp"
+#include "Management/Loot/LootMgr.hpp"
+#include "Management/Loot/LootTemplate.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Movement/MovementManager.h"
 #include "Objects/Units/Creatures/Creature.h"
@@ -679,8 +682,10 @@ bool ChatCommandHandler::HandleNpcListLootCommand(const char* args, WorldSession
     if (creature_target == nullptr)
         return true;
 
-    auto loot_result = WorldDatabase.query("SELECT itemid, normal10percentchance, heroic10percentchance, normal25percentchance, heroic25percentchance, mincount, maxcount FROM loot_creatures WHERE entryid=%u;", creature_target->getEntry());
-    if (loot_result != nullptr)
+    // the loaded template: the set of the build with the references of loot_groups resolved
+    const auto& creatureLoot = sLootMgr.getCreatureLoot();
+    const auto lootTemplate = creatureLoot.find(creature_target->getEntry());
+    if (lootTemplate != creatureLoot.end() && !lootTemplate->second->getEntries().empty())
     {
         uint8_t numFound = 0;
 
@@ -690,19 +695,17 @@ bool ChatCommandHandler::HandleNpcListLootCommand(const char* args, WorldSession
 
         systemMessage(m_session, "Listing loot for Creature {} ({})", creature_target->GetCreatureProperties()->Name, creature_target->getEntry());
 
-        do
+        for (const auto& lootItem : lootTemplate->second->getEntries())
         {
-            Field* field = loot_result->fetch();
-
-            auto item_proto = sMySQLStore.getItemProperties(field[0].asUint32());
-            if (item_proto == nullptr || item_proto->Quality < minQuality)
+            if (lootItem.itemproto == nullptr || lootItem.itemproto->Quality < minQuality)
                 continue;
 
-            redSystemMessage(m_session, "ItemID: {} {}", item_proto->ItemId, sMySQLStore.getItemLinkByProto(item_proto, m_session->language));
-            systemMessage(m_session, "-- N10 ({}) N25 ({}) H10 ({}) H25 ({}) min/max ({}/{})", field[1].asFloat(), field[3].asFloat(), field[2].asFloat(), field[4].asFloat(), field[5].asUint32(), field[6].asUint32());
+            redSystemMessage(m_session, "ItemID: {} {}", lootItem.itemproto->ItemId, sMySQLStore.getItemLinkByProto(lootItem.itemproto, m_session->language));
+            systemMessage(m_session, "-- N10 ({}) N25 ({}) H10 ({}) H25 ({}) min/max ({}/{})", lootItem.chance[0], lootItem.chance[1], lootItem.chance[2], lootItem.chance[3], lootItem.mincount, lootItem.maxcount);
 
-            ++numFound;
-        } while (loot_result->nextRow() && (numFound <= 25));
+            if (++numFound > 25)
+                break;
+        }
 
         if (numFound > 25)
             redSystemMessage(m_session, "More than 25 results found. Use .npc listloot <min quality> to increase the results.");

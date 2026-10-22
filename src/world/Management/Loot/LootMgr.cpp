@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Logging/Logger.hpp"
 #include "Management/ItemProperties.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/World.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Utilities/Random.hpp"
@@ -190,15 +191,181 @@ void LootMgr::loadLootProp()
     }
 }
 
+namespace
+{
+    // the chance indexes of the loot store items (normal 10, normal 25, heroic 10, heroic 25) a difficulty id of the
+    // client data stands for; 0 stands for every difficulty
+    std::vector<uint8_t> chanceIndexesOfDifficulty(uint8_t difficulty)
+    {
+        switch (difficulty)
+        {
+            case 0: return { 0, 1, 2, 3 };
+            case 4: return { 1 };                        // 25 player normal
+            case 2: case 5: case 8: case 15: case 23: case 24: return { 2 };   // heroic, 10 player heroic, challenge, heroic raid, mythic, timewalking
+            case 6: case 16: return { 3 };               // 25 player heroic, mythic raid
+            default: return { 0 };                       // normal, 10 player normal, normal raid, raid finder and the rest
+        }
+    }
+}
+
+void LootMgr::loadLootGroups()
+{
+    m_lootGroups.clear();
+
+    auto result = sMySQLStore.getWorldDBQuery(
+        "SELECT base.groupid, itemid, group_link, chance, groupindex, mincount, maxcount FROM loot_groups base "
+        "JOIN (SELECT groupid, MAX(build) build FROM loot_groups WHERE build <= %u GROUP BY groupid) latest "
+        "ON latest.groupid = base.groupid AND latest.build = base.build", WoW::getConfigBuild());
+    if (result == nullptr)
+    {
+        sLogger.info("LootMgr::loadLootGroups : Table `loot_groups` is empty!");
+        return;
+    }
+
+    do
+    {
+        Field* fields = result->fetch();
+        LootRow row;
+        row.itemId = fields[1].asUint32();
+        row.groupId = fields[2].asUint32();
+        row.chance = fields[3].asFloat();
+        row.groupIndex = fields[4].asUint8();
+        row.minCount = fields[5].asUint32();
+        row.maxCount = fields[6].asUint32();
+        m_lootGroups[fields[0].asUint32()].push_back(row);
+    } while (result->nextRow());
+
+    sLogger.info("{} loot groups loaded from loot_groups", m_lootGroups.size());
+}
+
+void LootMgr::expandLootRows(std::vector<LootRow> const& rows, float multiplier, uint8_t depth, std::unordered_map<uint32_t, LootRow>& items) const
+{
+    // the rows of an exclusive group share one roll: explicit chances are their share, rows without a chance split the rest
+    std::unordered_map<uint8_t, std::pair<float, uint32_t>> groups;    // index -> (sum of explicit chances, rows without a chance)
+    for (const auto& row : rows)
+    {
+        if (row.groupIndex == 0)
+            continue;
+
+        auto& group = groups[row.groupIndex];
+        if (row.chance > 0.0f)
+            group.first += row.chance;
+        else
+            ++group.second;
+    }
+
+    for (const auto& row : rows)
+    {
+        float chance = row.chance;
+        if (row.groupIndex != 0)
+        {
+            const auto& group = groups[row.groupIndex];
+            if (row.chance <= 0.0f)
+                chance = group.second != 0 ? std::max(0.0f, 100.0f - group.first) / static_cast<float>(group.second) : 0.0f;
+            else if (group.first > 100.0f)
+                chance = row.chance * 100.0f / group.first;
+        }
+        chance *= multiplier;
+
+        if (row.groupId != 0)
+        {
+            // a reference: its group's items with the chance of the reference, rolled as often as the count says
+            const auto group = m_lootGroups.find(row.groupId);
+            if (group == m_lootGroups.end() || depth >= 5)
+                continue;
+
+            const float rolls = static_cast<float>(std::max<uint32_t>(1, row.maxCount));
+            expandLootRows(group->second, std::min(100.0f, chance * rolls) / 100.0f, depth + 1, items);
+            continue;
+        }
+
+        if (chance <= 0.0f)
+            continue;
+
+        auto& item = items[row.itemId];
+        if (item.itemId == 0 || item.chance < chance)
+        {
+            item = row;
+            item.chance = chance;
+        }
+    }
+}
+
+void LootMgr::buildLootTemplate(uint32_t entry, std::vector<LootRow> const& rows, LootTemplateMap* lootTable, std::string const& tableName, uint32_t& count) const
+{
+    // per chance index the rows of its own difficulty, the rows valid for every difficulty where there are none
+    std::array<std::vector<LootRow>, 4> rowsOfIndex;
+    for (const auto& row : rows)
+        if (row.difficulty != 0)
+            for (const auto index : chanceIndexesOfDifficulty(row.difficulty))
+                rowsOfIndex[index].push_back(row);
+
+    std::array<bool, 4> hasOwnRows{};
+    for (uint8_t index = 0; index < 4; ++index)
+        hasOwnRows[index] = !rowsOfIndex[index].empty();
+
+    for (const auto& row : rows)
+        if (row.difficulty == 0)
+            for (const auto index : chanceIndexesOfDifficulty(0))
+                if (!hasOwnRows[index])
+                    rowsOfIndex[index].push_back(row);
+
+    // item -> chance per index, -1 where the item does not drop in that difficulty
+    std::unordered_map<uint32_t, std::pair<LootRow, std::array<float, 4>>> chances;
+    for (uint8_t index = 0; index < 4; ++index)
+    {
+        std::unordered_map<uint32_t, LootRow> items;
+        expandLootRows(rowsOfIndex[index], 1.0f, 0, items);
+        for (const auto& [itemId, item] : items)
+        {
+            auto itr = chances.find(itemId);
+            if (itr == chances.end())
+                itr = chances.emplace(itemId, std::make_pair(item, std::array<float, 4>{ -1.0f, -1.0f, -1.0f, -1.0f })).first;
+            itr->second.second[index] = item.chance;
+        }
+    }
+
+    if (chances.empty())
+        return;
+
+    auto tab = lootTable->try_emplace(entry, Util::LazyInstanceCreator([] {
+        return std::make_unique<LootTemplate>();
+    })).first;
+
+    for (const auto& [itemId, item] : chances)
+    {
+#if VERSION_STRING >= Cata
+        if (item.first.isCurrency)
+        {
+            LootStoreItem storeItem(itemId, item.second, item.first.minCount, item.first.maxCount);
+            tab->second->addEntry(storeItem);
+            ++count;
+            continue;
+        }
+#endif
+        const auto itemProto = sMySQLStore.getItemProperties(itemId);
+        if (itemProto == nullptr)
+        {
+            sLogger.debugDbTables("LootMgr::buildLootTemplate : Invalid Item with entry {} set in {}.", itemId, tableName);
+            continue;
+        }
+
+        LootStoreItem storeItem(itemProto, item.second, item.first.minCount, item.first.maxCount);
+        tab->second->addEntry(storeItem);
+        ++count;
+    }
+}
+
 void LootMgr::loadLootTables(std::string const& szTableName, LootTemplateMap* lootTable)
 {
+    if (m_lootGroups.empty())
+        loadLootGroups();
+
+    // the set of the highest build per entry: items and references with the chance of the roll
     auto result = sMySQLStore.getWorldDBQuery(
-        "SELECT entryid, itemid, normal10percentchance, normal25percentchance, "
-        "heroic10percentchance, heroic25percentchance, mincount, maxcount"
-#if VERSION_STRING >= Cata
-        ", is_currency"
-#endif
-        " FROM %s ORDER BY entryid ASC", szTableName.c_str());
+        "SELECT base.entryid, difficulty, itemid, groupid, chance, groupindex, mincount, maxcount, is_currency FROM %s base "
+        "JOIN (SELECT entryid, MAX(build) build FROM %s WHERE build <= %u GROUP BY entryid) latest "
+        "ON latest.entryid = base.entryid AND latest.build = base.build ORDER BY base.entryid ASC", szTableName.c_str(), szTableName.c_str(), WoW::getConfigBuild());
     if (result == nullptr)
     {
         sLogger.failure("LootMgr::loadLootTables : Loading loot from table {} failed.", szTableName);
@@ -206,11 +373,10 @@ void LootMgr::loadLootTables(std::string const& szTableName, LootTemplateMap* lo
     }
 
     const bool isCreatureTable = (szTableName == "loot_creatures");
-    LootTemplateMap::iterator tab = lootTable->end();
 
     uint32_t currentEntry = std::numeric_limits<uint32_t>::max();
-    uint32_t lastCheckedEntry = std::numeric_limits<uint32_t>::max();
-    bool isCurrentCreatureValid = true;
+    bool isCurrentEntryValid = true;
+    std::vector<LootRow> rows;
 
     uint32_t count = 0;
     do
@@ -218,77 +384,33 @@ void LootMgr::loadLootTables(std::string const& szTableName, LootTemplateMap* lo
         Field* fields = result->fetch();
 
         const uint32_t entry = fields[0].asUint32();
-
-        // Check creature validity once per entry group
-        if (isCreatureTable && entry != lastCheckedEntry)
+        if (entry != currentEntry)
         {
-            lastCheckedEntry = entry;
-            isCurrentCreatureValid = (sMySQLStore.getCreatureProperties(entry) != nullptr);
-        }
+            if (!rows.empty())
+                buildLootTemplate(currentEntry, rows, lootTable, szTableName, count);
 
-        if (isCreatureTable && !isCurrentCreatureValid)
-        {
-            continue;
-        }
-
-        uint32_t itemId = fields[1].asUint32();
-        const uint32_t minCount = fields[6].asUint32();
-        const uint32_t maxCount = fields[7].asUint32();
-
-#if VERSION_STRING >= Cata
-        // is_currency: itemId is a CurrencyTypes.dbc id instead of an item_properties entry.
-        // Always the last column - not all six loot tables have the same preceding columns.
-        if (fields[8].asUint8() != 0) // is_currency
-        {
-            std::array<float, 4> chance = {
-                fields[2].asFloat(), // Normal 10%
-                fields[3].asFloat(), // Normal 25%
-                fields[4].asFloat(), // Heroic 10%
-                fields[5].asFloat() // Heroic 25%
-            };
-
-            if (tab == lootTable->end() || currentEntry != entry)
-            {
-                currentEntry = entry;
-                tab = lootTable->try_emplace(entry, Util::LazyInstanceCreator([] {
-                    return std::make_unique<LootTemplate>();
-                })).first;
-            }
-
-            LootStoreItem storeItem(itemId, chance, minCount, maxCount);
-            tab->second->addEntry(storeItem);
-            count++;
-            continue;
-        }
-#endif
-
-        // Validate item existence before allocating memory
-        const auto itemProto = sMySQLStore.getItemProperties(itemId);
-        if (itemProto == nullptr)
-        {
-            sLogger.debugDbTables("LootMgr::loadLootTables : Invalid Item with entry {} set in {}.", itemId, szTableName);
-            continue;
-        }
-
-        if (tab == lootTable->end() || currentEntry != entry)
-        {
+            rows.clear();
             currentEntry = entry;
-            tab = lootTable->try_emplace(entry, Util::LazyInstanceCreator([] {
-                return std::make_unique<LootTemplate>();
-            })).first;
+            isCurrentEntryValid = !isCreatureTable || sMySQLStore.getCreatureProperties(entry) != nullptr;
         }
 
-        std::array<float, 4> chance = {
-            fields[2].asFloat(), // Normal 10%
-            fields[3].asFloat(), // Normal 25%
-            fields[4].asFloat(), // Heroic 10%
-            fields[5].asFloat() // Heroic 25%
-        };
+        if (!isCurrentEntryValid)
+            continue;
 
-        LootStoreItem storeItem(itemProto, chance, minCount, maxCount);
-        tab->second->addEntry(storeItem);
-        count++;
+        LootRow row;
+        row.difficulty = fields[1].asUint8();
+        row.itemId = fields[2].asUint32();
+        row.groupId = fields[3].asUint32();
+        row.chance = fields[4].asFloat();
+        row.groupIndex = fields[5].asUint8();
+        row.minCount = fields[6].asUint32();
+        row.maxCount = fields[7].asUint32();
+        row.isCurrency = fields[8].asUint8() != 0;
+        rows.push_back(row);
     } while (result->nextRow());
+
+    if (!rows.empty())
+        buildLootTemplate(currentEntry, rows, lootTable, szTableName, count);
 
     sLogger.info("{} loot templates loaded from {}", count, szTableName);
 }

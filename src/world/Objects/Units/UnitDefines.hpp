@@ -1047,7 +1047,17 @@ enum UnitFieldFlags2 : uint32_t
     UNIT_FLAG2_ALLOW_CHEAT_SPELLS               = 0x0040000 // Allows casting spells with AttributesExG & SP_ATTR_EX_G_IS_CHEAT_SPELL
 };
 
-#if VERSION_STRING >= Mop
+#if VERSION_STRING < Mop
+enum UnitDynamicFlags
+{
+    U_DYN_FLAG_LOOTABLE             = 0x01,
+    U_DYN_FLAG_UNIT_TRACKABLE       = 0x02,
+    U_DYN_FLAG_TAGGED_BY_OTHER      = 0x04,
+    U_DYN_FLAG_TAPPED_BY_PLAYER     = 0x08,
+    U_DYN_FLAG_PLAYER_INFO          = 0x10,
+    U_DYN_FLAG_DEAD                 = 0x20,
+};
+#elif VERSION_STRING < Legion
 enum UnitDynamicFlags
 {
     // Mop 5.4.8 shifted every bit of this field one position left compared to
@@ -1066,12 +1076,18 @@ enum UnitDynamicFlags
 #else
 enum UnitDynamicFlags
 {
-    U_DYN_FLAG_LOOTABLE             = 0x01,
-    U_DYN_FLAG_UNIT_TRACKABLE       = 0x02,
-    U_DYN_FLAG_TAGGED_BY_OTHER      = 0x04,
-    U_DYN_FLAG_TAPPED_BY_PLAYER     = 0x08,
-    U_DYN_FLAG_PLAYER_INFO          = 0x10,
-    U_DYN_FLAG_DEAD                 = 0x20,
+    // 7.x and later shifted the field once more: bit 0 is unused, the hide model bit moved to bit 1
+    // and so on. The "tapped by player" bit is gone, a corpse tapped by someone else only carries
+    // the tagged bit; from 9.x on the dead bit stands for "can skin".
+    U_DYN_FLAG_HIDE_MODEL            = 0x0002,
+    U_DYN_FLAG_LOOTABLE              = 0x0004,
+    U_DYN_FLAG_UNIT_TRACKABLE        = 0x0008,
+    U_DYN_FLAG_TAGGED_BY_OTHER       = 0x0010,
+    U_DYN_FLAG_TAPPED_BY_PLAYER      = 0x0000,
+    U_DYN_FLAG_PLAYER_INFO           = 0x0020,
+    U_DYN_FLAG_DEAD                  = 0x0040,
+    U_DYN_FLAG_REFER_A_FRIEND        = 0x0080,
+    U_DYN_FLAG_TAPPED_BY_ALL_THREAT  = 0x0000,
 };
 #endif
 

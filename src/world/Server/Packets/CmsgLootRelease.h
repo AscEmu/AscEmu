@@ -45,6 +45,15 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // 6.x and later: the 128 bit guid of the looted object
+                WoWGuid128 unit;
+                packet >> unit;
+                guid.init(WoWGuid::fromGuid128(unit));
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 guid[7] = packet.readBit();
