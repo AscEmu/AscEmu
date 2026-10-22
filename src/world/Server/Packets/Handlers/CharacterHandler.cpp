@@ -496,6 +496,18 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
+    // 9.x and later send the look as customization choices, the stored bytes come from them
+    if (!srlPacket.customizations.empty())
+    {
+        const auto look = CharacterCustomizations::convertChoices(srlPacket.createStruct._race, srlPacket.createStruct._class,
+            srlPacket.createStruct.gender, srlPacket.customizations);
+        srlPacket.createStruct.skin = look.skin;
+        srlPacket.createStruct.face = look.face;
+        srlPacket.createStruct.hairStyle = look.hairStyle;
+        srlPacket.createStruct.hairColor = look.hairColor;
+        srlPacket.createStruct.facialHair = look.facialStyle;
+    }
+
     const auto loginErrorCode = VerifyName(srlPacket.createStruct.name);
     if (loginErrorCode != E_CHAR_NAME_SUCCESS)
     {

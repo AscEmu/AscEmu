@@ -8447,4 +8447,52 @@ namespace CharacterCustomizations
         std::sort(choices.begin(), choices.end(), [](ChrCustomizationChoice const& a, ChrCustomizationChoice const& b) { return a.optionId < b.optionId; });
         return choices;
     }
+
+    LegacyLook convertChoices(uint8_t race, uint8_t playerClass, uint8_t sex, std::vector<ChrCustomizationChoice> const& choices)
+    {
+        LegacyLook look;
+        if (race == 0 || race > 64 || playerClass == 0 || playerClass > 16)
+            return look;
+
+        const uint64_t raceBit = uint64_t(1) << (race - 1);
+        const uint16_t classBit = uint16_t(1) << (playerClass - 1);
+
+        // the legacy values found so far, by legacy option
+        uint8_t values[LegacyOptionCustomDisplay3 + 1] = {};
+        bool found[LegacyOptionCustomDisplay3 + 1] = {};
+
+        // the options in their order, a dependent row needs the value of its dependency found before
+        for (uint8_t option = LegacyOptionSkin; option <= LegacyOptionCustomDisplay3; ++option)
+        {
+            for (const ConversionRow& row : conversionRows)
+            {
+                if (row.legacyOption != option || (row.raceMask & raceBit) == 0 || (row.classMask & classBit) == 0 || row.sex != sex)
+                    continue;
+
+                if (row.dependentOption != 0 && (!found[row.dependentOption] || values[row.dependentOption] != row.dependentValue))
+                    continue;
+
+                const auto chosen = std::find_if(choices.begin(), choices.end(), [&row](ChrCustomizationChoice const& choice)
+                {
+                    return choice.optionId == row.optionId && choice.choiceId == row.choiceId;
+                });
+                if (chosen == choices.end())
+                    continue;
+
+                values[option] = row.legacyValue;
+                found[option] = true;
+                break;
+            }
+        }
+
+        look.skin = values[LegacyOptionSkin];
+        look.face = values[LegacyOptionFace];
+        look.hairStyle = values[LegacyOptionHairStyle];
+        look.hairColor = values[LegacyOptionHairColor];
+        look.facialStyle = values[LegacyOptionFacialStyle];
+        look.customDisplay[0] = values[LegacyOptionCustomDisplay1];
+        look.customDisplay[1] = values[LegacyOptionCustomDisplay2];
+        look.customDisplay[2] = values[LegacyOptionCustomDisplay3];
+        return look;
+    }
 }

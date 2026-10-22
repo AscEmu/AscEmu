@@ -33,8 +33,8 @@ namespace AscEmu::Packets
         {
             if (m_protocol.isTheWarWithinOrLater())
             {
-                // 11.x: result as a 32 bit value (same result codes as 10.x)
-                packet << uint32_t(toDragonflightCharacterErrorCode(result));
+                // 11.x: result as a 32 bit value (same result codes as 10.x), 12.x with its own codes
+                packet << uint32_t(m_protocol.isMidnight() ? toMidnightCharacterErrorCode(result) : toDragonflightCharacterErrorCode(result));
                 return true;
             }
 

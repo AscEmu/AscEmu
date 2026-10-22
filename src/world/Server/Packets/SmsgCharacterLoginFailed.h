@@ -33,8 +33,8 @@ namespace AscEmu::Packets
         {
             if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
             {
-                // 11.x uses the result codes of 10.x
-                packet << (m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater() ? toDragonflightCharacterErrorCode(result) : m_protocol.isShadowlands() ? toShadowlandsCharacterErrorCode(result) : toBfACharacterErrorCode(result));
+                // 11.x uses the result codes of 10.x, 12.x has its own
+                packet << (m_protocol.isMidnight() ? toMidnightCharacterErrorCode(result) : m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater() ? toDragonflightCharacterErrorCode(result) : m_protocol.isShadowlands() ? toShadowlandsCharacterErrorCode(result) : toBfACharacterErrorCode(result));
                 return true;
             }
 

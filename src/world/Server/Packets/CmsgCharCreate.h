@@ -6,7 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "Storage/CharacterCustomizations.hpp"
 #include <cstdint>
+#include <vector>
 
 namespace AscEmu::Packets
 {
@@ -14,6 +16,8 @@ namespace AscEmu::Packets
     {
     public:
         CharCreate createStruct;
+        // 9.x and later: the look as the customization choices of the client
+        std::vector<CharacterCustomizations::ChrCustomizationChoice> customizations;
 
         CmsgCharCreate() : CmsgCharCreate(CharCreate())
         {
@@ -26,6 +30,20 @@ namespace AscEmu::Packets
         }
 
     protected:
+        void readCustomizations(WorldPacket& packet, uint32_t count)
+        {
+            if (count > 256)
+                return;
+
+            customizations.reserve(count);
+            for (uint32_t i = 0; i < count; ++i)
+            {
+                CharacterCustomizations::ChrCustomizationChoice choice{};
+                packet >> choice.optionId >> choice.choiceId;
+                customizations.push_back(choice);
+            }
+        }
+
         bool internalDeserialise(WorldPacket& packet) override
         {
             if (m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
@@ -49,11 +67,7 @@ namespace AscEmu::Packets
                 if (hasTemplateSet)
                     packet.read<int32_t>();
 
-                for (uint32_t i = 0; i < customizationCount; ++i)
-                {
-                    packet.read<uint32_t>();            // option
-                    packet.read<uint32_t>();            // choice
-                }
+                readCustomizations(packet, customizationCount);
 
                 return !packet.hadReadFailure();
             }
@@ -61,7 +75,7 @@ namespace AscEmu::Packets
             if (m_protocol.isShadowlands())
             {
                 // name length, template set, trial boost, new player experience; race, class, sex; the customization
-                // choices; the name; the template set; the choices are not stored yet
+                // choices; the name; the template set
                 const uint32_t nameLength = packet.readBits(6);
                 const bool hasTemplateSet = packet.readBit();
                 packet.readBit();                       // trial boost
@@ -77,11 +91,25 @@ namespace AscEmu::Packets
                 if (hasTemplateSet)
                     packet.read<int32_t>();
 
-                for (uint32_t i = 0; i < customizationCount; ++i)
-                {
-                    packet.read<uint32_t>();            // option
-                    packet.read<uint32_t>();            // choice
-                }
+                readCustomizations(packet, customizationCount);
+
+                return !packet.hadReadFailure();
+            }
+
+            if (m_protocol.isWoD() || m_protocol.isLegion())
+            {
+                // name length, template set; the look; the name; the template set
+                const uint32_t nameLength = packet.readBits(6);
+                const bool hasTemplateSet = packet.readBit();
+                packet.resetBitPos();
+
+                packet >> createStruct._race >> createStruct._class >> createStruct.gender >> createStruct.skin >>
+                    createStruct.face >> createStruct.hairStyle >> createStruct.hairColor >> createStruct.facialHair >>
+                    createStruct.outfitId;
+                createStruct.name = packet.readString(nameLength);
+
+                if (hasTemplateSet)
+                    packet.read<int32_t>();
 
                 return !packet.hadReadFailure();
             }

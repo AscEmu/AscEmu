@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "WoWGuid.hpp"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -28,7 +29,14 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (!m_protocol.isMop())
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x and later: the packed 128 bit guid of the character
+                WoWGuid128 character;
+                packet >> character;
+                guid = WoWGuid::fromGuid128(character);
+            }
+            else if (!m_protocol.isMop())
             {
                 uint64_t unpackedGuid;
                 packet >> unpackedGuid;

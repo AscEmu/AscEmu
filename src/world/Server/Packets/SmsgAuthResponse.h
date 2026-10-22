@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "CharacterRaceClasses.hpp"
 #include <algorithm>
 #include <cctype>
 #include <cstdint>
@@ -374,7 +375,9 @@ namespace AscEmu::Packets
                 packet << expansion;                    // active expansion
                 packet << expansion;                    // account expansion
                 packet << uint32_t(0);                  // seconds until pc kick
-                if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+                if (midnight)
+                    packet << uint32_t(sizeof(midnightRaceClasses) / sizeof(midnightRaceClasses[0]));
+                else if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
                     packet << uint32_t(sizeof(races) / sizeof(races[0]));
                 else
                     packet << uint32_t(sizeof(classes) / sizeof(classes[0]));
@@ -389,7 +392,22 @@ namespace AscEmu::Packets
                 if (midnight)
                     writeVirtualRealm();
 
-                if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+                if (midnight)
+                {
+                    // 12.x: every race with its classes and the expansion they need (active, account, minimum active)
+                    for (const auto& raceClasses : midnightRaceClasses)
+                    {
+                        packet << uint8_t(raceClasses.race);
+                        const uint32_t classCount = classCountOf(raceClasses);
+                        packet << classCount;
+                        for (uint32_t classIndex = 0; classIndex < classCount; ++classIndex)
+                        {
+                            const uint8_t classExpansion = expansionOfClass(raceClasses.classes[classIndex]);
+                            packet << uint8_t(raceClasses.classes[classIndex]) << classExpansion << classExpansion << classExpansion;
+                        }
+                    }
+                }
+                else if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
                 {
                     for (const uint8_t race : races)
                     {

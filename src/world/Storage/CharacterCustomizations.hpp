@@ -46,4 +46,8 @@ namespace CharacterCustomizations
 
     // the choices of a look, sorted by option id; empty when the race, sex or class is unknown
     SERVER_DECL std::vector<ChrCustomizationChoice> convertLegacyLook(uint8_t race, uint8_t playerClass, uint8_t sex, LegacyLook const& look);
+
+    // the look bytes behind the choices a client sent, the way back through the same table; an option without a
+    // known choice keeps the value zero
+    SERVER_DECL LegacyLook convertChoices(uint8_t race, uint8_t playerClass, uint8_t sex, std::vector<ChrCustomizationChoice> const& choices);
 }

@@ -16136,8 +16136,10 @@ void Player::updateStats()
     // Formulas from wowwiki
     int32_t attackPower = 0;
     int32_t rangedAttackPower = 0;
+#if VERSION_STRING < Legion
     int32_t hpdelta = 128;
     int32_t manadelta = 128;
+#endif
 
     uint32_t str = getStat(STAT_STRENGTH);
     uint32_t agi = getStat(STAT_AGILITY);
@@ -16229,6 +16231,31 @@ void Player::updateStats()
     setRangedAttackPower(rangedAttackPower);
 
     const auto* levelInfo = sObjectMgr.getLevelInfo(this->getRace(), this->getClass(), lev);
+
+    uint32_t hp = getBaseHealth();
+
+#if VERSION_STRING != Classic
+    int32_t stat_bonus = getPosStat(STAT_STAMINA) - getNegStat(STAT_STAMINA);
+#else
+    int32_t stat_bonus = 0;
+#endif
+    if (stat_bonus < 0)
+        stat_bonus = 0; // Avoid of having negative health
+
+    uint32_t oldmaxhp = getMaxHealth();
+
+#if VERSION_STRING >= Legion
+    // The clients since 7.x have no base health of their own: the health is the stamina times the health per stamina
+    // point of the level (a game table of the client). The class rows carry the class stamina times that value as base
+    // health, so the stamina from items and spells (stat_bonus, the base stamina is not part of it) adds health in
+    // that ratio; the mana is the class base alone, intellect gives none.
+    const uint32_t baseStamina = levelInfo != nullptr ? levelInfo->Stat[2] : 0;
+    uint32_t res = hp;
+    if (baseStamina > 0)
+        res += static_cast<uint32_t>(static_cast<uint64_t>(hp) * stat_bonus / baseStamina);
+    res += m_healthFromSpell + m_healthFromItems;
+#else
+    // the base health already holds the level 1 stamina, so that part is taken out of the bonus
     if (levelInfo != nullptr)
     {
         hpdelta = levelInfo->Stat[2] * 10;
@@ -16242,22 +16269,13 @@ void Player::updateStats()
         manadelta -= levelInfo->Stat[3] * 15;
     }
 
-    uint32_t hp = getBaseHealth();
-
-#if VERSION_STRING != Classic
-    int32_t stat_bonus = getPosStat(STAT_STAMINA) - getNegStat(STAT_STAMINA);
-#else
-    int32_t stat_bonus = 0;
-#endif
-    if (stat_bonus < 0)
-        stat_bonus = 0; // Avoid of having negative health
     int32_t bonus = stat_bonus * 10 + m_healthFromSpell + m_healthFromItems;
 
     uint32_t res = hp + bonus + hpdelta;
-    uint32_t oldmaxhp = getMaxHealth();
 
     if (res < hp)
         res = hp;
+#endif
 
     if (worldConfig.limit.isLimitSystemEnabled && (worldConfig.limit.maxHealthCap > 0) && (res > worldConfig.limit.maxHealthCap) && !getSession()->hasPermissions())   //hacker?
     {
@@ -16292,6 +16310,9 @@ void Player::updateStats()
     {
         // MP
         uint32_t mana = getBaseMana();
+#if VERSION_STRING >= Legion
+        res = mana + m_manaFromSpell + m_manaFromItems;
+#else
 #if VERSION_STRING != Classic
         stat_bonus = getPosStat(STAT_INTELLECT) - getNegStat(STAT_INTELLECT);
 #endif
@@ -16300,6 +16321,7 @@ void Player::updateStats()
         bonus = stat_bonus * 15 + m_manaFromSpell + m_manaFromItems;
 
         res = mana + bonus + manadelta;
+#endif
         if (res < mana)
             res = mana;
 

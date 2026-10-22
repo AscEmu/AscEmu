@@ -197,6 +197,23 @@ inline uint8_t toDragonflightCharacterErrorCode(uint8_t code)
     return code;
 }
 
+// the results of 12.1.5 clients: created (23 ..), deleted (66 ..), logged in (79 ..) and named (96 ..); 12.x added two
+// creation codes behind the ones used here (the 11.x delete success 65 means a missing entitlement there) and two
+// delete codes
+inline uint8_t toMidnightCharacterErrorCode(uint8_t code)
+{
+    if (code >= E_CHAR_NAME_SUCCESS)
+        return code - E_CHAR_NAME_SUCCESS + 96;
+    if (code >= E_CHAR_LOGIN_IN_PROGRESS)
+        return code - E_CHAR_LOGIN_IN_PROGRESS + 79;
+    if (code >= E_CHAR_DELETE_IN_PROGRESS)
+        return code - E_CHAR_DELETE_IN_PROGRESS + 66;
+    if (code >= E_CHAR_CREATE_IN_PROGRESS)
+        return code - E_CHAR_CREATE_IN_PROGRESS + 23;
+
+    return code;
+}
+
 // the results of 9.2.7 clients: created (23 ..), deleted (57 ..), logged in (68 ..) and named (85 ..); the groups
 // keep their order, the added codes of 9.x lie behind the ones used here
 inline uint8_t toShadowlandsCharacterErrorCode(uint8_t code)

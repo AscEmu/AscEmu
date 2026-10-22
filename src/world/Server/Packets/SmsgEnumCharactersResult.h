@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "CharacterRaceClasses.hpp"
 #include "Storage/CharacterCustomizations.hpp"
 #include <algorithm>
 #include <cstdint>
@@ -361,7 +362,7 @@ namespace AscEmu::Packets
                 packet << uint32_t(enum_data.size());
                 packet << uint32_t(0);                          // regionwide characters
                 packet << maxCharacterLevel;
-                packet << uint32_t(sizeof(unlockedRaces) / sizeof(unlockedRaces[0]));
+                packet << uint32_t(m_protocol.isMidnight() ? sizeof(midnightRaceClasses) / sizeof(midnightRaceClasses[0]) : sizeof(unlockedRaces) / sizeof(unlockedRaces[0]));
                 packet << uint32_t(0);                          // unlocked conditional appearances
                 packet << uint32_t(0);                          // race limit disables
                 packet << uint32_t(0);                          // warband groups
@@ -370,22 +371,51 @@ namespace AscEmu::Packets
                 for (auto const& data : enum_data)
                     writeCharacterTheWarWithin(packet, data, listPosition++);
 
-                for (const int8_t race : unlockedRaces)
+                // the unlock state of a race: license, achievement, heritage armor achievement, entitlement (11.x
+                // unused), hidden on the client; 12.x adds faction balance disabled and no available classes
+                const auto writeRaceUnlock = [&packet, this]()
                 {
-                    packet << race;
-                    if (m_protocol.isMidnight())
-                        packet << uint32_t(0);                  // 12.x: class unlocks of the race
-                    packet.writeBit(1);                         // has the license
-                    packet.writeBit(1);                         // has the achievement
-                    packet.writeBit(0);                         // has the heritage armor achievement
-                    packet.writeBit(0);                         // 11.x: unused, 12.x: has the entitlement
-                    packet.writeBit(0);                         // hidden on the client
+                    packet.writeBit(1);
+                    packet.writeBit(1);
+                    packet.writeBit(0);
+                    packet.writeBit(1);
+                    packet.writeBit(0);
                     if (m_protocol.isMidnight())
                     {
-                        packet.writeBit(0);                     // faction balance disabled
-                        packet.writeBit(0);                     // no available classes
+                        packet.writeBit(0);
+                        packet.writeBit(0);
                     }
                     packet.flushBits();
+                };
+
+                if (m_protocol.isMidnight())
+                {
+                    // 12.x: every race with its classes and their unlock state (expansion, achievement, entitlement),
+                    // the client offers a race only with them
+                    for (const auto& raceClasses : midnightRaceClasses)
+                    {
+                        packet << raceClasses.race;
+                        const uint32_t classCount = classCountOf(raceClasses);
+                        packet << classCount;
+                        for (uint32_t classIndex = 0; classIndex < classCount; ++classIndex)
+                        {
+                            packet << raceClasses.classes[classIndex];
+                            packet << uint32_t(0);              // achievement
+                            packet.writeBit(1);
+                            packet.writeBit(1);
+                            packet.writeBit(1);
+                            packet.flushBits();
+                        }
+                        writeRaceUnlock();
+                    }
+                }
+                else
+                {
+                    for (const int8_t race : unlockedRaces)
+                    {
+                        packet << race;
+                        writeRaceUnlock();
+                    }
                 }
             }
             else if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight())
