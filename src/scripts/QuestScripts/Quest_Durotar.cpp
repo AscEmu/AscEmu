@@ -82,6 +82,7 @@ public:
 
     void startSleeping()
     {
+        getCreature()->setStandState(STANDSTATE_SLEEP);
         castSpellOnSelf(SPELL_BUFF_SLEEP);
         // Start working after aura expires by itself
         addAIFunction([this](CreatureAIFunc /*PThis*/) { handleWakeUp(nullptr); }, DoOnceScheduler(2min));
@@ -109,6 +110,7 @@ public:
     {
         // Remove Zzz aura
         _removeAura(SPELL_BUFF_SLEEP);
+        getCreature()->setStandState(STANDSTATE_STAND);
 
         // Caster is nullptr when peon wakes by itself
         if (caster != nullptr)
