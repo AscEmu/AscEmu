@@ -823,6 +823,7 @@ void WorldSession::registerOpcodeHandler()
 
     // Queries
     registry.registerOpcode(MSG_CORPSE_QUERY, &WorldSession::handleCorpseQueryOpcode, false, true, true, true, false);
+    registry.registerOpcode(CMSG_CORPSE_QUERY, &WorldSession::handleCorpseQueryOpcode, false, false, false, false, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_NAME_QUERY, &WorldSession::handleNameQueryOpcode, true, true, true, true, true);
     // 7.x asks with this id, on the character list as well
     registry.registerOpcode<STATUS_AUTHED>(CMSG_QUERY_PLAYER_NAME, &WorldSession::handleNameQueryOpcode, false, false, false, false, false, true, true, true, true, true, true, true);
@@ -891,7 +892,7 @@ void WorldSession::registerOpcodeHandler()
 
     // Action Buttons
     registry.registerOpcode(CMSG_SET_ACTION_BUTTON, &WorldSession::handleSetActionButtonOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_REPOP_REQUEST, &WorldSession::handleRepopRequestOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_REPOP_REQUEST, &WorldSession::handleRepopRequestOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
 
     // Loot
     // 6.x and later: CMSG_AUTOSTORE_LOOT_ITEM carries the loot list ids of the client (one request per item)
@@ -1143,8 +1144,8 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_QUESTGIVER_QUERY_QUEST, &WorldSession::handleQuestGiverQueryQuestOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_QUESTGIVER_COMPLETE_QUEST, &WorldSession::handleQuestgiverCompleteQuestOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_QUESTLOG_REMOVE_QUEST, &WorldSession::handleQuestlogRemoveQuestOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
-    registry.registerOpcode(CMSG_RECLAIM_CORPSE, &WorldSession::handleCorpseReclaimOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_RESURRECT_RESPONSE, &WorldSession::handleResurrectResponse, true, true, true, true, true);
+    registry.registerOpcode(CMSG_RECLAIM_CORPSE, &WorldSession::handleCorpseReclaimOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_RESURRECT_RESPONSE, &WorldSession::handleResurrectResponse, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_PUSHQUESTTOPARTY, &WorldSession::handlePushQuestToPartyOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(MSG_QUEST_PUSH_RESULT, &WorldSession::handleQuestPushResultOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_QUEST_PUSH_RESULT, &WorldSession::handleQuestPushResultOpcode, false, false, false, false, false, true, true, true, true, true, true, true);
@@ -1457,7 +1458,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_REPORT_PLAYER, &WorldSession::handleReportPlayerOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_REQUEST_CEMETERY_LIST, &WorldSession::handleRequestCemeteryListOpcode, false, false, false, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_REQUEST_HOTFIX, &WorldSession::handleRequestHotfix, false, false, false, true, true, true, true, true, true, true, true, true);
-    registry.registerOpcode(CMSG_RETURN_TO_GRAVEYARD, &WorldSession::handleReturnToGraveyardOpcode, false, false, false, true, true);
+    registry.registerOpcode(CMSG_RETURN_TO_GRAVEYARD, &WorldSession::handleReturnToGraveyardOpcode, false, false, false, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_SUGGESTION_SUBMIT, &WorldSession::handleSuggestionOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_LOG_DISCONNECT, &WorldSession::handleLogDisconnectOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_PET_LEVEL_CHEAT, &WorldSession::Unhandled, false, false, false, true, false);

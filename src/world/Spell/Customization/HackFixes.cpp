@@ -2199,12 +2199,6 @@ void SpellMgr::applyHackFixes()
                 sp->setEffectTriggerSpell(0, 0);
             } break;
 
-            case 9036:
-            {
-                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
-                sp->setEffectTriggerSpell(20584, 1);
-            } break;
-
             case 24379:   //bg Restoration
                 sp->setEffectTriggerSpell(23493, 0);
                 break;

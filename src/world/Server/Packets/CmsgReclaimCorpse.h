@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "WoWGuid.hpp"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -40,11 +41,19 @@ namespace AscEmu::Packets
                 return m_minimum_size;
             else if (m_protocol.isMop())
                 return 1; // packed guid: mask byte + only the non-zero guid bytes (1..9 bytes)
-            return 0;
+            return 2; // 6.x and later: the two mask bytes of the packed 128 bit guid
         }
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                WoWGuid128 corpse;
+                packet >> corpse;
+                guid = WoWGuid::fromGuid128(corpse);
+                return !packet.hadReadFailure();
+            }
+
             if (m_protocol.isMop())
             {
                 guid[1] = packet.readBit();

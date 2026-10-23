@@ -34,6 +34,12 @@ namespace AscEmu::Packets
             if (m_protocol.expansion <= WoW::Expansion::_TBC)
                 return false;
 
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                packet << WoWGuid(guid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                return true;
+            }
+
             packet.appendPackGuid(guid);
 
             return true;

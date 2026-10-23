@@ -259,14 +259,14 @@ void Corpse::setBytes2(uint32_t bytes) { setField<uint32_t>(CorpseField::CorpseB
 uint8_t Corpse::getFace() const { return getField<uint8_t>(CorpseField::CorpseBytes2Face); }
 void Corpse::setFace(uint8_t face) { setField<uint8_t>(CorpseField::CorpseBytes2Face, face); }
 
-uint8_t Corpse::getHairStyle() const { return getField<uint8_t>(CorpseField::CorpseBytes2Face); }
-void Corpse::setHairStyle(uint8_t style) { setField<uint8_t>(CorpseField::CorpseBytes2Face, style); }
+uint8_t Corpse::getHairStyle() const { return getField<uint8_t>(CorpseField::CorpseBytes2HairStyle); }
+void Corpse::setHairStyle(uint8_t style) { setField<uint8_t>(CorpseField::CorpseBytes2HairStyle, style); }
 
-uint8_t Corpse::getHairColor() const { return getField<uint8_t>(CorpseField::CorpseBytes2Face); }
-void Corpse::setHairColor(uint8_t color) { setField<uint8_t>(CorpseField::CorpseBytes2Face, color); }
+uint8_t Corpse::getHairColor() const { return getField<uint8_t>(CorpseField::CorpseBytes2HairColor); }
+void Corpse::setHairColor(uint8_t color) { setField<uint8_t>(CorpseField::CorpseBytes2HairColor, color); }
 
-uint8_t Corpse::getFacialFeatures() const { return getField<uint8_t>(CorpseField::CorpseBytes2Face); }
-void Corpse::setFacialFeatures(uint8_t feature) { setField<uint8_t>(CorpseField::CorpseBytes2Face, feature); }
+uint8_t Corpse::getFacialFeatures() const { return getField<uint8_t>(CorpseField::CorpseBytes2FacialHair); }
+void Corpse::setFacialFeatures(uint8_t feature) { setField<uint8_t>(CorpseField::CorpseBytes2FacialHair, feature); }
 //bytes 2 end
 
 uint32_t Corpse::getFlags() const { return getField<uint32_t>(CorpseField::CorpseFlags); }

@@ -504,7 +504,7 @@ void ObjectMgr::loadCorpsesForInstance(WorldMap* _worldMap)
         do
         {
             Field* fields = result->fetch();
-            const uint64_t rawGuid = (static_cast<uint64_t>(fields[0].asUint32()) << 32 | HIGHGUID_TYPE_CORPSE);
+            const uint64_t rawGuid = (static_cast<uint64_t>(HIGHGUID_TYPE_CORPSE) << 32) | fields[0].asUint32();
             Corpse* corpse = _worldMap->getObjectFactory().createCorpse(rawGuid);
             if (!corpse)
                 continue;

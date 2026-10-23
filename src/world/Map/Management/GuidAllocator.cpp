@@ -89,6 +89,18 @@ uint64_t GuidAllocator::allocCorpse(bool canReuse)
     return packRaw(highType, 0, low);
 }
 
+void GuidAllocator::reserve(const uint64_t& guid)
+{
+    const int idx = slotOf(extractHighType(guid));
+    if (idx < 0)
+        return;
+
+    const uint32_t low = extractLow24(guid);
+    std::lock_guard<std::mutex> lock(m_mutex);
+    if (m_nextLow[idx] < low)
+        m_nextLow[idx] = low;
+}
+
 void GuidAllocator::release(const uint64_t& guid)
 {
     const uint32_t typeMasked = extractHighType(guid);

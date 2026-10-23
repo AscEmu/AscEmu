@@ -24,6 +24,7 @@ public:
     uint64_t allocCorpse(bool canReuse = true);
 
     void release(const uint64_t& guid);
+    void reserve(const uint64_t& guid);
 
     uint32_t allocateLow(uint32_t highTypeMasked, bool canReuse);
     uint64_t packRaw(uint32_t highType, uint32_t entryId, uint32_t lowCounter);

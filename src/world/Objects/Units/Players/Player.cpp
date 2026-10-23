@@ -7959,18 +7959,17 @@ void Player::buildRepop()
 
     SpellCastTargets target(getGuid());
 
+    // the wisp form of the night elves comes on top of the ghost aura
     if (getRace() == RACE_NIGHTELF)
     {
-        SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(9036);
+        SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(20584);
         Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, nullptr);
         spell->prepare(&target);
     }
-    else
-    {
-        SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(8326);
-        Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, nullptr);
-        spell->prepare(&target);
-    }
+
+    SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(8326);
+    Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, nullptr);
+    spell->prepare(&target);
 
     sendStopMirrorTimerPacket(MIRROR_TYPE_FATIGUE);
     sendStopMirrorTimerPacket(MIRROR_TYPE_BREATH);

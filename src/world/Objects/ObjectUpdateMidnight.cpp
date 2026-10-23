@@ -2860,6 +2860,25 @@ namespace
 
     constexpr uint8_t CorpseItemCount = 19;
 
+    // the class of the owner while online, the corpse stores none
+    static uint8_t corpseOwnerClass(Corpse* corpse)
+    {
+        const auto* owner = corpse->getWorldMapPlayer(corpse->getOwnerGuid());
+        return owner != nullptr ? static_cast<uint8_t>(owner->getClass()) : 0;
+    }
+
+    // the look bytes of the corpse as customization choices
+    static std::vector<CharacterCustomizations::ChrCustomizationChoice> corpseCustomizations(Corpse* corpse)
+    {
+        CharacterCustomizations::LegacyLook look;
+        look.skin = corpse->getSkinColor();
+        look.face = corpse->getFace();
+        look.hairStyle = corpse->getHairStyle();
+        look.hairColor = corpse->getHairColor();
+        look.facialStyle = corpse->getFacialFeatures();
+        return CharacterCustomizations::convertLegacyLook(corpse->getRace(), corpseOwnerClass(corpse), corpse->getGender(), look);
+    }
+
     void corpseCreate(Corpse* corpse, Context const& ctx)
     {
         ByteBuffer& data = ctx.data;
@@ -2873,11 +2892,14 @@ namespace
             data << uint32_t(corpse->getItem(i));
         data << uint8_t(corpse->getRace());
         data << uint8_t(corpse->getGender());
-        data << uint8_t(0);                                                 // class, no server value
-        data << uint32_t(0);                                                // customizations: the look bytes of the server layout have no 12.x list
+        const auto customizations = corpseCustomizations(corpse);
+        data << uint8_t(corpseOwnerClass(corpse));
+        data << uint32_t(customizations.size());
         data << uint32_t(corpse->getFlags());
         data << int32_t(0);                                                 // faction template
         data << uint32_t(0);                                                // state spell visual kit
+        for (const auto& customization : customizations)
+            data << customization.optionId << customization.choiceId;
     }
 
     void corpseCollect(ChangedFields const& changed, CorpseMask& mask)
@@ -2894,6 +2916,8 @@ namespace
             mask.set(6);
         if (changed.changed(CorpseField::CorpseBytes1))
             mask.setRange(7, 2);
+        if (changed.changed(CorpseField::CorpseBytes1) || changed.changed(CorpseField::CorpseBytes2))
+            mask.set(1);
         if (changed.changed(CorpseField::CorpseFlags))
             mask.set(10);
         for (uint8_t i = 0; i < CorpseItemCount; ++i)
@@ -2912,12 +2936,17 @@ namespace
     {
         ByteBuffer& data = ctx.data;
 
+        const auto customizations = mask[0] && mask[1] ? corpseCustomizations(corpse) : std::vector<CharacterCustomizations::ChrCustomizationChoice>();
+
         mask.writeBlocks(data);
         if (mask[0] && mask[1])
-            writeDynamicMask(data, 0);                                      // customizations
+            writeDynamicMask(data, static_cast<uint32_t>(customizations.size()));
         data.flushBits();
         if (mask[0])
         {
+            if (mask[1])
+                for (const auto& customization : customizations)
+                    data << customization.optionId << customization.choiceId;
             if (mask[2])
                 data << uint32_t(corpse->getViewerDynamicFlags(ctx.target));
             if (mask[3])
@@ -2933,7 +2962,7 @@ namespace
             if (mask[8])
                 data << uint8_t(corpse->getGender());
             if (mask[9])
-                data << uint8_t(0);
+                data << uint8_t(corpseOwnerClass(corpse));
             if (mask[10])
                 data << uint32_t(corpse->getFlags());
             if (mask[11])

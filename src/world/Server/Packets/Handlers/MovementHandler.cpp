@@ -585,6 +585,22 @@ void WorldSession::handleAcknowledgementOpcodes(WorldPacket& recvPacket)
 
             _player->obj_movement_info.flags = movementInfo.getMovementFlags();
         } break;
+        case CMSG_MOVE_WATER_WALK_ACK:
+        case CMSG_FORCE_MOVE_ROOT_ACK:
+        case CMSG_FORCE_MOVE_UNROOT_ACK:
+        case CMSG_MOVE_FEATHER_FALL_ACK:
+        case CMSG_MOVE_HOVER_ACK:
+        {
+            // the client confirms a forced state, the packet layouts are known from 4.x on
+            if (getClientProtocol().expansion < WoW::Expansion::_Cata)
+            {
+                recvPacket.rfinish();
+                break;
+            }
+
+            MovementInfo movementInfo;
+            movementInfo.read(recvPacket, getClientProtocol());
+        } break;
         default:
         {
             sLogger.debug("WorldSession::handleAcknowledgementOpcodes : Opcode {} ({}) received. This opcode is not known/implemented right now!",

@@ -592,6 +592,8 @@ DynamicObject* ObjectFactory::createDynamic()
 Corpse* ObjectFactory::createCorpse(uint64_t rawGuid)
 {
     const uint64_t guid = rawGuid ? rawGuid : m_guidAllocator.allocCorpse(true);
+    if (rawGuid)
+        m_guidAllocator.reserve(rawGuid);
 
     Corpse* corpse = new Corpse(guid);
     if (!corpse)

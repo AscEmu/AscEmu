@@ -33,6 +33,12 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                packet << reclaimTime;
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 packet.writeBit(reclaimTime == 0);

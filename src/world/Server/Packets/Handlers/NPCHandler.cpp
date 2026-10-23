@@ -162,6 +162,14 @@ void WorldSession::sendAuctionList(Creature* creature)
 // helper
 void WorldSession::sendSpiritHealerRequest(Creature* creature)
 {
+    // 10.x and later asked through the gossip option, the confirm packet is gone
+    const auto& protocol = getClientProtocol();
+    if (protocol.isDragonflight() || protocol.isTheWarWithinOrLater())
+    {
+        resurrectAtSpiritHealer();
+        return;
+    }
+
     SmsgSpiritHealerConfirm managedPacket(creature->getGuid());
     sendManagedPacket(managedPacket);
 }

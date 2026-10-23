@@ -2288,7 +2288,8 @@ void MySQLDataStore::loadGraveyardsTable()
     auto startTime = Util::TimeNow();
 
     //                                                   0         1         2           3            4         5          6           7       8
-    auto graveyards_result = WorldDatabase.query("SELECT id, position_x, position_y, position_z, orientation, zoneid, adjacentzoneid, mapid, faction FROM graveyards");
+    auto graveyards_result = WorldDatabase.query("SELECT base.id, position_x, position_y, position_z, orientation, zoneid, adjacentzoneid, mapid, faction FROM graveyards base "
+        "JOIN (SELECT id, MAX(build) build FROM graveyards WHERE build <= %u GROUP BY id) latest ON latest.id = base.id AND latest.build = base.build", WoW::getConfigBuild());
     if (graveyards_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `graveyards` is empty!");

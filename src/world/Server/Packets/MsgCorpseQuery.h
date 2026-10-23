@@ -38,6 +38,8 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+                return static_cast<size_t>(1 + 18 + 4 + 4 + 2 + 12);
             if (m_protocol.isMop())
                 return isFound ? static_cast<size_t>(1 + 8 + 4 + 4 + 4 + 4 + 4) : static_cast<size_t>(9 + (5 * 4));
             if (m_protocol.expansion > WoW::Expansion::_TBC)
@@ -47,8 +49,23 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x and later: valid bit, player, corpse map, shown map, transport, position
+                packet.setOpcode(SMSG_CORPSE_QUERY);
+                packet.writeBit(isFound != 0);
+                packet.flushBits();
+                packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << int32_t(corpseMapId);
+                packet << int32_t(mapId);
+                packet << WoWGuid128();
+                packet << position.x << position.y << position.z;
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
+                packet.setOpcode(SMSG_CORPSE_QUERY);
                 if (isFound)
                 {
                     packet.writeBit(guid[0]);
