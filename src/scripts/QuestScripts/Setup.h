@@ -31,6 +31,7 @@ void SetupBloodmystIsle(ScriptMgr* mgr);
 void SetupBurningSteppes(ScriptMgr* mgr);
 void SetupDesolace(ScriptMgr* mgr);
 void SetupDragonblight(ScriptMgr* mgr);
+void SetupDunMorogh(ScriptMgr* mgr);
 void SetupDurotar(ScriptMgr* mgr);
 void SetupDuskwood(ScriptMgr* mgr);
 void SetupDustwallowMarsh(ScriptMgr* mgr);
