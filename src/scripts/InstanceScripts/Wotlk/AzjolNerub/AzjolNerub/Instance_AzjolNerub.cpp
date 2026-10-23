@@ -300,7 +300,7 @@ private:
         }
     }
 
-    bool isInCombatWithPlayer() const
+    bool isInCombatWithPlayer()
     {
         Unit* target = getCreature()->getAIInterface()->getCurrentTarget();
         return target != nullptr && target->getPlayerOwnerOrSelf() != nullptr;
@@ -455,7 +455,7 @@ public:
     }
 
 private:
-    bool isWave() const
+    bool isWave()
     {
         return getCreature()->isSummon() && (getCreature()->getEntry() == CN_ANUBAR_CHAMPION || getCreature()->getEntry() == CN_ANUBAR_CRYPT_FIEND || getCreature()->getEntry() == CN_ANUBAR_NECROMANCER);
     }
