@@ -455,6 +455,12 @@ void WorldSession::handleSetActionButtonOpcode(WorldPacket& recvPacket)
             sLogger.debug("MISC: Added Spell {} into button {}", srlPacket.action, srlPacket.button);
             _player->setActionButton(srlPacket.button, srlPacket.action, static_cast<uint8_t>(srlPacket.type), static_cast<uint8_t>(srlPacket.misc));
         }
+        else if (srlPacket.type == 0x20 || srlPacket.type == 0x30 || srlPacket.type == 0x50 || srlPacket.type == 0x60 || srlPacket.type == 0x90)
+        {
+            // equipment set, dropdown, companion, mount, outfit
+            sLogger.debug("MISC: Added type {} action {} into button {}", srlPacket.type, srlPacket.action, srlPacket.button);
+            _player->setActionButton(srlPacket.button, srlPacket.action, static_cast<uint8_t>(srlPacket.type), static_cast<uint8_t>(srlPacket.misc));
+        }
     }
 }
 

@@ -346,6 +346,8 @@ public:
     [[nodiscard]] virtual uint32_t getViewerDisplayId(Player const* target) const;
     [[nodiscard]] virtual uint32_t getViewerUnitFlags(Player const* target) const;
     [[nodiscard]] virtual uint32_t getViewerLevel(Player const* target) const;
+    // the level a creature with a level range has against this unit
+    [[nodiscard]] uint32_t getLevelForTarget(Unit const* target) const;
 
     float getMinDamage() const;
     void setMinDamage(float damage);

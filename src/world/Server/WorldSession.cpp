@@ -891,7 +891,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE_ACK, &WorldSession::handleForceSpeedChangeAck, true, false, true, true, true, true, true, true, true, true, true, true);
 
     // Action Buttons
-    registry.registerOpcode(CMSG_SET_ACTION_BUTTON, &WorldSession::handleSetActionButtonOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_SET_ACTION_BUTTON, &WorldSession::handleSetActionButtonOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_REPOP_REQUEST, &WorldSession::handleRepopRequestOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
 
     // Loot
@@ -948,7 +948,7 @@ void WorldSession::registerOpcodeHandler()
     // Player Interaction
     registry.registerOpcode(CMSG_GAMEOBJ_USE, &WorldSession::handleGameObjectUse, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_REQUEST_PLAYED_TIME, &WorldSession::handlePlayedTimeOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_SETSHEATHED, &WorldSession::handleSetSheathedOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_SETSHEATHED, &WorldSession::handleSetSheathedOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_MESSAGECHAT, &WorldSession::handleMessageChatOpcode, true, true, true, false, false);
     registry.registerOpcode(CMSG_EMOTE, &WorldSession::handleEmoteOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_TEXT_EMOTE, &WorldSession::handleTextEmoteOpcode, true, true, true, true, true, true, true, true, true, true, true, true);

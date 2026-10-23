@@ -44,7 +44,7 @@ namespace AscEmu::Packets
                 misc = misc8;
                 type = type8;
             }
-            else // Mop
+            else if (m_protocol.expansion <= WoW::Expansion::_Mop)
             {
                 packet >> button;
                 WoWGuid buttonStream;
@@ -70,6 +70,15 @@ namespace AscEmu::Packets
                 action = buttonStream.getCounter();
                 type = static_cast<uint32_t>(buttonStream.getHighType());
                 misc = 0; // not sent in packet
+            }
+            else
+            {
+                // 6.x+: action in the low 56 bits, type in the high byte, then the button index
+                uint64_t packed = 0;
+                packet >> packed >> button;
+                action = static_cast<uint32_t>(packed & 0x00FFFFFFFFFFFFFFULL);
+                type = static_cast<uint32_t>(packed >> 56);
+                misc = 0;
             }
 
             return true;

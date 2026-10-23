@@ -30,7 +30,8 @@ namespace AscEmu::Packets
         {
             packet >> type;
 
-            if (m_protocol.isMop())
+            // 5.x+: animate bit behind the state
+            if (m_protocol.expansion >= WoW::Expansion::_Mop)
                 hasData = packet.readBit();
 
             return true;

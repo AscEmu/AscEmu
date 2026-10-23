@@ -3832,7 +3832,7 @@ void ItemInterface::ReduceItemDurability()
         {
             if (pItem->getDurability() && pItem->getMaxDurability())
             {
-                pItem->setDurability(pItem->getMaxDurability() - 1);
+                pItem->setDurability(pItem->getDurability() - 1);
                 pItem->m_isDirty = true;
                 //check final durability
                 if (!pItem->getDurability()) //no dur left

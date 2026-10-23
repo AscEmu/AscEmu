@@ -1398,6 +1398,11 @@ uint32_t Unit::getViewerUnitFlags(Player const* target) const
 
 uint32_t Unit::getViewerLevel(Player const* target) const
 {
+    return getLevelForTarget(target);
+}
+
+uint32_t Unit::getLevelForTarget(Unit const* target) const
+{
     if (auto const* creature = ToCreature(); CreatureLevelTuning::isScaling(creature))
         return CreatureLevelTuning::levelForTarget(creature, target);
 
@@ -8667,17 +8672,17 @@ void Unit::deactivate(WorldMap* /*mgr*/)
 
 float Unit::getChanceToDaze(Unit* target)
 {
-    if (target->getLevel() < CREATURE_DAZE_MIN_LEVEL) // since 3.3.0
+    if (target->getLevelForTarget(this) < CREATURE_DAZE_MIN_LEVEL) // since 3.3.0
         return 0.0f;
 
-    float attack_skill = getLevel() * 5.0f;
+    float attack_skill = getLevelForTarget(target) * 5.0f;
     float defense_skill;
 
 #if VERSION_STRING >= Cata
     // Defense skill was removed from the client in patch 4.0.1 - see Unit::strike() for the full
     // explanation. Use the same flat level*5 value real Cata/Mop uses instead of a skill line that
     // no longer gets populated for player characters.
-    defense_skill = target->getLevel() * 5.0f;
+    defense_skill = target->getLevelForTarget(this) * 5.0f;
 #else
     if (target->isPlayer())
         defense_skill = static_cast<float>(dynamic_cast<Player*>(target)->getSkillLineCurrent(SKILL_DEFENSE, false));
@@ -10112,7 +10117,7 @@ uint32_t Unit::getSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, 
 #if VERSION_STRING >= Cata
         // See Unit::strike() for the full explanation: weapon/defense skill no longer exist as
         // trainable stats from patch 4.0.1 onward, real Cata/Mop uses a flat level*5 value instead.
-        vskill = pVictim->getLevel() * 5;
+        vskill = pVictim->getLevelForTarget(this) * 5;
 #else
         vskill = static_cast<Player*>(pVictim)->getSkillLineCurrent(SKILL_DEFENSE);
 #endif
@@ -10143,14 +10148,14 @@ uint32_t Unit::getSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, 
     {
         if (weapon_damage_type != RANGED && !backAttack)
             dodge = pVictim->getStat(STAT_AGILITY) / 14.5f;             // what is this value?
-        victim_skill = pVictim->getLevel() * 5;
+        victim_skill = pVictim->getLevelForTarget(this) * 5;
 
         if (pVictim->isCreature())
         {
             Creature* c = static_cast<Creature*>(pVictim);
             if (c->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
             {
-                victim_skill = std::max(victim_skill, (static_cast<int32_t>(this->getLevel()) + 3) * 5);       //used max to avoid situation when lowlvl hits boss.
+                victim_skill = std::max(victim_skill, (static_cast<int32_t>(getLevelForTarget(pVictim)) + 3) * 5);       //used max to avoid situation when lowlvl hits boss.
             }
         }
     }
@@ -10254,12 +10259,12 @@ uint32_t Unit::getSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, 
     }
     else
     {
-        self_skill = this->getLevel() * 5;
+        self_skill = this->getLevelForTarget(pVictim) * 5;
         if (isCreature())
         {
             Creature* c = static_cast<Creature*>(this);
             if (c->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
-                self_skill = std::max(self_skill, (static_cast<int32_t>(pVictim->getLevel()) + 3) * 5); //used max to avoid situation when lowlvl hits boss.
+                self_skill = std::max(self_skill, (static_cast<int32_t>(pVictim->getLevelForTarget(this)) + 3) * 5); //used max to avoid situation when lowlvl hits boss.
         }
     }
 
@@ -10404,7 +10409,7 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
 #if VERSION_STRING >= Cata
         // Weapon skill and defense skill were removed from the client entirely in patch 4.0.1;
         // real Cata/Mop combat uses a flat level*5 "max skill value" for every unit regardless of type
-        vskill = pVictim->getLevel() * 5;
+        vskill = pVictim->getLevelForTarget(this) * 5;
 #else
         vskill = plr->getSkillLineCurrent(SKILL_DEFENSE);
 #endif
@@ -10475,12 +10480,12 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             ///\todo add shield check/block chance here how do we check what the creature has equipped?
         }
 
-        victim_skill = pVictim->getLevel() * 5;
+        victim_skill = pVictim->getLevelForTarget(this) * 5;
         if (pVictim->isCreature())
         {
             if (c->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
             {
-                victim_skill = std::max(victim_skill, (static_cast<int32_t>(getLevel()) + 3) * 5);     //used max to avoid situation when lowlvl hits boss.
+                victim_skill = std::max(victim_skill, (static_cast<int32_t>(getLevelForTarget(pVictim)) + 3) * 5);     //used max to avoid situation when lowlvl hits boss.
             }
         }
     }
@@ -10574,12 +10579,12 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     }
     else
     {
-        self_skill = this->getLevel() * 5;
+        self_skill = this->getLevelForTarget(pVictim) * 5;
         if (isCreature())
         {
             Creature* c = static_cast<Creature*>(this);
             if (c->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
-                self_skill = std::max(self_skill, (static_cast<int32_t>(pVictim->getLevel()) + 3) * 5); //used max to avoid situation when lowlvl hits boss.
+                self_skill = std::max(self_skill, (static_cast<int32_t>(pVictim->getLevelForTarget(this)) + 3) * 5); //used max to avoid situation when lowlvl hits boss.
         }
         crit = 5.0f; //will be modified later
 
@@ -10594,7 +10599,7 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     if (pVictim->isPlayer() && !this->isPlayer() && !ability && dmg.schoolMask == SCHOOL_MASK_NORMAL)
     {
 #if VERSION_STRING >= Cata
-        int32_t baseDefense = static_cast<int32_t>(pVictim->getLevel()) * 5;
+        int32_t baseDefense = static_cast<int32_t>(pVictim->getLevelForTarget(this)) * 5;
 #else
         int32_t baseDefense = static_cast<Player*>(pVictim)->getSkillLineCurrent(SKILL_DEFENSE, false);
 #endif
@@ -10609,7 +10614,7 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     //http://www.wowwiki.com/Glancing_blow
     // did my own quick research here, seems base glancing against equal level mob is about 5%
     // and goes up 5% each level. Need to check this further.
-    float diffAcapped = victim_skill - std::min(static_cast<float>(self_skill), getLevel() * 5.0f);
+    float diffAcapped = victim_skill - std::min(static_cast<float>(self_skill), getLevelForTarget(pVictim) * 5.0f);
 
     if (this->isPlayer() && !pVictim->isPlayer() && !ability)
     {
@@ -10803,6 +10808,9 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     {
         r++;
     }
+    // hit roll of player attacks and attacks on players
+    if (isPlayer() || pVictim->isPlayer())
+        sLogger.debug("strike: {} -> {} self_skill {} victim_skill {} hitchance {} miss {} dodge {} parry {} glanc {} block {} crit {} roll {} result {}", getGuidLow(), pVictim->getGuidLow(), self_skill, victim_skill, hitchance, chances[0], dodge, parry, glanc, block, crit, Roll, r);
     if (force_crit)
         r = 5;
     // postroll processing
