@@ -33,6 +33,21 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x and later: sender, earner, achievement, packed time, native and virtual realm, initial bit
+                const uint32_t realm = m_protocol.getVirtualRealmAddress();
+                packet << guid.toGuid128(m_protocol.realmId, 0);
+                packet << guid.toGuid128(m_protocol.realmId, 0);
+                packet << achievementId;
+                packet.appendPackedTime(completionTime);
+                packet << realm;
+                packet << realm;
+                packet.writeBit(false);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 packet.writeBit(guid[6]);
