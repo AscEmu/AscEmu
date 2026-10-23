@@ -526,6 +526,13 @@ public:
     explicit SparringCreature(Creature* pCreature) : CreatureAIScript(pCreature) {}
     static CreatureAIScript* Create(Creature* c) { return new SparringCreature(c); }
 
+    void OnLoad() override
+    {
+        // a sparring partner with a vehicle id fights like any other creature
+        getCreature()->setAItoUse(true);
+        setCanEnterCombat(true);
+    }
+
     void DamageTaken(Unit* attacker, uint32_t* damage) override
     {
         if (attacker == nullptr || attacker->getPlayerOwnerOrSelf() != nullptr)

@@ -14,3 +14,4 @@ void SetupMiscCreatures(ScriptMgr* mgr);
 void InitializeGameObjectTeleportTable(ScriptMgr* mgr);
 void SetupCityDalaran(ScriptMgr* mgr);
 void SetupNeutralGuards(ScriptMgr* mgr);
+void SetupVehicleCreatures(ScriptMgr* mgr);

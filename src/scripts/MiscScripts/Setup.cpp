@@ -41,6 +41,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
     InitializeGameObjectTeleportTable(mgr);
     SetupCityDalaran(mgr);
     SetupNeutralGuards(mgr);
+    SetupVehicleCreatures(mgr);
 }
 
 #ifdef _WIN32

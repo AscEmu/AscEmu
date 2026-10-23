@@ -403,6 +403,7 @@ Vehicle* Vehicle::removePassenger(Unit* unit)
     {
         unit->setCharmGuid(0);
         getBase()->setCharmedByGuid(0);
+        getBase()->setAItoUse(_aiEnabledBeforeControl);
 
         static_cast<Player*>(unit)->setFarsightGuid(0);
         getBase()->removeUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
@@ -625,6 +626,11 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
         passenger->setCharmGuid(getBase()->getGuid());
         getBase()->setCharmedByGuid(passenger->getGuid());
         getBase()->addUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE);
+
+        // the driver takes over, the own AI rests until the seat is free again
+        _aiEnabledBeforeControl = getBase()->isAIEnabled();
+        getBase()->setAItoUse(false);
+        getBase()->stopMoving();
 
         if (auto* c = getBase()->ToCreature())
         {

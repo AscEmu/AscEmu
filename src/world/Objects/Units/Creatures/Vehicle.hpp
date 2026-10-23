@@ -84,6 +84,7 @@ private:
 
     uint32_t _creatureEntry;
     VehicleStatus _status;
+    bool _aiEnabledBeforeControl = false;
     LocationVector _lastShootPos;
 };
 #endif

@@ -1,0 +1,4 @@
+-- creature_properties: 46 training dummy templates of the client builds since 1.12
+UPDATE `creature_properties` SET `isTrainingDummy` = 1 WHERE `isTrainingDummy` = 0 AND `entry` IN (2673,2674,4952,16111,17578,24792,30527,31143,31144,31146,32541,32542,32543,32545,32546,32547,32666,32667,44171,44389,44548,44614,44703,44794,44820,44848,44937,46647,48304,54970,55183,55184,58168,60162,60197,64446,65069,66969,67127,87318,87320,87322,87329,114832,153292,216458);
+
+INSERT INTO `world_db_version` (`id`, `LastUpdate`) VALUES ('264', '20261023-04_creature_training_dummies');
