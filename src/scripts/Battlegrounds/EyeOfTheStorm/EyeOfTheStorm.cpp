@@ -107,15 +107,21 @@ const float EOTSStartLocations[2][4] =
     { 1807.735962f, 1539.415649f, 1267.627319f, 0.0f },
 };
 
+// the force fields sit lower on the 5.x terrain
 const float EOTSBubbleLocations[2][5] =
 {
+#if VERSION_STRING >= Mop
+    { 184719, 1803.21f, 1539.49f, 1242.19f, AscEmu::Math::PiF },
+    { 184720, 2527.6f, 1596.91f, 1240.7f, -3.12414f },
+#else
     { 184719, 1803.21f, 1539.49f, 1261.09f, AscEmu::Math::PiF },
     { 184720, 2527.6f, 1596.91f, 1262.13f, -3.12414f },
+#endif
 };
 
 const float EOTSBubbleRotations[2][4] =
 {
-    { -0.173642f, -0.001515f, 0.984770f, -0.008594f },
+    { 0.173648f, 0.0f, 0.984808f, 0.0f },
     { -0.173642f, -0.001515f, 0.984770f, -0.008594f },
 };
 
@@ -608,7 +614,8 @@ void EyeOfTheStorm::OnCreate()
     {
         m_bubbles[i] = m_mapMgr->getSpawnManager().createGameObject(
             static_cast<uint32_t>(EOTSBubbleLocations[i][0]),
-            LocationVector(EOTSBubbleLocations[i][1], EOTSBubbleLocations[i][2], EOTSBubbleLocations[i][3], EOTSBubbleLocations[i][4]));
+            LocationVector(EOTSBubbleLocations[i][1], EOTSBubbleLocations[i][2], EOTSBubbleLocations[i][3], EOTSBubbleLocations[i][4]),
+            QuaternionData(EOTSBubbleRotations[i][0], EOTSBubbleRotations[i][1], EOTSBubbleRotations[i][2], EOTSBubbleRotations[i][3]));
         if (m_bubbles[i] == nullptr)
         {
             DLLLogDetail("EOTS is being created and you are missing gameobjects. Terminating.");

@@ -310,14 +310,14 @@ void ArathiBasin::SpawnControlPoint(uint32_t Id, uint32_t Type)
 
 void ArathiBasin::OnCreate()
 {
-    // Alliance Gate
-    GameObject* gate = createGameObject(180255, LocationVector(1284.597290f, 1281.166626f, -15.977916f, 0.76f), 32, 114, 1.5799990f);
+    // Alliance Gate, the gates are tilted and need their full rotation
+    GameObject* gate = createGameObject(180255, LocationVector(1284.597290f, 1281.166626f, -15.977916f, 0.7068594f), QuaternionData(0.012957f, -0.060288f, 0.344959f, 0.93659f), 32, 114, 1.5799990f);
     gate->setAnimationProgress(100);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);
 
     // horde gate
-    gate = createGameObject(180256, LocationVector(708.0902710f, 708.4479370f, -17.3898964f, 3.92f), 32, 114, 1.5699990f);
+    gate = createGameObject(180256, LocationVector(708.0902710f, 708.4479370f, -17.8342f, -2.391099f), QuaternionData(0.050291f, 0.015127f, 0.929217f, -0.365784f), 32, 114, 1.5699990f);
     gate->setAnimationProgress(100);
     gate->PushToWorld(m_mapMgr);
     m_gates.push_back(gate);

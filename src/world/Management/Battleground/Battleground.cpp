@@ -303,7 +303,13 @@ void Battleground::portPlayer(Player* plr, bool skip_teleport)
 
 GameObject* Battleground::createGameObject(uint32_t entry, LocationVector const& v, uint32_t flags, uint32_t faction, float scale)
 {
-    if (GameObject* go = m_mapMgr->getSpawnManager().createGameObject(entry, v))
+    // the client places the object by its rotation, the orientation alone is not enough from 4.x on
+    return createGameObject(entry, v, QuaternionData::fromEulerAnglesZYX(v.o, 0.0f, 0.0f), flags, faction, scale);
+}
+
+GameObject* Battleground::createGameObject(uint32_t entry, LocationVector const& v, QuaternionData const& rotation, uint32_t flags, uint32_t faction, float scale)
+{
+    if (GameObject* go = m_mapMgr->getSpawnManager().createGameObject(entry, v, rotation))
     {
         go->setState(GO_STATE_CLOSED);
         go->SetFaction(faction);

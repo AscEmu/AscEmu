@@ -18,6 +18,7 @@ class Spell;
 class Unit;
 class LocationVector;
 class GameObject;
+struct QuaternionData;
 class Creature;
 class WorldMap;
 
@@ -131,6 +132,7 @@ public:
     uint32_t getFreeSlots(uint32_t t, uint32_t type);
 
     GameObject* createGameObject(uint32_t entry, LocationVector const& v, uint32_t flags, uint32_t faction, float scale);
+    GameObject* createGameObject(uint32_t entry, LocationVector const& v, QuaternionData const& rotation, uint32_t flags, uint32_t faction, float scale);
     GameObject* spawnGameObject(uint32_t entry, LocationVector const& v, uint32_t flags, uint32_t faction, float scale);
     Creature* spawnCreature(uint32_t entry, float x, float y, float z, float o, uint32_t faction = 0);
     Creature* spawnCreature(uint32_t entry, LocationVector& v, uint32_t faction = 0);
