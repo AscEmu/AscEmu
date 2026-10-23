@@ -1018,8 +1018,18 @@ void Unit::setFaction(uint32_t factionId)
 }
 
 // the same field holds the item entry since WotLK and the display id before
-uint32_t Unit::getVirtualItemSlotId(uint8_t slot) const { return getField<uint32_t>(UnitField::VirtualItemSlotDisplay, slot); }
-uint32_t Unit::getVirtualItemDisplayId(uint8_t slot) const { return getField<uint32_t>(UnitField::VirtualItemSlotDisplay, slot); }
+// 6.x+: every visible item slot holds the item and its appearance values, the field index of a slot doubles
+static uint8_t virtualItemFieldIndex(uint8_t slot)
+{
+#if VERSION_STRING >= WoD
+    return static_cast<uint8_t>(slot * 2);
+#else
+    return slot;
+#endif
+}
+
+uint32_t Unit::getVirtualItemSlotId(uint8_t slot) const { return getField<uint32_t>(UnitField::VirtualItemSlotDisplay, virtualItemFieldIndex(slot)); }
+uint32_t Unit::getVirtualItemDisplayId(uint8_t slot) const { return getField<uint32_t>(UnitField::VirtualItemSlotDisplay, virtualItemFieldIndex(slot)); }
 void Unit::setVirtualItemSlotId(uint8_t slot, uint32_t item_id)
 {
     const auto isProperOffhandWeapon = [](uint32_t itemClass, uint32_t itemSubClass) -> bool
@@ -1044,7 +1054,7 @@ void Unit::setVirtualItemSlotId(uint8_t slot, uint32_t item_id)
 
     if (item_id == 0)
     {
-        setField<uint32_t>(UnitField::VirtualItemSlotDisplay, 0U, slot);
+        setField<uint32_t>(UnitField::VirtualItemSlotDisplay, 0U, virtualItemFieldIndex(slot));
 #if VERSION_STRING < WotLK
         setVirtualItemInfo(slot, 0);
 #endif
@@ -1071,7 +1081,7 @@ void Unit::setVirtualItemSlotId(uint8_t slot, uint32_t item_id)
     if (isCreature() && slot == OFFHAND)
         dynamic_cast<Creature*>(this)->toggleDualwield(isProperOffhandWeapon(itemDbc->Class, itemDbc->SubClass));
 
-    setField<uint32_t>(UnitField::VirtualItemSlotDisplay, item_id, slot);
+    setField<uint32_t>(UnitField::VirtualItemSlotDisplay, item_id, virtualItemFieldIndex(slot));
 #else
     unit_virtual_item_info virtualItemInfo{};
 

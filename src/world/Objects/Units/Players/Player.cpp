@@ -3429,9 +3429,9 @@ void Player::initVisibleUpdateBits()
     Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::MaxPower4));
     Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::MaxPower5));
 
-    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::VirtualItemSlotDisplay, 0));
-    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::VirtualItemSlotDisplay, 1));
-    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::VirtualItemSlotDisplay, 2));
+    // every value of the visible item slots, 6.x+ carries two per slot
+    for (uint16_t i = 0; i < Version::fieldCount(UnitField::VirtualItemSlotDisplay); ++i)
+        Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::VirtualItemSlotDisplay, i));
 
     Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::Level));
     Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::FactionTemplate));
@@ -3530,9 +3530,9 @@ void Player::initVisibleUpdateBits()
     Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::MaxPower7));
 #endif
 
-    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::VirtualItemSlotDisplay, 0));
-    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::VirtualItemSlotDisplay, 1));
-    Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::VirtualItemSlotDisplay, 2));
+    // every value of the visible item slots, 6.x+ carries two per slot
+    for (uint16_t i = 0; i < Version::fieldCount(UnitField::VirtualItemSlotDisplay); ++i)
+        Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::VirtualItemSlotDisplay, i));
 
 #if VERSION_STRING <= TBC
     Player::m_visibleUpdateMask.SetBit(Version::layouts().unit.index(UnitField::VirtualItemInfo, 0));
