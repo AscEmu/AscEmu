@@ -94,9 +94,9 @@ Battleground::~Battleground()
 
 void Battleground::updatePvPData()
 {
-    if (isTypeArena(m_type))
-        if (!m_hasEnded)
-            return;
+    // the client opens the score window when the log arrives: only at the end, requests use sendPVPData
+    if (!m_hasEnded)
+        return;
 
     if (UNIXTIME >= m_nextPvPUpdateTime)
     {
