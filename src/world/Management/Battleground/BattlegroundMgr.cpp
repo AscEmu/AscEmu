@@ -115,6 +115,8 @@ void BattlegroundManager::handleBattlegroundListPacket(WoWGuid& wowGuid, WorldSe
     SmsgBattlefieldList managedPacket;
     managedPacket.guid = wowGuid;
     managedPacket.battlegroundType = battlegroundType;
+    managedPacket.minLevel = 10;
+    managedPacket.maxLevel = static_cast<uint8_t>(worldConfig.player.playerLevelCap);
 
     std::lock_guard instanceLock(m_instanceLock);
     for (auto itr : m_instances[battlegroundType])

@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "LfgPacketHelpers.h"
 #include "WoWGuid.hpp"
 #include <cstdint>
 #include <vector>
@@ -33,6 +34,9 @@ namespace AscEmu::Packets
         std::vector<SmsgLfgProposalUpdatePlayer> players;
         uint64_t queueGuid;
         uint64_t playerGuid;
+        // 6.x+: queue ticket
+        uint32_t ticketId = 0;
+        uint32_t ticketTime = 0;
 
         SmsgLfgProposalUpdate() : SmsgLfgProposalUpdate(0, 0, 0, 0, 0, {}, 0, 0)
         {
@@ -60,6 +64,56 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                const auto expansion = m_protocol.expansion;
+                Lfg::writeRideTicket(packet, m_protocol, m_receiverMapId, queueGuid, ticketId, ticketTime);
+                packet << uint64_t(0);                                          // instance id
+                packet << uint32_t(proposalId);
+                packet << uint32_t(Lfg::dungeonEntry(dungeonId));               // slot
+                packet << int8_t(state);
+                packet << uint32_t(completedEncounters);
+                if (expansion >= WoW::Expansion::_Legion)
+                    packet << uint32_t(0);                                      // encounter mask
+                packet << uint32_t(players.size());
+                if (expansion >= WoW::Expansion::_Legion)
+                    packet << uint8_t(0);                                       // promised shortage role priority
+
+                const auto writePlayers = [&]()
+                {
+                    for (const auto& proposalPlayer : players)
+                    {
+                        Lfg::writeRoles(packet, m_protocol, proposalPlayer.role);
+                        packet.writeBit(proposalPlayer.isSelfPlayer != 0);     // me
+                        packet.writeBit(proposalPlayer.sameGroup != 0);        // same party
+                        packet.writeBit(proposalPlayer.inDungeon != 0);        // my party
+                        packet.writeBit(proposalPlayer.answered != 0);         // responded
+                        packet.writeBit(proposalPlayer.accepted != 0);         // accepted
+                        packet.flushBits();
+                    }
+                };
+                const auto writeFlags = [&]()
+                {
+                    packet.writeBit(expansion != WoW::Expansion::_WoD);         // valid completed mask
+                    packet.writeBit(isSameDungeon != 0);                        // proposal silent
+                    if (expansion != WoW::Expansion::_WoD)
+                        packet.writeBit(false);                                 // failed by my party
+                    packet.flushBits();
+                };
+
+                // 6.x and 12.x write the players before the flags
+                if (expansion == WoW::Expansion::_WoD || expansion >= WoW::Expansion::_Midnight)
+                {
+                    writePlayers();
+                    writeFlags();
+                }
+                else
+                {
+                    writeFlags();
+                    writePlayers();
+                }
+                return true;
+            }
             if (m_protocol.isMop())
             {
                 WoWGuid queueGuidObject = queueGuid;

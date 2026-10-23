@@ -44,6 +44,46 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
+#if VERSION_STRING >= WoD
+// 6.x+ queue ticket: the group when grouped, the player otherwise
+static uint64_t lfgTicketRequester(Player* player)
+{
+    const auto group = player->getGroup();
+    return group != nullptr ? group->GetGUID() : player->getGuid();
+}
+
+static void fillModernLfgStatus(SmsgLfgUpdateStatus& packet, const LfgUpdateData& updateData)
+{
+    const uint64_t requester = packet.guid.getRawGuid();
+    packet.ticketId = uint32_t(requester & 0xFFFFFFFF);
+    packet.ticketTime = uint32_t(sLfgMgr.getQueueJoinTime(requester));
+    packet.notifyUI = true;
+    packet.lfgJoined = updateData.updateType != LFG_UPDATETYPE_REMOVED_FROM_QUEUE;
+
+    const LfgState state = sLfgMgr.GetState(requester);
+    switch (updateData.updateType)
+    {
+        case LFG_UPDATETYPE_JOIN_PROPOSAL:
+        case LFG_UPDATETYPE_ADDED_TO_QUEUE:
+            packet.joined = true;
+            packet.queued = true;
+            break;
+        case LFG_UPDATETYPE_PROPOSAL_BEGIN:
+            packet.joined = true;
+            packet.queued = false;
+            break;
+        case LFG_UPDATETYPE_CLEAR_LOCK_LIST:
+            packet.joined = state != LFG_STATE_ROLECHECK && state != LFG_STATE_NONE;
+            packet.queued = state == LFG_STATE_QUEUED;
+            break;
+        default:
+            packet.joined = false;
+            packet.queued = false;
+            break;
+    }
+}
+#endif
+
 //not used cata
 void WorldSession::sendLfgUpdateSearch([[maybe_unused]] bool update)
 {
@@ -84,6 +124,15 @@ void WorldSession::sendLfgJoinResult([[maybe_unused]] const LfgJoinResultData& j
     sLogger.debugOpcode("SMSG_LFG_JOIN_RESULT {} heckResult: {} checkValue: {}.", _player->getGuid(), joinData.result, joinData.state);
 
     SmsgLfgJoinResult managedPacket(uint32_t(joinData.result), uint32_t(joinData.state), joinData.lockmap, _player->getGuid());
+#if VERSION_STRING >= WoD
+    if (_socket->getClientProtocol().expansion >= WoW::Expansion::_WoD)
+    {
+        const uint64_t requester = lfgTicketRequester(_player);
+        managedPacket.guid = requester;
+        managedPacket.ticketId = uint32_t(requester & 0xFFFFFFFF);
+        managedPacket.ticketTime = uint32_t(sLfgMgr.getQueueJoinTime(requester));
+    }
+#endif
     sendManagedPacket(managedPacket);
 #endif
 }
@@ -116,6 +165,10 @@ void WorldSession::sendLfgUpdatePlayer([[maybe_unused]] const LfgUpdateData& upd
     {
         SmsgLfgUpdateStatus managedPacket;
         managedPacket.guid = _player->getGuid();
+#if VERSION_STRING >= WoD
+        if (_socket->getClientProtocol().expansion >= WoW::Expansion::_WoD)
+            managedPacket.guid = lfgTicketRequester(_player);
+#endif
         managedPacket.updateType = uint8_t(updateData.updateType);
         managedPacket.isParty = false;
         managedPacket.joined = extrainfo;
@@ -123,6 +176,10 @@ void WorldSession::sendLfgUpdatePlayer([[maybe_unused]] const LfgUpdateData& upd
         managedPacket.roles = sLfgMgr.GetRoles(_player->getGuid());
         managedPacket.dungeons = updateData.dungeons;
         managedPacket.comment = updateData.comment;
+#if VERSION_STRING >= WoD
+        if (_socket->getClientProtocol().expansion >= WoW::Expansion::_WoD)
+            fillModernLfgStatus(managedPacket, updateData);
+#endif
         sendManagedPacket(managedPacket);
         return;
     }
@@ -178,6 +235,10 @@ void WorldSession::sendLfgUpdateParty([[maybe_unused]] const LfgUpdateData& upda
         managedPacket.roles = sLfgMgr.GetRoles(_player->getGuid());
         managedPacket.dungeons = updateData.dungeons;
         managedPacket.comment = updateData.comment;
+#if VERSION_STRING >= WoD
+        if (_socket->getClientProtocol().expansion >= WoW::Expansion::_WoD)
+            fillModernLfgStatus(managedPacket, updateData);
+#endif
         sendManagedPacket(managedPacket);
         return;
     }
@@ -224,6 +285,15 @@ void WorldSession::sendLfgQueueStatus([[maybe_unused]] uint32_t dungeon, [[maybe
         _player->getGuid(), dungeon, waitTime, avgWaitTime, waitTimeTanks, waitTimeHealer, waitTimeDps, queuedTime, tanks, healers, dps);
 
     SmsgLfgQueueStatus managedPacket(dungeon, avgWaitTime, waitTime, waitTimeTanks, waitTimeHealer, waitTimeDps, tanks, healers, dps, queuedTime, _player->getGuid());
+#if VERSION_STRING >= WoD
+    if (_socket->getClientProtocol().expansion >= WoW::Expansion::_WoD)
+    {
+        const uint64_t requester = lfgTicketRequester(_player);
+        managedPacket.guid = requester;
+        managedPacket.ticketId = uint32_t(requester & 0xFFFFFFFF);
+        managedPacket.ticketTime = uint32_t(sLfgMgr.getQueueJoinTime(requester));
+    }
+#endif
     sendManagedPacket(managedPacket);
 #endif
 }
@@ -363,6 +433,10 @@ void WorldSession::sendLfgUpdateProposal([[maybe_unused]] uint32_t proposalId, [
     }
 
     SmsgLfgProposalUpdate managedPacket(dungeonId, uint8_t(pProp->state), proposalId, completedEncounters, uint8_t(isSameDungeon), players, queueGuid, guid);
+#if VERSION_STRING >= WoD
+    managedPacket.ticketId = uint32_t(queueGuid & 0xFFFFFFFF);
+    managedPacket.ticketTime = uint32_t(sLfgMgr.getQueueJoinTime(queueGuid));
+#endif
     sendManagedPacket(managedPacket);
 #endif
 }

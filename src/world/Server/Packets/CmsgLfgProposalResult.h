@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "LfgPacketHelpers.h"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -30,6 +31,18 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                WoWGuid requester;
+                uint32_t ticketId = 0;
+                uint32_t ticketTime = 0;
+                Lfg::readRideTicket(packet, m_protocol, requester, ticketId, ticketTime);
+                packet.readSkip<uint64_t>();                    // instance id
+                packet >> lfgGroupId;
+                packet.resetBitPos();
+                accept = packet.readBit();
+                return true;
+            }
             if (m_protocol.isMop())
             {
                 WoWGuid guid1, guid2;

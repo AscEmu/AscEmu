@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "LfgPacketHelpers.h"
 #include "WoWGuid.hpp"
 #include <cstdint>
 
@@ -25,6 +26,9 @@ namespace AscEmu::Packets
         uint8_t dps;
         uint32_t queuedTime;
         uint64_t guid;
+        // 6.x+: queue ticket
+        uint32_t ticketId = 0;
+        uint32_t ticketTime = 0;
 
         SmsgLfgQueueStatus() : SmsgLfgQueueStatus(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         {
@@ -52,6 +56,23 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                Lfg::writeRideTicket(packet, m_protocol, m_receiverMapId, guid, ticketId, ticketTime);
+                packet << uint32_t(dungeon);                                    // slot
+                // 7.x puts the own wait time last and the queued time first
+                const bool legionOrder = m_protocol.expansion == WoW::Expansion::_Legion;
+                packet << uint32_t(legionOrder ? avgWaitTime : waitTime);
+                packet << uint32_t(legionOrder ? queuedTime : avgWaitTime);
+                packet << int32_t(waitTimeTanks);
+                packet << uint8_t(tanks);
+                packet << int32_t(waitTimeHealer);
+                packet << uint8_t(healers);
+                packet << int32_t(waitTimeDps);
+                packet << uint8_t(dps);
+                packet << uint32_t(legionOrder ? waitTime : queuedTime);
+                return true;
+            }
             if (m_protocol.isMop())
             {
                 WoWGuid playerGuid = guid;

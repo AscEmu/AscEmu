@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "LfgPacketHelpers.h"
 #include "WoWGuid.hpp"
 #include <cstdint>
 #include <string>
@@ -49,6 +50,24 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x+: sent as SMSG_LFG_BOOT_PLAYER, flags and reason length first, 11.x+ gives the length 9 bits
+                packet.setOpcode(SMSG_LFG_BOOT_PLAYER);
+                packet.writeBit(inProgress != 0);
+                packet.writeBit(agreeNum >= votedNeeded);
+                packet.writeBit(didVote != 0);
+                packet.writeBit(agree != 0);
+                packet.writeBits(uint32_t(reason.length()), m_protocol.expansion >= WoW::Expansion::_TheWarWithin ? 9 : 8);
+                packet.flushBits();
+                packet << WoWGuid(victim).toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << uint32_t(votesNum);
+                packet << uint32_t(agreeNum);
+                packet << int32_t(secsLeft);
+                packet << uint32_t(votedNeeded);
+                packet.writeString(reason);
+                return true;
+            }
             if (m_protocol.isMop())
             {
                 WoWGuid targetGuid = victim;

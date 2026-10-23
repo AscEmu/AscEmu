@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "LfgPacketHelpers.h"
 #include "Management/ItemProperties.hpp"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Management/QuestProperties.hpp"
@@ -48,6 +49,81 @@ namespace AscEmu::Packets
         {
             if (!qReward)
                 return false;
+
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                const auto expansion = m_protocol.expansion;
+                packet << uint32_t(randomDungeonEntry);                         // queued slot
+                packet << uint32_t(dungeonEntry);                               // actual slot
+                packet << int32_t(qReward->reward_money);
+                packet << int32_t(qReward->reward_xp);
+                packet << uint32_t(qReward->GetRewardItemCount());
+                for (uint8_t i = 0; i < 4; ++i)
+                {
+                    if (!qReward->reward_item[i])
+                        continue;
+
+                    const uint32_t itemId = qReward->reward_item[i];
+                    const uint32_t count = qReward->reward_itemcount[i];
+                    if (expansion == WoW::Expansion::_WoD)
+                    {
+                        packet << uint32_t(itemId);
+                        packet << uint32_t(count);
+                        packet << uint32_t(0);                                  // bonus currency
+                        packet.writeBit(false);                                 // is currency
+                        packet.flushBits();
+                    }
+                    else if (expansion == WoW::Expansion::_Legion)
+                    {
+                        // item instance with random property seed and id, no bonus list and no modifications
+                        packet << int32_t(itemId);
+                        packet << int32_t(0);
+                        packet << int32_t(0);
+                        packet.writeBit(false);
+                        packet.writeBit(false);
+                        packet.flushBits();
+                        packet << uint32_t(count);
+                        packet << uint32_t(0);                                  // bonus currency
+                        packet.writeBit(false);                                 // is currency
+                        packet.flushBits();
+                    }
+                    else
+                    {
+                        packet.writeBit(true);                                  // item
+                        packet.writeBit(false);                                 // currency
+                        if (expansion >= WoW::Expansion::_Midnight)
+                        {
+                            packet << uint32_t(count);
+                            packet << int32_t(0);                               // bonus quantity
+                            packet << int32_t(itemId);
+                            packet.writeBits(0, 7);                             // modifications
+                            packet.flushBits();
+                            packet.writeBit(false);                             // bonus list
+                            packet.flushBits();
+                        }
+                        else
+                        {
+                            packet << int32_t(itemId);
+                            if (expansion == WoW::Expansion::_BfA)
+                            {
+                                packet.writeBit(false);                         // bonus list
+                                packet.writeBit(false);                         // modifications
+                                packet.flushBits();
+                            }
+                            else
+                            {
+                                packet.writeBit(false);                         // bonus list
+                                packet.flushBits();
+                                packet.writeBits(0, 6);                         // modifications
+                                packet.flushBits();
+                            }
+                            packet << uint32_t(count);
+                            packet << int32_t(0);                               // bonus quantity
+                        }
+                    }
+                }
+                return true;
+            }
 
             if (m_protocol.expansion >= WoW::Expansion::_Cata)
             {

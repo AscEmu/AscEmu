@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "LfgPacketHelpers.h"
 #include "Management/LFG/LFG.hpp"
 #include "WoWGuid.hpp"
 #include <cstdint>
@@ -39,6 +40,13 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                packet << uint32_t(lockMap.size());
+                for (const auto& lock : lockMap)
+                    Lfg::writeBlackList(packet, m_protocol, m_receiverMapId, lock.first, lock.second);
+                return true;
+            }
             if (m_protocol.isMop())
             {
                 // BuildPartyLockDungeonBlock

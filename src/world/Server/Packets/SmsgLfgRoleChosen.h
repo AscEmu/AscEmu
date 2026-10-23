@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "LfgPacketHelpers.h"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -34,6 +35,14 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                packet << WoWGuid(guid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                Lfg::writeRoles(packet, m_protocol, roles);
+                packet.writeBit(roles > 0);                                     // accepted
+                packet.flushBits();
+                return true;
+            }
             if (m_protocol.isMop())
             {
                 const WoWGuid wowGuid(guid);

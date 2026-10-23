@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "LfgPacketHelpers.h"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -30,6 +31,23 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_Dragonflight)
+            {
+                // 10.x+: party index bit, roles byte, party index
+                const bool hasPartyIndex = packet.readBit();
+                uint8_t rolesByte = 0;
+                packet >> rolesByte;
+                roles = rolesByte;
+                if (hasPartyIndex)
+                    packet.readSkip<uint8_t>();
+                return true;
+            }
+            else if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                packet >> roles;
+                packet.readSkip<uint8_t>();                     // party index
+                return true;
+            }
             if (m_protocol.isMop())
             {
                 packet >> roles;

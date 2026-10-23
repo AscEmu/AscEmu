@@ -31,6 +31,9 @@ namespace AscEmu::Packets
         uint32_t honorPointsForWinning = 0;
         uint32_t arenaPointsForWinning = 0;
         uint32_t honorPointsForLosing = 0;
+        // 6.x+ - level range of the battleground
+        uint8_t minLevel = 0;
+        uint8_t maxLevel = 0;
 
         SmsgBattlefieldList() : ManagedPacket(SMSG_BATTLEFIELD_LIST, 0)
         {
@@ -47,6 +50,20 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x+: battlemaster, list id, level range, no joinable instances, pvp anywhere and random win flags
+                packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << int32_t(battlegroundType);
+                packet << uint8_t(minLevel);
+                packet << uint8_t(maxLevel);
+                packet << uint32_t(0);
+                packet.writeBit(false);
+                packet.writeBit(hasWonRbgToday);
+                packet.flushBits();
+                return true;
+            }
+
             if (m_protocol.isWotlk())
             {
                 // Send 0 instead of GUID when using the BG UI instead of Battlemaster

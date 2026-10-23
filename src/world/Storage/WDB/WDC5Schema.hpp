@@ -97,6 +97,7 @@ namespace WDB
         inline const WDC5TableSchema WMOAreaTable = makeScalarSchema("WMOAreaTable.db2", 0xC5A7B977, 1, 15);
         inline const WDC5TableSchema DungeonEncounter = makeScalarSchema("DungeonEncounter.db2", 0x35863DC4, 1, 11);
         inline const WDC5TableSchema LFGDungeons = makeSchemaWithArrays("LFGDungeons.db2", 0x34B02DE8, -1, 33, { { 32, 2 } });
+        inline const WDC5TableSchema ContentTuning = makeScalarSchema("ContentTuning.db2", 0xA3E13004, 0, 19);
         inline const WDC5TableSchema Phase = makeScalarSchema("Phase.db2", 0x6D5EB3BD, -1, 1);
         inline const WDC5TableSchema TransportAnimation = makeSchemaWithArrays("TransportAnimation.db2", 0xE622B105, -1, 3, { { 0, 3 } });
         inline const WDC5TableSchema TransportRotation = makeSchemaWithArrays("TransportRotation.db2", 0xD92B0C43, -1, 2, { { 0, 4 } });

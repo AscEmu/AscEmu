@@ -30,6 +30,12 @@ namespace AscEmu::Packets
             if (m_protocol.expansion < WoW::Expansion::_WotLK)
                 return false;
 
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                voteFor = packet.readBit();
+                return true;
+            }
+
             packet >> voteFor;
             return true;
         }

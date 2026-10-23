@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "LfgPacketHelpers.h"
 #include "Management/LFG/LFG.hpp"
 
 namespace AscEmu::Packets
@@ -24,6 +25,53 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                uint32_t numDungeons = 0;
+                if (m_protocol.expansion >= WoW::Expansion::_Dragonflight)
+                {
+                    // 10.x+: queue as group, party index present and mercenary bits, roles byte, slot count, party index
+                    packet.readBit();
+                    const bool hasPartyIndex = packet.readBit();
+                    packet.readBit();
+                    uint8_t rolesByte = 0;
+                    packet >> rolesByte;
+                    roles = rolesByte;
+                    packet >> numDungeons;
+                    if (hasPartyIndex)
+                        packet.readSkip<uint8_t>();
+                }
+                else if (m_protocol.expansion >= WoW::Expansion::_Legion)
+                {
+                    // 7.x to 9.x: queue as group and mercenary bits, party index, roles, slot count
+                    packet.readBit();
+                    packet.readBit();
+                    packet.readSkip<uint8_t>();
+                    packet >> roles;
+                    packet >> numDungeons;
+                }
+                else
+                {
+                    // 6.x: queue as group bit, comment length, party index, roles, slot count, three unused values, comment
+                    packet.readBit();
+                    const uint32_t commentLength = packet.readBits(8);
+                    packet.readSkip<uint8_t>();
+                    packet >> roles;
+                    packet >> numDungeons;
+                    packet.readSkip<uint32_t>();
+                    packet.readSkip<uint32_t>();
+                    packet.readSkip<uint32_t>();
+                    comment = packet.readString(commentLength);
+                }
+
+                for (uint32_t i = 0; i < numDungeons && i < 50; ++i)
+                {
+                    uint32_t dungeon;
+                    packet >> dungeon;
+                    dungeons.insert(dungeon & 0x00FFFFFF);
+                }
+                return true;
+            }
             if (m_protocol.isMop())
             {
                 packet.readSkip<uint8_t>();

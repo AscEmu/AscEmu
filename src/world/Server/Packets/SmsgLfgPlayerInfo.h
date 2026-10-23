@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "LfgPacketHelpers.h"
 #include "Management/ItemProperties.hpp"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Management/QuestProperties.hpp"
@@ -49,6 +50,98 @@ namespace AscEmu::Packets
         {
             if (!player)
                 return false;
+
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                const auto expansion = m_protocol.expansion;
+                packet << uint32_t(randomDungeons.size());
+                Lfg::writeBlackList(packet, m_protocol, m_receiverMapId, player->getGuid(), lock);
+                for (auto randomDungeon : randomDungeons)
+                {
+                    LfgReward const* reward = sLfgMgr.GetRandomDungeonReward(randomDungeon, level);
+                    QuestProperties const* qRew = nullptr;
+                    uint8_t done = 0;
+                    if (reward)
+                    {
+                        qRew = sMySQLStore.getQuestProperties(reward->reward[0].questId);
+                        if (qRew)
+                        {
+                            done = player->hasQuestFinished(qRew->id);
+                            if (done)
+                                qRew = sMySQLStore.getQuestProperties(reward->reward[1].questId);
+                        }
+                    }
+                    const bool firstReward = qRew && !done;
+                    const bool shortageEligible = player->getGroup() == nullptr;
+
+                    const auto writeRewards = [&]()
+                    {
+                        if (expansion >= WoW::Expansion::_Dragonflight)
+                            packet << uint8_t(0);                               // role mask
+                        else
+                            packet << uint32_t(0);
+                        packet << int32_t(qRew ? qRew->reward_money : 0);
+                        packet << int32_t(qRew ? qRew->reward_xp : 0);
+                        packet << uint32_t(qRew ? qRew->GetRewardItemCount() : 0);
+                        packet << uint32_t(0);                                  // currencies
+                        packet << uint32_t(0);                                  // bonus currencies
+                        if (qRew)
+                        {
+                            for (uint8_t i = 0; i < 4; ++i)
+                            {
+                                if (!qRew->reward_item[i])
+                                    continue;
+                                packet << int32_t(qRew->reward_item[i]);
+                                packet << int32_t(qRew->reward_itemcount[i]);
+                            }
+                        }
+                        // optional spell, artifact and honor values, 6.x has only one
+                        packet.writeBit(false);
+                        if (expansion >= WoW::Expansion::_Legion)
+                        {
+                            packet.writeBit(false);
+                            packet.writeBit(false);
+                            packet.writeBit(false);
+                        }
+                        packet.flushBits();
+                    };
+
+                    packet << uint32_t(randomDungeon);                          // slot
+                    packet << int32_t(1);                                       // completion quantity
+                    packet << int32_t(1);                                       // completion limit
+                    packet << int32_t(0);                                       // completion currency
+                    packet << int32_t(0);                                       // specific quantity
+                    packet << int32_t(1);                                       // specific limit
+                    packet << int32_t(0);                                       // overall quantity
+                    packet << int32_t(1);                                       // overall limit
+                    packet << int32_t(0);                                       // purse weekly quantity
+                    packet << int32_t(0);                                       // purse weekly limit
+                    packet << int32_t(0);                                       // purse quantity
+                    packet << int32_t(0);                                       // purse limit
+                    packet << int32_t(1);                                       // quantity
+                    packet << uint32_t(0);                                      // completed mask
+                    if (expansion >= WoW::Expansion::_Legion)
+                        packet << uint32_t(0);                                  // encounter mask
+                    packet << uint32_t(0);                                      // shortage rewards
+
+                    // 12.x writes the two flags behind the rewards
+                    if (expansion >= WoW::Expansion::_Midnight)
+                    {
+                        writeRewards();
+                        packet.writeBit(firstReward);
+                        packet.writeBit(shortageEligible);
+                        packet.flushBits();
+                    }
+                    else
+                    {
+                        packet.writeBit(firstReward);
+                        packet.writeBit(shortageEligible);
+                        packet.flushBits();
+                        writeRewards();
+                    }
+                }
+                return true;
+            }
 
             if (m_protocol.isMop())
             {

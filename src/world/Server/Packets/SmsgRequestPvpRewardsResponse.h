@@ -41,6 +41,60 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // an empty reward block: mask, money, xp, item, currency and bonus counts, the optional values
+                const auto writeReward = [&packet]()
+                {
+                    for (uint8_t i = 0; i < 6; ++i)
+                        packet << uint32_t(0);
+                };
+
+                if (m_protocol.expansion == WoW::Expansion::_WoD)
+                {
+                    // 6.x: the weekly conquest values, then the rated and arena rewards
+                    packet << currencyOnWeekConquestPoints;
+                    packet << currencyWeekCapConquestPoints;
+                    packet << currencyOnWeekConquestArena;
+                    packet << currencyWeekCapConquestArena;
+                    packet << uint32_t(0);                                      // ashran on week
+                    packet << uint32_t(0);                                      // ashran week cap
+                    packet << currencyOnWeekConquestRandomBattleground;
+                    packet << uint32_t(0);                                      // battleground week cap
+                    packet << uint32_t(0);                                      // conquest per rated battleground win
+                    packet << uint32_t(0);                                      // conquest per arena win
+                    for (uint8_t i = 0; i < 2; ++i)
+                    {
+                        writeReward();
+                        packet.writeBit(false);
+                        packet.flushBits();
+                    }
+                    return true;
+                }
+
+                if (m_protocol.expansion == WoW::Expansion::_Legion)
+                {
+                    // 7.x: random battleground reward, the win flags of the day, then the six rated and arena rewards
+                    const auto writeLegionReward = [&]()
+                    {
+                        writeReward();
+                        for (uint8_t i = 0; i < 4; ++i)
+                            packet.writeBit(false);
+                        packet.flushBits();
+                    };
+                    writeLegionReward();
+                    for (uint8_t i = 0; i < 6; ++i)
+                        packet.writeBit(false);
+                    packet.flushBits();
+                    for (uint8_t i = 0; i < 6; ++i)
+                        writeLegionReward();
+                    return true;
+                }
+
+                // 8.x+ clients get no answer
+                return false;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_WotLK)
                 return false;
 

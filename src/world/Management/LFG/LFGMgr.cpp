@@ -2171,6 +2171,12 @@ const std::string& LfgMgr::GetComment(uint64_t guid)
     return m_Players[guid].GetComment();
 }
 
+time_t LfgMgr::getQueueJoinTime(uint64_t guid) const
+{
+    const auto itQueue = m_QueueInfoMap.find(guid);
+    return itQueue != m_QueueInfoMap.end() ? itQueue->second->joinTime : 0;
+}
+
 bool LfgMgr::IsTeleported(uint64_t pguid)
 {
     if (std::find(m_teleport.begin(), m_teleport.end(), pguid) != m_teleport.end())

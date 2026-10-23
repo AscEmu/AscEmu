@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "LfgPacketHelpers.h"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
@@ -13,6 +14,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStructures.hpp"
 #include "WoWGuid.hpp"
 #include <cstdint>
+#include <utility>
+#include <vector>
 
 namespace AscEmu::Packets
 {
@@ -45,6 +48,54 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                const auto expansion = m_protocol.expansion;
+
+                // leader first
+                std::vector<std::pair<uint64_t, uint8_t>> members;
+                if (const auto itLeader = roles.find(leader); itLeader != roles.end())
+                    members.emplace_back(leader, itLeader->second);
+                for (const auto& rolePair : roles)
+                    if (rolePair.first != leader)
+                        members.emplace_back(rolePair.first, rolePair.second);
+
+                const auto writeMembers = [&]()
+                {
+                    for (const auto& [memberGuid, memberRoles] : members)
+                    {
+                        const WoWGuid wowGuid(memberGuid);
+                        Player* member = sObjectMgr.getPlayer(wowGuid.getCounter());
+                        packet << wowGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
+                        Lfg::writeRoles(packet, m_protocol, memberRoles);
+                        packet << uint8_t(member ? member->getLevel() : 0);
+                        packet.writeBit(memberRoles > 0);                      // role check complete
+                        packet.flushBits();
+                    }
+                };
+
+                packet << uint8_t(expansion == WoW::Expansion::_WoD ? 0 : 127); // party index
+                packet << uint8_t(state);
+                packet << uint32_t(dungeons.size());
+                if (expansion >= WoW::Expansion::_BfA)
+                    packet << uint32_t(0);                                      // battleground queue ids
+                else
+                    packet << uint64_t(0);                                      // battleground queue id
+                packet << int32_t(0);                                           // group finder activity
+                packet << uint32_t(members.size());
+                for (auto dungeonId : dungeons)
+                    packet << uint32_t(Lfg::dungeonEntry(dungeonId));
+
+                // 12.x writes the members before the two bits
+                if (expansion >= WoW::Expansion::_Midnight)
+                    writeMembers();
+                packet.writeBit(state == LFG_ROLECHECK_INITIALITING);          // is beginning
+                packet.writeBit(false);                                         // is requeue
+                packet.flushBits();
+                if (expansion < WoW::Expansion::_Midnight)
+                    writeMembers();
+                return true;
+            }
             if (m_protocol.isMop())
             {
                 // Note: guid is intentionally re-used as a mutable cursor across both the bit-mask

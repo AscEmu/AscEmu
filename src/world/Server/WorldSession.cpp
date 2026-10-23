@@ -1008,16 +1008,19 @@ void WorldSession::registerOpcodeHandler()
     // CMSG_SET_LFG_COMMENT is shared with the TBC-only Meeting Stone system below - only route
     // it here for WotLK, where the modern Dungeon Finder's comment actually gets used.
     registry.registerOpcode(CMSG_SET_LFG_COMMENT, &WorldSession::handleLfgSetCommentOpcode, false, false, true, false, false);
-    registry.registerOpcode(CMSG_LFG_JOIN, &WorldSession::handleLfgJoinOpcode, false, false, true, true, true);
-    registry.registerOpcode(CMSG_LFG_LEAVE, &WorldSession::handleLfgLeaveOpcode, false, false, true, true, true);
+    registry.registerOpcode(CMSG_LFG_JOIN, &WorldSession::handleLfgJoinOpcode, false, false, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_LFG_LEAVE, &WorldSession::handleLfgLeaveOpcode, false, false, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_SEARCH_LFG_JOIN, &WorldSession::handleLfgSearchOpcode, false, false, true, true, false);
     registry.registerOpcode(CMSG_SEARCH_LFG_LEAVE, &WorldSession::handleLfgSearchLeaveOpcode, false, false, true, true, false);
-    registry.registerOpcode(CMSG_LFG_PROPOSAL_RESULT, &WorldSession::handleLfgProposalResultOpcode, false, false, true, true, true);
-    registry.registerOpcode(CMSG_LFG_SET_ROLES, &WorldSession::handleLfgSetRolesOpcode, false, false, true, true, true);
-    registry.registerOpcode(CMSG_LFG_SET_BOOT_VOTE, &WorldSession::handleLfgSetBootVoteOpcode, false, false, true, true, true);
+    registry.registerOpcode(CMSG_LFG_PROPOSAL_RESULT, &WorldSession::handleLfgProposalResultOpcode, false, false, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_LFG_SET_ROLES, &WorldSession::handleLfgSetRolesOpcode, false, false, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_LFG_SET_BOOT_VOTE, &WorldSession::handleLfgSetBootVoteOpcode, false, false, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_LFD_PLAYER_LOCK_INFO_REQUEST, &WorldSession::handleLfgPlayerLockInfoRequestOpcode, false, false, true, true, false);
-    registry.registerOpcode(CMSG_LFG_TELEPORT, &WorldSession::handleLfgTeleportOpcode, false, false, true, true, true);
+    registry.registerOpcode(CMSG_LFG_TELEPORT, &WorldSession::handleLfgTeleportOpcode, false, false, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_LFD_PARTY_LOCK_INFO_REQUEST, &WorldSession::handleLfgPartyLockInfoRequestOpcode, false, false, true, true, false);
+    // 6.x+: lock info and queue status requests of the dungeon finder
+    registry.registerOpcode(CMSG_DF_GET_SYSTEM_INFO, &WorldSession::handleLfgLockInfoOpcode, false, false, false, false, false, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_DF_GET_JOIN_STATUS, &WorldSession::handleLfgGetStatusOpcode, false, false, false, false, false, true, true, true, true, true, true, true);
 
     // Meeting Stone "Looking For Group" matchmaking - TBC ONLY, do not confuse with the WotLK+
     // Dungeon Finder above.
@@ -1245,7 +1248,7 @@ void WorldSession::registerOpcodeHandler()
     // Battlegrounds
     registry.registerOpcode(CMSG_BATTLEFIELD_PORT, &WorldSession::handleBattlefieldPortOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_BATTLEFIELD_STATUS, &WorldSession::handleBattlefieldStatusOpcode, true, true, true, true, true);
-    registry.registerOpcode<STATUS_LOGGEDIN>(CMSG_BATTLEFIELD_LIST, &WorldSession::handleBattlefieldListOpcode, true, true, true, true, true);
+    registry.registerOpcode<STATUS_LOGGEDIN>(CMSG_BATTLEFIELD_LIST, &WorldSession::handleBattlefieldListOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_BATTLEMASTER_HELLO, &WorldSession::handleBattleMasterHelloOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_BATTLEMASTER_JOIN_ARENA, &WorldSession::handleArenaJoinOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_BATTLEMASTER_JOIN, &WorldSession::handleBattleMasterJoinOpcode, true, true, true, true, true);
@@ -1453,9 +1456,9 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_LF_GUILD_REMOVE_RECRUIT, &WorldSession::handleGuildFinderRemoveRecruit, false, false, false, true, false);
     registry.registerOpcode(CMSG_LF_GUILD_SET_GUILD_POST, &WorldSession::handleGuildFinderSetGuildPost, false, false, false, true, false);
     registry.registerOpcode(CMSG_REQUEST_RATED_BG_INFO, &WorldSession::handleRequestRatedBgInfoOpcode, false, false, false, true, true);
-    registry.registerOpcode(CMSG_REQUEST_RATED_BG_STATS, &WorldSession::handleRequestRatedBgStatsOpcode, false, false, false, true, true);
-    registry.registerOpcode(CMSG_REQUEST_PVP_REWARDS, &WorldSession::handleRequestPvPRewardsOpcode, false, false, false, true, true);
-    registry.registerOpcode(CMSG_REQUEST_PVP_OPTIONS_ENABLED, &WorldSession::handleRequestPvpOptionsOpcode, false, false, false, true, true);
+    registry.registerOpcode(CMSG_REQUEST_RATED_BG_STATS, &WorldSession::handleRequestRatedBgStatsOpcode, false, false, false, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_REQUEST_PVP_REWARDS, &WorldSession::handleRequestPvPRewardsOpcode, false, false, false, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_REQUEST_PVP_OPTIONS_ENABLED, &WorldSession::handleRequestPvpOptionsOpcode, false, false, false, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_REPORT, &WorldSession::handleReportOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_REPORT_PLAYER, &WorldSession::handleReportPlayerOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_REQUEST_CEMETERY_LIST, &WorldSession::handleRequestCemeteryListOpcode, false, false, false, true, true, true, true, true, true, true, true, true);

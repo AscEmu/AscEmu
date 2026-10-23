@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "LfgPacketHelpers.h"
 #include "Management/LFG/LFG.hpp"
 #include <cstdint>
 #include <string>
@@ -28,6 +29,11 @@ namespace AscEmu::Packets
         uint32_t roles = 0;
         LfgDungeonSet dungeons;
         std::string comment;
+        // 6.x+: queue ticket and the notify / still joined flags
+        uint32_t ticketId = 0;
+        uint32_t ticketTime = 0;
+        bool notifyUI = true;
+        bool lfgJoined = true;
 
         SmsgLfgUpdateStatus() : ManagedPacket(SMSG_LFG_UPDATE_STATUS, 0)
         {
@@ -41,6 +47,60 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                const auto expansion = m_protocol.expansion;
+                Lfg::writeRideTicket(packet, m_protocol, m_receiverMapId, guid.getRawGuid(), ticketId, ticketTime);
+                packet << uint8_t(1);                                           // dungeon queue
+                if (expansion >= WoW::Expansion::_TheWarWithin)
+                    packet << uint32_t(Lfg::clientUpdateType(m_protocol, updateType));
+                else
+                    packet << uint8_t(Lfg::clientUpdateType(m_protocol, updateType));
+                if (expansion == WoW::Expansion::_WoD)
+                {
+                    packet << uint8_t(0);
+                    packet << uint8_t(0);
+                    packet << uint8_t(0);
+                }
+                packet << uint32_t(dungeons.size());
+                Lfg::writeRoles(packet, m_protocol, roles);
+                packet << uint32_t(0);                                          // suspended players
+                if (expansion >= WoW::Expansion::_BfA)
+                    packet << uint32_t(0);                                      // queue map id
+                for (auto dungeonId : dungeons)
+                    packet << uint32_t(Lfg::dungeonEntry(dungeonId));
+
+                if (expansion == WoW::Expansion::_WoD)
+                {
+                    packet.writeBit(notifyUI);
+                    packet.writeBit(isParty);
+                    packet.writeBit(joined);
+                    packet.writeBit(lfgJoined);
+                    packet.writeBit(queued);
+                    packet.writeBits(uint32_t(comment.size()), 8);
+                    packet.flushBits();
+                    packet.writeString(comment);
+                    return true;
+                }
+
+                // 12.x swaps the first two bits
+                if (expansion >= WoW::Expansion::_Midnight)
+                {
+                    packet.writeBit(notifyUI);
+                    packet.writeBit(isParty);
+                }
+                else
+                {
+                    packet.writeBit(isParty);
+                    packet.writeBit(notifyUI);
+                }
+                packet.writeBit(joined);
+                packet.writeBit(lfgJoined);
+                packet.writeBit(queued);
+                packet.writeBit(false);                                         // brawl
+                packet.flushBits();
+                return true;
+            }
             if (m_protocol.isMop())
             {
                 const uint32_t size = static_cast<uint32_t>(dungeons.size());

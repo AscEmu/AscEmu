@@ -357,6 +357,10 @@ void WorldSession::handleRequestPvPRewardsOpcode(WorldPacket& /*recvPacket*/)
 #if VERSION_STRING >= Cata
     sLogger.debugOpcode("Received CMSG_REQUEST_RATED_BG_STATS received.");
 
+    // 8.x+ clients get no answer
+    if (_socket->getClientProtocol().expansion >= WoW::Expansion::_BfA)
+        return;
+
     SmsgRequestPvpRewardsResponse managedPacket(0, 0, 0, 0, 0, 0);
     sendManagedPacket(managedPacket);
 #endif

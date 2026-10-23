@@ -23,6 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WDC5File.hpp"
 #include "WDC5Schema.hpp"
 #include "Logging/Logger.hpp"
+#include "Server/World.h"
 #include "Management/AchievementMgr.h"
 #include "Map/Area/AreaStorage.hpp"
 
@@ -498,6 +499,35 @@ namespace
     {
         WDC5File map, mapDifficulty, uiMapAssignment, worldMapOverlay, areaTable, areaTrigger, areaGroupMember, liquidType, wmoAreaTable;
         WDC5File dungeonEncounter, lfgDungeons, phase, transportAnimation, transportRotation, taxiNodes, taxiPath, taxiPathNode, holidays;
+
+        // level ranges of the dungeons by content tuning id (9.x+), resolved with the level cap of the server
+        std::unordered_map<uint32_t, std::pair<uint32_t, uint32_t>> tuningLevels;
+#if VERSION_STRING >= TheWarWithin
+        {
+            WDC5File contentTuning;
+            if (!loadTables(errors, dbcPath, { { contentTuning, Layout::ContentTuning } }))
+                return false;
+
+            const int32_t levelCap = static_cast<int32_t>(worldConfig.player.playerLevelCap);
+            // level type: 1 lowest level, 2 level cap, 3 cap of the previous expansion
+            const auto adjust = [levelCap](int32_t type) -> int32_t
+            {
+                switch (type)
+                {
+                    case 1: return 1;
+                    case 2: return levelCap;
+                    case 3: return std::max(levelCap - 10, 1);
+                    default: return 0;
+                }
+            };
+            for (Row const row : rows(contentTuning))
+            {
+                const int32_t minLevel = std::clamp(row.i32(9) + adjust(row.i32(11)), 1, levelCap);
+                const int32_t maxLevel = std::clamp(row.i32(10) + adjust(row.i32(12)), 1, levelCap);
+                tuningLevels[row.id()] = { static_cast<uint32_t>(minLevel), static_cast<uint32_t>(maxLevel) };
+            }
+        }
+#endif
         if (!loadTables(errors, dbcPath, {
             { map, Layout::Map }, { mapDifficulty, Layout::MapDifficulty }, { uiMapAssignment, Layout::UiMapAssignment },
             { worldMapOverlay, Layout::WorldMapOverlay }, { areaTable, Layout::AreaTable }, { areaTrigger, Layout::AreaTrigger },
@@ -643,8 +673,8 @@ namespace
             entry.encounterName[0] = row.text(0);
         });
 
-        // the level requirements of the dungeons moved to ContentTuning, they stay 0 here
-        fillContainer(sLFGDungeonStore, lfgDungeons, [](WDB::Structures::LFGDungeonEntry& entry, Row const& row)
+        // the level requirements of the dungeons come from the content tuning of the row
+        fillContainer(sLFGDungeonStore, lfgDungeons, [&tuningLevels](WDB::Structures::LFGDungeonEntry& entry, Row const& row)
         {
             entry.ID = row.id();
             entry.name[0] = row.text(0);
@@ -654,6 +684,11 @@ namespace
             entry.type = row.u8(2);             // TypeID
             entry.expansion = row.u8(8);        // ExpansionLevel
             entry.grouptype = row.u8(12);       // GroupID
+            if (const auto itLevels = tuningLevels.find(row.u32(31)); itLevels != tuningLevels.end())
+            {
+                entry.minlevel = itLevels->second.first;
+                entry.maxlevel = itLevels->second.second;
+            }
         });
 
         fillContainer(sPhaseStore, phase, [](WDB::Structures::PhaseEntry& entry, Row const& row)

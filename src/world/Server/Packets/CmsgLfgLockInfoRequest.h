@@ -21,6 +21,20 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_Dragonflight)
+            {
+                // 10.x+: player bit, party index bit, party index
+                requestFromPlayer = packet.readBit();
+                if (packet.readBit())
+                    packet.readSkip<uint8_t>();
+                return true;
+            }
+            else if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                requestFromPlayer = packet.readBit();
+                packet.readSkip<uint8_t>();                     // party index
+                return true;
+            }
             if (m_protocol.isMop())
             {
                 packet.readSkip<uint8_t>();

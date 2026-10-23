@@ -304,6 +304,7 @@ public:
     void SetSelectedDungeons(uint64_t guid, const LfgDungeonSet& dungeons);
     uint32_t GetLFGDungeon(uint32_t id);
     const std::string& GetComment(uint64_t gguid);
+    time_t getQueueJoinTime(uint64_t guid) const;
 
 private:
     void RestoreState(uint64_t guid);
