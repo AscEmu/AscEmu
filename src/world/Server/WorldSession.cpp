@@ -1149,7 +1149,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(MSG_QUEST_PUSH_RESULT, &WorldSession::handleQuestPushResultOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_QUEST_PUSH_RESULT, &WorldSession::handleQuestPushResultOpcode, false, false, false, false, false, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_QUEST_POI_QUERY, &WorldSession::handleQuestPOIQueryOpcode, false, false, true, true, true, true, true, true, true, true, true, true);
-    registry.registerOpcode(CMSG_QUEST_NPC_QUERY, &WorldSession::handleQuestNpcQueryOpcode, false, false, false, false, true);
+    registry.registerOpcode(CMSG_QUEST_NPC_QUERY, &WorldSession::handleQuestNpcQueryOpcode, false, false, false, false, true, true, true, true, true, true, true, true);
 
     // Auction System
     registry.registerOpcode(CMSG_AUCTION_LIST_ITEMS, &WorldSession::handleAuctionListItems, true, true, true, true, true);

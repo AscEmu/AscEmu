@@ -47,6 +47,20 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                packet << uint32_t(quests.size());
+                for (const auto& quest : quests)
+                {
+                    packet << quest.questId;
+                    packet << uint32_t(quest.finisherEntries.size());
+                    for (const auto entry : quest.finisherEntries)
+                        packet << entry;
+                }
+
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 packet.writeBits(quests.size(), 21);
