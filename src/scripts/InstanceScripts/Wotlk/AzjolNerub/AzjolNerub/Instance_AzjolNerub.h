@@ -25,6 +25,14 @@ enum CreatureEntry
     //Anub'ar Shadowcaster
     CN_ANUB_SHADOWCASTER = 28733,
 
+    //Hadronox event
+    CN_ANUBAR_CRUSHER           = 28922,
+    CN_ANUBAR_CHAMPION          = 29062,
+    CN_ANUBAR_CRYPT_FIEND       = 29063,
+    CN_ANUBAR_NECROMANCER       = 29064,
+    CN_CRUSHER_CHAMPION         = 29117,
+    CN_CRUSHER_CRYPT_FIEND      = 29118,
+    CN_CRUSHER_NECROMANCER      = 29119,
 };
 
 enum CreatureSpells
@@ -44,6 +52,21 @@ enum CreatureSpells
     HADRONOX_WEBGRAB_HC         = 59421,    // Heroic
     HADRONOX_LEECHPOISON_HC     = 59417,    // Heroic
     HADRONOX_ACIDCLOUD_HC       = 59419,    // Heroic
+    HADRONOX_LEECHPOISON_HEAL   = 53800,
+    HADRONOX_WEB_FRONT_DOORS    = 53177,
+    HADRONOX_WEB_SIDE_DOORS     = 53185,
+
+    //Anub'ar Crusher and the packs
+    CRUSHER_SMASH               = 53318,
+    CRUSHER_FRENZY              = 53801,
+    ANUBAR_TAUNT                = 53798,
+    ANUBAR_REND                 = 59343,
+    ANUBAR_PUMMEL               = 59344,
+    ANUBAR_CRUSHING_WEBS        = 59347,
+    ANUBAR_INFECTED_WOUND       = 59348,
+    ANUBAR_SHADOW_BOLT          = 53333,
+    ANUBAR_ANIMATE_BONES_1      = 53334,
+    ANUBAR_ANIMATE_BONES_2      = 53336,
 
     //Watcher Gashra.
     GASHRA_WEBWRAP              = 52086,
