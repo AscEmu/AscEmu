@@ -33,6 +33,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Units/Creatures/CreatureDefines.hpp"
+#include "Units/Creatures/CreatureLevelTuning.hpp"
 #include "Management/Group.h"
 #include "Management/ObjectMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
@@ -992,6 +993,13 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     }
 
     dmgInfo.realDamage = dmgInfo.fullDamage;
+
+    // a level range creature deals the damage of the victim's level
+    if (auto const* scalingCaster = ToCreature(); CreatureLevelTuning::isScaling(scalingCaster))
+    {
+        dmgInfo.fullDamage = Util::float2int32(dmgInfo.fullDamage * CreatureLevelTuning::damageMultiplierForTarget(scalingCaster, victim));
+        dmgInfo.realDamage = dmgInfo.fullDamage;
+    }
 
     // Calculate resistance reduction
     if (dmgInfo.realDamage > 0 && isCreatureOrPlayer() && !(isPeriodic && school == SCHOOL_NORMAL))

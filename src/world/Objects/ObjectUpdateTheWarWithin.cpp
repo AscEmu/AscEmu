@@ -577,7 +577,7 @@ namespace
         }
 
         data << int64_t(unit->getMaxHealth());
-        data << int32_t(unit->getLevel());
+        data << int32_t(unit->getViewerLevel(ctx.target));
         data << int32_t(unit->getField<uint32_t>(UnitField::EffectiveLevel));
         data << int32_t(0);                                                 // content tuning
         data << int32_t(0);                                                 // scaling level min
@@ -943,7 +943,7 @@ namespace
             if (mask[37])
                 data << int64_t(unit->getMaxHealth());
             if (mask[38])
-                data << int32_t(unit->getLevel());
+                data << int32_t(unit->getViewerLevel(ctx.target));
             if (mask[39])
                 data << int32_t(unit->getField<uint32_t>(UnitField::EffectiveLevel));
             for (uint8_t bit = 40; bit <= 43; ++bit)

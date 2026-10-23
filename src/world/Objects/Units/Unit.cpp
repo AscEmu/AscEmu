@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Unit.hpp"
 
 #include "Creatures/Corpse.hpp"
+#include "Creatures/CreatureLevelTuning.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/HonorHandler.h"
@@ -1393,6 +1394,14 @@ uint32_t Unit::getViewerUnitFlags(Player const* target) const
         unitFlags &= ~UNIT_FLAG_NOT_SELECTABLE;
 
     return unitFlags;
+}
+
+uint32_t Unit::getViewerLevel(Player const* target) const
+{
+    if (auto const* creature = ToCreature(); CreatureLevelTuning::isScaling(creature))
+        return CreatureLevelTuning::levelForTarget(creature, target);
+
+    return getLevel();
 }
 
 float Unit::getMinDamage() const { return getField<float>(UnitField::MinimumDamage); }
@@ -7321,6 +7330,10 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
     const auto attacker = batch->caster;
     if (attacker != nullptr && attacker != this)
     {
+        // a level range creature takes the damage against the health of the attacker's level
+        if (auto const* scalingVictim = ToCreature(); CreatureLevelTuning::isScaling(scalingVictim))
+            damage = static_cast<uint32_t>(damage / CreatureLevelTuning::healthMultiplierForTarget(scalingVictim, attacker));
+
         if (attacker->isPlayer())
         {
             const auto plr = dynamic_cast<Player*>(attacker);
@@ -11188,6 +11201,12 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     if (pVictim->m_damageSplitTarget)
     {
         dmg.fullDamage = pVictim->doDamageSplitTarget(dmg.fullDamage, dmg.schoolMask, true);
+        dmg.realDamage = dmg.fullDamage;
+    }
+    // a level range creature deals the damage of the victim's level
+    if (auto const* scalingAttacker = ToCreature(); CreatureLevelTuning::isScaling(scalingAttacker))
+    {
+        dmg.fullDamage = Util::float2int32(dmg.fullDamage * CreatureLevelTuning::damageMultiplierForTarget(scalingAttacker, pVictim));
         dmg.realDamage = dmg.fullDamage;
     }
     //////////////////////////////////////////////////////////////////////////////////////////

@@ -345,6 +345,7 @@ public:
 
     [[nodiscard]] virtual uint32_t getViewerDisplayId(Player const* target) const;
     [[nodiscard]] virtual uint32_t getViewerUnitFlags(Player const* target) const;
+    [[nodiscard]] virtual uint32_t getViewerLevel(Player const* target) const;
 
     float getMinDamage() const;
     void setMinDamage(float damage);

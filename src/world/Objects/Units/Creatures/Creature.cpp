@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Objects/DynamicObject.hpp"
+#include "CreatureLevelTuning.hpp"
 #include "Server/ClientProtocol.hpp"
 #include "Management/AuctionMgr.hpp"
 #include "Management/QuestMgr.h"
@@ -904,7 +905,7 @@ void Creature::OnRespawn()
     sLogger.debug("Respawning '{}' (Entry: {}, LowGuid: {})...", GetCreatureProperties()->Name, getEntry(), getGuidLow());
 
     auto const [minLevel, maxLevel] = std::minmax(GetCreatureProperties()->MinLevel, GetCreatureProperties()->MaxLevel);
-    const uint32_t level = minLevel == maxLevel ? minLevel : Util::getRandomUInt(minLevel, maxLevel);
+    const uint32_t level = minLevel == maxLevel || CreatureLevelTuning::isScaling(this) ? maxLevel : Util::getRandomUInt(minLevel, maxLevel);
     setLevel(level);
     setHealth(getMaxHealth());
     uint32_t displayID = getNativeDisplayId();
@@ -1795,7 +1796,9 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     setHoverHeight(creature_properties->Scale);
 #endif
 
-    uint32_t health = creature_properties->MinHealth + Util::getRandomUInt(creature_properties->MaxHealth - creature_properties->MinHealth);
+    // a level range row holds the values of its two levels, the creature takes the upper one
+    const bool levelRange = CreatureLevelTuning::isScaling(creature_properties);
+    uint32_t health = levelRange ? creature_properties->MaxHealth : creature_properties->MinHealth + Util::getRandomUInt(creature_properties->MaxHealth - creature_properties->MinHealth);
 
     setMaxHealth(health);
     setHealth(health);
@@ -1815,13 +1818,13 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
 
     eventModelChange();
 
-    setLevel(creature_properties->MinLevel + (Util::getRandomUInt(creature_properties->MaxLevel - creature_properties->MinLevel)));
+    setLevel(levelRange ? creature_properties->MaxLevel : creature_properties->MinLevel + (Util::getRandomUInt(creature_properties->MaxLevel - creature_properties->MinLevel)));
 
     for (uint8_t i = 0; i < 7; ++i)
         setResistance(i, creature_properties->Resistances[i]);
 
     setBaseAttackTime(MELEE, creature_properties->AttackTime);
-    setMinDamage(creature_properties->MinDamage);
+    setMinDamage(levelRange ? creature_properties->MaxDamage / CreatureLevelTuning::MAX_ROLL_FACTOR : creature_properties->MinDamage);
     setMaxDamage(creature_properties->MaxDamage);
 
     setFaction(creature_properties->Faction);
@@ -2021,6 +2024,8 @@ bool Creature::LoadFromDB(MySQLStructure::CreatureSpawn* spawn, WorldMap* map, b
     setHoverHeight(creature_properties->Scale);
 #endif
 
+    // a level range row holds the values of its two levels, the creature takes the upper one
+    const bool levelRange = CreatureLevelTuning::isScaling(creature_properties);
     uint32_t health;
     if (creature_properties->MinHealth > creature_properties->MaxHealth)
     {
@@ -2029,7 +2034,7 @@ bool Creature::LoadFromDB(MySQLStructure::CreatureSpawn* spawn, WorldMap* map, b
     }
     else
     {
-        health = creature_properties->MinHealth + Util::getRandomUInt(creature_properties->MaxHealth - creature_properties->MinHealth);
+        health = levelRange ? creature_properties->MaxHealth : creature_properties->MinHealth + Util::getRandomUInt(creature_properties->MaxHealth - creature_properties->MinHealth);
     }
 
     setMaxHealth(health);
@@ -2047,7 +2052,7 @@ bool Creature::LoadFromDB(MySQLStructure::CreatureSpawn* spawn, WorldMap* map, b
 
     eventModelChange();
 
-    setLevel(creature_properties->MinLevel + (Util::getRandomUInt(creature_properties->MaxLevel - creature_properties->MinLevel)));
+    setLevel(levelRange ? creature_properties->MaxLevel : creature_properties->MinLevel + (Util::getRandomUInt(creature_properties->MaxLevel - creature_properties->MinLevel)));
 
     const MySQLStructure::MapInfo* mi = map->getBaseMap()->getMapInfo();
 
@@ -2059,7 +2064,7 @@ bool Creature::LoadFromDB(MySQLStructure::CreatureSpawn* spawn, WorldMap* map, b
 
     setBaseAttackTime(MELEE, creature_properties->AttackTime);
 
-    setMinDamage(creature_properties->MinDamage);
+    setMinDamage(levelRange ? creature_properties->MaxDamage / CreatureLevelTuning::MAX_ROLL_FACTOR : creature_properties->MinDamage);
     setMaxDamage(creature_properties->MaxDamage);
 
     setBaseAttackTime(RANGED, creature_properties->RangedAttackTime);

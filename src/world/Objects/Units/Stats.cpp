@@ -23,6 +23,7 @@
 #include "AEVersion.hpp"
 #include "Objects/Item.hpp"
 #include "Creatures/Creature.h"
+#include "Creatures/CreatureLevelTuning.hpp"
 #include "Creatures/Pet.h"
 #include "Logging/Log.hpp"
 #include "Server/World.h"
@@ -270,7 +271,7 @@ uint32_t CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
     if (victimI->Type == UNIT_TYPE_CRITTER)
         return 0;
 
-    uint32_t VictimLvl = pVictim->getLevel();
+    uint32_t VictimLvl = CreatureLevelTuning::levelForTarget(static_cast<Creature*>(pVictim), pAttacker);
     uint32_t AttackerLvl = pAttacker->getLevel();
 
     if (pAttacker->isPet() && static_cast< Pet* >(pAttacker)->getPlayerOwner())

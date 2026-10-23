@@ -178,6 +178,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementGenerators/FlightPathMovementGenerator.h"
 #include "Objects/GameObjectProperties.hpp"
 #include "Objects/Units/Creatures/Corpse.hpp"
+#include "Objects/Units/Creatures/CreatureLevelTuning.hpp"
 #include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/EventMgr.h"
@@ -2830,6 +2831,17 @@ void Player::applyLevelInfo(uint32_t newLevel)
     sendTalentsInfo();
 
     m_playedTime[0] = 0;
+
+#if VERSION_STRING >= Legion
+    // creatures with a level range show the new level at once
+    if (IsInWorld() && newLevel != previousLevel)
+    {
+        const uint32_t levelIndex = Version::layouts().unit.index(UnitField::Level);
+        for (const auto& inRangeObject : getInRangeObjectsSet())
+            if (auto* creature = inRangeObject != nullptr ? inRangeObject->ToCreature() : nullptr; CreatureLevelTuning::isScaling(creature))
+                creature->forceBuildUpdateValueForField(levelIndex, this);
+    }
+#endif
 }
 
 bool Player::isClassMage() const { return false; }
