@@ -1331,9 +1331,15 @@ namespace
             if (changed.changed(PlayerField::VisibleItemsEntry, i) || changed.changed(PlayerField::VisibleItemsEnchantment, i))
                 mask.set(226 + i);
 
-        // the group bits: the blocks of the plain fields, then the visible items
+        // quest log slots
+        for (uint8_t i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
+            if (changed.changed(PlayerField::QuestsQuestId, i) || changed.changed(PlayerField::QuestsState, i) ||
+                changed.changed(PlayerField::QuestsRequiredMobOrGo, i) || changed.changed(PlayerField::QuestsExpireTime, i))
+                mask.set(50 + i);
+
+        // group bits: plain fields, quest log, visible items
         struct Group { uint16_t parent; uint16_t first; uint16_t count; };
-        static constexpr Group groups[] = { { 0, 1, 31 }, { 32, 33, 13 }, { 225, 226, VisibleItemCount } };
+        static constexpr Group groups[] = { { 0, 1, 31 }, { 32, 33, 13 }, { 49, 50, QuestLogCount }, { 225, 226, VisibleItemCount } };
         for (const Group& group : groups)
             for (uint16_t i = 0; i < group.count; ++i)
                 if (mask[group.first + i])

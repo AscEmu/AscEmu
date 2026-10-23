@@ -1282,9 +1282,18 @@ namespace
             if (changed.changed(PlayerField::VisibleItemsEntry, i) || changed.changed(PlayerField::VisibleItemsEnchantment, i))
                 mask.set(162 + i);
 
+        // quest log slots
+        for (uint8_t i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
+            if (changed.changed(PlayerField::QuestsQuestId, i) || changed.changed(PlayerField::QuestsState, i) ||
+                changed.changed(PlayerField::QuestsRequiredMobOrGo, i) || changed.changed(PlayerField::QuestsExpireTime, i))
+                mask.set(36 + i);
+
         for (uint8_t bit = 1; bit < 32; ++bit)
             if (mask[bit])
                 mask.set(0);
+        for (uint8_t i = 0; i < QuestLogCount; ++i)
+            if (mask[36 + i])
+                mask.set(35);
         for (uint8_t i = 0; i < VisibleItemCount; ++i)
             if (mask[162 + i])
                 mask.set(161);

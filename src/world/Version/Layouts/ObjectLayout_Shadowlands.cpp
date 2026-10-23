@@ -280,6 +280,12 @@ namespace Version::Tables
         { PlayerField::LfgBonusFactionId,                      { 11432,    4,   1,    0 } },
         { PlayerField::LootSpecId,                             { 11436,    4,   1,    0 } },
         { PlayerField::OverrideZonePvpType,                    { 11440,    4,   1,    0 } },
+        // server side quest log slots behind the client fields: id, state, counts, expire time
+        { PlayerField::Quests,                                 { 11448,   24,  25,   24 } },
+        { PlayerField::QuestsQuestId,                          { 11448,    4,  25,   24 } },
+        { PlayerField::QuestsState,                            { 11452,    4,  25,   24 } },
+        { PlayerField::QuestsRequiredMobOrGo,                  { 11456,    8,  25,   24 } },
+        { PlayerField::QuestsExpireTime,                       { 11464,    4,  25,   24 } },
     };
 
     // WoWItem: 26 fields, 340 bytes
