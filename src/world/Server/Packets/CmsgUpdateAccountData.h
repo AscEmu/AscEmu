@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "WoWGuid.hpp"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -16,6 +17,8 @@ namespace AscEmu::Packets
         uint32_t uiId;
         uint32_t uiTimestamp;
         uint32_t uiDecompressedSize;
+        uint32_t compressedSize = 0;
+        size_t dataOffset = 8;
 
         CmsgUpdateAccountData() : CmsgUpdateAccountData(0, 0, 0)
         {
@@ -46,6 +49,42 @@ namespace AscEmu::Packets
                     packet.rfinish();
                     return false;
                 }
+            }
+            else if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x to 9.x: player, time, size and the type as bits; 10.x and later: time, size, player, type
+                WoWGuid128 player;
+                int64_t time = 0;
+                if (m_protocol.expansion <= WoW::Expansion::_Shadowlands)
+                {
+                    packet >> player;
+                    if (m_protocol.isShadowlands())
+                        packet >> time;
+                    else
+                        packet >> uiTimestamp;
+                    packet >> uiDecompressedSize;
+                    uiId = packet.readBits(m_protocol.isShadowlands() ? 4 : 3);
+                    packet.resetBitPos();
+                }
+                else
+                {
+                    packet >> time;
+                    packet >> uiDecompressedSize;
+                    packet >> player;
+                    packet >> uiId;
+                }
+                if (time != 0)
+                    uiTimestamp = static_cast<uint32_t>(time);
+
+                packet >> compressedSize;
+                dataOffset = packet.rpos();
+                if (uiDecompressedSize >= 0xFFFF || compressedSize > packet.remaining())
+                {
+                    packet.rfinish();
+                    return false;
+                }
+
+                packet.rfinish();
             }
             else // Mop
             {

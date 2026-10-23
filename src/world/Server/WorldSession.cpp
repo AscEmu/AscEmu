@@ -934,7 +934,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_AREATRIGGER, &WorldSession::handleAreaTriggerOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
 
     // Account Data
-    registry.registerOpcode<STATUS_AUTHED>(CMSG_UPDATE_ACCOUNT_DATA, &WorldSession::handleUpdateAccountData, true, true, true, true, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_UPDATE_ACCOUNT_DATA, &WorldSession::handleUpdateAccountData, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_REQUEST_ACCOUNT_DATA, &WorldSession::handleRequestAccountData, true, true, true, true, true);
     registry.registerOpcode(CMSG_TOGGLE_PVP, &WorldSession::handleTogglePVPOpcode, true, true, true, true, true);
 
@@ -1127,7 +1127,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_IGNORE_TRADE, &WorldSession::handleIgnoreTrade, true, true, true, true, true);
     registry.registerOpcode(CMSG_ACCEPT_TRADE, &WorldSession::handleAcceptTrade, true, true, true, true, true);
     registry.registerOpcode(CMSG_UNACCEPT_TRADE, &WorldSession::handleUnacceptTrade, true, true, true, true, true);
-    registry.registerOpcode(CMSG_CANCEL_TRADE, &WorldSession::handleCancelTrade, true, true, true, true, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_CANCEL_TRADE, &WorldSession::handleCancelTrade, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_SET_TRADE_ITEM, &WorldSession::handleSetTradeItem, true, true, true, true, true);
     registry.registerOpcode(CMSG_CLEAR_TRADE_ITEM, &WorldSession::handleClearTradeItem, true, true, true, true, true);
     registry.registerOpcode(CMSG_SET_TRADE_GOLD, &WorldSession::handleSetTradeGold, true, true, true, true, true);
@@ -1363,6 +1363,8 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode<STATUS_AUTHED>(CMSG_OBJECT_UPDATE_FAILED, &WorldSession::handleObjectUpdateFailedOpcode, false, false, false, true, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_LOADING_SCREEN_NOTIFY, &WorldSession::handleLoadScreenOpcode, false, false, false, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_TIME_SYNC_RESPONSE, &WorldSession::handleTimeSyncRespOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    // 6.x and later report dropped time sync answers on logout, nothing to do with them
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_DISCARDED_TIME_SYNC_ACKS, &WorldSession::Unhandled, false, false, false, false, false, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_MOVE_SET_CAN_FLY, &WorldSession::handleMovementOpcodes, false, false, false, true, false);
     registry.registerOpcode(CMSG_FORCE_PITCH_RATE_CHANGE_ACK, &WorldSession::handleAcknowledgementOpcodes, false, false, false, true, false, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_MESSAGECHAT_SAY, &WorldSession::handleMessageChatOpcode, false, false, false, true, true, true, true, true, true, true, true, true);
@@ -1460,7 +1462,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode<STATUS_AUTHED>(CMSG_REQUEST_HOTFIX, &WorldSession::handleRequestHotfix, false, false, false, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_RETURN_TO_GRAVEYARD, &WorldSession::handleReturnToGraveyardOpcode, false, false, false, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_SUGGESTION_SUBMIT, &WorldSession::handleSuggestionOpcode, false, false, false, true, false);
-    registry.registerOpcode(CMSG_LOG_DISCONNECT, &WorldSession::handleLogDisconnectOpcode, false, false, false, true, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_LOG_DISCONNECT, &WorldSession::handleLogDisconnectOpcode, false, false, false, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_PET_LEVEL_CHEAT, &WorldSession::Unhandled, false, false, false, true, false);
     registry.registerOpcode(CMSG_QUERY_BATTLEFIELD_STATE, &WorldSession::Unhandled, false, false, false, true, false);
     registry.registerOpcode(CMSG_ADDON_REGISTERED_PREFIXES, &WorldSession::handleAddonRegisteredPrefixesOpcode, false, false, false, true, true);

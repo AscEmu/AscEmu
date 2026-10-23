@@ -935,10 +935,19 @@ void WorldSession::handleUpdateAccountData(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
+    const uint64_t playerGuid = _player != nullptr ? _player->getGuid() : 0;
     if (srlPacket.uiId > 8)
     {
+        // 6.x and later know more account data types than the server stores
+        if (getClientProtocol().expansion >= WoW::Expansion::_WoD)
+        {
+            SmsgUpdateAccountDataComplete managedPacket(srlPacket.uiId, 0, playerGuid);
+            sendManagedPacket(managedPacket);
+            return;
+        }
+
         sLogger.failure("WARNING: Accountdata > 8 ({}) was requested to be updated by {} of account {}!",
-            srlPacket.uiId, _player->getName(), this->GetAccountId());
+            srlPacket.uiId, _player != nullptr ? _player->getName() : "-", this->GetAccountId());
         return;
     }
 
@@ -948,19 +957,20 @@ void WorldSession::handleUpdateAccountData(WorldPacket& recvPacket)
     {
         SetAccountData(srlPacket.uiId, NULL, false, 0);
 #if VERSION_STRING > TBC
-        SmsgUpdateAccountDataComplete managedPacket(srlPacket.uiId, 0);
+        SmsgUpdateAccountDataComplete managedPacket(srlPacket.uiId, 0, playerGuid);
         sendManagedPacket(managedPacket);
 #endif
         return;
     }
 
-    size_t receivedPackedSize = recvPacket.size() - 8;
+    const size_t dataOffset = srlPacket.dataOffset;
+    size_t receivedPackedSize = recvPacket.size() - dataOffset;
     auto data = std::make_unique<char[]>(srlPacket.uiDecompressedSize + 1);
     memset(data.get(), 0, srlPacket.uiDecompressedSize + 1);
 
     if (srlPacket.uiDecompressedSize > receivedPackedSize)
     {
-        const int32_t ZlibResult = uncompress(reinterpret_cast<uint8_t*>(data.get()), &uid, recvPacket.contents() + 8,
+        const int32_t ZlibResult = uncompress(reinterpret_cast<uint8_t*>(data.get()), &uid, recvPacket.contents() + dataOffset,
             static_cast<uLong>(receivedPackedSize));
 
         switch (ZlibResult)
@@ -990,12 +1000,12 @@ void WorldSession::handleUpdateAccountData(WorldPacket& recvPacket)
     }
     else
     {
-        memcpy(data.get(), recvPacket.contents() + 8, srlPacket.uiDecompressedSize);
+        memcpy(data.get(), recvPacket.contents() + dataOffset, srlPacket.uiDecompressedSize);
         SetAccountData(srlPacket.uiId, std::move(data), false, srlPacket.uiDecompressedSize);
     }
 
 #if VERSION_STRING > TBC
-    SmsgUpdateAccountDataComplete managedPacket(srlPacket.uiId, 0);
+    SmsgUpdateAccountDataComplete managedPacket(srlPacket.uiId, 0, playerGuid);
     sendManagedPacket(managedPacket);
 #endif
 }
@@ -1146,7 +1156,7 @@ void WorldSession::handleLogDisconnectOpcode([[maybe_unused]] WorldPacket& recvP
     uint32_t disconnectReason;
     recvPacket >> disconnectReason; // 13 - closed window
 
-    sLogger.debug("Player {} disconnected on {} - Reason {}", _player->getName(), Util::GetCurrentDateTimeString(), disconnectReason);
+    sLogger.debug("Player {} disconnected on {} - Reason {}", _player != nullptr ? _player->getName() : "-", Util::GetCurrentDateTimeString(), disconnectReason);
 #endif
 }
 
