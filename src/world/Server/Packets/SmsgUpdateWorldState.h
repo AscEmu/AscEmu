@@ -59,7 +59,10 @@ namespace AscEmu::Packets
 
             if (m_protocol.expansion == WoW::Expansion::_Mop)
             {
+                // 5.x: hidden bit, the value before the field
                 packet.writeBit(0);
+                packet << value1 << worldState1;
+                return true;
             }
 
             packet << worldState1 << value1;

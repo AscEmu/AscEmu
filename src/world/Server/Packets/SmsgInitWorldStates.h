@@ -99,9 +99,10 @@ namespace AscEmu::Packets
             }
             else if (m_protocol.isMop())
             {
+                // 5.x: map, area, zone; every state as value before field
                 packet << uint32_t(mapId);
-                packet << uint32_t(zone);
                 packet << uint32_t(area);
+                packet << uint32_t(zone);
 
                 if (clear)
                 {
@@ -116,8 +117,8 @@ namespace AscEmu::Packets
 
                         for (auto worldState : zoneWorldStates)
                         {
-                            packet << uint32_t(worldState.first);
                             packet << uint32_t(worldState.second);
+                            packet << uint32_t(worldState.first);
                         }
                     }
                     else
@@ -126,10 +127,10 @@ namespace AscEmu::Packets
                         packet.flushBits();
                     }
 
-                    packet << uint32_t(3191);
                     packet << uint32_t(arenaSeason);
-                    packet << uint32_t(3901);
+                    packet << uint32_t(3191);
                     packet << uint32_t(arenaProgress);
+                    packet << uint32_t(3901);
                 }
 
                 return true;
