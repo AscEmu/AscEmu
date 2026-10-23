@@ -81,6 +81,25 @@ namespace AscEmu::Packets
                 }
                 return true;
             }
+            else if (m_protocol.isCata())
+            {
+                packet << uint8_t(lockMap.size());
+                for (const auto& lock : lockMap)
+                {
+                    packet << uint64_t(lock.first);
+
+                    // entry, status, required and current item level
+                    packet << uint32_t(lock.second.size());
+                    for (const auto& playerLock : lock.second)
+                    {
+                        packet << uint32_t(playerLock.first);
+                        packet << uint32_t(playerLock.second);
+                        packet << uint32_t(0);
+                        packet << uint32_t(0);
+                    }
+                }
+                return true;
+            }
             else if (m_protocol.expansion > WoW::Expansion::_TBC)
             {
                 // BuildPartyLockDungeonBlock

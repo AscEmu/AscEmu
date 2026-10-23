@@ -387,7 +387,10 @@ void WorldSession::handleLfgLockInfoOpcode([[maybe_unused]] WorldPacket& recvPac
 
     sLogger.debugOpcode("Received CMSG_LFG_LOCK_INFO_REQUEST from {}.", srlPacket.requestFromPlayer ? "player" : "group");
 
-    //\todo handle player lock info and group lock info here
+    if (srlPacket.requestFromPlayer)
+        handleLfgPlayerLockInfoRequestOpcode(recvPacket);
+    else
+        handleLfgPartyLockInfoRequestOpcode(recvPacket);
 #endif
 }
 
@@ -541,7 +544,6 @@ void WorldSession::handleLfgPlayerLockInfoRequestOpcode(WorldPacket& /*recvPacke
     LfgDungeonSet randomDungeons;
     const uint8_t level = static_cast<uint8_t>(_player->getLevel());
 
-#if VERSION_STRING < Cata
     uint8_t expansion = static_cast<uint8_t>(_player->getSession()->GetFlags());
     for (uint32_t i = 0; i < sLFGDungeonStore.getNumRows(); ++i)
     {
@@ -549,7 +551,6 @@ void WorldSession::handleLfgPlayerLockInfoRequestOpcode(WorldPacket& /*recvPacke
         if (dungeon && dungeon->type == LFG_TYPE_RANDOM && dungeon->expansion <= expansion && dungeon->minlevel <= level && level <= dungeon->maxlevel)
             randomDungeons.insert(dungeon->Entry());
     }
-#endif
 
     // Get player locked Dungeons
     LfgLockMap lock = sLfgMgr.GetLockedDungeons(guid);

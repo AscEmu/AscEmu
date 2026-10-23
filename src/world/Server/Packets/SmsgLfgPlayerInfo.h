@@ -178,13 +178,11 @@ namespace AscEmu::Packets
                         }
                     }
 
-                    packet << uint8_t(done);                                // First completion of the day
+                    packet << uint8_t(qRew != nullptr && !done);            // first reward still open
 
-                    // Currency/Valor block - not tracked, sent as the reference's "no reward" shape
-                    for (uint8_t i = 0; i < 11; ++i)
+                    // completion, specific, overall, purse and quantity counters (13 values), not tracked
+                    for (uint8_t i = 0; i < 13; ++i)
                         packet << uint32_t(0);
-
-                    packet << uint32_t(0);                                  // Completed encounters - not tracked
 
                     packet << uint8_t(0);                                   // Call to Arms eligible - not implemented
                     for (uint8_t i = 0; i < 3; ++i)
@@ -204,6 +202,7 @@ namespace AscEmu::Packets
                             packet << uint32_t(qRew->reward_item[i]);
                             packet << uint32_t(item ? item->DisplayInfoID : 0);
                             packet << uint32_t(qRew->reward_itemcount[i]);
+                            packet << uint8_t(0);                           // an item, not a currency
                         }
                     }
                     else
@@ -214,12 +213,14 @@ namespace AscEmu::Packets
                     }
                 }
 
-                // BuildPlayerLockDungeonBlock
+                // BuildPlayerLockDungeonBlock: entry, status, required and current item level
                 packet << uint32_t(lock.size());
                 for (const auto& lockEntry : lock)
                 {
                     packet << uint32_t(lockEntry.first);
                     packet << uint32_t(lockEntry.second);
+                    packet << uint32_t(0);
+                    packet << uint32_t(0);
                 }
 
                 return true;
