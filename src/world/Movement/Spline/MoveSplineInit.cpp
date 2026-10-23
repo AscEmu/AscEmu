@@ -109,6 +109,15 @@ int32_t MoveSplineInit::Launch()
     if (moveFlags & MOVEFLAG_ROOTED)
         moveFlags &= ~MOVEFLAG_MOVING_MASK;
 
+    // a creature carries the walk flag of its spline, so the create block shows a walking unit as walking right away
+    if (unit->isCreature())
+    {
+        if (args.walk)
+            moveFlags |= MOVEFLAG_WALK;
+        else
+            moveFlags &= ~MOVEFLAG_WALK;
+    }
+
     if (!args.HasVelocity)
     {
         // If spline is initialized with SetWalk method it only means we need to select

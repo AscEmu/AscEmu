@@ -2374,7 +2374,7 @@ void Unit::setMoveWalk(bool set_walk)
 {
     if (isCreature())
     {
-        if (set_walk == hasUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY))
+        if (set_walk == hasUnitMovementFlag(MOVEFLAG_WALK))
             return;
 
         if (set_walk)

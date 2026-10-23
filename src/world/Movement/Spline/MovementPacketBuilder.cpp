@@ -966,6 +966,146 @@ void PacketBuilder::WriteMonsterMoveLegion(MoveSpline const& moveSpline, ByteBuf
 #endif
 }
 
+// 6.x+: the spline of a moving unit inside the create block: id, destination, then the movement spline with the
+// elapsed time, so a unit seen on its way keeps pace and animation from the first frame
+void PacketBuilder::WriteCreateLegion(MoveSpline const& moveSpline, ByteBuffer& data, Unit* unit, uint32_t realmId)
+{
+    data << uint32_t(moveSpline.GetId());
+
+    G3D::Vector3 destination;
+    if (!moveSpline.isCyclic())
+        destination = moveSpline.FinalDestination();
+    else if (moveSpline.spline.getPointCount() > 1)
+        destination = moveSpline.spline.getPoint(moveSpline.spline.last() - 1);
+    data << float(destination.x);
+    data << float(destination.y);
+    data << float(destination.z);
+
+    const bool hasSplineMove = !moveSpline.Finalized();
+    data.writeBit(hasSplineMove);
+    data.flushBits();
+    if (!hasSplineMove)
+        return;
+
+    uint8_t face = 0;
+    switch (moveSpline.splineflags & MoveSplineFlag::Mask_Final_Facing)
+    {
+        case MoveSplineFlag::Final_Point:  face = 1; break;
+        case MoveSplineFlag::Final_Target: face = 2; break;
+        case MoveSplineFlag::Final_Angle:  face = 3; break;
+        default: break;
+    }
+    const auto writeFacing = [&]()
+    {
+        switch (face)
+        {
+            case 1:
+                data << float(moveSpline.facing.f.x) << float(moveSpline.facing.f.y) << float(moveSpline.facing.f.z);
+                break;
+            case 2:
+                data << WoWGuid(moveSpline.facing.target).toGuid128(realmId, unit->GetMapId());
+                break;
+            case 3:
+                data << float(moveSpline.facing.angle);
+                break;
+            default:
+                break;
+        }
+    };
+    const auto writePoints = [&]()
+    {
+        for (const auto& point : moveSpline.getPath())
+            data << float(point.x) << float(point.y) << float(point.z);
+    };
+    const bool parabolic = moveSpline.splineflags.parabolic;
+    // only the 6.x and 7.x blocks carry the animation and special time values
+    [[maybe_unused]] const bool animation = moveSpline.splineflags.animation;
+    [[maybe_unused]] const bool specialTime = parabolic && moveSpline.effect_start_time < moveSpline.Duration();
+    const uint32_t splineFlags = legionSplineFlags(moveSpline.splineflags);
+    const uint32_t pointCount = static_cast<uint32_t>(moveSpline.getPath().size());
+    const auto writeJumpExtra = [&]()
+    {
+        if (!parabolic)
+            return;
+        data << float(moveSpline.vertical_acceleration);
+        data << uint32_t(moveSpline.effect_start_time);
+        data << uint32_t(0);                                          // duration override
+    };
+
+#if VERSION_STRING == WoD
+    // 6.x: the bit field leads, the counts are fields
+    data.writeBits(splineFlags, 28);
+    data.writeBits(face, 2);
+    data.writeBit(parabolic || animation);                            // jump gravity
+    data.writeBit(specialTime);
+    data.writeBits(uint8_t(moveSpline.spline.mode()), 2);
+    data.writeBit(false);                                             // filter keys
+    data.flushBits();
+    data << uint32_t(moveSpline.timePassed());
+    data << uint32_t(moveSpline.Duration());
+    data << float(1.0f);                                              // duration modifier
+    data << float(1.0f);                                              // next duration modifier
+    data << uint32_t(pointCount);
+    writeFacing();
+    if (parabolic || animation)
+        data << float(moveSpline.vertical_acceleration);
+    if (specialTime)
+        data << uint32_t(moveSpline.effect_start_time);
+    writePoints();
+#else
+    data << uint32_t(splineFlags);
+#if VERSION_STRING == Midnight
+    data << uint8_t(face);                                            // 12.x: the face as byte behind the flags
+#endif
+    data << int32_t(moveSpline.timePassed());
+    data << uint32_t(moveSpline.Duration());
+    data << float(1.0f);                                              // duration modifier
+    data << float(1.0f);                                              // next duration modifier
+#if VERSION_STRING == Midnight
+    writeFacing();
+#else
+    data.writeBits(face, 2);
+#endif
+#if VERSION_STRING == Legion
+    data.writeBit(parabolic || animation);                            // jump gravity
+    data.writeBit(specialTime);
+    data.writeBits(pointCount, 16);
+    data.writeBits(uint8_t(moveSpline.spline.mode()), 2);
+    data.writeBit(false);                                             // spline filter
+    data.writeBit(false);                                             // spell effect extra data
+    data.flushBits();
+    writeFacing();
+    if (parabolic || animation)
+        data << float(moveSpline.vertical_acceleration);
+    if (specialTime)
+        data << uint32_t(moveSpline.effect_start_time);
+    writePoints();
+#else
+    data.writeBit(false);                                             // fade object time
+    data.writeBits(pointCount, 16);
+#if VERSION_STRING == BfA
+    data.writeBits(uint8_t(moveSpline.spline.mode()), 2);
+#endif
+    data.writeBit(false);                                             // spline filter
+    data.writeBit(false);                                             // spell effect extra data
+    data.writeBit(parabolic);                                         // jump extra data
+#if VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+    data.writeBit(false);                                             // turn data
+#endif
+#if VERSION_STRING != BfA
+    data.writeBit(false);                                             // animation tier transition
+    data.writeBit(false);                                             // 9.x: unknown block, 12.x: spell visual data
+#endif
+    data.flushBits();
+#if VERSION_STRING != Midnight
+    writeFacing();
+#endif
+    writePoints();
+    writeJumpExtra();
+#endif
+#endif
+}
+
 void PacketBuilder::WriteStopMovementLegion(G3D::Vector3 const& pos, uint32_t splineId, ByteBuffer& data, Unit* unit, uint32_t realmId)
 {
     data << unit->GetNewGUID().toGuid128(realmId, unit->GetMapId());

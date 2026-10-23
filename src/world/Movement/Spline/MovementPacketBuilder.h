@@ -45,5 +45,7 @@ public:
     // animation tier a byte and the flags above the path flags are renumbered.
     static void WriteMonsterMoveLegion(MoveSpline const& mov, ByteBuffer& data, Unit* unit, uint32_t realmId);
     static void WriteStopMovementLegion(G3D::Vector3 const& loc, uint32_t splineId, ByteBuffer& data, Unit* unit, uint32_t realmId);
+    // 6.x+: the spline block of the object create packet
+    static void WriteCreateLegion(MoveSpline const& mov, ByteBuffer& data, Unit* unit, uint32_t realmId);
 };
 } // namespace MovementMgr

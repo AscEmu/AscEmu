@@ -3460,8 +3460,12 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         *data << float(7.0f);                           // over maximum deceleration
         *data << float(0.4f);                           // launch speed coefficient
 #endif
-        data->writeBit(false);                          // spline
+        // a unit on its way carries the spline, so the client keeps its pace and animation
+        const bool hasSpline = unit->movespline->Initialized() && !unit->movespline->Finalized();
+        data->writeBit(hasSpline);
         data->flushBits();
+        if (hasSpline)
+            MovementMgr::PacketBuilder::WriteCreateLegion(*unit->movespline, *data, unit, realmId);
     }
 
 #if VERSION_STRING == WoD
