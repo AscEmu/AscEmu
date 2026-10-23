@@ -1159,6 +1159,26 @@ namespace
             data << int16_t(questLog != nullptr && i < 4 ? questLog->getMobCountByIndex(i) : 0);
     }
 
+    // quest id to log slot, the client finds its entries through it
+    void playerQuestIndexCreate(Player* player, ByteBuffer& data)
+    {
+        std::vector<std::pair<int32_t, int32_t>> entries;
+        for (uint8_t slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)
+            if (const QuestLogEntry* questLog = player->getQuestLogBySlotId(slot))
+                entries.emplace_back(static_cast<int32_t>(questLog->getQuestProperties()->id), static_cast<int32_t>(slot));
+
+        data << uint32_t(entries.size());
+        for (const auto& [questId, slot] : entries)
+            data << questId << slot;
+    }
+
+    // update: the whole map instead of changes
+    void playerQuestIndexUpdate(Player* player, ByteBuffer& data)
+    {
+        data << uint8_t(1);
+        playerQuestIndexCreate(player, data);
+    }
+
     void playerVisibleItemFields(Player* player, uint8_t slot, ByteBuffer& data)
     {
         data << int32_t(player->getVisibleItemEntry(slot));
@@ -1292,7 +1312,7 @@ namespace
         {
             for (uint8_t i = 0; i < QuestLogCount; ++i)
                 playerQuestLogCreate(player, i, data);
-            writeMapFieldCreate(data);                                      // quest log quest id to index
+            playerQuestIndexCreate(player, data);
             data << uint32_t(0);                                            // quest session quest log
         }
 
@@ -1368,9 +1388,20 @@ namespace
             if (changed.changed(PlayerField::VisibleItemsEntry, i) || changed.changed(PlayerField::VisibleItemsEnchantment, i))
                 mask.set(230 + i);
 
-        // the group bits: the blocks of the plain fields, then the visible items
+        // quest log slots, a changed id renews the index map
+        for (uint8_t i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
+        {
+            if (changed.changed(PlayerField::QuestsQuestId, i))
+                mask.set(25);
+            if (changed.changed(PlayerField::QuestsQuestId, i) || changed.changed(PlayerField::QuestsState, i) ||
+                changed.changed(PlayerField::QuestsRequiredCountState, i) || changed.changed(PlayerField::QuestsRequiredMobOrGo, i) ||
+                changed.changed(PlayerField::QuestsExpireTime, i))
+                mask.set(54 + i);
+        }
+
+        // group bits: plain fields, quest log, visible items
         struct Group { uint16_t parent; uint16_t first; uint16_t count; };
-        static constexpr Group groups[] = { { 0, 1, 31 }, { 32, 33, 17 }, { 229, 230, VisibleItemCount } };
+        static constexpr Group groups[] = { { 0, 1, 31 }, { 32, 33, 17 }, { 53, 54, QuestLogCount }, { 229, 230, VisibleItemCount } };
         for (const Group& group : groups)
             for (uint16_t i = 0; i < group.count; ++i)
                 if (mask[group.first + i])
@@ -1453,7 +1484,7 @@ namespace
             if (mask[24])
                 data << int32_t(player->getGuildTimestamp());
             if (mask[25])
-                writeMapFieldUpdate(data);                                  // quest log quest id to index
+                playerQuestIndexUpdate(player, data);
             if (mask[26])
                 data << int32_t(player->getChosenTitle());
             if (mask[27])
