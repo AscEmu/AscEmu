@@ -35,7 +35,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgUpdateAccountData.h"
 #include "Server/Packets/CmsgSetSelection.h"
 #include "Server/Packets/CmsgTutorialFlag.h"
+#include "Server/Packets/CmsgQueryCountdownTimer.h"
 #include "Server/Packets/CmsgSetSheathed.h"
+#include "Server/Packets/SmsgStartTimer.h"
 #include "Server/Packets/CmsgRequestPlayedTime.h"
 #include "Server/Packets/SmsgPlayedTime.h"
 #include "Server/Packets/CmsgSetActionButton.h"
@@ -1310,6 +1312,26 @@ void WorldSession::handleGetUndeleteCooldownStatusOpcode(WorldPacket& /*recvPack
     constexpr uint32_t maxCooldown = 30 * 24 * 60 * 60;
 
     SmsgUndeleteCooldownStatusResponse managedPacket(false, maxCooldown, 0);
+    sendManagedPacket(managedPacket);
+}
+
+void WorldSession::handleQueryCountdownTimerOpcode(WorldPacket& recvPacket)
+{
+    CmsgQueryCountdownTimer srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    // answered only while the group of the player has that countdown
+    const auto group = _player->getGroup();
+    if (group == nullptr || srlPacket.timerType < 0)
+        return;
+
+    uint32_t totalTime = 0;
+    uint32_t timeLeft = 0;
+    if (!group->getCountdown(static_cast<uint32_t>(srlPacket.timerType), totalTime, timeLeft))
+        return;
+
+    SmsgStartTimer managedPacket(srlPacket.timerType, timeLeft, totalTime);
     sendManagedPacket(managedPacket);
 }
 

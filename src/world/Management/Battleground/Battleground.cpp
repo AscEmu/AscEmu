@@ -49,6 +49,9 @@
 
 using namespace AscEmu::Packets;
 
+// the preparation countdown: 10 seconds, then the 60, 30 and 15 second stages
+static constexpr uint32_t PreparationSeconds = 85;
+
 Battleground::Battleground(WorldMap* worldMap, uint32_t id, uint32_t levelGroup, uint32_t type) : m_mapMgr(worldMap), m_id(id), m_type(type), m_levelGroup(levelGroup)
 {
     sEventMgr.AddEvent(this, &Battleground::eventResurrectPlayers, EVENT_BATTLEGROUND_QUEUE_UPDATE, 30000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -278,6 +281,9 @@ void Battleground::portPlayer(Player* plr, bool skip_teleport)
     if (!m_countdownStage)
     {
         m_countdownStage = 1;
+        for (auto& group : m_groups)
+            if (group)
+                group->startCountdown(0, PreparationSeconds, static_cast<uint32_t>(UNIXTIME));
         sEventMgr.AddEvent(this, &Battleground::eventCountdown, EVENT_BATTLEGROUND_COUNTDOWN, 30000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         sEventMgr.ModifyEventTimeLeft(this, EVENT_BATTLEGROUND_COUNTDOWN, 10000);
     }

@@ -782,6 +782,7 @@ protected:
         void handleUITimeRequestOpcode(WorldPacket& /*recvPacket*/);        //>= Cata
         void handleGetUndeleteCooldownStatusOpcode(WorldPacket& /*recvPacket*/);    //>= WoD
         void handleNoResponseOpcode(WorldPacket& /*recvPacket*/);
+        void handleQueryCountdownTimerOpcode(WorldPacket& recvPacket);     //>= WoD
         void handleServerTimeOffsetRequestOpcode(WorldPacket& /*recvPacket*/);  //>= Dragonflight
         void handleSocialContractRequestOpcode(WorldPacket& /*recvPacket*/);    //>= Dragonflight
         void handleBattlenetRequestOpcode(WorldPacket& recvPacket);             //>= TheWarWithin

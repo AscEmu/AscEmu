@@ -801,6 +801,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode<STATUS_AUTHED>(CMSG_SET_EXCLUDED_CHAT_CENSOR_SOURCES, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, false, false, false, true, true, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_SETUP_WARBAND_GROUPS, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, false, false, false, false, true, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_FETCH_BLEEP_PROXIES, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_QUERY_COUNTDOWN_TIMER, &WorldSession::handleQueryCountdownTimerOpcode, false, false, false, false, false, true, true, true, true, true, true, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_GET_LAST_CATALOG_FETCH, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_OPEN_TRADESKILL_NPC, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_GET_GARRISON_INFO, &WorldSession::handleGetGarrisonInfoOpcode, false, false, false, false, false, false, true, true, true, true, true, true);

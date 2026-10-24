@@ -10,6 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/InstanceMgr.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 
+#include <array>
+
 class BaseMap;
 
 enum PartyErrors
@@ -185,6 +187,10 @@ public:
 
     void SendNullUpdate(Player* pPlayer);
 
+    // countdown timers of 6.x+ clients: 0 pvp preparation, 1 challenge mode, 2 player countdown
+    void startCountdown(uint32_t type, uint32_t seconds, uint32_t startTime);
+    bool getCountdown(uint32_t type, uint32_t& totalTime, uint32_t& timeLeft) const;
+
     // Destroying/Converting
     void Disband();
     Player* FindFirstPlayer();
@@ -327,6 +333,13 @@ protected:
     std::recursive_mutex m_groupLock;
     bool m_dirty;
     bool m_updateblock;
+
+    struct Countdown
+    {
+        uint32_t start = 0;
+        uint32_t end = 0;
+    };
+    std::array<Countdown, 3> m_countdowns{};
     uint32_t updatecounter;
 
 public:

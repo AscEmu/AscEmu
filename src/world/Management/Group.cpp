@@ -422,6 +422,26 @@ void SubGroup::Disband()
     m_Parent->m_SubGroups[m_Id] = nullptr;
 }
 
+void Group::startCountdown(uint32_t type, uint32_t seconds, uint32_t startTime)
+{
+    if (type >= m_countdowns.size())
+        return;
+
+    m_countdowns[type].start = startTime;
+    m_countdowns[type].end = startTime + seconds;
+}
+
+bool Group::getCountdown(uint32_t type, uint32_t& totalTime, uint32_t& timeLeft) const
+{
+    if (type >= m_countdowns.size() || m_countdowns[type].end == 0)
+        return false;
+
+    const auto now = static_cast<uint32_t>(UNIXTIME);
+    totalTime = m_countdowns[type].end - m_countdowns[type].start;
+    timeLeft = now < m_countdowns[type].end ? m_countdowns[type].end - now : 0;
+    return true;
+}
+
 Player* Group::FindFirstPlayer()
 {
     std::lock_guard lock(m_groupLock);
