@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "QuestPacketsGuid128.h"
 #include <cstdint>
 #include <vector>
 
@@ -44,6 +45,91 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x+: vendor, reason (item count or the armorer flag), then the items with their instance data
+                const auto expansion = m_protocol.expansion;
+                if (m_protocol.isWoD())
+                    packet.appendPackGuid(vendorGuid.getRawGuid());
+                else
+                    packet << vendorGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
+
+                const uint8_t reason = rawItemCount ? static_cast<uint8_t>(rawItemCount) : static_cast<uint8_t>(vendorIsArmorer);
+                if (m_protocol.isTheWarWithinOrLater())
+                    packet << int32_t(reason);
+                else
+                    packet << uint8_t(reason);
+                packet << uint32_t(items.size());
+
+                for (const auto& item : items)
+                {
+                    const int32_t quantity = static_cast<int32_t>(item.availableAmount);
+                    if (m_protocol.isWoD())
+                    {
+                        // 6.x: 32 bit price, the instance follows the type
+                        packet << uint32_t(item.slot);
+                        packet << uint32_t(item.type);
+                        writeEmptyItemInstance(packet, m_protocol, int32_t(item.itemId));
+                        packet << int32_t(quantity);
+                        packet << uint32_t(item.price);
+                        packet << uint32_t(item.maxDurability);
+                        packet << uint32_t(item.buyCount);
+                        packet << uint32_t(item.extendedCostId);
+                        packet << uint32_t(0);                                  // player condition failed
+                        packet.writeBit(false);                                 // do not filter on vendor
+                        packet.flushBits();
+                    }
+                    else if (expansion <= WoW::Expansion::_Shadowlands)
+                    {
+                        // 7.x - 9.x: id, type, quantity, price, durability, stack, cost, condition, instance, flags
+                        packet << uint32_t(item.slot);
+                        packet << int32_t(item.type);
+                        packet << int32_t(quantity);
+                        packet << uint64_t(item.price);
+                        packet << int32_t(item.maxDurability);
+                        packet << int32_t(item.buyCount);
+                        packet << int32_t(item.extendedCostId);
+                        packet << int32_t(0);                                   // player condition failed
+                        writeEmptyItemInstance(packet, m_protocol, int32_t(item.itemId));
+                        if (expansion == WoW::Expansion::_Shadowlands)
+                            packet.writeBit(false);                             // locked
+                        packet.writeBit(false);                                 // do not filter on vendor
+                        if (expansion >= WoW::Expansion::_BfA)
+                            packet.writeBit(false);                             // refundable
+                        packet.flushBits();
+                    }
+                    else
+                    {
+                        // 10.x+: price first, 11.x drops the durability, 12.x moves the instance behind the flags
+                        packet << uint64_t(item.price);
+                        packet << uint32_t(item.slot);
+                        packet << int32_t(item.type);
+                        if (expansion == WoW::Expansion::_Dragonflight)
+                            packet << int32_t(item.maxDurability);
+                        packet << int32_t(item.buyCount);
+                        packet << int32_t(quantity);
+                        packet << int32_t(item.extendedCostId);
+                        packet << int32_t(0);                                   // player condition failed
+                        if (!m_protocol.isMidnight())
+                        {
+                            packet.writeBit(false);                             // locked
+                            packet.writeBit(false);                             // do not filter on vendor
+                            packet.writeBit(false);                             // refundable
+                            packet.flushBits();
+                        }
+                        writeEmptyItemInstance(packet, m_protocol, int32_t(item.itemId));
+                        if (m_protocol.isMidnight())
+                        {
+                            packet.writeBit(false);                             // locked
+                            packet.writeBit(false);                             // do not filter on vendor
+                            packet.writeBit(false);                             // refundable
+                            packet.flushBits();
+                        }
+                    }
+                }
+                return true;
+            }
+
             // If there are no items visible to this player and this byte is 1, the client opens an
             // empty vendor window; otherwise it silently ignores the packet. Retail sends the raw
             // (unfiltered) vendor item count here, falling back to the armorer flag only when the

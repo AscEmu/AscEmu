@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "ItemInstanceHelpers.h"
 #include "ManagedPacket.h"
 #include <cstdint>
 
@@ -75,6 +76,14 @@ namespace AscEmu::Packets
                 packet.readByteSeq(vendorGuid[2]);
                 packet.readByteSeq(vendorGuid[3]);
                 packet.readByteSeq(vendorGuid[4]);
+                return true;
+            }
+
+            else if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x+: the vendor and the buy back slot
+                [[maybe_unused]] const auto vendorGuid = readClientGuid(packet, m_protocol);
+                packet >> buybackSlot;
                 return true;
             }
 

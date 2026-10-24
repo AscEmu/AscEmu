@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "ItemInstanceHelpers.h"
 #include "ManagedPacket.h"
 #include <cstdint>
 
@@ -33,6 +34,11 @@ namespace AscEmu::Packets
                 uint64_t unpackedGuid;
                 packet >> unpackedGuid;
                 guid.init(unpackedGuid);
+            }
+            else if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x+: the vendor guid alone
+                guid = readClientGuid(packet, m_protocol);
             }
             else // Mop
             {

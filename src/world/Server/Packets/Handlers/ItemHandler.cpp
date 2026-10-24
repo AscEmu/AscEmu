@@ -2005,6 +2005,9 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
 
     SmsgBuyItem managedPacket(srlPacket.sourceGuid.getRawGuid(), Util::getMSTime(), srlPacket.itemEntry,
         srlPacket.amount * creature_item.amount);
+    // 6.x+: the vendor slot and the stock left behind this purchase
+    managedPacket.slotNumber = srlPacket.slot > 0 ? static_cast<uint32_t>(srlPacket.slot) : 0;
+    managedPacket.signedAmount = creature_item.max_amount > 0 ? static_cast<int32_t>(creature_item.available_amount) - static_cast<int32_t>(srlPacket.amount * creature_item.amount) : -1;
     sendManagedPacket(managedPacket);
 
     if (creature_item.max_amount)

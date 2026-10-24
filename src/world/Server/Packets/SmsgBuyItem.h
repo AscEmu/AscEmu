@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "ItemInstanceHelpers.h"
 #include "ManagedPacket.h"
 #include <cstdint>
 
@@ -71,6 +72,16 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x+: vendor, vendor slot, the stock left and the bought count, a buy back names its slot the same way
+                writeClientGuid(packet, m_protocol, m_receiverMapId, sellerGuid);
+                packet << uint32_t(slotNumber);
+                packet << int32_t(signedAmount);
+                packet << uint32_t(purchasedAmount);
+                return true;
+            }
+
             if (variant == Variant::Vendor)
             {
                 if (m_protocol.expansion < WoW::Expansion::_Mop)

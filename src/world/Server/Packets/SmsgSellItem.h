@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "ItemInstanceHelpers.h"
 #include "ManagedPacket.h"
 #include <cstdint>
 
@@ -34,6 +35,24 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x+: vendor and item with the reason as byte, 10.x+ a list of items behind a 32 bit reason
+                writeClientGuid(packet, m_protocol, m_receiverMapId, vendorGuid.getRawGuid());
+                if (m_protocol.expansion >= WoW::Expansion::_Dragonflight)
+                {
+                    packet << uint32_t(1);
+                    packet << int32_t(error);
+                    writeClientGuid(packet, m_protocol, m_receiverMapId, itemGuid.getRawGuid());
+                }
+                else
+                {
+                    writeClientGuid(packet, m_protocol, m_receiverMapId, itemGuid.getRawGuid());
+                    packet << uint8_t(error);
+                }
+                return true;
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << vendorGuid.getRawGuid() << itemGuid.getRawGuid() << error;

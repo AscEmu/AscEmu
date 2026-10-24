@@ -3084,6 +3084,7 @@ namespace ObjectUpdateMidnight
     namespace EntityFragment
     {
         constexpr uint8_t Object = 3;
+        constexpr uint8_t Vendor = 18;
         constexpr uint8_t TagItem = 200;
         constexpr uint8_t TagContainer = 201;
         constexpr uint8_t TagUnit = 204;
@@ -3099,6 +3100,19 @@ namespace ObjectUpdateMidnight
         constexpr uint8_t ObjectChanged = 0x02;
     }
 
+    // the vendor fragment of a creature: its vendor types and the petition flag, 0 without
+    static int32_t vendorFragmentFlags(Object* object)
+    {
+        if (object->getObjectTypeId() != TYPEID_UNIT)
+            return 0;
+
+        const uint64_t npcFlags = static_cast<Unit*>(object)->getNpcFlags();
+        int32_t flags = static_cast<int32_t>((npcFlags & 0xF80) >> 7);          // generic, ammo, food, poison, reagent
+        if (npcFlags & UNIT_NPC_FLAG_CHARTERGIVER)
+            flags |= 0x20;
+        return flags;
+    }
+
     static void writeEntityFragments(Object* object, ByteBuffer& data)
     {
         data << uint8_t(EntityFragment::Object);
@@ -3112,6 +3126,8 @@ namespace ObjectUpdateMidnight
                 data << uint8_t(EntityFragment::TagContainer);
                 break;
             case TYPEID_UNIT:
+                if (vendorFragmentFlags(object) != 0)
+                    data << uint8_t(EntityFragment::Vendor);
                 data << uint8_t(EntityFragment::TagUnit);
                 break;
             case TYPEID_PLAYER:
@@ -3181,6 +3197,10 @@ namespace ObjectUpdateMidnight
             default:
                 break;
         }
+
+        // the vendor fragment follows the object fragment
+        if (const int32_t vendorFlags = vendorFragmentFlags(object); vendorFlags != 0)
+            data << int32_t(vendorFlags);
 
         data.put<uint32_t>(sizePosition, static_cast<uint32_t>(data.wpos() - sizePosition - sizeof(uint32_t)));
     }

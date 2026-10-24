@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "ItemInstanceHelpers.h"
 #include "ManagedPacket.h"
 #include <cstdint>
 
@@ -40,6 +41,52 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x+: vendor, container, then quantity, vendor slot, bag slot and the item instance; the vendor type and
+                // the instance move around between the versions
+                const auto expansion = m_protocol.expansion;
+                sourceGuid = readClientGuid(packet, m_protocol);
+                [[maybe_unused]] const auto containerGuid = readClientGuid(packet, m_protocol);
+
+                uint32_t quantity = 0;
+                uint32_t muid = 0;
+                uint32_t bag = 0;
+                int32_t vendorType = 1;
+                if (m_protocol.isWoD())
+                {
+                    readItemInstance(packet, m_protocol, itemEntry);
+                    packet >> quantity >> muid >> bag;
+                    vendorType = static_cast<int32_t>(packet.readBits(2));
+                }
+                else if (m_protocol.isMidnight())
+                {
+                    readItemInstance(packet, m_protocol, itemEntry);
+                    packet >> quantity >> muid >> bag >> vendorType;
+                }
+                else if (expansion == WoW::Expansion::_TheWarWithin)
+                {
+                    packet >> quantity >> muid >> bag >> vendorType;
+                    readItemInstance(packet, m_protocol, itemEntry);
+                }
+                else
+                {
+                    packet >> quantity >> muid >> bag;
+                    readItemInstance(packet, m_protocol, itemEntry);
+                    if (expansion <= WoW::Expansion::_Shadowlands)
+                    {
+                        packet.resetBitPos();
+                        vendorType = static_cast<int32_t>(packet.readBits(expansion == WoW::Expansion::_Shadowlands ? 3 : 2));
+                    }
+                }
+
+                slot = static_cast<int32_t>(muid);
+                amount = static_cast<uint8_t>(quantity);
+                bagSlot = static_cast<uint8_t>(bag);
+                itemType = static_cast<uint8_t>(vendorType);
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 uint32_t amount32 = 0;
