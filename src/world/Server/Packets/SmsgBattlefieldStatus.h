@@ -5,7 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "BattlegroundPacketHelpers.h"
 #include "ManagedPacket.h"
+#include "Management/Battleground/BattlegroundDefines.hpp"
+#include "Utilities/Util.hpp"
 
 #include <cstdint>
 
@@ -22,6 +25,9 @@ namespace AscEmu::Packets
         uint32_t mapId;
         uint8_t ratedMatch;
         bool isArena;
+        // 6.x+: the join time of the queue ticket and the side of the player
+        uint32_t joinTime = 0;
+        bool horde = false;
 
         SmsgBattlefieldStatus() : SmsgBattlefieldStatus(WoWGuid(),0, 0, 0, 0, 0, 0, false)
         {
@@ -38,6 +44,82 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x+: one opcode per state, every state starts with the queue ticket
+                const uint64_t requester = guid.getRawGuid();
+                switch (status)
+                {
+                    case BattlegroundDef::STATUS_INQUEUE:
+                    {
+                        packet.setOpcode(SMSG_BATTLEFIELD_STATUS_QUEUED);
+                        Battlegrounds::writeStatusHeader(packet, m_protocol, m_receiverMapId, requester, 0, joinTime, type, instanceId, ratedMatch != 0);
+                        packet << uint32_t(0);                                          // average wait time
+                        packet << uint32_t(Util::getMSTime() - joinTime);               // wait time
+                        if (m_protocol.expansion >= WoW::Expansion::_Shadowlands)
+                            packet << int32_t(0);                                       // selected spec
+                        packet.writeBit(false);                                         // as group
+                        if (m_protocol.isLegion())
+                        {
+                            packet.writeBit(false);                                     // suspended queue
+                            packet.writeBit(true);                                      // eligible for matchmaking
+                        }
+                        else
+                        {
+                            packet.writeBit(true);                                      // eligible for matchmaking
+                            packet.writeBit(false);                                     // suspended queue
+                        }
+                        packet.flushBits();
+                        return true;
+                    }
+                    case BattlegroundDef::STATUS_READY:
+                    {
+                        packet.setOpcode(SMSG_BATTLEFIELD_STATUS_NEEDCONFIRMATION);
+                        Battlegrounds::writeStatusHeader(packet, m_protocol, m_receiverMapId, requester, 0, joinTime, type, instanceId, ratedMatch != 0);
+                        packet << uint32_t(mapId);
+                        packet << uint32_t(time);                                       // timeout
+                        packet << uint8_t(0);                                           // role
+                        return true;
+                    }
+                    case BattlegroundDef::STATUS_TIME:
+                    {
+                        packet.setOpcode(SMSG_BATTLEFIELD_STATUS_ACTIVE);
+                        Battlegrounds::writeStatusHeader(packet, m_protocol, m_receiverMapId, requester, 0, joinTime, type, instanceId, ratedMatch != 0);
+                        packet << uint32_t(mapId);
+                        const uint32_t elapsed = time * 1000;
+                        if (m_protocol.isLegion())
+                        {
+                            packet << uint32_t(elapsed);                                // start timer
+                            packet << uint32_t(0);                                      // shutdown timer
+                        }
+                        else
+                        {
+                            packet << uint32_t(0);                                      // shutdown timer
+                            packet << uint32_t(elapsed);                                // start timer
+                        }
+                        if (m_protocol.isTheWarWithinOrLater())
+                        {
+                            packet << int8_t(horde ? 0 : 1);                            // arena faction
+                            packet.writeBit(false);                                     // left early
+                            packet.writeBit(false);                                     // brawl
+                        }
+                        else
+                        {
+                            packet.writeBit(!horde);                                    // arena faction, set for the alliance
+                            packet.writeBit(false);                                     // left early
+                        }
+                        packet.flushBits();
+                        return true;
+                    }
+                    default:
+                    {
+                        packet.setOpcode(SMSG_BATTLEFIELD_STATUS_NONE);
+                        Battlegrounds::writeTicket(packet, m_protocol, m_receiverMapId, requester, 0, joinTime);
+                        return true;
+                    }
+                }
+            }
+
             if (m_protocol.expansion <= WoW::Expansion::_WotLK)
             {
                 if (!status)

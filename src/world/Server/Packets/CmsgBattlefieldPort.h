@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "BattlegroundPacketHelpers.h"
 #include "ManagedPacket.h"
 #include <cstdint>
 
@@ -101,6 +102,13 @@ namespace AscEmu::Packets
                 packet.readByteSeq(guid[6]);
                 packet.readByteSeq(guid[1]);
 
+                return true;
+            }
+            else if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x+: the queue ticket, then the accept bit
+                Battlegrounds::readTicket(packet, m_protocol, queueSlot, time);
+                action = packet.readBit();
                 return true;
             }
 

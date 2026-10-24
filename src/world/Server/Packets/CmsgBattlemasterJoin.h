@@ -114,6 +114,31 @@ namespace AscEmu::Packets
 
                 return true;
             }
+            else if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x+: the queue id names the battlemaster list, 8.x+ sends a list of them and no group flag
+                uint64_t queueId = 0;
+                if (m_protocol.expansion >= WoW::Expansion::_BfA)
+                {
+                    uint32_t count = 0;
+                    packet >> count >> roleMask;
+                    packet.readSkip<int32_t>();     // blacklist maps
+                    packet.readSkip<int32_t>();
+                    if (count == 0)
+                        return false;
+                    packet >> queueId;
+                }
+                else
+                {
+                    packet >> queueId >> roleMask;
+                    packet.readSkip<int32_t>();     // blacklist maps
+                    packet.readSkip<int32_t>();
+                    asGroup = packet.readBit();
+                }
+                bgType = static_cast<uint32_t>(queueId & 0xFFFF);
+                instanceId = 0;
+                return true;
+            }
 
             return false;
         }

@@ -8831,6 +8831,9 @@ void Player::setHasWonRbgToday(bool value) { this->m_hasWonRbgToday = value; }
 void Player::setBgQueueType(uint32_t type) { this->m_bgQueueType = type; }
 uint32_t Player::getBgQueueType() const { return this->m_bgQueueType; }
 
+void Player::setBgQueueJoinTime(uint32_t time) { m_bgQueueJoinTime = time; }
+uint32_t Player::getBgQueueJoinTime() const { return m_bgQueueJoinTime; }
+
 bool Player::hasBgFlag() const { return m_bgHasFlag; }
 void Player::setHasBgFlag(bool set) { m_bgHasFlag = set; }
 

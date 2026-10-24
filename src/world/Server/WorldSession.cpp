@@ -1247,13 +1247,13 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_DISMISS_CRITTER, &WorldSession::handleDismissCritter, false, false, true, true, true);
 
     // Battlegrounds
-    registry.registerOpcode(CMSG_BATTLEFIELD_PORT, &WorldSession::handleBattlefieldPortOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_BATTLEFIELD_STATUS, &WorldSession::handleBattlefieldStatusOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_BATTLEFIELD_PORT, &WorldSession::handleBattlefieldPortOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_BATTLEFIELD_STATUS, &WorldSession::handleBattlefieldStatusOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode<STATUS_LOGGEDIN>(CMSG_BATTLEFIELD_LIST, &WorldSession::handleBattlefieldListOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_BATTLEMASTER_HELLO, &WorldSession::handleBattleMasterHelloOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_BATTLEMASTER_JOIN_ARENA, &WorldSession::handleArenaJoinOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_BATTLEMASTER_JOIN, &WorldSession::handleBattleMasterJoinOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_LEAVE_BATTLEFIELD, &WorldSession::handleLeaveBattlefieldOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_BATTLEMASTER_JOIN_ARENA, &WorldSession::handleArenaJoinOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_BATTLEMASTER_JOIN, &WorldSession::handleBattleMasterJoinOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_LEAVE_BATTLEFIELD, &WorldSession::handleLeaveBattlefieldOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_AREA_SPIRIT_HEALER_QUERY, &WorldSession::handleAreaSpiritHealerQueryOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_AREA_SPIRIT_HEALER_QUEUE, &WorldSession::handleAreaSpiritHealerQueueOpcode, true, true, true, true, true);
     registry.registerOpcode(MSG_BATTLEGROUND_PLAYER_POSITIONS, &WorldSession::handleBattlegroundPlayerPositionsOpcode, true, true, true, true, true);

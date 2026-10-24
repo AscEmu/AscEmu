@@ -260,10 +260,16 @@ void WorldSession::handleBattlefieldStatusOpcode(WorldPacket& /*recvPacket*/)
     const auto pendingBattleground = _player->m_pendingBattleground;
     const auto Battleground = _player->m_bg;
 
+    // 6.x+: a status goes out only for queues the player is in
+    if (_socket->getClientProtocol().expansion >= WoW::Expansion::_WoD && Battleground == nullptr && pendingBattleground == nullptr && !_player->isQueuedForBg())
+        return;
+
     if (Battleground)
         sBattlegroundManager.sendBattlefieldStatus(_player, BattlegroundDef::STATUS_TIME, Battleground->getType(), Battleground->getId(), static_cast<uint32_t>(UNIXTIME) - Battleground->getStartTime(), _player->GetMapId(), Battleground->Rated());
     else if (pendingBattleground)
         sBattlegroundManager.sendBattlefieldStatus(_player, BattlegroundDef::STATUS_READY, pendingBattleground->getType(), pendingBattleground->getId(), 120000, 0, pendingBattleground->Rated());
+    else if (_player->isQueuedForBg())
+        sBattlegroundManager.sendBattlefieldStatus(_player, BattlegroundDef::STATUS_INQUEUE, _player->getBgQueueType(), _player->getQueuedBgInstanceId(), 0, 0, 0);
     else
         sBattlegroundManager.sendBattlefieldStatus(_player, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
 }
@@ -273,6 +279,10 @@ void WorldSession::handleBattleMasterJoinOpcode(WorldPacket& recvPacket)
     CmsgBattlemasterJoin srlPacket;
     if (!parsePacket(recvPacket, srlPacket))
         return;
+
+    // 8.x+ clients send no group flag, a party joins as a party
+    if (_socket->getClientProtocol().expansion >= WoW::Expansion::_BfA && _player->getGroup() != nullptr)
+        srlPacket.asGroup = 1;
 
     if (_player->hasAurasWithId(BattlegroundDef::DESERTER))
     {

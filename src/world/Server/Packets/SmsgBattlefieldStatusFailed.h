@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "BattlegroundPacketHelpers.h"
 #include "ManagedPacket.h"
 #include "Management/Battleground/BattlegroundDefines.hpp"
 
@@ -40,6 +41,21 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x+: ticket, queue id, result and the player a result names
+                const uint64_t requester = playerGuid.getRawGuid();
+                Battlegrounds::writeTicket(packet, m_protocol, m_receiverMapId, requester, queueSlot, joinTime);
+                packet << uint64_t(Battlegrounds::queueId(bgType, false));
+                packet << uint32_t(result);
+                const bool named = result == BattlegroundDef::JOIN_RESULT_NOT_IN_BATTLEGROUND || result == BattlegroundDef::JOIN_RESULT_TIMED_OUT;
+                if (m_protocol.isWoD())
+                    packet.appendPackGuid(named ? requester : 0);
+                else
+                    packet << WoWGuid(named ? requester : uint64_t(0)).toGuid128(m_protocol.realmId, m_receiverMapId);
+                return true;
+            }
+
             WoWGuid bgGuid(bgType, 0, HIGHGUID_TYPE_BATTLEGROUND);
             WoWGuid unkGuid;
 

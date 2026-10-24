@@ -24,6 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgBattlefieldStatus.h"
 #include "Storage/WorldStrings.h"
 #include "Utilities/Random.hpp"
+#include "Utilities/Util.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -1309,8 +1310,17 @@ uint32_t BattlegroundManager::getJoinResultForGroupJoinStatus(int32_t status)
 
 void BattlegroundManager::sendBattlefieldStatus(Player* player, BattlegroundDef::Status status, uint32_t type, uint32_t instanceId, uint32_t time, uint32_t mapId, uint8_t ratedMatch)
 {
+    // the queue ticket of 6.x+ clients carries the join time through every state
+    if (player->getBgQueueJoinTime() == 0)
+        player->setBgQueueJoinTime(Util::getMSTime());
+
     SmsgBattlefieldStatus managedPacket(player->GetNewGUID(), status, type, instanceId, time, mapId, ratedMatch, Battleground::isTypeArena(type));
+    managedPacket.joinTime = player->getBgQueueJoinTime();
+    managedPacket.horde = player->isTeamHorde();
     player->getSession()->sendManagedPacket(managedPacket);
+
+    if (status == BattlegroundDef::STATUS_NOFLAGS)
+        player->setBgQueueJoinTime(0);
 }
 
 void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battlegroundType, uint8_t asGroup, uint8_t ratedMatch)

@@ -1450,6 +1450,10 @@ public:
     void setBgQueueType(uint32_t type);
     uint32_t getBgQueueType() const;
 
+    // join time of the current queue, the ticket of 6.x+ clients
+    void setBgQueueJoinTime(uint32_t time);
+    uint32_t getBgQueueJoinTime() const;
+
     bool hasBgFlag() const;
     void setHasBgFlag(bool set);
 
@@ -1474,6 +1478,7 @@ private:
     bool m_hasWonRbgToday = false;
 
     uint32_t m_bgQueueType = 0;
+    uint32_t m_bgQueueJoinTime = 0;
 
     bool m_bgHasFlag = false;
 
