@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "BattlegroundPacketHelpers.h"
 #include "ManagedPacket.h"
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/Battleground/BattlegroundDefines.hpp"
@@ -54,7 +55,7 @@ namespace AscEmu::Packets
             {
                 // 6.x+: battlemaster, list id, level range, no joinable instances, pvp anywhere and random win flags
                 packet << guid.toGuid128(m_protocol.realmId, m_receiverMapId);
-                packet << int32_t(battlegroundType);
+                packet << int32_t(Battlegrounds::listId(m_protocol, battlegroundType));
                 packet << uint8_t(minLevel);
                 packet << uint8_t(maxLevel);
                 packet << uint32_t(0);

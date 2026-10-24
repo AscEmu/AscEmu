@@ -545,7 +545,7 @@ void Battleground::playSoundToTeam(uint32_t Team, uint32_t Sound)
             itr->getSession()->sendManagedPacket(sendPacket);
 }
 
-void Battleground::removePlayer(Player* plr, bool logout)
+void Battleground::removePlayer(Player* plr, bool logout, bool teleport)
 {
     if (!plr)
         return;
@@ -615,10 +615,14 @@ void Battleground::removePlayer(Player* plr, bool logout)
                 plr->castSpell(plr, BattlegroundDef::DESERTER, true);
         }
 
-        if (!IS_INSTANCE(plr->getBGEntryMapId()))
-            plr->safeTeleport(plr->getBGEntryMapId(), plr->getBGEntryInstanceId(), plr->getBGEntryPosition());
-        else
-            plr->safeTeleport(plr->getBindMapId(), 0, plr->getBindPosition());
+        // a teleport that already runs leaves the battleground on its own way
+        if (teleport)
+        {
+            if (!IS_INSTANCE(plr->getBGEntryMapId()))
+                plr->safeTeleport(plr->getBGEntryMapId(), plr->getBGEntryInstanceId(), plr->getBGEntryPosition());
+            else
+                plr->safeTeleport(plr->getBindMapId(), 0, plr->getBindPosition());
+        }
 
         sBattlegroundManager.sendBattlefieldStatus(plr, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
     }

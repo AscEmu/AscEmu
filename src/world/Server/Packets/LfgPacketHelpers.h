@@ -16,17 +16,21 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Packets::Lfg
 {
-    // 6.x+ queue ticket: requester, queue id, type 2 (dungeon finder), join time; 9.x+ closes it with the cross faction bit
+    // 6.x+ queue ticket: requester, queue id, type 2 (dungeon finder), join time; 9.x+ widens the time to 64 bit and closes with the cross faction bit
     inline void writeRideTicket(WorldPacket& packet, WoW::ClientProtocol const& protocol, uint32_t receiverMapId, uint64_t requester, uint32_t id, uint32_t time)
     {
         packet << WoWGuid(requester).toGuid128(protocol.realmId, receiverMapId);
         packet << uint32_t(id);
         packet << uint32_t(2);
-        packet << uint32_t(time);
         if (protocol.expansion >= WoW::Expansion::_Shadowlands)
         {
+            packet << int64_t(time);
             packet.writeBit(false);
             packet.flushBits();
+        }
+        else
+        {
+            packet << uint32_t(time);
         }
     }
 
@@ -34,12 +38,19 @@ namespace AscEmu::Packets::Lfg
     {
         WoWGuid128 guid;
         uint32_t type = 0;
-        packet >> guid >> id >> type >> time;
+        packet >> guid >> id >> type;
         requester = WoWGuid::fromGuid128(guid);
         if (protocol.expansion >= WoW::Expansion::_Shadowlands)
         {
+            int64_t wideTime = 0;
+            packet >> wideTime;
+            time = static_cast<uint32_t>(wideTime);
             packet.readBit();
             packet.resetBitPos();
+        }
+        else
+        {
+            packet >> time;
         }
     }
 

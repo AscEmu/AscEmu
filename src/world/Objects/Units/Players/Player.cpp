@@ -1929,7 +1929,8 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
     if (m_bg && m_bg->getWorldMap() && getWorldMap() &&
         getWorldMap()->getBaseMap()->getMapInfo()->mapid != mapId)
     {
-        m_bg->removePlayer(this, false);
+        // the battleground must not start a second teleport inside this one
+        m_bg->removePlayer(this, false, false);
     }
 
     if (!changesWorld && IsInWorld())
@@ -8071,6 +8072,10 @@ uint32_t Player::getBindZoneId() const { return m_bindData.zoneId; }
 // Battleground Entry
 void Player::setBGEntryPoint(float x, float y, float z, float o, uint32_t mapId, int32_t instanceId)
 {
+    // a queue joined from inside a battleground keeps the point the player came from
+    if (const auto* baseMap = sMapMgr.findBaseMap(mapId); baseMap && baseMap->isBattlegroundOrArena() && hasValidBGEntryPoint())
+        return;
+
     m_bgEntryData.location = { x, y, z, o };
     m_bgEntryData.mapId = mapId;
     m_bgEntryData.instanceId = instanceId;

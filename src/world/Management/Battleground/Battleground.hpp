@@ -126,7 +126,7 @@ public:
     bool hasFreeSlots(uint32_t Team, uint32_t type);
 
     void addPlayer(Player* plr, uint32_t team);
-    void removePlayer(Player* plr, bool logout);
+    void removePlayer(Player* plr, bool logout, bool teleport = true);
     void portPlayer(Player* plr, bool skip_teleport = false);
     void removePendingPlayer(Player* plr);
     uint32_t getFreeSlots(uint32_t t, uint32_t type);

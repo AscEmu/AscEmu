@@ -16,7 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 namespace AscEmu::Packets::Battlegrounds
 {
     // 6.x+ queue ticket: requester (packed on 6.x, 128 bit from 7.x), queue slot, type 1 (battlegrounds), join time;
-    // 9.x+ closes it with the cross faction bit
+    // 9.x+ widens the time to 64 bit and closes with the cross faction bit
     inline void writeTicket(WorldPacket& packet, WoW::ClientProtocol const& protocol, uint32_t receiverMapId, uint64_t requester, uint32_t slot, uint32_t time)
     {
         if (protocol.isWoD())
@@ -26,11 +26,15 @@ namespace AscEmu::Packets::Battlegrounds
 
         packet << uint32_t(slot);
         packet << uint32_t(1);
-        packet << uint32_t(time);
         if (protocol.expansion >= WoW::Expansion::_Shadowlands)
         {
+            packet << int64_t(time);
             packet.writeBit(false);
             packet.flushBits();
+        }
+        else
+        {
+            packet << uint32_t(time);
         }
     }
 
@@ -47,11 +51,18 @@ namespace AscEmu::Packets::Battlegrounds
         }
 
         uint32_t type = 0;
-        packet >> slot >> type >> time;
+        packet >> slot >> type;
         if (protocol.expansion >= WoW::Expansion::_Shadowlands)
         {
+            int64_t wideTime = 0;
+            packet >> wideTime;
+            time = static_cast<uint32_t>(wideTime);
             packet.readBit();
             packet.resetBitPos();
+        }
+        else
+        {
+            packet >> time;
         }
     }
 
@@ -65,6 +76,19 @@ namespace AscEmu::Packets::Battlegrounds
             case BattlegroundDef::TYPE_ARENA_5V5: return 5;
             default: return 0;
         }
+    }
+
+    // 10.x+ clients know Warsong Gulch and Arathi Basin under the lists of their remakes, the classic lists are brawls there
+    inline uint32_t listId(WoW::ClientProtocol const& protocol, uint32_t type)
+    {
+        if (protocol.expansion >= WoW::Expansion::_Dragonflight)
+        {
+            if (type == BattlegroundDef::TYPE_WARSONG_GULCH)
+                return 1014;
+            if (type == BattlegroundDef::TYPE_ARATHI_BASIN)
+                return 1018;
+        }
+        return type;
     }
 
     // the queue id of 6.x+ clients: battlemaster list, queue type, rated flag and team size under the battleground guid type
@@ -84,17 +108,18 @@ namespace AscEmu::Packets::Battlegrounds
         writeTicket(packet, protocol, receiverMapId, requester, slot, time);
 
         const bool list = protocol.expansion >= WoW::Expansion::_BfA;
+        const uint64_t queue = queueId(listId(protocol, type), rated);
         if (list)
             packet << uint32_t(1);
         else
-            packet << uint64_t(queueId(type, rated));
+            packet << uint64_t(queue);
 
         packet << uint8_t(0);                                                       // range min
         packet << uint8_t(worldConfig.player.playerLevelCap);                       // range max
         packet << uint8_t(teamSize(type) != 0 ? teamSize(type) : (protocol.isWoD() ? 1 : 0));
         packet << uint32_t(instanceId);
         if (list)
-            packet << uint64_t(queueId(type, rated));
+            packet << uint64_t(queue);
 
         packet.writeBit(rated);                                                     // registered match
         packet.writeBit(false);                                                     // tournament rules

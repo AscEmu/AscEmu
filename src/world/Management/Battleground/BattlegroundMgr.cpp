@@ -148,6 +148,13 @@ void BattlegroundManager::handleBattlegroundJoin(WorldSession* session, uint32_t
     if (bgType >= BATTLEGROUND_NUM_TYPES || bgType == 0 ||
         (!m_bgMaps.contains(bgType) && bgType != BattlegroundDef::TYPE_RANDOM))
     {
+        // 6.x+ clients pick from their own battleground list, an entry the server has no map for is no cheat
+        if (session->getClientProtocol().expansion >= WoW::Expansion::_WoD)
+        {
+            session->systemMessage("This battleground is not available.");
+            return;
+        }
+
         sCheatLog.writefromsession(session, "Attempted to join invalid battleground type: {}.", bgType);
         plr->softDisconnect();
         return;

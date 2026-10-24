@@ -284,6 +284,12 @@ void WorldSession::handleBattleMasterJoinOpcode(WorldPacket& recvPacket)
     if (_socket->getClientProtocol().expansion >= WoW::Expansion::_BfA && _player->getGroup() != nullptr)
         srlPacket.asGroup = 1;
 
+    // 8.3+: the remade Warsong Gulch and Arathi Basin lists, the server runs the classic maps
+    if (srlPacket.bgType == 1014)
+        srlPacket.bgType = BattlegroundDef::TYPE_WARSONG_GULCH;
+    else if (srlPacket.bgType == 1018)
+        srlPacket.bgType = BattlegroundDef::TYPE_ARATHI_BASIN;
+
     if (_player->hasAurasWithId(BattlegroundDef::DESERTER))
     {
         sBattlegroundManager.sendGroupJoinedBattleground(_player, BattlegroundDef::GROUP_JOIN_STATUS_DESERTERS, srlPacket.bgType);

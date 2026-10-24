@@ -46,7 +46,7 @@ namespace AscEmu::Packets
                 // 6.x+: ticket, queue id, result and the player a result names
                 const uint64_t requester = playerGuid.getRawGuid();
                 Battlegrounds::writeTicket(packet, m_protocol, m_receiverMapId, requester, queueSlot, joinTime);
-                packet << uint64_t(Battlegrounds::queueId(bgType, false));
+                packet << uint64_t(Battlegrounds::queueId(Battlegrounds::listId(m_protocol, bgType), false));
                 packet << uint32_t(result);
                 const bool named = result == BattlegroundDef::JOIN_RESULT_NOT_IN_BATTLEGROUND || result == BattlegroundDef::JOIN_RESULT_TIMED_OUT;
                 if (m_protocol.isWoD())
