@@ -1265,6 +1265,10 @@ void GameObject::despawn(uint32_t delayMs, uint32_t respawnDelayMs)
         m_respawnTime = 0;
     }
 
+    // the owner no longer holds a summoned object that despawns
+    if (Player* owner = getPlayerOwner(); owner != nullptr && owner->getSummonedObject() == this)
+        owner->setSummonedObject(nullptr);
+
     getWorldMap()->getSpawnManager().despawn(getGuid(), respawnDelayMs);
 }
 
@@ -2212,6 +2216,8 @@ void GameObject_FishingNode::onUse(Player* player)
     {
         case GO_READY: // ready for loot
         {
+            m_despawnDelay = 0;                     // the bobber waits for the loot release
+
             uint32_t zone, subzone;
             m_WorldMap->getZoneAndAreaId(GetPhase(), zone, subzone, GetPosition());
 

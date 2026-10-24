@@ -11,6 +11,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <memory>
 #include <ranges>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 namespace WDB::Structures
 {
@@ -111,6 +114,8 @@ public:
     void reloadSpellDisabled();
 
     // Skills
+    // the skill effects a spell carries beyond the effects the spell info holds: skill line and step
+    std::vector<std::pair<uint16_t, uint16_t>> const& getExtraSkillSteps(uint32_t spellId) const;
     // Returns skill ability entries by spell id
     SpellSkillAbilityMapRange getSkillEntryRangeForSpell(uint32_t spellId) const;
     // Returns skill ability entries by skill id
@@ -198,6 +203,7 @@ private:
     SpellAreaForQuestMap mSpellAreaForQuestEndMap;
 
     SpellInfoMap mSpellInfoMapStore;
+    std::unordered_map<uint32_t, std::vector<std::pair<uint16_t, uint16_t>>> mExtraSkillSteps;
 
     SpellInfo* getMutableSpellInfo(const uint32_t spellId) const;
 

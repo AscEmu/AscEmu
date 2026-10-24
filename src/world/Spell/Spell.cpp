@@ -713,6 +713,7 @@ void Spell::castMe(const bool doReCheck)
     m_casterDamageInfo.schoolMask = SchoolMask(getSpellInfo()->getSchoolMask());
 
     // Loop through spell effects and process the spell effect on each target
+    m_executingEffects = true;
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         const auto spellEffect = getSpellInfo()->getEffect(i);
@@ -804,6 +805,12 @@ void Spell::castMe(const bool doReCheck)
             //Target->removeAuraStateAndAuras(static_cast<AuraState>(getSpellInfo()->getTargetAuraState()));
         }
     }
+
+    m_executingEffects = false;
+
+    // a channeled spell replaced by its own effects is finished already and waits in the garbage list
+    if (m_spellState == SPELL_STATE_FINISHED)
+        return;
 
     // If spell is not channeled, the spell cast has finished successfully and the spell is traveling
     // Spells without travel time are also finished on next update tick
@@ -1442,11 +1449,13 @@ void Spell::cancel()
                     if (getPlayerCaster() != nullptr && getPlayerCaster()->getSummonedObject() != nullptr)
                     {
                         auto obj = getPlayerCaster()->getSummonedObject();
-                        if (obj->IsInWorld())
-                            obj->destroy();
-
-                        delete obj;
                         getPlayerCaster()->setSummonedObject(nullptr);
+
+                        // the map deletes it deferred, only an object without a map is deleted here
+                        if (obj->IsInWorld() || obj->getLifecycleMap() != nullptr)
+                            obj->destroy();
+                        else
+                            delete obj;
                     }
 
                     if (m_timer > 0)
@@ -3506,6 +3515,15 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                         }
                     }
                 }
+#if VERSION_STRING >= Dragonflight
+                // a fishing pole sits in the fishing tool slot
+                if (!hasItemWithProperType && (getSpellInfo()->getEquippedItemSubClass() & (1 << ITEM_SUBCLASS_WEAPON_FISHING_POLE)) != 0)
+                {
+                    const auto tool = p_caster->getItemInterface()->GetInventoryItem(PROFESSION_SLOT_FISHING_TOOL);
+                    if (tool != nullptr && tool->getItemProperties()->Class == ITEM_CLASS_PROFESSION && tool->getItemProperties()->SubClass == ITEM_SUBCLASS_PROFESSION_FISHING)
+                        hasItemWithProperType = true;
+                }
+#endif
             } break;
             // Spell requires an armor piece (like shield)
             case ITEM_CLASS_ARMOR:
@@ -4780,6 +4798,11 @@ void Spell::sendSpellGo()
 void Spell::sendChannelStart(const uint32_t duration)
 {
     MsgChannelStart managedPacket(m_caster->GetNewGUID(), getSpellInfo()->getId(), duration);
+#if VERSION_STRING >= WoD
+    // a client with its own data resolves the channel visual from the SpellXSpellVisual row the server names
+    if (WoW::hasOwnClientData(WoW::getServerExpansion()))
+        managedPacket.spellVisualId = getSpellInfo()->getSpellVisual(0);
+#endif
     PacketBroadcast::sendToSet(*m_caster, managedPacket, true);
 
     Object const* channelTarget = nullptr;

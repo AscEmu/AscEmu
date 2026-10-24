@@ -16,6 +16,7 @@ namespace AscEmu::Packets
         WoWGuid casterGuid;
         uint32_t spellId;
         uint32_t duration;
+        uint32_t spellVisualId {0};             // SpellXSpellVisual row of the channel (7.x and later clients with own data)
 
         MsgChannelStart() : MsgChannelStart(WoWGuid(), 0, 0)
         {
@@ -40,7 +41,7 @@ namespace AscEmu::Packets
                 packet << casterGuid.toGuid128(m_protocol.realmId, m_receiverMapId);
                 packet << int32_t(spellId);
                 if (!m_protocol.isWoD())
-                    packet << int32_t(0);
+                    packet << int32_t(spellVisualId);
                 if (m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
                     packet << int32_t(0);
                 packet << uint32_t(duration);

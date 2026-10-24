@@ -640,20 +640,7 @@ void Spell::spellEffectSkillStep(uint8_t effectIndex)
         skillId = SKILL_LOCKPICKING;
 #endif
 
-    const auto skillLine = sSkillLineStore.lookupEntry(skillId);
-    if (skillLine == nullptr)
-        return;
-
-    // Set new skill maximum value for professions only
-    // Other types will be handled on skill apply
-    uint16_t max = 0;
-    if (skillLine->type == SKILL_TYPE_PROFESSION || skillLine->type == SKILL_TYPE_SECONDARY)
-        max = static_cast<uint16_t>(damage * 75);
-
-    if (m_playerTarget->hasSkillLine(skillId))
-        m_playerTarget->modifySkillMaximum(skillId, max);
-    else
-        m_playerTarget->addSkillLine(skillId, 1, max);
+    m_playerTarget->applySkillStep(skillId, static_cast<uint16_t>(damage));
 }
 
 void Spell::spellEffectProficiency(uint8_t /*effectIndex*/)

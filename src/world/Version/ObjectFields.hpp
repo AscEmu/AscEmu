@@ -236,6 +236,7 @@ namespace Version
         BankSlot,                                    // bank_slot[]
         BankBagSlot,                                 // bank_bag_slot[]
         VendorBuyBackSlot,                           // vendor_buy_back_slot[]
+        ProfessionSlot,                              // profession_slot[], 10.x+
         KeyRingSlot,                                 // key_ring_slot[]
         FarsightGuid,                                // farsight_guid
         FieldComboTarget,                            // field_combo_target

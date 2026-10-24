@@ -91,7 +91,7 @@ namespace AscEmu::Packets
 
                 packet << WoWGuid(creature->getGuid()).toGuid128(m_protocol.realmId, m_receiverMapId);
                 packet << static_cast<int8_t>(trainer->TrainerType);
-                packet << static_cast<uint32_t>(trainer->spellset_id);    // trainer id, echoed by the client on buy
+                packet << static_cast<uint32_t>(1);
 
                 const size_t countPos = packet.wpos();
                 packet << static_cast<uint32_t>(0);
@@ -161,7 +161,7 @@ namespace AscEmu::Packets
 
                 packet << WoWGuid(creature->getGuid()).toGuid128(m_protocol.realmId, m_receiverMapId);
                 packet << static_cast<uint32_t>(trainer->TrainerType);
-                packet << static_cast<uint32_t>(m_protocol.isWoD() ? 1 : trainer->spellset_id);    // trainer id, echoed by the client on buy
+                packet << static_cast<uint32_t>(1);
 
                 const size_t countPos = packet.wpos();
                 packet << static_cast<uint32_t>(0);

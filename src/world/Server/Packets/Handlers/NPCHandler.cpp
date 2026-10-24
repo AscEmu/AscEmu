@@ -228,6 +228,10 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
     if (trainerSpell->castSpell != nullptr)
     {
         _player->castSpell(_player, trainerSpell->castSpell->getId(), true);
+
+        // the skill effects beyond the third effect of the teaching spell
+        for (const auto& [skillLine, step] : sSpellMgr.getExtraSkillSteps(trainerSpell->castSpell->getId()))
+            _player->applySkillStep(skillLine, step);
     }
     else
     {
@@ -479,11 +483,6 @@ void WorldSession::sendTrainerList(Creature* creature)
         uiMessage = _player->getSession()->localizedWorldSrv(ServerString::SS_WHAT_CAN_I_TEACH_YOU);
     else
         uiMessage = trainer->UIMessage;
-
-    // the greeting carries the name itself, the trainer frame does not expand $N
-    const std::string playerName(_player->getName());
-    for (size_t pos = uiMessage.find("$N"); pos != std::string::npos; pos = uiMessage.find("$N", pos + playerName.size()))
-        uiMessage.replace(pos, 2, playerName);
 
     SmsgTrainerList managedPacket(creature, _player, uiMessage);
     sendManagedPacket(managedPacket);

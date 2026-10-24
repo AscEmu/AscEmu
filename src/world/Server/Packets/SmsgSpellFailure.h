@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "Spell/Definitions/SpellFailure.hpp"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -41,7 +42,7 @@ namespace AscEmu::Packets
                 packet << uint8_t(castNumber);
                 packet << int32_t(spellId);
                 packet << uint32_t(0);
-                packet << uint16_t(result);
+                packet << uint16_t(SpellFailureClient::castResultFor(m_protocol, result));
                 return true;
             }
 
@@ -54,7 +55,7 @@ namespace AscEmu::Packets
                 packet << uint32_t(0);
                 if (m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
                     packet << int32_t(0);           // script visual
-                packet << uint16_t(result);
+                packet << uint16_t(SpellFailureClient::castResultFor(m_protocol, result));
                 if (m_protocol.isMidnight())
                     packet << WoWGuid128();         // 12.x: the unit that failed the cast
                 return true;

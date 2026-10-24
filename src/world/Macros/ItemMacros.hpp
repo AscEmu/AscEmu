@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "AEVersion.hpp"
+
 /// -
 #define MAX_ITEM_PROTO_DAMAGES 2
 
@@ -34,6 +36,7 @@ This file is released under the MIT license. See README-MIT for more information
 /// -
 #define RANDOM_SUFFIX_MAGIC_CALCULATION(__suffix, __scale) Util::float2int32(float(__suffix) * float(__scale) / 10000.0f);
 
+#if VERSION_STRING < Cata
 /// -
 #define INVENTORY_KEYRING_START     86 // InventoryKeyRingSlots
 #define INVENTORY_KEYRING_1         86
@@ -105,3 +108,10 @@ This file is released under the MIT license. See README-MIT for more information
 #define CURRENCYTOKEN_SLOT_31       148
 #define CURRENCYTOKEN_SLOT_32       149
 #define CURRENCYTOKEN_SLOT_END      150
+#else
+/// the clients from 4.x on have no keyring and no currency token slots, both ranges stay empty behind the inventory
+#define INVENTORY_KEYRING_START     MAX_INVENTORY_SLOT
+#define INVENTORY_KEYRING_END       MAX_INVENTORY_SLOT
+#define CURRENCYTOKEN_SLOT_START    MAX_INVENTORY_SLOT
+#define CURRENCYTOKEN_SLOT_END      MAX_INVENTORY_SLOT
+#endif

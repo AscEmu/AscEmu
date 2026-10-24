@@ -1558,7 +1558,7 @@ namespace
     struct InvSlotRange { PlayerField field; uint16_t first; uint16_t count; bool mapped; };
     constexpr InvSlotRange InvSlotRanges[] =
     {
-        { PlayerField::InventorySlot, 0, 19, true }, { PlayerField::InventorySlot, 0, 11, false }, { PlayerField::InventorySlot, 19, 4, true },
+        { PlayerField::InventorySlot, 0, 19, true }, { PlayerField::ProfessionSlot, 0, 11, true }, { PlayerField::InventorySlot, 19, 4, true },
         { PlayerField::InventorySlot, 0, 1, false }, { PlayerField::PackSlot, 0, 16, true }, { PlayerField::PackSlot, 0, 12, false },
         { PlayerField::BankSlot, 0, 28, true }, { PlayerField::BankBagSlot, 0, 7, true }, { PlayerField::VendorBuyBackSlot, 0, 12, true }
     };

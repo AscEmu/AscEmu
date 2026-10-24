@@ -134,8 +134,28 @@ void SpellMgr::initialize()
         setSpellMissingCIsFlags(spellInfo.get());
     }
 
+#if VERSION_STRING >= Cata
+    // the skill effects beyond the third effect, the spell info has no room for them
+    for (uint32_t i = 0; i < sSpellEffectStore.getNumRows(); ++i)
+    {
+        const auto effect = sSpellEffectStore.lookupEntry(i);
+        if (effect == nullptr || effect->EffectIndex < MAX_SPELL_EFFECTS)
+            continue;
+
+        if (effect->Effect == SPELL_EFFECT_SKILL_STEP || effect->Effect == SPELL_EFFECT_SKILL)
+            mExtraSkillSteps[effect->EffectSpellId].emplace_back(static_cast<uint16_t>(effect->EffectMiscValue), static_cast<uint16_t>(effect->EffectBasePoints));
+    }
+#endif
+
     // Hackfixes
     applyHackFixes();
+}
+
+std::vector<std::pair<uint16_t, uint16_t>> const& SpellMgr::getExtraSkillSteps(uint32_t spellId) const
+{
+    static const std::vector<std::pair<uint16_t, uint16_t>> none;
+    const auto itr = mExtraSkillSteps.find(spellId);
+    return itr != mExtraSkillSteps.end() ? itr->second : none;
 }
 
 void SpellMgr::finalize()

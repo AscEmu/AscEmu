@@ -1783,6 +1783,21 @@ void ObjectMgr::loadTrainerSpellSets()
             if (learnSpellID != 0)
                 ts.learnSpell = sSpellMgr.getSpellInfo(learnSpellID);
 
+            // a teaching spell is cast: its learn effects give the real spells, its skill effects the skill lines
+            if (ts.castSpell == nullptr && ts.learnSpell != nullptr && ts.learnSpell->hasEffect(SPELL_EFFECT_LEARN_SPELL))
+            {
+                ts.castSpell = ts.learnSpell;
+                ts.learnSpell = nullptr;
+                for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                {
+                    if (ts.castSpell->getEffect(i) == SPELL_EFFECT_LEARN_SPELL)
+                    {
+                        ts.castRealSpell = sSpellMgr.getSpellInfo(ts.castSpell->getEffectTriggerSpell(i));
+                        break;
+                    }
+                }
+            }
+
             if (ts.castSpell == nullptr && ts.learnSpell == nullptr)
                 continue;
 

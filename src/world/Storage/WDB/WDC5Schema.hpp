@@ -131,6 +131,8 @@ namespace WDB
         inline const WDC5TableSchema Item = makeScalarSchema("Item.db2", 0x996192AA, -1, 15);
         inline const WDC5TableSchema ItemAppearance = makeScalarSchema("ItemAppearance.db2", 0x481C4281, -1, 5);
         inline const WDC5TableSchema ItemModifiedAppearance = makeScalarSchema("ItemModifiedAppearance.db2", 0x03A6C979, 0, 7);
+        inline const WDC5TableSchema ItemEffect = makeScalarSchema("ItemEffect.db2", 0x4CA77678, -1, 9);
+        inline const WDC5TableSchema ItemXItemEffect = makeScalarSchema("ItemXItemEffect.db2", 0x96F083AD, -1, 1);
         inline const WDC5TableSchema ItemExtendedCost = makeSchemaWithArrays("ItemExtendedCost.db2", 0x22331DAB, -1, 11, { { 7, 5 }, { 8, 5 }, { 9, 5 }, { 10, 5 } });
         inline const WDC5TableSchema ItemSet = makeSchemaWithArrays("ItemSet.db2", 0xF79068A4, -1, 5, { { 4, 17 } });
         inline const WDC5TableSchema ItemSetSpell = makeScalarSchema("ItemSetSpell.db2", 0x2666A73F, -1, 4);

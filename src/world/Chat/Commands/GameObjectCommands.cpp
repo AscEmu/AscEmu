@@ -754,6 +754,30 @@ bool ChatCommandHandler::HandleGOSetAnimProgressCommand(const char* args, WorldS
     return true;
 }
 
+// .gobject customanim <animId>: plays the custom animation on the selected game object
+bool ChatCommandHandler::HandleGOCustomAnimCommand(const char* args, WorldSession* m_session)
+{
+    uint32_t animId;
+    if (sscanf(args, "%u", &animId) != 1)
+    {
+        redSystemMessage(m_session, "You need to define the anim id!");
+        redSystemMessage(m_session, ".gobject customanim <animId>");
+        return true;
+    }
+
+    auto gameobject = m_session->GetPlayer()->getSelectedGo();
+    if (gameobject == nullptr)
+    {
+        redSystemMessage(m_session, "No selected GameObject!");
+        return true;
+    }
+
+    gameobject->sendGameobjectCustomAnim(animId);
+    greenSystemMessage(m_session, "Gameobject custom anim {} sent", animId);
+
+    return true;
+}
+
 //.gobject set faction
 bool ChatCommandHandler::HandleGOSetFactionCommand(const char* args, WorldSession* m_session)
 {

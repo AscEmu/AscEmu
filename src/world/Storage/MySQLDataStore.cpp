@@ -735,6 +735,40 @@ void MySQLDataStore::loadItemPropertiesTable()
         ++item_count;
     } while (item_result->nextRow());
 
+    // a client with its own data decides class, subclass and inventory type of an item itself
+    if (WoW::hasOwnClientData(WoW::getServerExpansion()))
+    {
+        for (auto& [entry, itemProperties] : _itemPropertiesStore)
+        {
+            if (const auto clientItem = sItemStore.lookupEntry(entry))
+            {
+                itemProperties.Class = static_cast<uint32_t>(clientItem->Class);
+                itemProperties.SubClass = static_cast<uint16_t>(clientItem->SubClass);
+                itemProperties.InventoryType = static_cast<uint32_t>(clientItem->InventoryType);
+            }
+
+            if (const auto effects = sItemEffects.find(entry); effects != sItemEffects.end())
+            {
+                uint8_t index = 0;
+                for (const auto& effect : effects->second)
+                {
+                    if (index >= MAX_ITEM_PROTO_SPELLS)
+                        break;
+
+                    ItemSpell& spell = itemProperties.Spells[index++];
+                    spell.Id = effect.spellId;
+                    spell.Trigger = effect.trigger;
+                    spell.Charges = effect.charges;
+                    spell.Cooldown = effect.cooldown;
+                    spell.Category = effect.category;
+                    spell.CategoryCooldown = effect.categoryCooldown;
+                }
+                for (; index < MAX_ITEM_PROTO_SPELLS; ++index)
+                    itemProperties.Spells[index] = ItemSpell();
+            }
+        }
+    }
+
     sLogger.info("MySQLDataLoads : Loaded {} item_properties in {} ms!", item_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 

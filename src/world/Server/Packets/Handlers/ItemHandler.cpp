@@ -1194,7 +1194,7 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    int8_t Slot = _player->getItemInterface()->GetItemSlotByType(eitem->getItemProperties()->InventoryType);
+    int8_t Slot = _player->getItemInterface()->GetItemSlotByType(eitem->getItemProperties());
     if (Slot == ITEM_NO_SLOT_AVAILABLE)
     {
         _player->getItemInterface()->buildInventoryChangeError(eitem, nullptr, INV_ERR_ITEM_CANT_BE_EQUIPPED);
@@ -1378,7 +1378,7 @@ void WorldSession::handleAutoEquipItemSlotOpcode(WorldPacket& recvPacket)
     if (item == nullptr)
         return;
 
-    int8_t slotType = _player->getItemInterface()->GetItemSlotByType(item->getItemProperties()->InventoryType);
+    int8_t slotType = _player->getItemInterface()->GetItemSlotByType(item->getItemProperties());
     bool hasDualWield2H = false;
 
     sLogger.debug("CMSG_AUTOEQUIP_ITEM_SLOT ItemGUID: {}, SrcSlot: {}, DestSlot: {}, SlotType: {}",

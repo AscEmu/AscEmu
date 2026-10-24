@@ -49,7 +49,7 @@ namespace AscEmu::Packets
         // though nothing gets written for them. Defaults to slots.size() when that quirk doesn't apply.
         uint32_t reportedItemCount = 0;
 
-        // guid of the looting player, 6.x and later send it as the owner of the loot window
+        // 6.x and later: the object that holds the loot, the client releases the loot with this guid
         uint64_t ownerGuid = 0;
 
         SmsgLootResponse() : SmsgLootResponse(0, 0, 0, {}, {}, 0)

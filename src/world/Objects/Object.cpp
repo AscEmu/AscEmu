@@ -784,8 +784,11 @@ void Object::interruptSpellWithSpellType(CurrentSpellType spellType)
             }
         }
 
-        // Cancel spell
-        curSpell->cancel();
+        // a channeled spell replaced while applying its own effects ends without interrupt packets
+        if (curSpell->isExecutingEffects() && curSpell->getState() == SPELL_STATE_CHANNELING)
+            curSpell->finish(false);
+        else
+            curSpell->cancel();
         m_currentSpell[spellType] = nullptr;
     }
 }

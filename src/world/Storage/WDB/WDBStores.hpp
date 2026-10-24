@@ -180,6 +180,18 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::NameGenEntry> sNameGenStor
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SkillLineAbilityEntry> sSkillLineAbilityStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SkillLineEntry> sSkillLineStore;
 extern SERVER_DECL std::unordered_map<uint32_t, std::vector<uint32_t>> sSkillLineChildren;     // parent skill line -> expansion lines, own client data only
+
+// an item effect of the client data: the spell an item casts by its trigger
+struct ClientItemEffect
+{
+    uint32_t spellId = 0;
+    uint8_t trigger = 0;
+    int16_t charges = 0;
+    int32_t cooldown = -1;
+    uint16_t category = 0;
+    int32_t categoryCooldown = -1;
+};
+extern SERVER_DECL std::unordered_map<uint32_t, std::vector<ClientItemEffect>> sItemEffects;         // item -> effects, own client data only
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellEntry> sSpellStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellCastTimesEntry> sSpellCastTimesStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellDurationEntry> sSpellDurationStore;

@@ -1131,6 +1131,9 @@ void Player::setBankBagSlotItemGuid(uint8_t slot, uint64_t guid) { setField<uint
 uint64_t Player::getVendorBuybackSlot(uint8_t slot) const { return getField<uint64_t>(PlayerField::VendorBuyBackSlot, slot); }
 void Player::setVendorBuybackSlot(uint8_t slot, uint64_t guid) { setField<uint64_t>(PlayerField::VendorBuyBackSlot, guid, slot); }
 
+uint64_t Player::getProfessionSlotItemGuid(uint8_t slot) const { return getField<uint64_t>(PlayerField::ProfessionSlot, slot); }
+void Player::setProfessionSlotItemGuid(uint8_t slot, uint64_t guid) { setField<uint64_t>(PlayerField::ProfessionSlot, guid, slot); }
+
 uint64_t Player::getKeyRingSlotItemGuid(uint8_t slot) const { return getField<uint64_t>(PlayerField::KeyRingSlot, slot); }
 void Player::setKeyRingSlotItemGuid(uint8_t slot, uint64_t guid) { setField<uint64_t>(PlayerField::KeyRingSlot, guid, slot); }
 
@@ -2660,7 +2663,7 @@ bool Player::create(CharCreate& charCreateContent)
                 }
                 else
                 {
-                    itemSlot = getItemInterface()->GetItemSlotByType(itemProperties->InventoryType);
+                    itemSlot = getItemInterface()->GetItemSlotByType(itemProperties);
                 }
 
                 //use safeadd only for equipmentset items... all other items will go to a free bag slot.
@@ -5099,15 +5102,6 @@ void Player::addSkillLine(uint16_t skillLine, uint16_t currentValue, uint16_t ma
         if (newSkill.CurrentValue > 0)
             onLearnedNewSkill(newSkill.CurrentValue, skillStep, newSkill.Skill->type == SKILL_TYPE_PROFESSION);
     }
-
-    // the expansion lines follow a learned skill at value 0, the client looks them up
-    if (currentValue > 0)
-    {
-        if (const auto children = sSkillLineChildren.find(skillLine); children != sSkillLineChildren.end())
-            for (const auto child : children->second)
-                if (!hasSkillLine(static_cast<uint16_t>(child), true))
-                    addSkillLine(static_cast<uint16_t>(child), 0, 0, true, true);
-    }
 }
 
 bool Player::hasSkillLine(uint16_t skillLine, bool strict/* = false*/) const
@@ -5221,6 +5215,24 @@ void Player::modifySkillBonus(uint16_t skillLine, int16_t amount, bool permanent
     _updateSkillBonusFields(itr->second.FieldPosition, static_cast<uint16_t>(itr->second.TemporaryBonusValue), static_cast<uint16_t>(itr->second.PermanentBonusValue));
 }
 
+void Player::applySkillStep(uint16_t skillLine, uint16_t step)
+{
+    const auto skillEntry = sSkillLineStore.lookupEntry(skillLine);
+    if (skillEntry == nullptr)
+        return;
+
+    // Set new skill maximum value for professions only
+    // Other types will be handled on skill apply
+    uint16_t max = 0;
+    if (skillEntry->type == SKILL_TYPE_PROFESSION || skillEntry->type == SKILL_TYPE_SECONDARY)
+        max = static_cast<uint16_t>(step * 75);
+
+    if (hasSkillLine(skillLine))
+        modifySkillMaximum(skillLine, max);
+    else
+        addSkillLine(skillLine, 1, max);
+}
+
 void Player::modifySkillMaximum(uint16_t skillLine, uint16_t maxValue)
 {
     if (skillLine == 0)
@@ -5275,11 +5287,6 @@ void Player::removeSkillLine(uint16_t skillLine)
     auto itr = m_skills.find(skillLine);
     if (itr == m_skills.end())
         return;
-
-    // the expansion lines go with their parent
-    if (const auto children = sSkillLineChildren.find(skillLine); children != sSkillLineChildren.end())
-        for (const auto child : children->second)
-            removeSkillLine(static_cast<uint16_t>(child));
 
     const auto fieldPosition = itr->second.FieldPosition;
 
@@ -11463,7 +11470,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
     }
 #endif
 
-    SmsgLootResponse lootResponsePacket(guid, loot_type, pLoot->gold, std::move(lootSlots), std::move(lootCurrencies), maxItemsCount, getGuid());
+    SmsgLootResponse lootResponsePacket(guid, loot_type, pLoot->gold, std::move(lootSlots), std::move(lootCurrencies), maxItemsCount, guid);
     m_session->sendManagedPacket(lootResponsePacket);
 
     addUnitFlags(UNIT_FLAG_LOOTING);

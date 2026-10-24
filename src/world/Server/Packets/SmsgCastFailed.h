@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "Spell/Definitions/SpellFailure.hpp"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -46,7 +47,7 @@ namespace AscEmu::Packets
             {
                 // spell, reason, two arguments, cast count
                 packet << int32_t(spellId);
-                packet << int32_t(errorMsg);
+                packet << int32_t(SpellFailureClient::castResultFor(m_protocol, errorMsg));
                 packet << int32_t(extra1 || extra2 ? extra1 : -1);
                 packet << int32_t(extra2 ? extra2 : -1);
                 packet << uint8_t(multiCast);
@@ -61,7 +62,7 @@ namespace AscEmu::Packets
                 packet << uint32_t(0);
                 if (m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
                     packet << int32_t(0);           // script visual
-                packet << int32_t(errorMsg);
+                packet << int32_t(SpellFailureClient::castResultFor(m_protocol, errorMsg));
                 packet << int32_t(extra1 || extra2 ? extra1 : -1);
                 packet << int32_t(extra2 ? extra2 : -1);
                 if (m_protocol.isMidnight())

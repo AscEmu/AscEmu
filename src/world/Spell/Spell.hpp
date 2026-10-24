@@ -346,6 +346,7 @@ private:
     std::map<AuraEffectModifier const*, bool> m_usedModifiers;
 
     SpellState m_spellState = SPELL_STATE_NULL;
+    bool m_executingEffects = false;                // castMe is applying the effects to the targets
     SpellCastResult cancastresult = SPELL_CAST_SUCCESS;
 
     bool m_triggeredSpell = false;
@@ -531,6 +532,7 @@ public:
     void AddTime(uint32_t type);
 
     uint32_t getState() const;
+    bool isExecutingEffects() const { return m_executingEffects; }
 
     // Send Packet functions
     void SendLogExecute(uint32_t damage, uint64_t& targetGuid);

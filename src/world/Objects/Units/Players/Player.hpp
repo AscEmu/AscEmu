@@ -253,6 +253,9 @@ public:
     uint64_t getVendorBuybackSlot(uint8_t slot) const;
     void setVendorBuybackSlot(uint8_t slot, uint64_t guid);
 
+    uint64_t getProfessionSlotItemGuid(uint8_t slot) const;
+    void setProfessionSlotItemGuid(uint8_t slot, uint64_t guid);
+
     uint64_t getKeyRingSlotItemGuid(uint8_t slot) const;
     void setKeyRingSlotItemGuid(uint8_t slot, uint64_t guid);
 
@@ -921,6 +924,8 @@ public:
     void advanceAllSkills(uint16_t amount = 1);
     void advanceSkillLine(uint16_t skillLine, uint16_t amount = 1);
     void addSkillLine(uint16_t skillLine, uint16_t currentValue, uint16_t maxValue, bool noSpellLearning = false, bool initializeProfession = false);
+    // a skill step effect: the skill line gets the step, professions their maximum
+    void applySkillStep(uint16_t skillLine, uint16_t step);
     bool hasSkillLine(uint16_t skillLine, bool strict = false) const;
     uint16_t getSkillLineCurrent(uint16_t skillLine, bool includeBonus = true) const;
     uint16_t getSkillLineMax(uint16_t skillLine) const;

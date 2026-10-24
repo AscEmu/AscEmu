@@ -63,6 +63,9 @@ namespace Version::Tables
         { UnitField::BattlePetCompanionGuid,            {  176,   16,   1,    0 } },
         { UnitField::BattlePetCompanionGuidLow,         {  176,    4,   1,    0 } },
         { UnitField::BattlePetCompanionGuidHigh,        {  180,    4,   1,    0 } },
+        { UnitField::ChannelObjectGuid,                 {  192,    8,   1,    0 } },
+        { UnitField::ChannelObjectGuidLow,              {  192,    4,   1,    0 } },
+        { UnitField::ChannelObjectGuidHigh,             {  196,    4,   1,    0 } },
         { UnitField::ChannelSpell,                      {  200,    4,   1,    0 } },
         { UnitField::SummonedByHomeRealm,               {  208,    4,   1,    0 } },
         { UnitField::FieldBytes0,                       {  212,    4,   1,    0 } },
@@ -204,6 +207,7 @@ namespace Version::Tables
         { PlayerField::BankSlot,                               { 4968,   16,  28,   16 } },
         { PlayerField::BankBagSlot,                            { 5416,   16,   7,   16 } },
         { PlayerField::VendorBuyBackSlot,                      { 5528,   16,  12,   16 } },
+        { PlayerField::ProfessionSlot,                         { 18320,   16,  11,   16 } },    // behind the client fields
         { PlayerField::FarsightGuid,                           { 7464,   16,   1,    0 } },
         { PlayerField::SummonedBattlePetGuid,                  { 7480,   16,   1,    0 } },
         { PlayerField::FieldKnownTitles,                       { 7496,    8,   6,    8 } },

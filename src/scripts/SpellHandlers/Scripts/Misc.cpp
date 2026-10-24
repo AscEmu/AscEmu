@@ -4,6 +4,9 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Management/ItemInterface.h"
+#include "Management/ItemProperties.hpp"
+#include "Objects/Item.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Spell/SpellAura.hpp"
 #include "Spell/SpellScript.hpp"
@@ -145,6 +148,60 @@ private:
     bool _health = false;
 };
 
+#if VERSION_STRING >= Mop
+enum ModernFishingSpells
+{
+    SPELL_FISHING_DUMMY = 131474,       // the fishing button of the professions window
+    SPELL_FISHING_NO_POLE = 131476,
+    SPELL_FISHING_WITH_POLE = 131490
+};
+
+// the dummy casts the fishing spell that fits the main hand
+class ModernFishing : public SpellScript
+{
+public:
+    SpellScriptCheckDummy onDummyOrScriptedEffect(Spell* spell, uint8_t /*effIndex*/) override
+    {
+        const auto player = spell->getPlayerCaster();
+        if (player == nullptr)
+            return SpellScriptCheckDummy::DUMMY_OK;
+
+        const auto mainHand = player->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+        bool hasPole = mainHand != nullptr && mainHand->getItemProperties()->Class == ITEM_CLASS_WEAPON && mainHand->getItemProperties()->SubClass == ITEM_SUBCLASS_WEAPON_FISHING_POLE;
+#if VERSION_STRING >= Dragonflight
+        // the pole sits in the fishing tool slot
+        if (const auto tool = player->getItemInterface()->GetInventoryItem(PROFESSION_SLOT_FISHING_TOOL))
+            hasPole = hasPole || (tool->getItemProperties()->Class == ITEM_CLASS_PROFESSION && tool->getItemProperties()->SubClass == ITEM_SUBCLASS_PROFESSION_FISHING);
+#endif
+        player->castSpell(player, hasPole ? SPELL_FISHING_WITH_POLE : SPELL_FISHING_NO_POLE, false);
+        return SpellScriptCheckDummy::DUMMY_OK;
+    }
+};
+
+#if VERSION_STRING >= Dragonflight
+// the channel with a pole shows the pole of the tool slot as the visible main hand
+class ModernFishingPole : public SpellScript
+{
+public:
+    void onAuraApply(Aura* aur) override
+    {
+        const auto player = aur->getPlayerOwner();
+        if (player == nullptr)
+            return;
+
+        if (const auto tool = player->getItemInterface()->GetInventoryItem(PROFESSION_SLOT_FISHING_TOOL))
+            player->setVisibleItemFields(EQUIPMENT_SLOT_MAINHAND, tool);
+    }
+
+    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
+    {
+        if (const auto player = aur->getPlayerOwner())
+            player->setVisibleItemFields(EQUIPMENT_SLOT_MAINHAND, player->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND));
+    }
+};
+#endif
+#endif
+
 void setupMiscSpells(ScriptMgr* mgr)
 {
     // Call legacy script setup
@@ -173,5 +230,12 @@ void setupMiscSpells(ScriptMgr* mgr)
 #endif
 #if VERSION_STRING >= WotLK
     mgr->register_spell_script(SPELL_VENGEFUL_STORMHAMMER, new ScriptedEffectWithoutLogic);
+#endif
+
+#if VERSION_STRING >= Mop
+    mgr->register_spell_script(SPELL_FISHING_DUMMY, new ModernFishing);
+#if VERSION_STRING >= Dragonflight
+    mgr->register_spell_script(SPELL_FISHING_WITH_POLE, new ModernFishingPole);
+#endif
 #endif
 }

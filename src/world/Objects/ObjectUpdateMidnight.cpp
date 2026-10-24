@@ -28,6 +28,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/UpdateMask.h"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
+#include "Spell/SpellInfo.hpp"
+#include "Spell/SpellMgr.hpp"
 #include "Server/WorldConfig.h"
 #include "Storage/MySQLStructures.h"
 #include "Version/ObjectLayout.hpp"
@@ -419,8 +421,10 @@ namespace
     // the channel: spell, spell visual (x spell visual, script visual), start time, duration
     void unitChannelCreate(Unit* unit, ByteBuffer& data)
     {
+        const auto spellInfo = sSpellMgr.getSpellInfo(unit->getChannelSpellId());
         data << int32_t(unit->getChannelSpellId());
-        data << int32_t(0) << int32_t(0);
+        data << int32_t(spellInfo != nullptr ? spellInfo->getSpellVisual(0) : 0);   // SpellXSpellVisual
+        data << int32_t(0);                                                 // script visual
         data << uint32_t(0);                                                // start time, no server value
         data << uint32_t(0);                                                // duration, no server value
     }
@@ -1628,7 +1632,7 @@ namespace
     struct InvSlotRange { PlayerField field; uint16_t first; uint16_t count; bool mapped; };
     constexpr InvSlotRange InvSlotRanges[] =
     {
-        { PlayerField::InventorySlot, 0, 19, true }, { PlayerField::InventorySlot, 0, 11, false }, { PlayerField::InventorySlot, 19, 4, true },
+        { PlayerField::InventorySlot, 0, 19, true }, { PlayerField::ProfessionSlot, 0, 11, true }, { PlayerField::InventorySlot, 19, 4, true },
         { PlayerField::InventorySlot, 0, 1, false }, { PlayerField::PackSlot, 0, 16, true }, { PlayerField::PackSlot, 0, 12, false },
         { PlayerField::BankBagSlot, 0, 6, true }, { PlayerField::VendorBuyBackSlot, 0, 12, true }
     };

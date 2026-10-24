@@ -262,6 +262,7 @@ CommandTableStorage::CommandTableStorage()
 
         {"gobject set",                   "o", 0 },
         {"gobject set animprogress",      "o", 1, wrap(&ChatCommandHandler::HandleGOSetAnimProgressCommand),      "Sets anim progress of selected GO" },
+        {"gobject customanim",            "o", 1, wrap(&ChatCommandHandler::HandleGOCustomAnimCommand),           "Plays custom anim <animId> on selected GO" },
         {"gobject set faction",           "o", 1, wrap(&ChatCommandHandler::HandleGOSetFactionCommand),           "Sets the faction of the GO" },
         {"gobject set flags",             "o", 1, wrap(&ChatCommandHandler::HandleGOSetFlagsCommand),             "Sets the flags of the GO" },
         {"gobject set overrides",         "o", 1, wrap(&ChatCommandHandler::HandleGOSetOverridesCommand),         "Sets override of selected GO" },

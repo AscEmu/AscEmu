@@ -278,8 +278,14 @@ void ItemInterface::buildInventoryChangeError(Item const* srcItem, Item const* d
 
 void ItemInterface::setOwnerInventoryItem(uint8_t slot, uint64_t guid)
 {
-    if (slot < INVENTORY_SLOT_BAG_END)
+    if (slot < EQUIPMENT_SLOT_END)
         m_pOwner->setInventorySlotItemGuid(slot, guid);
+#if VERSION_STRING >= Dragonflight
+    else if (slot >= PROFESSION_SLOT_START && slot < PROFESSION_SLOT_END)
+        m_pOwner->setProfessionSlotItemGuid(slot - PROFESSION_SLOT_START, guid);
+#endif
+    else if (slot < INVENTORY_SLOT_BAG_END)
+        m_pOwner->setInventorySlotItemGuid(EQUIPMENT_SLOT_END + (slot - INVENTORY_SLOT_BAG_START), guid);   // the bags follow the equipment
     else if (slot < INVENTORY_SLOT_ITEM_END)
         m_pOwner->setPackSlotItemGuid(slot - INVENTORY_SLOT_ITEM_START, guid);
     else if (slot < BANK_SLOT_ITEM_END)
@@ -2692,6 +2698,26 @@ int8_t ItemInterface::CanEquipItemInSlot(int8_t DstInvSlot, int8_t slot, ItemPro
         {
             return 0;
         }
+#if VERSION_STRING >= Dragonflight
+        case PROFESSION_SLOT_PROFESSION1_TOOL:
+        case PROFESSION_SLOT_PROFESSION1_GEAR1:
+        case PROFESSION_SLOT_PROFESSION1_GEAR2:
+        case PROFESSION_SLOT_PROFESSION2_TOOL:
+        case PROFESSION_SLOT_PROFESSION2_GEAR1:
+        case PROFESSION_SLOT_PROFESSION2_GEAR2:
+        case PROFESSION_SLOT_COOKING_TOOL:
+        case PROFESSION_SLOT_COOKING_GEAR1:
+        case PROFESSION_SLOT_FISHING_TOOL:
+        case PROFESSION_SLOT_FISHING_GEAR1:
+        case PROFESSION_SLOT_FISHING_GEAR2:
+        {
+            if (isProfessionSlotFor(proto, slot))
+                return 0;
+            else
+                return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
+        }
+#endif
+#if VERSION_STRING < Cata
         case INVENTORY_KEYRING_1:
         case INVENTORY_KEYRING_2:
         case INVENTORY_KEYRING_3:
@@ -2776,6 +2802,7 @@ int8_t ItemInterface::CanEquipItemInSlot(int8_t DstInvSlot, int8_t slot, ItemPro
                 return INV_ERR_ITEM_DOESNT_GO_INTO_BAG;
             }
         }
+#endif
         default:
             return 0;
     }
@@ -2904,6 +2931,113 @@ int8_t ItemInterface::CanAffordItem(ItemProperties const* item, uint32_t amount,
 }
 
 // Gets the Item slot by item type
+#if VERSION_STRING >= Dragonflight
+// the skill of a profession item, by its subclass
+static uint16_t professionItemSkill(uint16_t subClass)
+{
+    static constexpr uint16_t skills[MAX_ITEM_SUBCLASS_PROFESSION] =
+    {
+        SKILL_BLACKSMITHING, SKILL_LEATHERWORKING, SKILL_ALCHEMY, SKILL_HERBALISM, SKILL_COOKING, SKILL_MINING, SKILL_TAILORING,
+        SKILL_ENGINEERING, SKILL_ENCHANTING, SKILL_FISHING, SKILL_SKINNING, SKILL_JEWELCRAFTING, SKILL_INSCRIPTION, SKILL_ARCHAEOLOGY
+    };
+    return subClass < MAX_ITEM_SUBCLASS_PROFESSION ? skills[subClass] : 0;
+}
+
+// the slots a profession item may take: the tool slot or the gear slots of its profession, none without the skill
+bool ItemInterface::getProfessionSlots(ItemProperties const* proto, int8_t& first, int8_t& second)
+{
+    first = ITEM_NO_SLOT_AVAILABLE;
+    second = ITEM_NO_SLOT_AVAILABLE;
+
+    if (proto == nullptr || proto->Class != ITEM_CLASS_PROFESSION)
+        return false;
+
+    const bool isTool = proto->InventoryType == INVTYPE_PROFESSION_TOOL;
+    if (!isTool && proto->InventoryType != INVTYPE_PROFESSION_GEAR)
+        return false;
+
+    const uint16_t skill = professionItemSkill(proto->SubClass);
+    if (skill == 0 || !m_pOwner->hasSkillLine(skill))
+        return false;
+
+    switch (proto->SubClass)
+    {
+        case ITEM_SUBCLASS_PROFESSION_COOKING:
+            first = isTool ? PROFESSION_SLOT_COOKING_TOOL : PROFESSION_SLOT_COOKING_GEAR1;
+            return true;
+        case ITEM_SUBCLASS_PROFESSION_FISHING:
+            // fishing has no gear slots on the client
+            if (!isTool)
+                return false;
+            first = PROFESSION_SLOT_FISHING_TOOL;
+            return true;
+        case ITEM_SUBCLASS_PROFESSION_BLACKSMITHING:
+        case ITEM_SUBCLASS_PROFESSION_LEATHERWORKING:
+        case ITEM_SUBCLASS_PROFESSION_ALCHEMY:
+        case ITEM_SUBCLASS_PROFESSION_HERBALISM:
+        case ITEM_SUBCLASS_PROFESSION_MINING:
+        case ITEM_SUBCLASS_PROFESSION_TAILORING:
+        case ITEM_SUBCLASS_PROFESSION_ENGINEERING:
+        case ITEM_SUBCLASS_PROFESSION_ENCHANTING:
+        case ITEM_SUBCLASS_PROFESSION_SKINNING:
+        case ITEM_SUBCLASS_PROFESSION_JEWELCRAFTING:
+        case ITEM_SUBCLASS_PROFESSION_INSCRIPTION:
+        {
+            // the primary professions take the slot block of their profession index
+            for (uint32_t index = 0; index < 2; ++index)
+            {
+                if (m_pOwner->getProfessionSkillLine(index) != skill)
+                    continue;
+
+                const int8_t base = static_cast<int8_t>(PROFESSION_SLOT_PROFESSION1_TOOL + index * PROFESSION_SLOT_MAX_COUNT);
+                if (isTool)
+                {
+                    first = base;
+                }
+                else
+                {
+                    first = base + 1;
+                    second = base + 2;
+                }
+                return true;
+            }
+            return false;
+        }
+        default:
+            return false;
+    }
+}
+
+// the slot a profession item is equipped to, the second gear slot when the first is taken
+int8_t ItemInterface::getProfessionSlot(ItemProperties const* proto)
+{
+    int8_t first, second;
+    if (!getProfessionSlots(proto, first, second))
+        return ITEM_NO_SLOT_AVAILABLE;
+
+    if (second != ITEM_NO_SLOT_AVAILABLE && GetInventoryItem(first) != nullptr && GetInventoryItem(second) == nullptr)
+        return second;
+
+    return first;
+}
+
+bool ItemInterface::isProfessionSlotFor(ItemProperties const* proto, int8_t slot)
+{
+    int8_t first, second;
+    return getProfessionSlots(proto, first, second) && (slot == first || slot == second);
+}
+#endif
+
+// the slot of an item by its properties, the profession items by their profession
+int8_t ItemInterface::GetItemSlotByType(ItemProperties const* proto)
+{
+#if VERSION_STRING >= Dragonflight
+    if (proto->InventoryType == INVTYPE_PROFESSION_TOOL || proto->InventoryType == INVTYPE_PROFESSION_GEAR)
+        return getProfessionSlot(proto);
+#endif
+    return GetItemSlotByType(proto->InventoryType);
+}
+
 int8_t ItemInterface::GetItemSlotByType(uint32_t type)
 {
     switch (type)

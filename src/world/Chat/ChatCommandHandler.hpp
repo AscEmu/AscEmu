@@ -367,6 +367,7 @@ public:
     bool HandleGOSetPhaseCommand(const char* args, WorldSession* m_session);
     bool HandleGOSetScaleCommand(const char* args, WorldSession* m_session);
     bool HandleGOSetAnimProgressCommand(const char* args, WorldSession* m_session);
+    bool HandleGOCustomAnimCommand(const char* args, WorldSession* m_session);
     bool HandleGOSetOverridesCommand(const char* args, WorldSession* m_session);
 
     //old GMTicket commands

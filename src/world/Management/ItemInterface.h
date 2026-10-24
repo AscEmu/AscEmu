@@ -216,6 +216,12 @@ private:
         int8_t CanReceiveItem(ItemProperties const* item, uint32_t amount);
         int8_t CanAffordItem(ItemProperties const* item, uint32_t amount, Creature* pVendor);
         int8_t GetItemSlotByType(uint32_t type);
+        int8_t GetItemSlotByType(ItemProperties const* proto);
+#if VERSION_STRING >= Dragonflight
+        bool getProfessionSlots(ItemProperties const* proto, int8_t& first, int8_t& second);
+        int8_t getProfessionSlot(ItemProperties const* proto);
+        bool isProfessionSlotFor(ItemProperties const* proto, int8_t slot);
+#endif
         Item* GetItemByGUID(uint64_t itemGuid);
 
         void SwapItemSlots(int8_t srcslot, int8_t dstslot);

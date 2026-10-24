@@ -1041,10 +1041,11 @@ namespace
 
     bool loadItemStores(WDB::StoreProblemList& errors, std::string const& dbcPath)
     {
-        WDC5File item, itemAppearance, itemModifiedAppearance, itemExtendedCost, itemSet, itemSetSpell, itemCurrencyCost, itemLimitCategory;
+        WDC5File item, itemAppearance, itemModifiedAppearance, itemEffect, itemXItemEffect, itemExtendedCost, itemSet, itemSetSpell, itemCurrencyCost, itemLimitCategory;
         WDC5File durabilityCosts, durabilityQuality;
         if (!loadTables(errors, dbcPath, {
             { item, Layout::Item }, { itemAppearance, Layout::ItemAppearance }, { itemModifiedAppearance, Layout::ItemModifiedAppearance },
+            { itemEffect, Layout::ItemEffect }, { itemXItemEffect, Layout::ItemXItemEffect },
             { itemExtendedCost, Layout::ItemExtendedCost }, { itemSet, Layout::ItemSet }, { itemSetSpell, Layout::ItemSetSpell },
             { itemCurrencyCost, Layout::ItemCurrencyCost }, { itemLimitCategory, Layout::ItemLimitCategory },
             { durabilityCosts, Layout::DurabilityCosts }, { durabilityQuality, Layout::DurabilityQuality } }))
@@ -1079,6 +1080,26 @@ namespace
             entry.InventoryType = row.i8(3);
             entry.Sheath = row.u8(4);
         });
+
+        // the effects of an item, linked by ItemXItemEffect
+        std::unordered_map<uint32_t, ClientItemEffect> effectById;
+        effectById.reserve(itemEffect.getRecordCount());
+        for (Row const row : rows(itemEffect))
+        {
+            ClientItemEffect effect;
+            effect.spellId = row.u32(6);                // SpellID
+            effect.trigger = row.u8(1);                 // TriggerType
+            effect.charges = row.i16(2);                // Charges
+            effect.cooldown = row.i32(3);               // CoolDownMSec
+            effect.category = row.u16(5);               // SpellCategoryID
+            effect.categoryCooldown = row.i32(4);       // CategoryCoolDownMSec
+            effectById.emplace(row.id(), effect);
+        }
+
+        sItemEffects.clear();
+        for (Row const row : rows(itemXItemEffect))
+            if (auto const effect = effectById.find(row.u32(0)); effect != effectById.end())   // ItemEffectID
+                sItemEffects[row.parent()].push_back(effect->second);                            // ItemID
 
         fillContainer(sItemExtendedCostStore, itemExtendedCost, [](WDB::Structures::ItemExtendedCostEntry& entry, Row const& row)
         {
