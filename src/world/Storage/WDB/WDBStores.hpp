@@ -12,6 +12,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WDBStructures.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 
+#include <cstdint>
+#include <unordered_map>
+#include <vector>
+
 namespace WDB::Structures
 {
     struct ItemExtendedCostEntry;
@@ -175,6 +179,7 @@ inline MapDifficultyMap sMapDifficultyMap;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::NameGenEntry> sNameGenStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SkillLineAbilityEntry> sSkillLineAbilityStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SkillLineEntry> sSkillLineStore;
+extern SERVER_DECL std::unordered_map<uint32_t, std::vector<uint32_t>> sSkillLineChildren;     // parent skill line -> expansion lines, own client data only
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellEntry> sSpellStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellCastTimesEntry> sSpellCastTimesStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellDurationEntry> sSpellDurationStore;

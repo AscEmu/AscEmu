@@ -40,6 +40,24 @@ namespace AscEmu::Packets
         }
 
     protected:
+        // the client encodes the state as known 0, available 1, unavailable 2 since Cata
+        uint8_t clientSpellState(TrainerSpell const* trainerSpell) const
+        {
+            const auto state = player->getSession()->trainerGetSpellStatus(trainerSpell);
+            if (m_protocol.expansion < WoW::Expansion::_Cata)
+                return static_cast<uint8_t>(state);
+
+            switch (state)
+            {
+                case TRAINER_SPELL_GRAY:
+                    return 0;
+                case TRAINER_SPELL_GREEN:
+                    return 1;
+                default:
+                    return 2;
+            }
+        }
+
         size_t expectedSize() const override
         {
             if (creature == nullptr)
@@ -73,7 +91,7 @@ namespace AscEmu::Packets
 
                 packet << WoWGuid(creature->getGuid()).toGuid128(m_protocol.realmId, m_receiverMapId);
                 packet << static_cast<int8_t>(trainer->TrainerType);
-                packet << static_cast<uint32_t>(1);
+                packet << static_cast<uint32_t>(trainer->spellset_id);    // trainer id, echoed by the client on buy
 
                 const size_t countPos = packet.wpos();
                 packet << static_cast<uint32_t>(0);
@@ -121,7 +139,7 @@ namespace AscEmu::Packets
                     for (; requiredSpellCount < maxRequiredCount; ++requiredSpellCount)
                         packet << static_cast<uint32_t>(0);
 
-                    packet << static_cast<uint8_t>(player->getSession()->trainerGetSpellStatus(&trainerSpell));
+                    packet << clientSpellState(&trainerSpell);
                     packet << static_cast<uint8_t>(trainerSpell.requiredLevel);
 
                     ++count;
@@ -143,7 +161,7 @@ namespace AscEmu::Packets
 
                 packet << WoWGuid(creature->getGuid()).toGuid128(m_protocol.realmId, m_receiverMapId);
                 packet << static_cast<uint32_t>(trainer->TrainerType);
-                packet << static_cast<uint32_t>(1);
+                packet << static_cast<uint32_t>(m_protocol.isWoD() ? 1 : trainer->spellset_id);    // trainer id, echoed by the client on buy
 
                 const size_t countPos = packet.wpos();
                 packet << static_cast<uint32_t>(0);
@@ -191,7 +209,7 @@ namespace AscEmu::Packets
                     for (; requiredSpellCount < maxRequiredCount; ++requiredSpellCount)
                         packet << static_cast<uint32_t>(0);
 
-                    packet << static_cast<uint8_t>(player->getSession()->trainerGetSpellStatus(&trainerSpell));
+                    packet << clientSpellState(&trainerSpell);
                     packet << static_cast<uint8_t>(trainerSpell.requiredLevel);
 
                     ++count;
@@ -298,7 +316,7 @@ namespace AscEmu::Packets
 
                     packet << static_cast<uint32_t>(trainerSpell.requiredSkillLine);
                     packet << static_cast<uint32_t>(trainerSpell.requiredSkillLineValue);
-                    packet << static_cast<uint8_t>(player->getSession()->trainerGetSpellStatus(&trainerSpell));
+                    packet << clientSpellState(&trainerSpell);
 
                     ++count;
                 }
@@ -367,7 +385,7 @@ namespace AscEmu::Packets
                     }
 
                     packet << static_cast<uint32_t>(spellInfo->getId());
-                    packet << static_cast<uint8_t>(player->getSession()->trainerGetSpellStatus(&trainerSpell));
+                    packet << clientSpellState(&trainerSpell);
                     packet << static_cast<uint32_t>(trainerSpell.cost);
                     if (m_protocol.expansion < WoW::Expansion::_Cata)
                     {

@@ -526,7 +526,6 @@ namespace Version::Tables
         { "MSG_SAVE_GUILD_EMBLEM", OpcodeDevelopmentState::Unchecked },
         { "MSG_TABARDVENDOR_ACTIVATE", OpcodeDevelopmentState::Unchecked },
         { "SMSG_PLAY_SPELL_VISUAL", OpcodeDevelopmentState::Unchecked },
-        { "SMSG_PLAY_SPELL_VISUAL_KIT", OpcodeDevelopmentState::Unchecked },
         { "CMSG_ZONEUPDATE", OpcodeDevelopmentState::Unchecked },
         { "SMSG_PARTYKILLLOG", OpcodeDevelopmentState::Unchecked },
         { "SMSG_COMPRESSED_UPDATE_OBJECT", OpcodeDevelopmentState::Unchecked },
@@ -2596,5 +2595,6 @@ namespace Version::Tables
         { "CMSG_MOVE_INIT_ACTIVE_MOVER_COMPLETE", OpcodeDevelopmentState::Okay },
         { "CMSG_GET_CHARACTER_CURRENCY_TRANSFER_LOG", OpcodeDevelopmentState::Okay },
         { "CMSG_GET_LANDING_PAGE_SHIPMENTS", OpcodeDevelopmentState::Okay },
+        { "SMSG_PLAY_SPELL_VISUAL_TARGETED", OpcodeDevelopmentState::Okay },
     };
 }

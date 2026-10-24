@@ -1359,7 +1359,7 @@ namespace
     constexpr uint16_t InvSlotCount = 199;
     constexpr uint16_t ExploredZoneCount = 192;
     constexpr uint16_t SkillCount = 256;
-    constexpr uint16_t LegacySkillCount = 128;
+    constexpr uint16_t LegacySkillCount = 256;      // the layout stores every slot
     constexpr uint16_t QuestCompletedCount = 875;
     constexpr uint8_t KnownTitleCount = 6;
 

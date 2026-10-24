@@ -724,6 +724,9 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spells
     void playSpellVisual(uint32_t visual_id, uint32_t type);
+    // a SpellVisual from this unit to a target or a position, Cata and later
+    void playSpellVisualTargeted(Unit* target, uint32_t visualId, float travelSpeed, bool speedAsTime = false, uint16_t missReason = 0, uint16_t reflectStatus = 0);
+    void playSpellVisualTargeted(LocationVector const& targetPosition, uint32_t visualId, float travelSpeed, bool speedAsTime = false, float launchDelay = 0.0f);
     void applyDiminishingReturnTimer(uint32_t* duration, SpellInfo const* spell);
     void removeDiminishingReturnTimer(SpellInfo const* spell);
 

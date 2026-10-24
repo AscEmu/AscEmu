@@ -54,6 +54,7 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::NameGenEntry> sNameGenStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SkillLineAbilityEntry> sSkillLineAbilityStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SkillLineEntry> sSkillLineStore;
+SERVER_DECL std::unordered_map<uint32_t, std::vector<uint32_t>> sSkillLineChildren;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellEntry> sSpellStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellCastTimesEntry> sSpellCastTimesStore;

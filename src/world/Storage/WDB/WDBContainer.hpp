@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WDBLoader.hpp"
 
+#include <algorithm>
 #include <cstring>
 #include <list>
 #include <memory>
@@ -83,6 +84,28 @@ namespace WDB
             ++m_manual_used;
             m_manual_index_table[_id] = entry;
             return entry;
+        }
+
+        // Room for entries beside the rows a file loaded: the loaded rows stay reachable, the new ids come from
+        // addManualEntry(). lookupEntry() and getNumRows() keep their maxId + 1 semantics.
+        void extendManualEntries(uint32_t _maxId, uint32_t _count)
+        {
+            static_assert(std::is_trivially_destructible_v<T>, "manual entries are raw zeroed storage");
+
+            const uint32_t rowCount = std::max(m_row_count, _maxId + 1);
+            auto indexTable = std::make_unique<T*[]>(rowCount);
+            for (uint32_t i = 0; i < rowCount; ++i)
+                indexTable[i] = i < m_row_count ? const_cast<T*>(lookupEntry(i)) : nullptr;
+
+            if (m_manual_data)
+                m_string_pool_list.emplace_back(std::move(m_manual_data));    // earlier manual entries stay alive
+
+            m_manual_index_table = std::move(indexTable);
+            m_row_count = rowCount;
+            m_manual_count = _count;
+            m_manual_used = 0;
+            m_manual_data = std::make_unique<char[]>(static_cast<size_t>(_count) * sizeof(T) + sizeof(T));
+            std::memset(m_manual_data.get(), 0, static_cast<size_t>(_count) * sizeof(T) + sizeof(T));
         }
 
         void setFormat(std::unique_ptr<const char[]> _format)

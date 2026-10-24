@@ -1636,7 +1636,7 @@ namespace
     constexpr uint8_t InvSlotCount = 105;
     constexpr uint16_t ExploredZoneCount = 240;
     constexpr uint16_t SkillCount = 256;
-    constexpr uint16_t LegacySkillCount = 128;
+    constexpr uint16_t LegacySkillCount = 256;      // the layout stores every slot
     constexpr uint8_t KnownTitleCount = 6;
     constexpr uint8_t BitVectorCount = 14;
     constexpr uint8_t ExploredZoneBitVector = 1;

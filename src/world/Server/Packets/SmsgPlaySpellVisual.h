@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "ItemInstanceHelpers.h"
 #include "ManagedPacket.h"
 #include <cstdint>
 
@@ -34,6 +35,23 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x+: unit, kit, type, duration; mounted bit from 9.x
+                writeClientGuid(packet, m_protocol, m_receiverMapId, rawGuid);
+                packet << static_cast<int32_t>(visualId);
+                packet << static_cast<int32_t>(type);
+                packet << uint32_t(0);
+
+                if (m_protocol.expansion >= WoW::Expansion::_Shadowlands)
+                {
+                    packet.writeBit(false);
+                    packet.flushBits();
+                }
+
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 packet << rawGuid << visualId;

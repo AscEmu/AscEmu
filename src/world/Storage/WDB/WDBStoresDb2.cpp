@@ -1192,6 +1192,12 @@ namespace
             entry.linkable = row.i8(8);         // CanLink
         });
 
+        // the expansion lines of a profession, learned together with their parent
+        sSkillLineChildren.clear();
+        for (Row const row : rows(skillLine))
+            if (const auto parent = row.i32(9); parent != 0)    // ParentSkillLineID
+                sSkillLineChildren[static_cast<uint32_t>(parent)].push_back(row.id());
+
         fillContainer(sSkillLineAbilityStore, skillLineAbility, [](WDB::Structures::SkillLineAbilityEntry& entry, Row const& row)
         {
             entry.Id = row.id();

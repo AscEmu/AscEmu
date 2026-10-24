@@ -21,6 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgEnvironmentalDamageLog.h"
 #include "Server/Packets/SmsgPeriodicAuraLog.h"
 #include "Server/Packets/SmsgPlaySpellVisual.h"
+#include "Server/Packets/SmsgPlaySpellVisualTargeted.h"
 #include "Server/Packets/SmsgPowerUpdate.h"
 #include "Server/Packets/SmsgSpellHealLog.h"
 #include "Server/Packets/SmsgSpellOrDamageImmune.h"
@@ -3040,6 +3041,24 @@ void Unit::applyControlStatesIfNeeded()
 void Unit::playSpellVisual(uint32_t visual_id, uint32_t type)
 {
     SmsgPlaySpellVisual sendPacket(getGuid(), visual_id, type);
+    PacketBroadcast::sendToSet(*this, sendPacket, true);
+}
+
+void Unit::playSpellVisualTargeted(Unit* target, uint32_t visualId, float travelSpeed, bool speedAsTime/* = false*/, uint16_t missReason/* = 0*/, uint16_t reflectStatus/* = 0*/)
+{
+    if (target == nullptr || WoW::getServerExpansion() < WoW::Expansion::_Cata)
+        return;
+
+    SmsgPlaySpellVisualTargeted sendPacket(getGuid(), target->getGuid(), target->GetPosition(), visualId, travelSpeed, speedAsTime, missReason, reflectStatus);
+    PacketBroadcast::sendToSet(*this, sendPacket, true);
+}
+
+void Unit::playSpellVisualTargeted(LocationVector const& targetPosition, uint32_t visualId, float travelSpeed, bool speedAsTime/* = false*/, float launchDelay/* = 0.0f*/)
+{
+    if (WoW::getServerExpansion() < WoW::Expansion::_Cata)
+        return;
+
+    SmsgPlaySpellVisualTargeted sendPacket(getGuid(), 0, targetPosition, visualId, travelSpeed, speedAsTime, 0, 0, launchDelay);
     PacketBroadcast::sendToSet(*this, sendPacket, true);
 }
 

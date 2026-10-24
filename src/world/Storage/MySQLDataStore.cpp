@@ -181,6 +181,63 @@ namespace
     {
         return _randomPropertyNames.emplace_back(name).data();
     }
+
+    // owns the names of the skill lines built from the world table
+    std::deque<std::string> _skillLineNames;
+
+    char* pooledSkillLineName(char const* name)
+    {
+        return _skillLineNames.emplace_back(name).data();
+    }
+}
+
+// The skill lines of the clients from 7.x on that the 5.4.8 dbc lacks: profession lines, their expansion lines and the
+// secondary professions. A client with its own data carries them already.
+void MySQLDataStore::loadSkillLinesTable()
+{
+    if (WoW::hasOwnClientData(WoW::getServerExpansion()))
+        return;
+
+    auto startTime = Util::TimeNow();
+
+    // the row of the highest build up to the build of this server, the highest id first sizes the store
+    auto result = WorldDatabase.query("SELECT id, category, parent, name FROM skill_line base WHERE build = (SELECT MAX(build) FROM skill_line buildspecific "
+        "WHERE base.id = buildspecific.id AND build <= %u) ORDER BY id DESC", WoW::getConfigBuild());
+    if (result == nullptr)
+    {
+        sLogger.info("MySQLDataLoads : Table `skill_line` has no rows for build {}!", WoW::getConfigBuild());
+        return;
+    }
+
+    sSkillLineStore.extendManualEntries(result->fetch()[0].asUint32(), result->getRowCount());
+
+    uint32_t count = 0;
+    do
+    {
+        Field* fields = result->fetch();
+        const auto id = fields[0].asUint32();
+
+        if (sSkillLineStore.lookupEntry(id) == nullptr)
+        {
+            auto* entry = sSkillLineStore.addManualEntry(id);
+            if (entry == nullptr)
+                continue;
+
+            entry->id = id;
+            entry->type = fields[1].asUint32();
+
+            char* name = pooledSkillLineName(fields[3].asCString());
+            for (auto& localeName : entry->Name)
+                localeName = name;
+
+            ++count;
+        }
+
+        if (const auto parent = fields[2].asUint32(); parent != 0)
+            sSkillLineChildren[parent].push_back(id);
+    } while (result->nextRow());
+
+    sLogger.info("MySQLDataLoads : Loaded {} skill lines from `skill_line` table in {} ms!", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 // The random property and suffix definitions of the clients up to 8.x. A client whose data does not carry them any

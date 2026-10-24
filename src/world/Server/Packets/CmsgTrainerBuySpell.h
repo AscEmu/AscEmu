@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "ItemInstanceHelpers.h"
 #include "ManagedPacket.h"
 #include <cstdint>
 
@@ -43,11 +44,22 @@ namespace AscEmu::Packets
                 return m_minimum_size;
             else if (m_protocol.isMop())
                 return 9; // uint32 spellId + uint32 trainerId + packed guid mask byte
+            else if (m_protocol.expansion >= WoW::Expansion::_WoD)
+                return 2 + 4 + 4; // guid masks, trainer id, spell id
             return 0;
         }
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x+: guid, trainer id, spell id
+                guid = readClientGuid(packet, m_protocol);
+                packet >> trainerId;
+                packet >> spellId;
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 packet >> spellId;

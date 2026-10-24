@@ -525,7 +525,7 @@ SpellInfo const* SpellMgr::getEquivalentSpellRankFor(SpellInfo const* originalSp
 
 void SpellMgr::loadSpellInfoData()
 {
-    for (uint32_t i = 0; i < MAX_SPELL_ID; ++i)
+    for (uint32_t i = 0; i < sSpellStore.getNumRows(); ++i)
     {
         const auto dbcSpellEntry = sSpellStore.lookupEntry(i);
         if (dbcSpellEntry == nullptr)

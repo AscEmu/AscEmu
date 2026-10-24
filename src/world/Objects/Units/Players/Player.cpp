@@ -5096,6 +5096,15 @@ void Player::addSkillLine(uint16_t skillLine, uint16_t currentValue, uint16_t ma
         if (newSkill.CurrentValue > 0)
             onLearnedNewSkill(newSkill.CurrentValue, skillStep, newSkill.Skill->type == SKILL_TYPE_PROFESSION);
     }
+
+    // the expansion lines follow a learned skill at value 0, the client looks them up
+    if (currentValue > 0)
+    {
+        if (const auto children = sSkillLineChildren.find(skillLine); children != sSkillLineChildren.end())
+            for (const auto child : children->second)
+                if (!hasSkillLine(static_cast<uint16_t>(child), true))
+                    addSkillLine(static_cast<uint16_t>(child), 0, 0, true, true);
+    }
 }
 
 bool Player::hasSkillLine(uint16_t skillLine, bool strict/* = false*/) const
@@ -5150,7 +5159,7 @@ void Player::learnInitialSkills()
             continue;
 
         const auto skillLine = sSkillLineStore.lookupEntry(skill.skillid);
-        if (skillLine == nullptr)
+        if (skillLine == nullptr || hasSkillLine(skill.skillid, true))
             continue;
 
         // Set current skill values for Death Knight's weapon skills
@@ -5263,6 +5272,11 @@ void Player::removeSkillLine(uint16_t skillLine)
     auto itr = m_skills.find(skillLine);
     if (itr == m_skills.end())
         return;
+
+    // the expansion lines go with their parent
+    if (const auto children = sSkillLineChildren.find(skillLine); children != sSkillLineChildren.end())
+        for (const auto child : children->second)
+            removeSkillLine(static_cast<uint16_t>(child));
 
     const auto fieldPosition = itr->second.FieldPosition;
 
@@ -5382,6 +5396,28 @@ float Player::getSkillUpChance(uint16_t id)
 #if VERSION_STRING >= Cata
 void Player::setInitialPlayerProfessions()
 {
+    // expansion lines known (own client data or the skill_line table): every profession line incl. the expansion lines and the secondary professions, the trainer frame looks all of them up
+    if (WoW::hasOwnClientData(WoW::getServerExpansion()) || !sSkillLineChildren.empty())
+    {
+        std::vector<uint32_t> secondaryLines = { SKILL_COOKING, SKILL_FISHING, SKILL_ARCHAEOLOGY };
+        for (const auto parent : { SKILL_COOKING, SKILL_FISHING, SKILL_ARCHAEOLOGY })
+            if (const auto children = sSkillLineChildren.find(static_cast<uint32_t>(parent)); children != sSkillLineChildren.end())
+                secondaryLines.insert(secondaryLines.end(), children->second.begin(), children->second.end());
+
+        for (uint32_t skillId = 1; skillId < sSkillLineStore.getNumRows(); ++skillId)
+        {
+            const auto skillLine = sSkillLineStore.lookupEntry(skillId);
+            if (skillLine == nullptr || hasSkillLine(static_cast<uint16_t>(skillId), true))
+                continue;
+
+            if (skillLine->type != SKILL_TYPE_PROFESSION && std::find(secondaryLines.begin(), secondaryLines.end(), skillId) == secondaryLines.end())
+                continue;
+
+            addSkillLine(static_cast<uint16_t>(skillId), 0, 0, false, true);
+        }
+        return;
+    }
+
     // Since cata player must have profession skills initialized even if the player does not have them
 #if VERSION_STRING == Cata
     for (uint16_t skillId = SKILL_FROST; skillId != SKILL_PET_HYDRA; ++skillId)
@@ -15131,11 +15167,8 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
     loadSkills(results[PlayerQuery::Skills].result.get());
 
-    if (m_firstLogin || m_skills.empty())
-    {
-        // no skills - reset to defaults
-        learnInitialSkills();
-    }
+    // the default race and class skills of this build, missing ones are added at every login
+    learnInitialSkills();
 
 #if VERSION_STRING >= Cata
     setInitialPlayerProfessions();

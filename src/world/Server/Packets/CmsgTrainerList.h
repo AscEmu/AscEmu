@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "ItemInstanceHelpers.h"
 #include "ManagedPacket.h"
 #include <cstdint>
 
@@ -30,9 +31,7 @@ namespace AscEmu::Packets
         {
             if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
             {
-                WoWGuid128 unit;
-                packet >> unit;
-                guid = WoWGuid::fromGuid128(unit);
+                guid = readClientGuid(packet, m_protocol);
                 return true;
             }
 

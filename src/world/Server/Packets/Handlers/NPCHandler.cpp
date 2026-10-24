@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgAuctionHello.h"
 #include "Server/Packets/SmsgSpiritHealerConfirm.h"
 #include "Server/Packets/CmsgTrainerBuySpell.h"
+#include "Server/Packets/SmsgTrainerBuyFailed.h"
 #include "Server/Packets/SmsgTrainerBuySucceeded.h"
 #include "Server/Packets/SmsgPetitionShowlist.h"
 #include "Server/Packets/CmsgPetitionShowlist.h"
@@ -212,7 +213,13 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
 
     const auto spellStatus = trainerGetSpellStatus(trainerSpell);
     if (spellStatus == TRAINER_SPELL_RED || spellStatus == TRAINER_SPELL_GRAY)
+    {
+        // 1 = not enough money, 0 = service unavailable
+        const uint32_t reason = spellStatus == TRAINER_SPELL_RED && trainerSpell->cost != 0 && !_player->hasEnoughCoinage(trainerSpell->cost) ? 1 : 0;
+        SmsgTrainerBuyFailed failedPacket(srlPacket.guid.getRawGuid(), srlPacket.spellId, reason);
+        sendManagedPacket(failedPacket);
         return;
+    }
 
     // teach the spell
     _player->modCoinage(-static_cast<int32_t>(trainerSpell->cost));
@@ -240,9 +247,8 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
             _player->removeSpell(trainerSpell->deleteSpell, true);
     }
 
-    // Mop has no SMSG_TRAINER_BUY_SUCCEEDED equivalent - the client infers
-    // success from the resulting spell-learn/gold updates alone.
-    if (!srlPacket.getClientProtocol().isMop())
+    // MoP and later have no SMSG_TRAINER_BUY_SUCCEEDED, the client infers success from the learned spell
+    if (srlPacket.getClientProtocol().expansion < WoW::Expansion::_Mop)
     {
         SmsgTrainerBuySucceeded managedPacket(srlPacket.guid.getRawGuid(), srlPacket.spellId);
         sendManagedPacket(managedPacket);
@@ -473,6 +479,11 @@ void WorldSession::sendTrainerList(Creature* creature)
         uiMessage = _player->getSession()->localizedWorldSrv(ServerString::SS_WHAT_CAN_I_TEACH_YOU);
     else
         uiMessage = trainer->UIMessage;
+
+    // the greeting carries the name itself, the trainer frame does not expand $N
+    const std::string playerName(_player->getName());
+    for (size_t pos = uiMessage.find("$N"); pos != std::string::npos; pos = uiMessage.find("$N", pos + playerName.size()))
+        uiMessage.replace(pos, 2, playerName);
 
     SmsgTrainerList managedPacket(creature, _player, uiMessage);
     sendManagedPacket(managedPacket);
