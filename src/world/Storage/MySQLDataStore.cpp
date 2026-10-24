@@ -735,6 +735,7 @@ void MySQLDataStore::loadItemPropertiesTable()
         ++item_count;
     } while (item_result->nextRow());
 
+#if VERSION_STRING >= WoD
     // a client with its own data decides class, subclass and inventory type of an item itself
     if (WoW::hasOwnClientData(WoW::getServerExpansion()))
     {
@@ -768,6 +769,7 @@ void MySQLDataStore::loadItemPropertiesTable()
             }
         }
     }
+#endif
 
     sLogger.info("MySQLDataLoads : Loaded {} item_properties in {} ms!", item_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
