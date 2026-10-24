@@ -1174,7 +1174,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_MAIL_MARK_AS_READ, &WorldSession::handleMarkAsReadOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_MAIL_RETURN_TO_SENDER, &WorldSession::handleReturnToSenderOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_MAIL_DELETE, &WorldSession::handleMailDeleteOpcode, true, true, true, true, true);
-    registry.registerOpcode(MSG_QUERY_NEXT_MAIL_TIME, &WorldSession::handleMailTimeOpcode, true, true, true, true, true);
+    registry.registerOpcode(MSG_QUERY_NEXT_MAIL_TIME, &WorldSession::handleMailTimeOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_MAIL_CREATE_TEXT_ITEM, &WorldSession::handleMailCreateTextItemOpcode, true, true, true, true, true);
 
     // Guild Query (called when not logged in sometimes)

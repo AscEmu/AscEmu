@@ -11,6 +11,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WoWGuid.hpp"
 #include "Logging/Log.hpp"
 
+#include <set>
+#include <vector>
+
 namespace AscEmu::Packets
 {
     class MsgQueryNextMailTime : public ManagedPacket
@@ -30,6 +33,47 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
             const uint32_t now = static_cast<uint32_t>(UNIXTIME);
+
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x+: the next mail time, then up to three delivered unread mails, one per sender
+                packet.setOpcode(SMSG_MAIL_QUERY_NEXT_TIME_RESULT);
+
+                std::vector<MailMessage const*> next;
+                std::set<uint64_t> senders;
+                for (const auto& message : messageMap)
+                {
+                    const auto& mail = message.second;
+                    if (mail.checked_flag & MAIL_CHECK_MASK_READ || mail.deleted_flag || now < mail.delivery_time || senders.contains(mail.sender_guid))
+                        continue;
+
+                    senders.insert(mail.sender_guid);
+                    next.push_back(&mail);
+                    if (next.size() == 3)
+                        break;
+                }
+
+                packet << float(next.empty() ? -static_cast<float>(TimeVars::Day) : 0.0f);
+                packet << uint32_t(next.size());
+                for (const auto* mail : next)
+                {
+                    const bool normal = mail->message_type == MAIL_TYPE_NORMAL;
+                    if (m_protocol.isWoD())
+                        packet.appendPackGuid(normal ? mail->sender_guid : 0);
+                    else
+                        packet << WoWGuid(normal ? mail->sender_guid : uint64_t(0)).toGuid128(m_protocol.realmId, m_receiverMapId);
+
+                    packet << float(static_cast<int64_t>(mail->delivery_time) - now);
+                    packet << int32_t(normal ? 0 : mail->sender_guid);                 // alt sender id
+                    if (m_protocol.isTheWarWithinOrLater())
+                        packet << int32_t(mail->message_type);                          // alt sender type
+                    else
+                        packet << uint8_t(mail->message_type);
+                    packet << int32_t(mail->stationery);
+                }
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 bool hasUnreadMail = false;
