@@ -493,7 +493,7 @@ namespace AscEmu::Packets
                 look.hairStyle = static_cast<uint8_t>((data.bytes >> 16) & 0xFF);
                 look.hairColor = static_cast<uint8_t>((data.bytes >> 24) & 0xFF);
                 look.facialStyle = static_cast<uint8_t>(data.bytes2 & 0xFF);
-                customizations = CharacterCustomizations::convertLegacyLook(data.race, data.Class, data.gender, look);
+                customizations = data.customizations.empty() ? CharacterCustomizations::convertLegacyLook(data.race, data.Class, data.gender, look) : data.customizations;
                 packet << uint32_t(customizations.size());
             }
             else
@@ -598,7 +598,7 @@ namespace AscEmu::Packets
             look.hairStyle = static_cast<uint8_t>((data.bytes >> 16) & 0xFF);
             look.hairColor = static_cast<uint8_t>((data.bytes >> 24) & 0xFF);
             look.facialStyle = static_cast<uint8_t>(data.bytes2 & 0xFF);
-            const auto customizations = CharacterCustomizations::convertLegacyLook(data.race, data.Class, data.gender, look);
+            const auto customizations = data.customizations.empty() ? CharacterCustomizations::convertLegacyLook(data.race, data.Class, data.gender, look) : data.customizations;
 
             packet << uint32_t(customizations.size());
             packet << data.level;

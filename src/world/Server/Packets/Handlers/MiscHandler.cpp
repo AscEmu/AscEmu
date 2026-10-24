@@ -1568,6 +1568,8 @@ void WorldSession::handleBarberShopResult([[maybe_unused]] WorldPacket& recvPack
     if (barberShopSkinColor)
         _player->setSkinColor(static_cast<uint8_t>(barberShopSkinColor->hairId));
 
+    _player->refreshCustomizationsFromLook();
+
     _player->modCoinage(-static_cast<int32_t>(cost));
 
     _player->setStandState(STANDSTATE_STAND);

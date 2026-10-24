@@ -13863,6 +13863,40 @@ bool Player::loadDeletedSpells(QueryResult* result)
     return true;
 }
 
+// the look bytes as the customization list, the stored form of every version
+void Player::refreshCustomizationsFromLook()
+{
+    CharacterCustomizations::LegacyLook look;
+    look.skin = getSkinColor();
+    look.face = getFace();
+    look.hairStyle = getHairStyle();
+    look.hairColor = getHairColor();
+    look.facialStyle = getFacialFeatures();
+    m_customizations = CharacterCustomizations::convertLegacyLook(static_cast<uint8_t>(getRace()), static_cast<uint8_t>(getClass()), getPlayerGender(), look);
+}
+
+bool Player::saveCustomizations(bool newCharacter, QueryBuffer* buf)
+{
+    if (!newCharacter && buf == nullptr)
+        return false;
+
+    const auto run = [&](std::string const& query)
+    {
+        if (!newCharacter)
+            buf->addQueryStr(query);
+        else
+            CharacterDatabase.executeNA(query.c_str());
+    };
+
+    // a new character has no rows, and the queued statements of a new character do not keep their order
+    if (!newCharacter)
+        run("DELETE FROM character_customizations WHERE guid = '" + std::to_string(getGuidLow()) + "';");
+    for (const auto& choice : m_customizations)
+        run("INSERT INTO character_customizations VALUES('" + std::to_string(getGuidLow()) + "','" + std::to_string(choice.optionId) + "','" + std::to_string(choice.choiceId) + "');");
+
+    return true;
+}
+
 bool Player::saveDeletedSpells(bool newCharacter, QueryBuffer* buf)
 {
     if (!newCharacter && buf == nullptr)
@@ -14596,6 +14630,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
     ss << "', ";
 
     saveSkills(newCharacter, buf);
+    saveCustomizations(newCharacter, buf);
 
     ss << getWatchedFaction() << ", "
 #if VERSION_STRING > Classic
@@ -14958,7 +14993,8 @@ namespace PlayerQuery
         Achievements = 16,
         AchievementProgress = 17,
         CufProfiles = 18,
-        Currencies = 19
+        Currencies = 19,
+        Customizations = 20
     };
 }
 
@@ -14994,6 +15030,7 @@ bool Player::loadFromDB(uint32_t guid)
 #if VERSION_STRING >= Cata
     q->addQuery("SELECT id, name, frameHeight, frameWidth, sortBy, healthText, boolOptions, topPoint, bottomPoint, leftPoint, topOffset, bottomOffset, leftOffset FROM character_cuf_profiles WHERE ownerguid = %u", guid); // 18
     q->addQuery("SELECT currency, quantity, weekly_quantity, tracked_quantity, flags FROM character_currency WHERE guid = %u", guid); // 19
+    q->addQuery("SELECT option_id, choice_id FROM character_customizations WHERE guid = %u ORDER BY option_id", guid); // 20
 #endif
 
     // queue it!
@@ -15167,6 +15204,17 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
     loadSkills(results[PlayerQuery::Skills].result.get());
 
+    // 9.x and later: the look as customization choices when the character was created with them
+    m_customizations.clear();
+    if (auto* customizationResult = results[PlayerQuery::Customizations].result.get())
+    {
+        do
+        {
+            Field* customizationFields = customizationResult->fetch();
+            m_customizations.push_back({ customizationFields[0].asUint32(), customizationFields[1].asUint32() });
+        } while (customizationResult->nextRow());
+    }
+
     // the default race and class skills of this build, missing ones are added at every login
     learnInitialSkills();
 
@@ -15215,6 +15263,10 @@ void Player::loadFromDBProc(QueryResultVector& results)
 #endif
 
     setPlayerGender(getGender());
+
+    // a character without a stored list gets it from the look bytes, saved with the next save
+    if (m_customizations.empty())
+        refreshCustomizationsFromLook();
 
     setPlayerFlags(field[24].asUint32());
     setEnabledActionBars(field[25].asUint8());

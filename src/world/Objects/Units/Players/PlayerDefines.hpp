@@ -11,11 +11,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Skill.hpp"
 #include "Platform/SymbolVisibility.hpp"
 #include "Server/ClientProtocol.hpp"
+#include "Storage/CharacterCustomizations.hpp"
 
 #include <algorithm>
 #include <array>
 #include <cstdint>
 #include <ctime>
+#include <vector>
 #include <string>
 #include <map>
 #include <unordered_map>
@@ -826,6 +828,7 @@ struct CharEnumData
     uint8_t gender;
     uint32_t bytes;
     uint32_t bytes2;
+    std::vector<CharacterCustomizations::ChrCustomizationChoice> customizations;    // 9.x+: the stored choices, empty for a look converted from the bytes
     std::string name;
     float x;
     float y;

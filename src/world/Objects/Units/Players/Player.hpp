@@ -150,6 +150,12 @@ public:
     uint32_t getPlayerBytes() const;
     void setPlayerBytes(uint32_t bytes);
 
+    // 9.x and later: the look as the customization choices of the client, empty for a look converted from the bytes
+    std::vector<CharacterCustomizations::ChrCustomizationChoice> const& getCustomizations() const { return m_customizations; }
+    void setCustomizations(std::vector<CharacterCustomizations::ChrCustomizationChoice> customizations) { m_customizations = std::move(customizations); }
+    void refreshCustomizationsFromLook();
+    std::vector<CharacterCustomizations::ChrCustomizationChoice> m_customizations;
+
     uint8_t getSkinColor() const;
     void setSkinColor(uint8_t color);
 
@@ -2019,6 +2025,7 @@ public:
 
     bool saveReputations(bool newCharacter, QueryBuffer* buf);
     bool saveSkills(bool newCharacter, QueryBuffer* buf);
+    bool saveCustomizations(bool newCharacter, QueryBuffer* buf);
 
     bool m_firstLogin = false;
 

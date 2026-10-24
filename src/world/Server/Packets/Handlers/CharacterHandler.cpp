@@ -55,6 +55,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Strings.hpp"
 
+#include <sstream>
+
 using namespace AscEmu::Packets;
 
 CharacterErrorCodes VerifyName(utf8_string name)
@@ -481,6 +483,7 @@ uint8_t WorldSession::deleteCharacter(WoWGuid guid)
         CharacterDatabase.execute("DELETE FROM playerdeletedspells WHERE GUID = %u", guid.getLowGuid());
         CharacterDatabase.execute("DELETE FROM playerreputations WHERE guid = %u", guid.getLowGuid());
         CharacterDatabase.execute("DELETE FROM playerskills WHERE GUID = %u", guid.getLowGuid());
+        CharacterDatabase.execute("DELETE FROM character_customizations WHERE guid = %u", guid.getLowGuid());
         CharacterDatabase.execute("DELETE FROM playersummons WHERE ownerguid=%u", guid.getLowGuid());
         CharacterDatabase.execute("DELETE FROM playersummonspells WHERE ownerguid=%u", guid.getLowGuid());
 
@@ -620,6 +623,12 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
         newPlayer->addSummonSpell(1860, 3716);
         newPlayer->addSummonSpell(1863, 7814);
     }
+
+    // the look is stored as the customization list of every version
+    if (!srlPacket.customizations.empty())
+        newPlayer->setCustomizations(srlPacket.customizations);
+    else
+        newPlayer->refreshCustomizationsFromLook();
 
     newPlayer->saveToDB(true);
 
@@ -1125,6 +1134,26 @@ void WorldSession::characterEnumProc(QueryResult* result)
 
             ++charRealCount;
         } while (result->nextRow());
+    }
+
+    // 9.x and later: the look as the stored customization choices
+    if (!enumData.empty())
+    {
+        std::stringstream guids;
+        for (const auto& data : enumData)
+            guids << (guids.tellp() > 0 ? "," : "") << static_cast<uint32_t>(data.guid);
+
+        if (auto customizationResult = CharacterDatabase.query("SELECT guid, option_id, choice_id FROM character_customizations WHERE guid IN (%s) ORDER BY guid, option_id", guids.str().c_str()))
+        {
+            do
+            {
+                Field* fields = customizationResult->fetch();
+                const auto guid = fields[0].asUint32();
+                for (auto& data : enumData)
+                    if (static_cast<uint32_t>(data.guid) == guid)
+                        data.customizations.push_back({ fields[1].asUint32(), fields[2].asUint32() });
+            } while (customizationResult->nextRow());
+        }
     }
 
     sLogger.debug("Character Enum Built in {} ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));

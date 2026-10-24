@@ -1272,6 +1272,9 @@ namespace
     // the look of a player as customization choices, converted from the stored bytes
     static std::vector<CharacterCustomizations::ChrCustomizationChoice> playerCustomizations(Player* player)
     {
+        if (!player->getCustomizations().empty())
+            return player->getCustomizations();
+
         CharacterCustomizations::LegacyLook look;
         look.skin = player->getSkinColor();
         look.face = player->getFace();
