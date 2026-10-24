@@ -2595,5 +2595,6 @@ namespace Version::Tables
         { "CMSG_REQUEST_SCHEDULED_PVP_INFO", OpcodeDevelopmentState::Okay },
         { "CMSG_MOVE_INIT_ACTIVE_MOVER_COMPLETE", OpcodeDevelopmentState::Okay },
         { "CMSG_GET_CHARACTER_CURRENCY_TRANSFER_LOG", OpcodeDevelopmentState::Okay },
+        { "CMSG_GET_LANDING_PAGE_SHIPMENTS", OpcodeDevelopmentState::Okay },
     };
 }

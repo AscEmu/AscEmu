@@ -807,6 +807,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_REQUEST_LFG_LIST_BLACKLIST, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_LFG_LIST_GET_STATUS, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_GET_CHARACTER_CURRENCY_TRANSFER_LOG, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode(CMSG_GET_LANDING_PAGE_SHIPMENTS, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, false, false, true, true, true, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_GET_LAST_CATALOG_FETCH, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_OPEN_TRADESKILL_NPC, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_GET_GARRISON_INFO, &WorldSession::handleGetGarrisonInfoOpcode, false, false, false, false, false, false, true, true, true, true, true, true);
