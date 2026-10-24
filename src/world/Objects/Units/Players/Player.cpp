@@ -2564,7 +2564,10 @@ bool Player::create(CharCreate& charCreateContent)
     //memcpy(m_taxiMask, m_playerCreateInfo->taximask, sizeof(m_taxiMask));
 
     if (auto playerClassLevelStats = sMySQLStore.getPlayerClassLevelStats(1, charCreateContent._class))
+    {
         setMaxHealth(playerClassLevelStats->health);
+        setMaxPower(POWER_TYPE_MANA, playerClassLevelStats->mana);     // the new character starts with full mana
+    }
     else
         sLogger.failure("No class levelstats found!");
 
