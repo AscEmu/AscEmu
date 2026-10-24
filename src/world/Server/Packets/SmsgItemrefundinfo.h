@@ -78,6 +78,19 @@ namespace AscEmu::Packets
                 packet << uint32_t(0);
                 packet << refundTime;
             }
+            else if (m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // 7.x and later: item, money, five item costs, five currency costs, flags, purchase time
+                packet << WoWGuid(itemGuid).toGuid128(m_protocol.realmId, m_receiverMapId);
+                packet << uint64_t(buyPrice);
+                for (uint8_t i = 0; i < 5; ++i)
+                    packet << int32_t(extendedCostItem[i]) << int32_t(extendedCostCount[i]);
+                for (uint8_t i = 0; i < 5; ++i)
+                    packet << int32_t(extendedCostReqCur[i]) << int32_t(extendedCostReqCurrCount[i]);
+                packet << uint32_t(0);                                  // flags
+                packet << uint32_t(refundTime);                         // purchase time
+                return true;
+            }
             else if (m_protocol.isCata())
             {
                 WoWGuid objectGuid = itemGuid;

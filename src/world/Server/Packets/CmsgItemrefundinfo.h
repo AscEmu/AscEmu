@@ -67,6 +67,15 @@ namespace AscEmu::Packets
 
                 return true;
             }
+            else if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            {
+                // 6.x and later: the 128 bit guid of the item
+                WoWGuid128 item;
+                packet >> item;
+                itemGuid.init(WoWGuid::fromGuid128(item));
+
+                return true;
+            }
             else if (m_protocol.expansion >= WoW::Expansion::_WotLK)
             {
                 uint64_t unpackedGuid;

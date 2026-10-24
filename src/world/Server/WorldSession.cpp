@@ -1102,7 +1102,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_CANCEL_TEMP_ENCHANTMENT, &WorldSession::handleCancelTemporaryEnchantmentOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_SOCKET_GEMS, &WorldSession::handleInsertGemOpcode, false, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_WRAP_ITEM, &WorldSession::handleWrapItemOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_ITEMREFUNDINFO, &WorldSession::handleItemRefundInfoOpcode, false, false, true, true, true);
+    registry.registerOpcode(CMSG_ITEMREFUNDINFO, &WorldSession::handleItemRefundInfoOpcode, false, false, true, true, true, false, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_ITEMREFUNDREQUEST, &WorldSession::handleItemRefundRequestOpcode, false, false, true, false, true);
 
     registry.registerOpcode(CMSG_EQUIPMENT_SET_SAVE, &WorldSession::handleEquipmentSetSave, false, false, true, true, true);
