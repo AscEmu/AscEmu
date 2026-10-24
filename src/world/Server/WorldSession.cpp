@@ -1470,7 +1470,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_PET_LEVEL_CHEAT, &WorldSession::Unhandled, false, false, false, true, false);
     registry.registerOpcode(CMSG_QUERY_BATTLEFIELD_STATE, &WorldSession::Unhandled, false, false, false, true, false);
     registry.registerOpcode(CMSG_ADDON_REGISTERED_PREFIXES, &WorldSession::handleAddonRegisteredPrefixesOpcode, false, false, false, true, true);
-    registry.registerOpcode(CMSG_UNREGISTER_ALL_ADDON_PREFIXES, &WorldSession::handleUnregisterAddonPrefixesOpcode, false, false, false, true, true);
+    registry.registerOpcode(CMSG_UNREGISTER_ALL_ADDON_PREFIXES, &WorldSession::handleUnregisterAddonPrefixesOpcode, false, false, false, true, true, true, true, true, true, true, true, true);
 
     registry.registerOpcode(SMSG_CLEAR_TARGET, &WorldSession::handleClearTargetOpcode, false, false, false, true, true);
 }
