@@ -2594,5 +2594,6 @@ namespace Version::Tables
         { "CMSG_FETCH_BLEEP_PROXIES", OpcodeDevelopmentState::Okay },
         { "CMSG_REQUEST_SCHEDULED_PVP_INFO", OpcodeDevelopmentState::Okay },
         { "CMSG_MOVE_INIT_ACTIVE_MOVER_COMPLETE", OpcodeDevelopmentState::Okay },
+        { "CMSG_GET_CHARACTER_CURRENCY_TRANSFER_LOG", OpcodeDevelopmentState::Okay },
     };
 }
