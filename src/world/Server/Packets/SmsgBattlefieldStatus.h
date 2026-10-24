@@ -55,7 +55,7 @@ namespace AscEmu::Packets
                         packet.setOpcode(SMSG_BATTLEFIELD_STATUS_QUEUED);
                         Battlegrounds::writeStatusHeader(packet, m_protocol, m_receiverMapId, requester, 0, joinTime, type, instanceId, ratedMatch != 0);
                         packet << uint32_t(0);                                          // average wait time
-                        packet << uint32_t(Util::getMSTime() - joinTime);               // wait time
+                        packet << uint32_t(::Util::getMSTime() - joinTime);               // wait time
                         if (m_protocol.expansion >= WoW::Expansion::_Shadowlands)
                             packet << int32_t(0);                                       // selected spec
                         packet.writeBit(false);                                         // as group

@@ -839,6 +839,7 @@ protected:
         //////////////////////////////////////////////////////////////////////////////////////////
         // MovementHandler.cpp
         void handleSetActiveMoverOpcode(WorldPacket& recvPacket);
+        void handleMoveInitActiveMoverCompleteOpcode(WorldPacket& recvPacket);    //>= Shadowlands
         void handleMoveTimeSkippedOpcode(WorldPacket& recvPacket);
         void updatePlayerMovementVars(uint16_t opcode);
         bool isHackDetectedInMovementData(uint16_t opcode);

@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Logging/Logger.hpp"
 #include "Server/Packets/ManagedPacket.h"
+#include "Server/Packets/CmsgMoveInitActiveMoverComplete.h"
 #include "Server/Packets/CmsgSetActiveMover.h"
 #include "Server/Packets/MovementPacket.h"
 #include "Server/WorldSession.h"
@@ -67,6 +68,15 @@ namespace
                 transport->RemovePassenger(pet);
         }
     }
+}
+
+void WorldSession::handleMoveInitActiveMoverCompleteOpcode(WorldPacket& recvPacket)
+{
+    CmsgMoveInitActiveMoverComplete srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    _player->handleInitActiveMoverComplete(srlPacket.ticks);
 }
 
 void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvPacket)

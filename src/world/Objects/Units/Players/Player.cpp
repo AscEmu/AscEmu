@@ -10633,6 +10633,12 @@ void Player::handleTimeSyncResponse(uint32_t counter, uint32_t clientTicks)
     m_timeSyncClient = clientTicks;
 }
 
+void Player::handleInitActiveMoverComplete(uint32_t clientTicks)
+{
+    m_timeSyncClient = clientTicks;
+    m_timeSyncServer = Util::getMSTime();
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////
 // Void Storage
 #if VERSION_STRING > WotLK

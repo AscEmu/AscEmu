@@ -38,7 +38,7 @@ namespace AscEmu::Packets::Battlegrounds
     {
         if (protocol.isWoD())
         {
-            packet.unpackGuid();
+            [[maybe_unused]] const auto requester = packet.unpackGuid();
         }
         else
         {

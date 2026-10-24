@@ -2593,5 +2593,6 @@ namespace Version::Tables
         { "CMSG_REQUEST_INSTANCE_ENCOUNTER_EVENT_SYNC", OpcodeDevelopmentState::Okay },
         { "CMSG_FETCH_BLEEP_PROXIES", OpcodeDevelopmentState::Okay },
         { "CMSG_REQUEST_SCHEDULED_PVP_INFO", OpcodeDevelopmentState::Okay },
+        { "CMSG_MOVE_INIT_ACTIVE_MOVER_COMPLETE", OpcodeDevelopmentState::Okay },
     };
 }

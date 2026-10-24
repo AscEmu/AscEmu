@@ -1947,6 +1947,8 @@ public:
     void resetTimeSync();
     void sendTimeSync();
     void handleTimeSyncResponse(uint32_t counter, uint32_t clientTicks);
+    // 9.x+: the client clock sent after its own create block, a time sync of its own
+    void handleInitActiveMoverComplete(uint32_t clientTicks);
 
 private:
     uint16_t m_spellAreaUpdateTimer = 1000;
