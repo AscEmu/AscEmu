@@ -234,6 +234,8 @@ namespace WoW {
             case Build::DRAGONFLIGHT_BUILD: return Expansion::_Dragonflight;
             case Build::THEWARWITHIN_BUILD: return Expansion::_TheWarWithin;
             case Build::MIDNIGHT_BUILD: return Expansion::_Midnight;
+            case 70529:                                         // 12.1.5 client updates, same protocol as 70391
+            case 70575: return Expansion::_Midnight;
             default:                   return Expansion::Unknown;
         }
     }
