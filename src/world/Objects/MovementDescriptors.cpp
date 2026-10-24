@@ -12427,6 +12427,7 @@ static std::span<MovementStep const> getShadowlandsGuid128MovementDescriptor(uin
         case MSG_MOVE_START_FORWARD:
         case MSG_MOVE_START_BACKWARD:
         case MSG_MOVE_SET_FACING:
+        case CMSG_MOVE_SET_FACING_HEARTBEAT:
         case MSG_MOVE_START_STRAFE_LEFT:
         case MSG_MOVE_START_STRAFE_RIGHT:
         case MSG_MOVE_STOP_STRAFE:
@@ -12781,6 +12782,7 @@ static std::span<MovementStep const> getDragonflightGuid128MovementDescriptor(ui
         case MSG_MOVE_START_FORWARD:
         case MSG_MOVE_START_BACKWARD:
         case MSG_MOVE_SET_FACING:
+        case CMSG_MOVE_SET_FACING_HEARTBEAT:
         case MSG_MOVE_START_STRAFE_LEFT:
         case MSG_MOVE_START_STRAFE_RIGHT:
         case MSG_MOVE_STOP_STRAFE:
@@ -13143,6 +13145,7 @@ static std::span<MovementStep const> getTheWarWithinGuid128MovementDescriptor(ui
         case MSG_MOVE_START_FORWARD:
         case MSG_MOVE_START_BACKWARD:
         case MSG_MOVE_SET_FACING:
+        case CMSG_MOVE_SET_FACING_HEARTBEAT:
         case MSG_MOVE_START_STRAFE_LEFT:
         case MSG_MOVE_START_STRAFE_RIGHT:
         case MSG_MOVE_STOP_STRAFE:
@@ -13501,6 +13504,7 @@ static std::span<MovementStep const> getMidnightGuid128MovementDescriptor(uint32
         case MSG_MOVE_START_FORWARD:
         case MSG_MOVE_START_BACKWARD:
         case MSG_MOVE_SET_FACING:
+        case CMSG_MOVE_SET_FACING_HEARTBEAT:
         case MSG_MOVE_START_STRAFE_LEFT:
         case MSG_MOVE_START_STRAFE_RIGHT:
         case MSG_MOVE_STOP_STRAFE:

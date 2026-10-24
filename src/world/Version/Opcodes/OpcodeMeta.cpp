@@ -233,6 +233,7 @@ namespace Version::Tables
         { "MSG_MOVE_SET_TURN_RATE", OpcodeDevelopmentState::Unchecked },
         { "MSG_MOVE_TOGGLE_COLLISION_CHEAT", OpcodeDevelopmentState::Unchecked },
         { "MSG_MOVE_SET_FACING", OpcodeDevelopmentState::Unchecked },
+        { "CMSG_MOVE_SET_FACING_HEARTBEAT", OpcodeDevelopmentState::Unchecked },
         { "MSG_MOVE_SET_PITCH", OpcodeDevelopmentState::Unchecked },
         { "MSG_MOVE_WORLDPORT_ACK", OpcodeDevelopmentState::Unchecked },
         { "SMSG_MONSTER_MOVE", OpcodeDevelopmentState::Unchecked },

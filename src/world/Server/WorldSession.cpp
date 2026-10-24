@@ -854,6 +854,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(MSG_MOVE_START_FORWARD, &WorldSession::handleMovementOpcodes, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(MSG_MOVE_START_BACKWARD, &WorldSession::handleMovementOpcodes, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(MSG_MOVE_SET_FACING, &WorldSession::handleMovementOpcodes, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_MOVE_SET_FACING_HEARTBEAT, &WorldSession::handleMovementOpcodes, false, false, false, false, false, false, false, false, true, true, true, true);
     registry.registerOpcode(MSG_MOVE_START_STRAFE_LEFT, &WorldSession::handleMovementOpcodes, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(MSG_MOVE_START_STRAFE_RIGHT, &WorldSession::handleMovementOpcodes, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(MSG_MOVE_STOP_STRAFE, &WorldSession::handleMovementOpcodes, true, true, true, true, true, true, true, true, true, true, true, true);

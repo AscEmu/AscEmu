@@ -132,6 +132,7 @@ namespace Version::Tables
         { MSG_MOVE_SET_SWIM_BACK_SPEED, 0x2DDA },
         { MSG_MOVE_SET_TURN_RATE, 0x2DDD },
         { MSG_MOVE_SET_FACING, 0x3A0A },
+        { CMSG_MOVE_SET_FACING_HEARTBEAT, 0x3A09 },
         { MSG_MOVE_SET_PITCH, 0x3A0B },
         { MSG_MOVE_WORLDPORT_ACK, 0x35F9 },
         { SMSG_MONSTER_MOVE, 0x2DD4 },
