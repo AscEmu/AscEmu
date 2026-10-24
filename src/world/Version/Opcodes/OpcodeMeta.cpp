@@ -2591,5 +2591,6 @@ namespace Version::Tables
         { "SMSG_ADVENTURE_JOURNAL_DATA_RESPONSE", OpcodeDevelopmentState::Okay },
         { "CMSG_PERKS_PROGRAM_STATUS_REQUEST", OpcodeDevelopmentState::Okay },
         { "CMSG_REQUEST_INSTANCE_ENCOUNTER_EVENT_SYNC", OpcodeDevelopmentState::Okay },
+        { "CMSG_FETCH_BLEEP_PROXIES", OpcodeDevelopmentState::Okay },
     };
 }
