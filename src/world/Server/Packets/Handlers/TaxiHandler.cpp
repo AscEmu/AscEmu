@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Management/TaxiMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Server/Packets/CmsgTaxiQueryAvailableNodes.h"
 #include "Server/Packets/CmsgEnabletaxi.h"
 #include "Server/Packets/SmsgTaxinodeStatus.h"
@@ -15,6 +16,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgActivateTaxiReply.h"
 #include "Server/Packets/CmsgActivateTaxiExpress.h"
 #include "Server/Packets/CmsgActivateTaxi.h"
+
+#include <algorithm>
 #include "Movement/MovementManager.h"
 #include "Server/Packets/SmsgNewTaxiPath.h"
 #include "Movement/MovementGenerators/FlightPathMovementGenerator.h"
@@ -41,7 +44,7 @@ void WorldSession::sendTaxiStatus(WoWGuid guid)
     if (nearest == 0)
         return;
 
-    SmsgTaxinodeStatus managedPacket(guid.getRawGuid(), player->m_taxi->isTaximaskNodeKnown(nearest));
+    SmsgTaxinodeStatus managedPacket(guid.getRawGuid(), player->m_taxi->isTaximaskNodeKnown(nearest), unit->GetMapId());
     sendManagedPacket(managedPacket);
 }
 
@@ -57,7 +60,13 @@ void WorldSession::sendTaxiMenu(Creature* unit)
         GetPlayer()->m_cheats.hasTaxiCheat = true; // Grimwing in Ebon Hold, special case. NOTE: Not perfect, Zul'Aman should not be included according to WoWhead, and I think taxicheat includes it.
 
     const auto& taxiMask = GetPlayer()->getTaxiData()->getTaxiMask(GetPlayer()->m_cheats.hasTaxiCheat);
-    SmsgShowTaxiNodes managedPacket(unit->getGuid(), nearestNode, taxiMask);
+
+    // the clients from 6.x on read as many mask bytes as their taxi nodes need
+    uint32_t maskSize = DBC_TAXI_MASK_SIZE;
+#if VERSION_STRING >= WoD
+    maskSize = std::min<uint32_t>(DBC_TAXI_MASK_SIZE, (sTaxiNodesStore.getNumRows() - 1) / 8 + 1);
+#endif
+    SmsgShowTaxiNodes managedPacket(unit->getGuid(), nearestNode, taxiMask, unit->GetMapId(), maskSize);
     sendManagedPacket(managedPacket);
 
     GetPlayer()->m_cheats.hasTaxiCheat = lastTaxiCheaterState;
@@ -92,10 +101,10 @@ bool WorldSession::sendLearnNewTaxiNode(Creature* unit)
 
     if (GetPlayer()->m_taxi->setTaximaskNode(curloc))
     {
-        SmsgNewTaxiPath managedPathPacket;
+        SmsgNewTaxiPath managedPathPacket(static_cast<int32_t>(curloc));
         sendManagedPacket(managedPathPacket);
 
-        SmsgTaxinodeStatus managedPacket(unit->getGuid(), true);
+        SmsgTaxinodeStatus managedPacket(unit->getGuid(), true, unit->GetMapId());
         sendManagedPacket(managedPacket);
 
         return true;
@@ -108,7 +117,7 @@ void WorldSession::sendDiscoverNewTaxiNode(uint32_t nodeid)
 {
     if (GetPlayer()->m_taxi->setTaximaskNode(nodeid))
     {
-        SmsgNewTaxiPath managedPacket;
+        SmsgNewTaxiPath managedPacket(static_cast<int32_t>(nodeid));
         sendManagedPacket(managedPacket);
     }
 }
@@ -197,6 +206,14 @@ void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
     {
         sendActivateTaxiReply(TaxiNodeError::ERR_TaxiTooFarAway);
         return;
+    }
+
+    // 6.x and later send only the destination, the source is the node of the flight master
+    if (srlPacket.nodes[0] == 0)
+    {
+        srlPacket.nodes[0] = sTaxiMgr.getNearestTaxiNode(npc->GetPosition(), npc->GetMapId(), GetPlayer()->GetTeam());
+        if (srlPacket.nodes[0] == 0)
+            return;
     }
 
     if (!GetPlayer()->m_cheats.hasTaxiCheat)

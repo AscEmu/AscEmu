@@ -28,7 +28,12 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion >= WoW::Expansion::_Classic)
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                mode = packet.readBit() ? 1 : 0;
+                return true;
+            }
+            else if (m_protocol.expansion >= WoW::Expansion::_Classic)
             {
                 packet >> mode;
                 return true;

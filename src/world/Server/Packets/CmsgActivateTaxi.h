@@ -14,7 +14,9 @@ namespace AscEmu::Packets
     {
     public:
         WoWGuid guid;
-        std::vector<uint32_t> nodes;
+        std::vector<uint32_t> nodes;    // source and destination, the source is 0 from 6.x on and taken from the vendor
+        uint32_t groundMountId = 0;     // 6.x and later: the mounts the client shows on the flight
+        uint32_t flyingMountId = 0;
 
         CmsgActivateTaxi() : CmsgActivateTaxi(0, {0, 0})
         {
@@ -28,10 +30,36 @@ namespace AscEmu::Packets
         {
         }
 
+        bool deserialise(WorldPacket& packet) override
+        {
+            if (packet.remaining() < expectedSize())
+                return false;
+
+            return internalDeserialise(packet);
+        }
+
     protected:
+        size_t expectedSize() const override
+        {
+            // 6.x and later: the packed 128 bit guid (two mask bytes at least), the node and the two mounts
+            return m_protocol.expansion >= WoW::Expansion::_WoD ? 2 + 4 + 4 + 4 : m_minimum_size;
+        }
+
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.isMop())
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                WoWGuid128 vendor;
+                packet >> vendor;
+                guid = WoWGuid(WoWGuid::fromGuid128(vendor));
+
+                nodes.resize(2);
+                nodes[0] = 0;
+                packet >> nodes[1] >> groundMountId >> flyingMountId;
+
+                return true;
+            }
+            else if (m_protocol.isMop())
             {
                 nodes.resize(2);
 

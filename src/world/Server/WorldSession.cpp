@@ -1061,10 +1061,10 @@ void WorldSession::registerOpcodeHandler()
 #endif
 
     // Taxi / NPC Interaction
-    registry.registerOpcode(CMSG_ENABLETAXI, &WorldSession::handleEnabletaxiOpcode, false, true, true, true, false);
-    registry.registerOpcode(CMSG_TAXINODE_STATUS_QUERY, &WorldSession::handleTaxiNodeStatusQueryOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_TAXIQUERYAVAILABLENODES, &WorldSession::handleTaxiQueryAvaibleNodesOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_ACTIVATE_TAXI, &WorldSession::handleActivateTaxiOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_ENABLETAXI, &WorldSession::handleEnabletaxiOpcode, false, true, true, true, false, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_TAXINODE_STATUS_QUERY, &WorldSession::handleTaxiNodeStatusQueryOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_TAXIQUERYAVAILABLENODES, &WorldSession::handleTaxiQueryAvaibleNodesOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_ACTIVATE_TAXI, &WorldSession::handleActivateTaxiOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(MSG_TABARDVENDOR_ACTIVATE, &WorldSession::handleTabardVendorActivateOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_BANKER_ACTIVATE, &WorldSession::handleBankerActivateOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_BUY_BANK_SLOT, &WorldSession::handleBuyBankSlotOpcode, true, true, true, true, true, true, true, true, true, true, false, false);
@@ -1308,7 +1308,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_GAMEOBJ_REPORT_USE, &WorldSession::handleGameobjReportUseOpCode, false, false, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_PET_CAST_SPELL, &WorldSession::handlePetCastSpell, true, true, true, true, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_WORLD_STATE_UI_TIMER_UPDATE, &WorldSession::handleWorldStateUITimerUpdate, false, false, true, true, true);
-    registry.registerOpcode(CMSG_SET_TAXI_BENCHMARK_MODE, &WorldSession::handleSetTaxiBenchmarkOpcode, true, false, true, true, true);
+    registry.registerOpcode(CMSG_SET_TAXI_BENCHMARK_MODE, &WorldSession::handleSetTaxiBenchmarkOpcode, true, false, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_UNLEARN_SKILL, &WorldSession::handleUnlearnSkillOpcode, true, true, true, true, true);
 
     // Chat

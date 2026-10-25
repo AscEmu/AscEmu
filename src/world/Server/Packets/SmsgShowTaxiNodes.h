@@ -19,12 +19,16 @@ namespace AscEmu::Packets
         uint64_t guid;
         uint32_t nearestNode;
         std::array<uint8_t, DBC_TAXI_MASK_SIZE> taxiMask;
+        uint32_t mapId;         // the map of the flight master, part of its 128 bit guid from 6.x on
+        uint32_t maskSize;      // the mask bytes the client of the build reads, 6.x and later
 
-        SmsgShowTaxiNodes(uint64_t guid, uint32_t nearestNode, std::array<uint8_t, DBC_TAXI_MASK_SIZE> const& taxiMask) :
+        SmsgShowTaxiNodes(uint64_t guid, uint32_t nearestNode, std::array<uint8_t, DBC_TAXI_MASK_SIZE> const& taxiMask, uint32_t mapId = 0, uint32_t maskSize = DBC_TAXI_MASK_SIZE) :
             ManagedPacket(SMSG_SHOWTAXINODES, 0),
             guid(guid),
             nearestNode(nearestNode),
-            taxiMask(taxiMask)
+            taxiMask(taxiMask),
+            mapId(mapId),
+            maskSize(maskSize)
         {
         }
 
@@ -38,7 +42,30 @@ size_t expectedSize() const override
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isMop())
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x and later: the window of the flight master and the node masks, two masks from 7.x on
+                // (landing and usable nodes), counted in uint64 blocks from 10.x on
+                const bool blocks = m_protocol.expansion >= WoW::Expansion::_Dragonflight;
+                const bool twoMasks = m_protocol.expansion >= WoW::Expansion::_Legion;
+                const uint32_t size = blocks ? ((maskSize + 7) / 8) * 8 : maskSize;
+
+                packet.writeBit(true);                                  // window info
+                packet.flushBits();
+                packet << uint32_t(blocks ? size / 8 : size);
+                if (twoMasks)
+                    packet << uint32_t(blocks ? size / 8 : size);
+
+                packet << WoWGuid(guid).toGuid128(m_protocol.realmId, mapId);
+                packet << nearestNode;
+
+                for (uint8_t mask = 0; mask < (twoMasks ? 2 : 1); ++mask)
+                    for (uint32_t i = 0; i < size; ++i)
+                        packet << uint8_t(i < taxiMask.size() ? taxiMask[i] : 0);
+
+                return true;
+            }
+            else if (m_protocol.isMop())
             {
                 const WoWGuid npcGuid(guid);
 

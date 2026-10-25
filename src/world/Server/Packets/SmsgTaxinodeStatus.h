@@ -16,15 +16,17 @@ namespace AscEmu::Packets
     public:
         WoWGuid guid;
         bool isNodeKnown;
+        uint32_t mapId;         // the map of the flight master, part of its 128 bit guid from 6.x on
 
         SmsgTaxinodeStatus() : SmsgTaxinodeStatus(0, 0)
         {
         }
 
-        SmsgTaxinodeStatus(uint64_t guid, bool isNodeKnown) :
+        SmsgTaxinodeStatus(uint64_t guid, bool isNodeKnown, uint32_t mapId = 0) :
             ManagedPacket(SMSG_TAXINODE_STATUS, 0),
             guid(guid),
-            isNodeKnown(isNodeKnown)
+            isNodeKnown(isNodeKnown),
+            mapId(mapId)
         {
         }
 
@@ -34,7 +36,16 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isMop())
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x and later: 1 = learned, 2 = not learned yet
+                packet << guid.toGuid128(m_protocol.realmId, mapId);
+                packet.writeBits(isNodeKnown ? 1 : 2, 2);
+                packet.flushBits();
+
+                return true;
+            }
+            else if (m_protocol.isMop())
             {
                 packet.writeBit(guid[6]);
                 packet.writeBit(guid[2]);

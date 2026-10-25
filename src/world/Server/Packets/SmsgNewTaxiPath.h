@@ -13,16 +13,22 @@ namespace AscEmu::Packets
     {
     public:
 
-        SmsgNewTaxiPath() :
-            ManagedPacket(SMSG_NEW_TAXI_PATH, 0)
+        int32_t node;       // the learned node, 11.x and later
+
+        SmsgNewTaxiPath(int32_t node = 0) :
+            ManagedPacket(SMSG_NEW_TAXI_PATH, 0),
+            node(node)
         {
         }
 
     protected:
         size_t expectedSize() const override { return m_minimum_size; }
 
-        bool internalSerialise(WorldPacket& /*packet*/) override
+        bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isTheWarWithinOrLater())
+                packet << node;
+
             return true;
         }
 

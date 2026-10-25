@@ -75,6 +75,15 @@ namespace AscEmu::Packets
 
                 return true;
             }
+            else if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 6.x and later: the 128 bit guid of the flight master
+                WoWGuid128 unit;
+                packet >> unit;
+                creatureGuid.init(WoWGuid::fromGuid128(unit));
+
+                return true;
+            }
 
             return false;
         }
