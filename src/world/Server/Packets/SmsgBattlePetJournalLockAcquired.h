@@ -5,10 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "ManagedPacket.h"
+#include "BattlePetPacketData.hpp"
 
 namespace AscEmu::Packets
 {
+    // the journal may be changed by this session
     class SmsgBattlePetJournalLockAcquired : public ManagedPacket
     {
     public:
@@ -17,16 +18,7 @@ namespace AscEmu::Packets
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
-        {
-            if (m_protocol.isMop())
-            {
-                return true;
-            }
-
-            return false;
-        }
-
+        bool internalSerialise(WorldPacket& /*packet*/) override { return m_protocol.expansion >= WoW::Expansion::_Mop; }
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
     };
 }

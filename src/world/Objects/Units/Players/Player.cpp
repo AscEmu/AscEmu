@@ -159,8 +159,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgEquipmentSetSaved.h"
 #include "Server/Packets/SmsgEquipmentSetList.h"
 #include "Server/Packets/SmsgLoadCufProfiles.h"
-#include "Server/Packets/SmsgBattlePetJournal.h"
-#include "Server/Packets/SmsgBattlePetJournalLockAcquired.h"
+#include "Management/BattlePets/BattlePetCollection.hpp"
 #include "Server/Packets/SmsgWorldServerInfo.h"
 #include "Server/Packets/SmsgUpdateActionButtons.h"
 #include "Server/Packets/SmsgLootList.h"
@@ -836,12 +835,7 @@ void Player::onAttachToWorld()
     summonTemporarilyUnsummonedPet();
 
 #if VERSION_STRING >= Mop
-    SmsgBattlePetJournal battlePetJournalPacket;
-    getSession()->sendManagedPacket(battlePetJournalPacket);
-
-    SmsgBattlePetJournalLockAcquired battlePetJournalLockPacket;
-    getSession()->sendManagedPacket(battlePetJournalLockPacket);
-
+    getSession()->getBattlePets().sendJournal();
 #endif
 
 #if VERSION_STRING >= Cata

@@ -184,6 +184,11 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemReforgeEntry> sItemReforgeSto
 #if VERSION_STRING >= Mop
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellMiscEntry> sSpellMiscStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrSpecializationEntry> sChrSpecializationStore;
+SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetSpeciesEntry> sBattlePetSpeciesStore;
+SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetBreedStateEntry> sBattlePetBreedStateStore;
+SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetSpeciesStateEntry> sBattlePetSpeciesStateStore;
+SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetBreedQualityEntry> sBattlePetBreedQualityStore;
+SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemToBattlePetEntry> sItemToBattlePetStore;
 WDB::Structures::SpellPowerMap sSpellPowerMap;
 #endif
 
@@ -1087,6 +1092,12 @@ bool loadDBCs()
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sChrSpecializationStore, dbc_path, "ChrSpecialization.dbc");
     buildClassSpecializationTabs();
+
+    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sBattlePetSpeciesStore, dbc_path, "BattlePetSpecies.db2");
+    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sBattlePetBreedStateStore, dbc_path, "BattlePetBreedState.db2");
+    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sBattlePetSpeciesStateStore, dbc_path, "BattlePetSpeciesState.db2");
+    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sBattlePetBreedQualityStore, dbc_path, "BattlePetBreedQuality.db2");
+    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemToBattlePetStore, dbc_path, "ItemToBattlePet.db2");
 #endif
 
     /////////////////////////////////////////////////////////////////////////////////////////

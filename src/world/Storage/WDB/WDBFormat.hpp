@@ -88,6 +88,56 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
             }
         },
         {
+            "BattlePetBreedQuality.db2",
+            {
+                ""/*Classic*/,
+                ""/*BC*/,
+                ""/*WotLK*/,
+                ""/*Cata*/,
+                "nif"/*Mop - DB2*/
+            }
+        },
+        {
+            "BattlePetBreedState.db2",
+            {
+                ""/*Classic*/,
+                ""/*BC*/,
+                ""/*WotLK*/,
+                ""/*Cata*/,
+                "niii"/*Mop - DB2*/
+            }
+        },
+        {
+            "BattlePetSpecies.db2",
+            {
+                ""/*Classic*/,
+                ""/*BC*/,
+                ""/*WotLK*/,
+                ""/*Cata*/,
+                "nixiixixx"/*Mop - DB2*/
+            }
+        },
+        {
+            "BattlePetSpeciesState.db2",
+            {
+                ""/*Classic*/,
+                ""/*BC*/,
+                ""/*WotLK*/,
+                ""/*Cata*/,
+                "niii"/*Mop - DB2*/
+            }
+        },
+        {
+            "ItemToBattlePet.db2",
+            {
+                ""/*Classic*/,
+                ""/*BC*/,
+                ""/*WotLK*/,
+                ""/*Cata*/,
+                "ni"/*Mop - DB2*/
+            }
+        },
+        {
             "BarberShopStyle.dbc",
             {
                 ""/*Classic*/,

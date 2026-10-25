@@ -45,9 +45,52 @@ enum LogonRealmOpcodes
     LRCMSG_ALL_ACCOUNT_REQUEST        = 0x017,  // request all account data
     LRSMSG_ALL_ACCOUNT_RESULT         = 0x018,  // send id, name, rank of all accounts to realm
     LRSMSG_PENDING_WORLD_SESSION      = 0x019,  // Battle.net session announced to the realm before its client connects
+    LRCMSG_BATTLE_PET_REQUEST         = 0x01A,  // request the battle pet journal of an account
+    LRSMSG_BATTLE_PET_RESULT          = 0x01B,  // the battle pets and battle slots of an account
+    LRCMSG_BATTLE_PET_SAVE            = 0x01C,  // changed and released battle pets of an account
+    LRCMSG_BATTLE_PET_ADD             = 0x01D,  // new battle pet, the logonserver hands out its id
+    LRSMSG_BATTLE_PET_ADD_RESULT      = 0x01E,  // the new battle pet with its id or the reason it was refused
 
     LRMSG_MAX_OPCODES                           // max opcodes
 };
+
+inline const char* getLogonRealmOpcodeName(uint32_t opcode)
+{
+    switch (opcode)
+    {
+        case LRCMSG_REALM_REGISTER_REQUEST:     return "LRCMSG_REALM_REGISTER_REQUEST";
+        case LRSMSG_REALM_REGISTER_RESULT:      return "LRSMSG_REALM_REGISTER_RESULT";
+        case LRCMSG_ACC_SESSION_REQUEST:        return "LRCMSG_ACC_SESSION_REQUEST";
+        case LRSMSG_ACC_SESSION_RESULT:         return "LRSMSG_ACC_SESSION_RESULT";
+        case LRCMSG_LOGON_PING_STATUS:          return "LRCMSG_LOGON_PING_STATUS";
+        case LRSMSG_LOGON_PING_RESULT:          return "LRSMSG_LOGON_PING_RESULT";
+        case LRCMSG_BUILD_REQUEST:              return "LRCMSG_BUILD_REQUEST";
+        case LRSMSG_BUILD_RESULT:               return "LRSMSG_BUILD_RESULT";
+        case LRCMSG_AUTH_REQUEST:               return "LRCMSG_AUTH_REQUEST";
+        case LRSMSG_AUTH_RESPONSE:              return "LRSMSG_AUTH_RESPONSE";
+        case LRSMSG_ACC_CHAR_MAPPING_REQUEST:   return "LRSMSG_ACC_CHAR_MAPPING_REQUEST";
+        case LRCMSG_ACC_CHAR_MAPPING_RESULT:    return "LRCMSG_ACC_CHAR_MAPPING_RESULT";
+        case LRCMSG_ACC_CHAR_MAPPING_UPDATE:    return "LRCMSG_ACC_CHAR_MAPPING_UPDATE";
+        case LRSMSG_SEND_ACCOUNT_DISCONNECT:    return "LRSMSG_SEND_ACCOUNT_DISCONNECT";
+        case LRCMSG_LOGIN_CONSOLE_REQUEST:      return "LRCMSG_LOGIN_CONSOLE_REQUEST";
+        case LRSMSG_LOGIN_CONSOLE_RESULT:       return "LRSMSG_LOGIN_CONSOLE_RESULT";
+        case LRCMSG_ACCOUNT_DB_MODIFY_REQUEST:  return "LRCMSG_ACCOUNT_DB_MODIFY_REQUEST";
+        case LRSMSG_ACCOUNT_DB_MODIFY_RESULT:   return "LRSMSG_ACCOUNT_DB_MODIFY_RESULT";
+        case LRSMSG_REALM_POPULATION_REQUEST:   return "LRSMSG_REALM_POPULATION_REQUEST";
+        case LRCMSG_REALM_POPULATION_RESULT:    return "LRCMSG_REALM_POPULATION_RESULT";
+        case LRCMSG_ACCOUNT_REQUEST:            return "LRCMSG_ACCOUNT_REQUEST";
+        case LRSMSG_ACCOUNT_RESULT:             return "LRSMSG_ACCOUNT_RESULT";
+        case LRCMSG_ALL_ACCOUNT_REQUEST:        return "LRCMSG_ALL_ACCOUNT_REQUEST";
+        case LRSMSG_ALL_ACCOUNT_RESULT:         return "LRSMSG_ALL_ACCOUNT_RESULT";
+        case LRSMSG_PENDING_WORLD_SESSION:      return "LRSMSG_PENDING_WORLD_SESSION";
+        case LRCMSG_BATTLE_PET_REQUEST:         return "LRCMSG_BATTLE_PET_REQUEST";
+        case LRSMSG_BATTLE_PET_RESULT:          return "LRSMSG_BATTLE_PET_RESULT";
+        case LRCMSG_BATTLE_PET_SAVE:            return "LRCMSG_BATTLE_PET_SAVE";
+        case LRCMSG_BATTLE_PET_ADD:             return "LRCMSG_BATTLE_PET_ADD";
+        case LRSMSG_BATTLE_PET_ADD_RESULT:      return "LRSMSG_BATTLE_PET_ADD_RESULT";
+        default:                                return "UNKNOWN";
+    }
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// A Battle.net session (6.x and later clients) the logonserver announces to the realm with

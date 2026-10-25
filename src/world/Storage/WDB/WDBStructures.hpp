@@ -1058,6 +1058,52 @@ namespace WDB::Structures
         uint32_t criteriaTreeID;
 #endif
     };
+
+#if VERSION_STRING >= Mop
+    // the battle pet journal: species, the stat states of breeds and species, the quality multipliers
+    struct BattlePetSpeciesEntry
+    {
+        uint32_t id;                                                // 0
+        uint32_t creatureId;                                        // 1
+        //uint32_t iconFileId;                                      // 2
+        uint32_t summonSpellId;                                     // 3
+        uint32_t petType;                                           // 4
+        //int32_t unknown;                                          // 5
+        uint32_t flags;                                             // 6
+        //char* description;                                       // 7
+        //char* sourceText;                                         // 8
+    };
+
+    struct BattlePetBreedStateEntry
+    {
+        uint32_t id;                                                // 0
+        uint32_t breedId;                                           // 1
+        uint32_t stateId;                                           // 2
+        int32_t value;                                              // 3
+    };
+
+    struct BattlePetSpeciesStateEntry
+    {
+        uint32_t id;                                                // 0
+        uint32_t speciesId;                                         // 1
+        uint32_t stateId;                                           // 2
+        int32_t value;                                              // 3
+    };
+
+    struct BattlePetBreedQualityEntry
+    {
+        uint32_t id;                                                // 0
+        uint32_t quality;                                           // 1
+        float multiplier;                                           // 2
+    };
+
+    // 5.x: the item that teaches a species
+    struct ItemToBattlePetEntry
+    {
+        uint32_t itemId;                                            // 0
+        uint32_t speciesId;                                         // 1
+    };
+#endif
 #endif
 
     struct CurrencyTypesEntry

@@ -96,6 +96,9 @@
 #include "Utilities/Random.hpp"
 #include "Utilities/MathConstants.hpp"
 #include "Server/PacketBroadcast.hpp"
+#include "Management/BattlePets/BattlePetCollection.hpp"
+#include "Management/BattlePets/BattlePetMgr.hpp"
+#include "Server/Packets/SmsgBattlePetError.h"
 
 using namespace AscEmu::Packets;
 
@@ -3624,6 +3627,29 @@ void Spell::SpellEffectTransformItem(uint8_t effectIndex)
     }
 }
 
+// companion spells of 5.x and later teach a pet of the journal instead of a spell
+static bool learnBattlePet([[maybe_unused]] Player* player, [[maybe_unused]] uint32_t spellId)
+{
+#if VERSION_STRING >= Mop
+    const auto* species = sBattlePetMgr.getSpeciesBySpell(spellId);
+    if (species == nullptr || player == nullptr || player->getSession() == nullptr)
+        return false;
+
+    auto& battlePets = player->getSession()->getBattlePets();
+    if (const uint8_t error = battlePets.canLearn(species->id))
+    {
+        AscEmu::Packets::SmsgBattlePetError errorPacket(error, species->creatureId);
+        player->getSession()->sendManagedPacket(errorPacket);
+        return true;
+    }
+
+    battlePets.learnSpecies(species->id);
+    return true;
+#else
+    return false;
+#endif
+}
+
 void Spell::SpellEffectLearnSpell(uint8_t effectIndex) // Learn Spell
 {
     if (m_playerTarget == nullptr && m_unitTarget && m_unitTarget->isPet()) // something's wrong with this logic here.
@@ -3641,6 +3667,9 @@ void Spell::SpellEffectLearnSpell(uint8_t effectIndex) // Learn Spell
         uint32_t spellid = damage;
         if (!spellid || !sSpellMgr.getSpellInfo(spellid)) return;
 
+        if (learnBattlePet(p_caster, spellid))
+            return;
+
         // learn me!
         p_caster->addSpell(spellid);
 
@@ -3654,6 +3683,9 @@ void Spell::SpellEffectLearnSpell(uint8_t effectIndex) // Learn Spell
         return;*/
 
         uint32_t spellToLearn = getSpellInfo()->getEffectTriggerSpell(effectIndex);
+        if (learnBattlePet(m_playerTarget, spellToLearn))
+            return;
+
         m_playerTarget->addSpell(spellToLearn);
 
         if (spellToLearn == 2575)   //hacky fix for mining from creatures

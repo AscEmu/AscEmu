@@ -35,6 +35,7 @@ enum HIGHGUID_TYPE : uint32_t
     HIGHGUID_TYPE_BATTLEGROUND  = 0x1F100000,
     HIGHGUID_TYPE_INSTANCE      = 0x1F400000,
     HIGHGUID_TYPE_GROUP         = 0x1F500000,
+    HIGHGUID_TYPE_BATTLE_PET    = 0x1F600000,     // the pets of the battle pet journal, 5.x and later
     HIGHGUID_TYPE_GUILD         = 0x1FF70000,
     //===============================================
     HIGHGUID_TYPE_MASK          = 0xFFF00000,
@@ -59,6 +60,7 @@ enum class HighGuid : uint64_t
     Battleground    = 0x1F100000,
     Instance        = 0x1F400000,
     Group           = 0x1F500000,
+    BattlePet       = 0x1F600000,
     Guild           = 0x1FF70000,
     HighGuidMask    = 0xFFF00000,
     LowGuidMask     = 0x00FFFFFF,
@@ -83,6 +85,7 @@ enum class HighGuid128 : uint8_t
     Guild           = 28,
     WowAccount      = 29,
     BNetAccount     = 30,
+    BattlePet       = 44,
     Cast            = 47
 };
 
@@ -316,6 +319,7 @@ public:
             case masked(HIGHGUID_TYPE_TRANSPORTER):
             case masked(HIGHGUID_TYPE_TRANSPORT):       return WoWGuid128::transport(HighGuid128::Transport, getCounter() & (ElevatorCounterBit - 1));
             case masked(HIGHGUID_TYPE_GROUP):           return WoWGuid128::global(HighGuid128::Party, getLowGuid());
+            case masked(HIGHGUID_TYPE_BATTLE_PET):      return WoWGuid128::global(HighGuid128::BattlePet, getLowGuid());
             case masked(HIGHGUID_TYPE_UNIT):            return WoWGuid128::mapSpecific(HighGuid128::Creature, realmId, mapId, getEntry(), getCounter());
             case masked(HIGHGUID_TYPE_VEHICLE):         return WoWGuid128::mapSpecific(HighGuid128::Vehicle, realmId, mapId, getEntry(), getCounter());
             case masked(HIGHGUID_TYPE_PET):             return WoWGuid128::mapSpecific(HighGuid128::Pet, realmId, mapId, getEntry(), getCounter());
@@ -351,6 +355,7 @@ public:
                     return WoWGuid(transportCounter & (ElevatorCounterBit - 1), 0, HIGHGUID_TYPE_GAMEOBJECT);
                 return WoWGuid((uint64_t(HIGHGUID_TYPE_TRANSPORTER) << 32) | transportCounter);
             case HighGuid128::Party:            return WoWGuid((uint64_t(HIGHGUID_TYPE_GROUP) << 32) | counter);
+            case HighGuid128::BattlePet:        return WoWGuid((uint64_t(HIGHGUID_TYPE_BATTLE_PET) << 32) | counter);
             case HighGuid128::Creature:         return WoWGuid(counter & LOWGUID_ENTRY_MASK, guid.getEntry(), HIGHGUID_TYPE_UNIT);
             case HighGuid128::Vehicle:          return WoWGuid(counter & LOWGUID_ENTRY_MASK, guid.getEntry(), HIGHGUID_TYPE_VEHICLE);
             case HighGuid128::Pet:              return WoWGuid(counter & LOWGUID_ENTRY_MASK, guid.getEntry(), HIGHGUID_TYPE_PET);

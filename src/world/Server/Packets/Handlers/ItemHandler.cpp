@@ -67,6 +67,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellInfo.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Management/BattlePets/BattlePetCollection.hpp"
+#include "Management/BattlePets/BattlePetMgr.hpp"
+#include "Server/Packets/SmsgBattlePetError.h"
 #include "Objects/Units/Creatures/AIInterface.h"
 
 using namespace AscEmu::Packets;
@@ -308,11 +311,26 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
 
     // In "learning" spells, set the spell id to be taught as spell's forced basepoints
     uint32_t spellToLearn = 0;
-    if (itemProto->Spells[0].Id == 483 || itemProto->Spells[0].Id == 55884)
+    if (spellId == 483 || spellId == 55884)
     {
-        spellId = itemProto->Spells[0].Id;
-        spellToLearn = itemProto->Spells[1].Id;
+        // the item spells are loaded in no fixed order, the taught one carries the learning trigger
+        for (const auto& itemSpell : itemProto->Spells)
+            if (itemSpell.Trigger == LEARNING && itemSpell.Id != 0)
+                spellToLearn = itemSpell.Id;
     }
+
+#if VERSION_STRING >= Mop
+    // the item stays when the journal can not take the pet
+    if (const auto* species = sBattlePetMgr.getSpeciesBySpell(spellToLearn))
+    {
+        if (const uint8_t error = getBattlePets().canLearn(species->id))
+        {
+            SmsgBattlePetError errorPacket(error, species->creatureId);
+            sendManagedPacket(errorPacket);
+            return;
+        }
+    }
+#endif
 
     if (srlPacket.targets.getTargetMask() == TARGET_SELF)
         srlPacket.targets.setUnitTarget(_player->getGuid());

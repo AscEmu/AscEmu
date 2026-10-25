@@ -46,6 +46,7 @@
 #include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Script/HookInterface.hpp"
+#include "Management/BattlePets/BattlePetCollection.hpp"
 #include <cstdarg>
 #include "OpcodeHandlerRegistry.hpp"
 
@@ -85,6 +86,10 @@ WorldSession::WorldSession(uint32_t id, std::string name, WorldSocket* sock) :
 {
 #if VERSION_STRING >= Cata
     isAddonMessageFiltered = false;
+#endif
+
+#if VERSION_STRING >= Mop
+    m_battlePets = std::make_unique<BattlePetCollection>(*this);
 #endif
 
     for (uint8_t x = 0; x < 8; x++)
@@ -190,6 +195,10 @@ uint8_t WorldSession::Update(uint32_t InstanceID)
     if (InstanceID != GetInstance())
         return 2;
 
+#if VERSION_STRING >= Mop
+    m_battlePets->update();
+#endif
+
     if (_logoutTime && (m_currMsTime >= _logoutTime) && GetInstance() == InstanceID)
     {
         // Check if the player is in the process of being moved. We can't delete him if we are.
@@ -279,6 +288,10 @@ void WorldSession::LogoutPlayer(bool Save)
 
     if (_player != nullptr)
     {
+#if VERSION_STRING >= Mop
+        m_battlePets->dismiss();
+#endif
+
         // Logout must not leave a possessed NPC behind as a temporary
         // visibility viewer/activator. Do this before aura/spell/session cleanup.
         _player->resetPossessionBeforeRelocation();
@@ -1412,7 +1425,17 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_VOID_SWAP_ITEM, &WorldSession::handleVoidSwapItem, false, false, false, true, true);
     registry.registerOpcode(CMSG_LEARN_PREVIEW_TALENTS, &WorldSession::handleLearnPreviewTalentsOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_GUILD_BANK_MONEY_WITHDRAWN_QUERY, &WorldSession::handleGuildBankMoneyWithdrawn, false, false, false, true, true, true, true, true, true, true, true, true);
-    registry.registerOpcode(CMSG_BATTLE_PET_REQUEST_JOURNAL, &WorldSession::handleBattlePetRequestJournal, false, false, false, false, true);
+    registry.registerOpcode(CMSG_BATTLE_PET_REQUEST_JOURNAL, &WorldSession::handleBattlePetRequestJournal, false, false, false, false, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_BATTLE_PET_REQUEST_JOURNAL_LOCK, &WorldSession::handleBattlePetRequestJournalLock, false, false, false, false, false, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_BATTLE_PET_DELETE_PET, &WorldSession::handleBattlePetDeletePet, false, false, false, false, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_BATTLE_PET_SUMMON_COMPANION, &WorldSession::handleBattlePetSummon, false, false, false, false, true, false, false, false, false, false, false, false);
+    registry.registerOpcode(CMSG_BATTLE_PET_SUMMON, &WorldSession::handleBattlePetSummon, false, false, false, false, false, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_BATTLE_PET_SET_BATTLE_SLOT, &WorldSession::handleBattlePetSetBattleSlot, false, false, false, false, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_BATTLE_PET_MODIFY_NAME, &WorldSession::handleBattlePetModifyName, false, false, false, false, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_BATTLE_PET_QUERY_NAME, &WorldSession::handleBattlePetQueryName, false, false, false, false, true, false, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_BATTLE_PET_SET_FLAGS, &WorldSession::handleBattlePetSetFlags, false, false, false, false, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_BATTLE_PET_CLEAR_FANFARE, &WorldSession::handleBattlePetClearFanfare, false, false, false, false, false, false, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_USE_CRITTER_ITEM, &WorldSession::handleUseCritterItem, false, false, false, false, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_SAVE_CUF_PROFILES, &WorldSession::handleSaveCufProfiles, false, false, false, true, true);
     registry.registerOpcode(CMSG_GUILD_BANK_QUERY_TEXT, &WorldSession::handleQueryGuildBankTabText, false, false, false, true, false, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_GUILD_BANK_LOG_QUERY, &WorldSession::handleGuildBankLogQuery, false, false, false, false, true, true, true, true, true, true, true, true);

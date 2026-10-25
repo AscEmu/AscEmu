@@ -124,6 +124,11 @@ namespace WDB::Structures
 #if VERSION_STRING >= Mop
     struct SpellMiscEntry;
     struct ChrSpecializationEntry;
+    struct BattlePetSpeciesEntry;
+    struct BattlePetBreedStateEntry;
+    struct BattlePetSpeciesStateEntry;
+    struct BattlePetBreedQualityEntry;
+    struct ItemToBattlePetEntry;
 #endif
 }
 
@@ -307,6 +312,11 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStable
 #if VERSION_STRING >= Mop
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellMiscEntry> sSpellMiscStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrSpecializationEntry> sChrSpecializationStore;
+    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetSpeciesEntry> sBattlePetSpeciesStore;
+    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetBreedStateEntry> sBattlePetBreedStateStore;
+    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetSpeciesStateEntry> sBattlePetSpeciesStateStore;
+    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetBreedQualityEntry> sBattlePetBreedQualityStore;
+    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemToBattlePetEntry> sItemToBattlePetStore;
 
     WDB::Structures::SpellPowerEntry const* getSpellPowerEntry(uint32_t spellId);
 #endif

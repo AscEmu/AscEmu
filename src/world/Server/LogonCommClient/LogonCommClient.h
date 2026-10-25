@@ -57,6 +57,8 @@ public:
     void HandleResultCheckAccount(WorldPacket& recvData);
     void HandleResultAllAccount(WorldPacket& recvData);
     void HandlePendingWorldSession(WorldPacket& recvData);
+    void HandleBattlePetResult(WorldPacket& recvData);
+    void HandleBattlePetAddResult(WorldPacket& recvData);
 
     void CompressAndSend(ByteBuffer& uncompressed);
     uint32_t last_ping;

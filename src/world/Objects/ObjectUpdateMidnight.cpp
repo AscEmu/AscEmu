@@ -475,8 +475,8 @@ namespace
         ctx.guid(unit->getField<uint64_t>(UnitField::DemonCreatorGuid));
         data << WoWGuid128();                                               // look at controller target
         ctx.guid(unit->getTargetGuid());
-        data << WoWGuid128();                                               // battle pet companion
-        data << uint64_t(0);                                                // battle pet db id
+        ctx.guid(unit->getField<uint64_t>(UnitField::BattlePetCompanionGuid));
+        data << uint64_t(WoWGuid::getLowGuidFromRaw(unit->getField<uint64_t>(UnitField::BattlePetCompanionGuid))); // battle pet db id
         data << WoWGuid128();                                               // battle pet attached to decor
         data << WoWGuid128();                                               // battle pet decor house
         unitChannelCreate(unit, data);
@@ -1865,7 +1865,7 @@ namespace
         for (uint8_t i = 0; i < InvSlotCount; ++i)
             ctx.guid(activeInvSlot(player, i));
         ctx.guid(player->getFarsightGuid());
-        data << WoWGuid128();                                               // summoned battle pet
+        ctx.guid(player->getField<uint64_t>(PlayerField::SummonedBattlePetGuid));
         data << uint32_t(KnownTitleCount);
         data << uint64_t(player->getCoinage());
         data << uint64_t(0);                                                // account bank coinage

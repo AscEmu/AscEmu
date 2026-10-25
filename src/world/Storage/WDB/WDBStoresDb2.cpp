@@ -1590,6 +1590,55 @@ namespace
     }
 }
 
+namespace
+{
+    // the battle pet journal: species with creature, summon spell, type and flags; the stat states; the quality multipliers
+    bool loadBattlePetStores(WDB::StoreProblemList& errors, std::string const& dbcPath)
+    {
+        WDC5File species, breedState, speciesState, breedQuality;
+        if (!loadTables(errors, dbcPath, {
+            { species, Layout::BattlePetSpecies }, { breedState, Layout::BattlePetBreedState },
+            { speciesState, Layout::BattlePetSpeciesState }, { breedQuality, Layout::BattlePetBreedQuality } }))
+            return false;
+
+        fillContainer(sBattlePetSpeciesStore, species, [](WDB::Structures::BattlePetSpeciesEntry& entry, Row const& row)
+        {
+            entry.id = row.id();
+            entry.creatureId = row.u32(3);
+            entry.summonSpellId = row.u32(4);
+            entry.petType = static_cast<uint32_t>(row.i8(6));
+            entry.flags = row.u32(7);
+        });
+
+        fillContainer(sBattlePetBreedStateStore, breedState, [](WDB::Structures::BattlePetBreedStateEntry& entry, Row const& row)
+        {
+            entry.id = row.id();
+            entry.breedId = row.parent();
+            entry.stateId = row.u32(0);
+            entry.value = static_cast<int32_t>(row.u16(1));
+        });
+
+        fillContainer(sBattlePetSpeciesStateStore, speciesState, [](WDB::Structures::BattlePetSpeciesStateEntry& entry, Row const& row)
+        {
+            entry.id = row.id();
+            entry.speciesId = row.parent();
+            entry.stateId = row.u16(0);
+            entry.value = row.i32(1);
+        });
+
+        fillContainer(sBattlePetBreedQualityStore, breedQuality, [](WDB::Structures::BattlePetBreedQualityEntry& entry, Row const& row)
+        {
+            entry.id = row.id();
+            entry.multiplier = row.f32(1);
+            entry.quality = row.u8(2);
+        });
+
+        sLogger.info("DB2: battle pet stores ready (species={}, breedStates={}, speciesStates={}).",
+            species.getRecordCount(), breedState.getRecordCount(), speciesState.getRecordCount());
+        return true;
+    }
+}
+
 bool loadDb2Stores(WDB::StoreProblemList& errors, std::string const& dbcPath)
 {
     gStringPool.clear();
@@ -1598,7 +1647,7 @@ bool loadDb2Stores(WDB::StoreProblemList& errors, std::string const& dbcPath)
     sLogger.info("DB2: loading the client tables from {}", dbcPath);
 
     bool ok = true;
-    for (auto const load : { &loadCharacterStores, &loadCreatureStores, &loadWorldStores, &loadMiscStores, &loadItemStores, &loadSpellStores })
+    for (auto const load : { &loadCharacterStores, &loadCreatureStores, &loadWorldStores, &loadMiscStores, &loadItemStores, &loadSpellStores, &loadBattlePetStores })
         ok = load(errors, dbcPath) && ok;
     return ok;
 }

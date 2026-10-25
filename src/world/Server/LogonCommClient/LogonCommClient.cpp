@@ -33,6 +33,8 @@
 #include "Logging/Logger.hpp"
 #include "Server/ConfigMgr.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "LogonCommBattlePets.hpp"
+#include "Management/BattlePets/BattlePetCollection.hpp"
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Server/WorldSocket.hpp"
@@ -130,6 +132,11 @@ void LogonCommClientSocket::HandlePacket(WorldPacket& recvData)
         NULL,                                                   // LRCMSG_ALL_ACCOUNT_REQUEST
         &LogonCommClientSocket::HandleResultAllAccount,         // LRSMSG_ALL_ACCOUNT_RESULT
         &LogonCommClientSocket::HandlePendingWorldSession,      // LRSMSG_PENDING_WORLD_SESSION
+        NULL,                                                   // LRCMSG_BATTLE_PET_REQUEST
+        &LogonCommClientSocket::HandleBattlePetResult,          // LRSMSG_BATTLE_PET_RESULT
+        NULL,                                                   // LRCMSG_BATTLE_PET_SAVE
+        NULL,                                                   // LRCMSG_BATTLE_PET_ADD
+        &LogonCommClientSocket::HandleBattlePetAddResult,       // LRSMSG_BATTLE_PET_ADD_RESULT
     };
 
     if (recvData.getOpcode() >= LRMSG_MAX_OPCODES || Handlers[recvData.getOpcode()] == 0)
@@ -688,4 +695,47 @@ void LogonCommClientSocket::HandlePendingWorldSession(WorldPacket& recvData)
 
     sLogger.debug("LogonCommClient: pending world session of game account {} ('{}'), build {}, expires at {}", session.gameAccountId, session.gameAccountName, session.clientBuild, session.expiresAt);
     sLogonCommHandler.storePendingSession(std::move(session));
+}
+
+void LogonCommClientSocket::HandleBattlePetResult(WorldPacket& recvData)
+{
+    uint32_t accountId = 0;
+    uint32_t petCount = 0;
+    recvData >> accountId >> petCount;
+
+    std::vector<LogonComm::BattlePetRecord> pets;
+    pets.reserve(petCount);
+    for (uint32_t i = 0; i < petCount; ++i)
+        pets.push_back(LogonComm::readBattlePet(recvData));
+
+    auto slots = LogonComm::readBattlePetSlots(recvData);
+    if (recvData.hadReadFailure())
+    {
+        sLogger.failure("LogonCommClient: malformed battle pet journal for account {}", accountId);
+        return;
+    }
+
+#if VERSION_STRING >= Mop
+    if (WorldSession* session = sWorld.getSessionByAccountId(accountId))
+        session->getBattlePets().onLoaded(std::move(pets), std::move(slots));
+#endif
+}
+
+void LogonCommClientSocket::HandleBattlePetAddResult(WorldPacket& recvData)
+{
+    uint32_t accountId = 0;
+    uint8_t result = 0;
+    recvData >> accountId >> result;
+    auto pet = LogonComm::readBattlePet(recvData);
+
+    if (recvData.hadReadFailure())
+    {
+        sLogger.failure("LogonCommClient: malformed battle pet add result for account {}", accountId);
+        return;
+    }
+
+#if VERSION_STRING >= Mop
+    if (WorldSession* session = sWorld.getSessionByAccountId(accountId))
+        session->getBattlePets().onAddResult(result, std::move(pet));
+#endif
 }

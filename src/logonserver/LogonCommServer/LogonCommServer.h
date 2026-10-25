@@ -53,6 +53,9 @@ public:
     void HandleUpdateMapping(WorldPacket& recvData);
     void HandleTestConsoleLogin(WorldPacket& recvData);
     void HandleDatabaseModify(WorldPacket& recvData);
+    void HandleBattlePetRequest(WorldPacket& recvData);
+    void HandleBattlePetSave(WorldPacket& recvData);
+    void HandleBattlePetAdd(WorldPacket& recvData);
     void HandlePopulationRespond(WorldPacket& recvData);
     void HandleRequestCheckAccount(WorldPacket& recvData);
     void HandleRequestAllAccounts(WorldPacket& recvData);
@@ -67,6 +70,12 @@ public:
     std::set<uint32_t> server_ids;
 
 private:
+    // one row in logoncomm_log for every request of a realm, the handler adds account and detail
+    void writeCommLog(uint32_t logOpcode);
+
+    uint32_t m_logAccountId = 0;
+    std::string m_logDetail;
+
     uint32_t remaining;
     uint16_t opcode;
     uint32_t seed;

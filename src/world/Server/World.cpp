@@ -61,6 +61,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #if VERSION_STRING >= Cata
 #include "Management/Guild/GuildFinderMgr.hpp"
+#include "Management/BattlePets/BattlePetMgr.hpp"
 #endif
 
 WoW::Expansion WoW::g_serverExpansion = COMPILED_EXPANSION;
@@ -800,6 +801,11 @@ bool World::setInitialWorldSettings()
     sLogger.info("World : Loading loot data...");
     sLootMgr.initialize();
     sLootMgr.loadLoot();
+
+#if VERSION_STRING >= Mop
+    sLogger.info("World : Loading battle pet data...");
+    sBattlePetMgr.initialize();
+#endif
 
     loadMySQLTablesByTask();
 

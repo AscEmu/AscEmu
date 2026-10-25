@@ -54,6 +54,7 @@ struct LfgReward;
 struct LfgRoleCheck;
 struct Loot;
 class WoWGuid;
+class BattlePetCollection;
 class Query;
 class QueryResult;
 
@@ -530,7 +531,6 @@ protected:
         //\brief this was an MSG opcode on versions < Cata.
         //       now it is split into CMSG and SMSG packets since cata.
         void handleGuildBankMoneyWithdrawn(WorldPacket& /*recvPacket*/);
-        void handleBattlePetRequestJournal(WorldPacket& /*recvPacket*/);  //Mop
         void handleSaveCufProfiles(WorldPacket& recvPacket);   //Mop
 
         //\brief this was two seperated opcodes on versions < Cata.
@@ -904,6 +904,25 @@ protected:
         void handleDismissCritter(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
+        // BattlePetHandler.cpp
+    public:
+#if VERSION_STRING >= Mop
+        BattlePetCollection& getBattlePets() { return *m_battlePets; }
+#endif
+
+    protected:
+        void handleBattlePetRequestJournal(WorldPacket& recvPacket);
+        void handleBattlePetRequestJournalLock(WorldPacket& recvPacket);
+        void handleBattlePetDeletePet(WorldPacket& recvPacket);
+        void handleBattlePetSummon(WorldPacket& recvPacket);
+        void handleBattlePetSetBattleSlot(WorldPacket& recvPacket);
+        void handleBattlePetModifyName(WorldPacket& recvPacket);
+        void handleBattlePetQueryName(WorldPacket& recvPacket);
+        void handleBattlePetSetFlags(WorldPacket& recvPacket);
+        void handleBattlePetClearFanfare(WorldPacket& recvPacket);
+        void handleUseCritterItem(WorldPacket& recvPacket);
+
+        //////////////////////////////////////////////////////////////////////////////////////////
         // QueryHandler.cpp
         void handleGameObjectQueryOpcode(WorldPacket& recvPacket);
         void handleQueryTimeOpcode(WorldPacket& recvPacket);
@@ -1085,6 +1104,10 @@ protected:
         // updates concurrently during that handoff.
         std::atomic_bool m_updateInProgress{ false };
         uint32_t m_skippedUpdates = 0;
+
+#if VERSION_STRING >= Mop
+        std::unique_ptr<BattlePetCollection> m_battlePets;
+#endif
 
 public:
     static void registerOpcodeHandler();

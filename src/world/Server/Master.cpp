@@ -97,7 +97,7 @@ namespace
 {
     // DB version
     constexpr std::string_view REQUIRED_CHAR_DB_VERSION = "20261024-00_character_customizations";
-    constexpr std::string_view REQUIRED_WORLD_DB_VERSION = "20261025-03_gameobject_spawns";
+    constexpr std::string_view REQUIRED_WORLD_DB_VERSION = "20261025-04_battle_pet_breeds";
 
     void printBanner()
     {

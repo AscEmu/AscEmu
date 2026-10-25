@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace Version::Tables
 {
-    // Mop: 944 opcodes with a hex value in this client version
+    // Mop: 953 opcodes with a hex value in this client version
     static const OpcodeEntry mopOpcodeEntries[] =
     {
         { CMSG_BEASTMASTER, 0x0021 },
@@ -784,6 +784,8 @@ namespace Version::Tables
         { CMSG_BATTLE_PET_SET_BATTLE_SLOT, 0x0163 },
         { CMSG_BATTLE_PET_SET_FLAGS, 0x17AC },
         { CMSG_BATTLE_PET_SUMMON_COMPANION, 0x1896 },
+        { CMSG_CAGE_BATTLE_PET, 0x1561 },
+        { CMSG_USE_CRITTER_ITEM, 0x1540 },
         { CMSG_GROUP_INITIATE_ROLE_POLL, 0x1882 },
         { CMSG_GROUP_INVITE_RESPONSE, 0x0D61 },
         { CMSG_GROUP_SET_ROLES, 0x1A92 },
@@ -946,6 +948,13 @@ namespace Version::Tables
         { SMSG_LOAD_EQUIPMENT_SET, 0x18E2 },
         { SMSG_BATTLE_PET_JOURNAL, 0x1542 },
         { SMSG_BATTLE_PET_JOURNAL_LOCK_ACQUIRED, 0x1A0F },
+        { SMSG_BATTLE_PET_JOURNAL_LOCK_DENIED, 0x0203 },
+        { SMSG_BATTLE_PET_UPDATES, 0x041A },
+        { SMSG_PET_BATTLE_SLOT_UPDATES, 0x16AF },
+        { SMSG_BATTLE_PET_DELETED, 0x18AB },
+        { SMSG_BATTLE_PETS_HEALED, 0x0E9E },
+        { SMSG_QUERY_BATTLE_PET_NAME_RESPONSE, 0x1540 },
+        { SMSG_BATTLE_PET_CAGE_DATE_ERROR, 0x068B },
         { SMSG_REALM_NAME_QUERY_RESPONSE, 0x063E },
         { CMSG_REQUEST_FORCED_REACTIONS, 0x06F5 },
         { CMSG_REQUEST_CONQUEST_FORMULA_CONSTANTS, 0x0365 },

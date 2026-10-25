@@ -20,6 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Packets/SmsgBattleNetConnectionStatus.h"
 #include "Version/VersionRegistry.hpp"
 #include "WorldSession.h"
+#include "Management/BattlePets/BattlePetCollection.hpp"
 #include "Utilities/Random.hpp"
 #include "Packets/CmsgAuthSession.h"
 
@@ -517,6 +518,11 @@ void WorldSocket::sendAuthenticated(std::unique_ptr<WorldSession> sessionHolder)
 
     sWorld.addGlobalSession(m_session);
     sWorld.addSession(std::move(sessionHolder));
+
+#if VERSION_STRING >= Mop
+    // the answer finds the session by its account
+    m_session->getBattlePets().requestLoad();
+#endif
 }
 
 void WorldSocket::sendClientConnectionPacket()

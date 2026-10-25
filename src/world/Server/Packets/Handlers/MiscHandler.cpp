@@ -90,8 +90,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGetMirrorimageData.h"
 #include "Server/Packets/SmsgClientcacheVersion.h"
 #include "Server/Packets/SmsgSetForceReactions.h"
-#include "Server/Packets/SmsgBattlePetJournal.h"
-#include "Server/Packets/SmsgBattlePetJournalLockAcquired.h"
 #include "Server/Packets/SmsgConquestFormulaConstants.h"
 #include "Server/Packets/SmsgServerTimeOffset.h"
 #include "Server/Packets/SmsgSocialContractRequestResponse.h"
@@ -476,15 +474,6 @@ void WorldSession::handleRequestConquestFormulaConstants(WorldPacket& /*recvPack
 {
     SmsgConquestFormulaConstants conquestFormulaConstantsPacket;
     sendManagedPacket(conquestFormulaConstantsPacket);
-}
-
-void WorldSession::handleBattlePetRequestJournal(WorldPacket& /*recvPacket*/)
-{
-    SmsgBattlePetJournal battlePetJournalPacket;
-    sendManagedPacket(battlePetJournalPacket);
-
-    SmsgBattlePetJournalLockAcquired battlePetJournalLockPacket;
-    sendManagedPacket(battlePetJournalLockPacket);
 }
 
 void WorldSession::handleSaveCufProfiles(WorldPacket& recvPacket)

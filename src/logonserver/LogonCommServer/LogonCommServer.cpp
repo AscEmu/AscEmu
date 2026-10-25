@@ -19,9 +19,11 @@
 
 #include "LogonCommServer.h"
 
+#include <mutex>
 #include <sstream>
 
 #include "LogonCommDefines.hpp"
+#include "LogonCommBattlePets.hpp"
 #include "Server/LogonServerDefines.hpp"
 
 #include "Logging/Log.hpp"
@@ -128,9 +130,14 @@ void LogonCommServerSocket::onRead()
 
 void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
 {
+    m_logAccountId = 0;
+    m_logDetail.clear();
+
     if (authenticated == 0 && recvData.getOpcode() != LRCMSG_AUTH_REQUEST)
     {
         // invalid
+        m_logDetail = "not authenticated, disconnected";
+        writeCommLog(recvData.getOpcode());
         disconnect();
         return;
     }
@@ -163,15 +170,41 @@ void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
         &LogonCommServerSocket::HandleRequestAllAccounts,   // LRCMSG_ALL_ACCOUNT_REQUEST
         NULL,                                               // LRSMSG_ALL_ACCOUNT_RESULT
         NULL,                                               // LRSMSG_PENDING_WORLD_SESSION
+        &LogonCommServerSocket::HandleBattlePetRequest,     // LRCMSG_BATTLE_PET_REQUEST
+        NULL,                                               // LRSMSG_BATTLE_PET_RESULT
+        &LogonCommServerSocket::HandleBattlePetSave,        // LRCMSG_BATTLE_PET_SAVE
+        &LogonCommServerSocket::HandleBattlePetAdd,         // LRCMSG_BATTLE_PET_ADD
+        NULL,                                               // LRSMSG_BATTLE_PET_ADD_RESULT
     };
 
     if (recvData.getOpcode() >= LRMSG_MAX_OPCODES || Handlers[recvData.getOpcode()] == 0)
     {
         sLogger.failure("Got unknwon packet from logoncomm: {}", recvData.getOpcode());
+        m_logDetail = "unknown opcode";
+        writeCommLog(recvData.getOpcode());
         return;
     }
 
     (this->*(Handlers[recvData.getOpcode()]))(recvData);
+    writeCommLog(recvData.getOpcode());
+}
+
+void LogonCommServerSocket::writeCommLog(uint32_t logOpcode)
+{
+    // the heartbeat of every realm would bury the requests
+    if (logOpcode == LRCMSG_LOGON_PING_STATUS || logOpcode == LRCMSG_REALM_POPULATION_RESULT)
+        return;
+
+    std::string realmIds;
+    for (const uint32_t realmId : server_ids)
+        realmIds += (realmIds.empty() ? "" : ",") + std::to_string(realmId);
+
+    if (m_logDetail.size() > 255)
+        m_logDetail.resize(255);
+
+    sLogonSQL->execute("INSERT INTO logoncomm_log (time, realm_ids, remote_ip, opcode, opcode_name, account_id, detail) VALUES (FROM_UNIXTIME(%u), '%s', '%s', %u, '%s', %u, '%s')",
+        static_cast<uint32_t>(UNIXTIME), realmIds.c_str(), sLogonSQL->escapeString(getRemoteIp()).c_str(), logOpcode, getLogonRealmOpcodeName(logOpcode),
+        m_logAccountId, sLogonSQL->escapeString(m_logDetail).c_str());
 }
 
 void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
@@ -185,9 +218,12 @@ void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
     sLogger.info("Registering realm `{}` with ID {}.", realmName, realmId);
 
     // check Realms if realmId is valid! Otherwise, send back error.
+    m_logDetail = fmt::format("realm {} '{}'", realmId, realmName);
+
     auto realm = sRealmManager.getRealmById(realmId);
     if (realm == nullptr)
     {
+        m_logDetail += " unknown to the logonserver";
         WorldPacket data(LRSMSG_REALM_REGISTER_RESULT, 4);
         data << uint32_t(1); // 1 = realm not known by logonserver - failed
         data << realmId;
@@ -237,6 +273,9 @@ void LogonCommServerSocket::HandleSessionRequest(WorldPacket& recvData)
     if (acct == nullptr || acct->SessionKey == NULL)
         error = 1; // Unauthorized user.
 
+    m_logAccountId = acct != nullptr ? acct->AccountId : 0;
+    m_logDetail = fmt::format("account '{}'{}", account_name, error ? " without session" : "");
+
     // build response packet
     WorldPacket data(LRSMSG_ACC_SESSION_RESULT, 150);
     data << request_id;
@@ -281,9 +320,12 @@ void LogonCommServerSocket::HandleBuildRequest(WorldPacket& recvData)
     recvData >> request_id;
     recvData >> ip;
 
+    const auto build = sRealmManager.getBuildForIP(ip);
+    m_logDetail = fmt::format("ip {} build {}", ip, build);
+
     WorldPacket data(LRSMSG_BUILD_RESULT, 50);
     data << request_id;
-    data << sRealmManager.getBuildForIP(ip);
+    data << build;
 
     SendPacket(&data);
 }
@@ -392,6 +434,8 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
     data << result;
     SendPacket(&data);
 
+    m_logDetail = fmt::format("realm {} {}", uint32_t(realmId), result ? "ok" : "wrong password");
+
     // set our general var
     authenticated = result;
 }
@@ -427,6 +471,7 @@ void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
     std::unordered_map<uint32_t, uint8_t>::iterator itr;
     buf >> count;
     sLogger.info("Got mapping packet for realm {}, total of {} entries.", (unsigned int)realm_id, (unsigned int)count);
+    m_logDetail = fmt::format("realm {}, {} accounts", realm_id, count);
     for (uint32_t i = 0; i < count; ++i)
     {
         buf >> account_id >> number_of_characters;
@@ -455,6 +500,9 @@ void LogonCommServerSocket::HandleUpdateMapping(WorldPacket & recvData)
     recvData >> account_id;
     recvData >> chars_to_add;
 
+    m_logAccountId = account_id;
+    m_logDetail = fmt::format("realm {}, characters {:+}", realm_id, static_cast<int8_t>(chars_to_add));
+
     auto itr = realm->_characterMap.find(account_id);
     if (itr != realm->_characterMap.end())
         itr->second += chars_to_add;
@@ -477,6 +525,9 @@ void LogonCommServerSocket::HandleTestConsoleLogin(WorldPacket & recvData)
 
     data << request;
 
+    // never the password
+    m_logDetail = fmt::format("account '{}' failed", accountname);
+
     const auto* pAccount = sAccountMgr.getAccountByName(accountname);
     if (pAccount == nullptr)
     {
@@ -484,6 +535,8 @@ void LogonCommServerSocket::HandleTestConsoleLogin(WorldPacket & recvData)
         SendPacket(&data);
         return;
     }
+
+    m_logAccountId = pAccount->AccountId;
 
     std::string pass;
     pass.assign(accountname);
@@ -497,6 +550,7 @@ void LogonCommServerSocket::HandleTestConsoleLogin(WorldPacket & recvData)
         return;
     }
 
+    m_logDetail = fmt::format("account '{}' ok", accountname);
     data << uint32_t(1);
     SendPacket(&data);
 }
@@ -520,10 +574,13 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             // remember we expect this in uppercase
             AscEmu::Util::Strings::toUpperCase(account);
 
+            m_logDetail = fmt::format("ban account '{}' {} reason '{}'", account, duration, banreason);
+
             auto* pAccount = sAccountMgr.getAccountByName(account);
             if (pAccount == nullptr)
                 return;
 
+            m_logAccountId = pAccount->AccountId;
             pAccount->Banned = duration;
 
             // update it in the sql (duh)
@@ -564,10 +621,13 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             // remember we expect this in uppercase
             AscEmu::Util::Strings::toUpperCase(account);
 
+            m_logDetail = fmt::format("mute account '{}' {}", account, duration);
+
             auto* pAccount = sAccountMgr.getAccountByName(account);
             if (pAccount == nullptr)
                 return;
 
+            m_logAccountId = pAccount->AccountId;
             pAccount->Muted = duration;
 
             // update it in the sql (duh)
@@ -585,6 +645,8 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             recvData >> duration;
             recvData >> banreason;
 
+            m_logDetail = fmt::format("ip ban {} {} reason '{}'", ip, duration, banreason);
+
             if (sIpBanMgr.add(ip, duration))
                 sLogonSQL->execute("INSERT INTO ipbans VALUES(\"%s\", %u, \"%s\")", sLogonSQL->escapeString(ip).c_str(), duration, sLogonSQL->escapeString(banreason).c_str());
 
@@ -595,6 +657,8 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
         {
             std::string ip;
             recvData >> ip;
+
+            m_logDetail = fmt::format("ip unban {}", ip);
 
             if (sIpBanMgr.remove(ip))
                 sLogonSQL->execute("DELETE FROM ipbans WHERE ip = \"%s\"", sLogonSQL->escapeString(ip).c_str());
@@ -617,6 +681,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
 
             const auto changed = AscEmu::Accounts::changePassword(account_name, old_password, new_password);
             result = static_cast<uint8_t>(changed == AscEmu::Accounts::Result::Ok ? Result_Account_Finished : Result_Account_PW_wrong);
+            m_logDetail = fmt::format("change password of account '{}': {}", account_name, AscEmu::Accounts::describe(changed));
             if (changed != AscEmu::Accounts::Result::Ok)
                 sLogger.info("LogonComm: password change of account '{}' failed: {}", account_name, AscEmu::Accounts::describe(changed));
 
@@ -642,6 +707,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             recvData >> account_name;
 
             const auto created = AscEmu::Accounts::createAccount(name, password, "");
+            m_logDetail = fmt::format("create account '{}' by '{}': {}", name, account_name, AscEmu::Accounts::describe(created));
             if (created == AscEmu::Accounts::Result::Exists)
                 result = static_cast<uint8_t>(Result_Account_Exists);
             else if (created == AscEmu::Accounts::Result::Ok)
@@ -682,6 +748,7 @@ void LogonCommServerSocket::HandleRequestCheckAccount(WorldPacket & recvData)
             recvData >> account_name;
             recvData >> request_name;
             recvData >> additional;
+            m_logDetail = fmt::format("check account '{}' for '{}'", account_name, request_name);
 
             const char* additional_data = additional.c_str();
 
@@ -719,6 +786,7 @@ void LogonCommServerSocket::HandleRequestCheckAccount(WorldPacket & recvData)
         {
             recvData >> account_name;
             recvData >> request_name;
+            m_logDetail = fmt::format("id of account '{}' for '{}'", account_name, request_name);
 
             std::string account_name_save = account_name;  // save original account_name to check
 
@@ -764,8 +832,11 @@ void LogonCommServerSocket::HandleRequestAllAccounts(WorldPacket& /*recvData*/)
         accountsArray += std::to_string(map_itr.second->AccountId) + "," + map_itr.first + "," + (gm_flags.empty() ? "0" : gm_flags) + ";";
     }
 
+    m_logDetail = fmt::format("{} accounts", accountMap.size());
+
     // remove last ; from string
-    accountsArray.pop_back();
+    if (!accountsArray.empty())
+        accountsArray.pop_back();
 
     WorldPacket data(LRSMSG_ALL_ACCOUNT_RESULT, 3000);
     data << accountsArray;
@@ -793,4 +864,159 @@ void LogonCommServerSocket::RefreshRealmsPop()
         data << (*itr);
         SendPacket(&data);
     }
+}
+
+namespace
+{
+    // every realm of the account reaches the same rows, one change at a time
+    std::mutex battlePetLock;
+}
+
+void LogonCommServerSocket::HandleBattlePetRequest(WorldPacket& recvData)
+{
+    uint32_t accountId = 0;
+    recvData >> accountId;
+
+    std::lock_guard lock(battlePetLock);
+
+    std::vector<LogonComm::BattlePetRecord> pets;
+    if (auto result = sLogonSQL->query("SELECT id, species, breed, display_id, level, experience, health, quality, flags, name, name_timestamp "
+        "FROM battle_pets WHERE account_id = %u", accountId))
+    {
+        do
+        {
+            Field* fields = result->fetch();
+
+            LogonComm::BattlePetRecord pet;
+            pet.id = fields[0].asUint32();
+            pet.species = fields[1].asUint32();
+            pet.breed = fields[2].asUint16();
+            pet.displayId = fields[3].asUint32();
+            pet.level = fields[4].asUint16();
+            pet.experience = fields[5].asUint16();
+            pet.health = fields[6].asUint32();
+            pet.quality = fields[7].asUint8();
+            pet.flags = fields[8].asUint16();
+            pet.name = fields[9].asCString();
+            pet.nameTimestamp = fields[10].asUint64();
+            pets.push_back(std::move(pet));
+        }
+        while (result->nextRow());
+    }
+
+    std::vector<LogonComm::BattlePetSlotRecord> slots;
+    if (auto result = sLogonSQL->query("SELECT slot, pet_id, locked FROM battle_pet_slots WHERE account_id = %u ORDER BY slot", accountId))
+    {
+        do
+        {
+            Field* fields = result->fetch();
+
+            LogonComm::BattlePetSlotRecord slot;
+            slot.index = fields[0].asUint8();
+            slot.petId = fields[1].asUint32();
+            slot.locked = fields[2].asUint8() != 0;
+            slots.push_back(slot);
+        }
+        while (result->nextRow());
+    }
+
+    m_logAccountId = accountId;
+    m_logDetail = fmt::format("load {} pets, {} slots", pets.size(), slots.size());
+
+    WorldPacket data(LRSMSG_BATTLE_PET_RESULT, 9 + pets.size() * 48);
+    data << accountId << uint32_t(pets.size());
+    for (const auto& pet : pets)
+        LogonComm::writeBattlePet(data, pet);
+    LogonComm::writeBattlePetSlots(data, slots);
+    SendPacket(&data);
+}
+
+void LogonCommServerSocket::HandleBattlePetSave(WorldPacket& recvData)
+{
+    uint32_t accountId = 0;
+    uint32_t savedCount = 0;
+    recvData >> accountId >> savedCount;
+
+    std::lock_guard lock(battlePetLock);
+
+    m_logAccountId = accountId;
+    m_logDetail = "save";
+
+    // a pet another realm released stays released
+    for (uint32_t i = 0; i < savedCount; ++i)
+    {
+        const auto pet = LogonComm::readBattlePet(recvData);
+        sLogonSQL->waitExecute("UPDATE battle_pets SET species = %u, breed = %u, display_id = %u, level = %u, experience = %u, health = %u, quality = %u, flags = %u, "
+            "name = '%s', name_timestamp = %llu WHERE account_id = %u AND id = %u", pet.species, uint32_t(pet.breed), pet.displayId, uint32_t(pet.level),
+            uint32_t(pet.experience), pet.health, uint32_t(pet.quality), uint32_t(pet.flags), sLogonSQL->escapeString(pet.name).c_str(),
+            static_cast<unsigned long long>(pet.nameTimestamp), accountId, pet.id);
+        m_logDetail += fmt::format(" pet {}", pet.id);
+    }
+
+    uint32_t removedCount = 0;
+    recvData >> removedCount;
+    for (uint32_t i = 0; i < removedCount; ++i)
+    {
+        uint32_t petId = 0;
+        recvData >> petId;
+        sLogonSQL->waitExecute("DELETE FROM battle_pets WHERE account_id = %u AND id = %u", accountId, petId);
+        m_logDetail += fmt::format(" released {}", petId);
+    }
+
+    const auto slots = LogonComm::readBattlePetSlots(recvData);
+    for (const auto& slot : slots)
+    {
+        sLogonSQL->waitExecute("REPLACE INTO battle_pet_slots (account_id, slot, pet_id, locked) VALUES (%u, %u, %u, %u)",
+            accountId, uint32_t(slot.index), slot.petId, slot.locked ? 1u : 0u);
+    }
+    m_logDetail += fmt::format(", {} slots", slots.size());
+}
+
+void LogonCommServerSocket::HandleBattlePetAdd(WorldPacket& recvData)
+{
+    uint32_t accountId = 0;
+    uint8_t maxPerSpecies = 0;
+    uint32_t maxPets = 0;
+    recvData >> accountId >> maxPerSpecies >> maxPets;
+    auto pet = LogonComm::readBattlePet(recvData);
+
+    std::lock_guard lock(battlePetLock);
+
+    // the limits count the pets of every realm
+    uint32_t total = 0;
+    uint32_t ofSpecies = 0;
+    uint32_t highestId = 0;
+    if (auto result = sLogonSQL->query("SELECT COUNT(*), COALESCE(SUM(species = %u), 0), COALESCE(MAX(id), 0) FROM battle_pets WHERE account_id = %u", pet.species, accountId))
+    {
+        Field* fields = result->fetch();
+        total = fields[0].asUint32();
+        ofSpecies = fields[1].asUint32();
+        highestId = fields[2].asUint32();
+    }
+
+    uint8_t result = 0;
+    if (total >= maxPets)
+        result = LogonComm::BattlePetAddTooManyPets;
+    else if (ofSpecies >= maxPerSpecies)
+        result = LogonComm::BattlePetAddTooManyOfSpecies;
+
+    if (result == 0)
+    {
+        pet.id = highestId + 1;
+        if (!sLogonSQL->waitExecute("INSERT INTO battle_pets (account_id, id, species, breed, display_id, level, experience, health, quality, flags, name, name_timestamp) "
+            "VALUES (%u, %u, %u, %u, %u, %u, %u, %u, %u, %u, '%s', %llu)", accountId, pet.id, pet.species, uint32_t(pet.breed), pet.displayId,
+            uint32_t(pet.level), uint32_t(pet.experience), pet.health, uint32_t(pet.quality), uint32_t(pet.flags),
+            sLogonSQL->escapeString(pet.name).c_str(), static_cast<unsigned long long>(pet.nameTimestamp)))
+        {
+            result = LogonComm::BattlePetAddFailed;
+        }
+    }
+
+    m_logAccountId = accountId;
+    m_logDetail = result == 0 ? fmt::format("species {} as pet {}", pet.species, pet.id) : fmt::format("species {} refused ({})", pet.species, result);
+
+    WorldPacket data(LRSMSG_BATTLE_PET_ADD_RESULT, 64);
+    data << accountId << result;
+    LogonComm::writeBattlePet(data, pet);
+    SendPacket(&data);
 }

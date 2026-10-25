@@ -127,6 +127,12 @@ namespace WDB
         inline const WDC5TableSchema Criteria = makeScalarSchema("Criteria.db2", 0x53D03513, 0, 12);
         inline const WDC5TableSchema CriteriaTree = makeScalarSchema("CriteriaTree.db2", 0xFF97AE12, -1, 7);
 
+        // Battle pets: the breed and species states take their breed and species from the relation data
+        inline const WDC5TableSchema BattlePetSpecies = makeScalarSchema("BattlePetSpecies.db2", 0x589BE282, 2, 12);
+        inline const WDC5TableSchema BattlePetBreedState = makeScalarSchema("BattlePetBreedState.db2", 0x030182F5, -1, 2);
+        inline const WDC5TableSchema BattlePetSpeciesState = makeScalarSchema("BattlePetSpeciesState.db2", 0x2ABE26A5, -1, 2);
+        inline const WDC5TableSchema BattlePetBreedQuality = makeScalarSchema("BattlePetBreedQuality.db2", 0xF3E3FDFC, -1, 3);
+
         // Items
         inline const WDC5TableSchema Item = makeScalarSchema("Item.db2", 0x996192AA, -1, 15);
         inline const WDC5TableSchema ItemAppearance = makeScalarSchema("ItemAppearance.db2", 0x481C4281, -1, 5);
