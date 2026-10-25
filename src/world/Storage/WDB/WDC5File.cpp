@@ -553,34 +553,34 @@ namespace WDB
 
         // Copy records can theoretically reference another copy record. Resolve in
         // passes so chained aliases work as well, while rejecting broken sources.
+        m_records.reserve(m_records.size() + copyRecords.size());
+        m_parentIds.reserve(m_parentIds.size() + copyRecords.size());
         while (!copyRecords.empty())
         {
-            bool madeProgress = false;
-            for (auto itr = copyRecords.begin(); itr != copyRecords.end();)
+            std::vector<std::pair<uint32_t, uint32_t>> unresolved;
+            for (auto const& [newId, sourceId] : copyRecords)
             {
-                auto const source = m_recordIndexById.find(itr->second);
+                auto const source = m_recordIndexById.find(sourceId);
                 if (source == m_recordIndexById.end())
                 {
-                    ++itr;
+                    unresolved.emplace_back(newId, sourceId);
                     continue;
                 }
 
                 uint32_t const sourceIndex = source->second;
                 RecordRef copy = m_records[sourceIndex];
-                copy.externalId = itr->first;
+                copy.externalId = newId;
                 copy.hasExternalId = true;
 
                 uint32_t const copyIndex = static_cast<uint32_t>(m_records.size());
                 m_records.push_back(copy);
                 m_parentIds.push_back(m_parentIds[sourceIndex]);
-                m_recordIndexById.emplace(itr->first, copyIndex);
-
-                itr = copyRecords.erase(itr);
-                madeProgress = true;
+                m_recordIndexById.emplace(newId, copyIndex);
             }
 
-            if (!madeProgress)
+            if (unresolved.size() == copyRecords.size())
                 return fail(error, "WDC5 copy table references unknown source record in " + filename);
+            copyRecords.swap(unresolved);
         }
 
         if (m_isSparse)

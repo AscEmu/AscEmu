@@ -194,16 +194,27 @@ void LootMgr::loadLootProp()
 namespace
 {
     // the chance indexes of the loot store items (normal 10, normal 25, heroic 10, heroic 25) a difficulty id of the
-    // client data stands for; 0 stands for every difficulty
-    std::vector<uint8_t> chanceIndexesOfDifficulty(uint8_t difficulty)
+    // client data stands for; 0 stands for every difficulty. The chance indexes a difficulty feeds, one bit per index
+    uint8_t chanceIndexMaskOfDifficulty(uint8_t difficulty)
     {
         switch (difficulty)
         {
-            case 0: return { 0, 1, 2, 3 };
-            case 4: return { 1 };                        // 25 player normal
-            case 2: case 5: case 8: case 15: case 23: case 24: return { 2 };   // heroic, 10 player heroic, challenge, heroic raid, mythic, timewalking
-            case 6: case 16: return { 3 };               // 25 player heroic, mythic raid
-            default: return { 0 };                       // normal, 10 player normal, normal raid, raid finder and the rest
+            case 0:
+                return 0xF;
+            case 4:     // 25 player normal
+                return 1 << 1;
+            case 2:     // heroic
+            case 5:     // 10 player heroic
+            case 8:     // challenge
+            case 15:    // heroic raid
+            case 23:    // mythic
+            case 24:    // timewalking
+                return 1 << 2;
+            case 6:     // 25 player heroic
+            case 16:    // mythic raid
+                return 1 << 3;
+            default:    // normal, 10 player normal, normal raid, raid finder and the rest
+                return 1 << 0;
         }
     }
 }
@@ -297,8 +308,9 @@ void LootMgr::buildLootTemplate(uint32_t entry, std::vector<LootRow> const& rows
     std::array<std::vector<LootRow>, 4> rowsOfIndex;
     for (const auto& row : rows)
         if (row.difficulty != 0)
-            for (const auto index : chanceIndexesOfDifficulty(row.difficulty))
-                rowsOfIndex[index].push_back(row);
+            for (uint8_t index = 0; index < 4; ++index)
+                if (chanceIndexMaskOfDifficulty(row.difficulty) & (1 << index))
+                    rowsOfIndex[index].push_back(row);
 
     std::array<bool, 4> hasOwnRows{};
     for (uint8_t index = 0; index < 4; ++index)
@@ -306,17 +318,28 @@ void LootMgr::buildLootTemplate(uint32_t entry, std::vector<LootRow> const& rows
 
     for (const auto& row : rows)
         if (row.difficulty == 0)
-            for (const auto index : chanceIndexesOfDifficulty(0))
+            for (uint8_t index = 0; index < 4; ++index)
                 if (!hasOwnRows[index])
                     rowsOfIndex[index].push_back(row);
 
     // item -> chance per index, -1 where the item does not drop in that difficulty
     std::unordered_map<uint32_t, std::pair<LootRow, std::array<float, 4>>> chances;
+    std::unordered_map<uint32_t, LootRow> sharedItems;      // the rows every difficulty shares expand once
+    bool sharedExpanded = false;
     for (uint8_t index = 0; index < 4; ++index)
     {
-        std::unordered_map<uint32_t, LootRow> items;
-        expandLootRows(rowsOfIndex[index], 1.0f, 0, items);
-        for (const auto& [itemId, item] : items)
+        std::unordered_map<uint32_t, LootRow> ownItems;
+        if (hasOwnRows[index])
+        {
+            expandLootRows(rowsOfIndex[index], 1.0f, 0, ownItems);
+        }
+        else if (!sharedExpanded)
+        {
+            expandLootRows(rowsOfIndex[index], 1.0f, 0, sharedItems);
+            sharedExpanded = true;
+        }
+
+        for (const auto& [itemId, item] : hasOwnRows[index] ? ownItems : sharedItems)
         {
             auto itr = chances.find(itemId);
             if (itr == chances.end())
