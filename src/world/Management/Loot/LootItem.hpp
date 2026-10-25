@@ -23,23 +23,24 @@ class Player;
 
 struct LootStoreItem
 {
-    explicit LootStoreItem(ItemProperties const* _itemproto, std::array<float, 4> _chance, uint32_t _mincount, uint32_t _maxcount);
+    LootStoreItem() = default;
+    explicit LootStoreItem(ItemProperties const* _itemproto, float _chance, uint32_t _mincount, uint32_t _maxcount);
     // currency variant: _currencyId reuses the itemId field, itemproto stays null
-    explicit LootStoreItem(uint32_t _currencyId, std::array<float, 4> _chance, uint32_t _mincount, uint32_t _maxcount);
+    explicit LootStoreItem(uint32_t _currencyId, float _chance, uint32_t _mincount, uint32_t _maxcount);
 
     // the item that drops (or the CurrencyTypes.dbc id, when isCurrency is set)
     uint32_t itemId = 0;
     // Item properties
     ItemProperties const* itemproto = nullptr;
     // chance to drop the Item
-    std::array<float, 4> chance;
+    float chance = 0.0f;
     // minimum quantity to drop
     uint32_t mincount = 0;
     // maximum quantity to drop
     uint32_t maxcount = 0;
 
     // rolls a chance and determines if the item can be added to the loottable
-    bool roll(uint8_t difficulty) const;
+    bool roll() const;
 
     // determines if a item is a quest drop
     bool needs_quest = false;

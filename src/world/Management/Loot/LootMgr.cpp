@@ -16,6 +16,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Random.hpp"
 #include "Utilities/Util.hpp"
 
+#include <array>
+#include <algorithm>
+
 template <class T> // works for anything that has the field 'chance' and is stored in plain array
 T* randomChoiceVector(std::vector<std::pair<T*, float>> const& variant)
 {
@@ -243,140 +246,99 @@ void LootMgr::loadLootGroups()
         row.groupIndex = fields[4].asUint8();
         row.minCount = fields[5].asUint32();
         row.maxCount = fields[6].asUint32();
-        m_lootGroups[fields[0].asUint32()].push_back(row);
+
+        auto& group = m_lootGroups[fields[0].asUint32()];
+        if (group == nullptr)
+            group = std::make_shared<LootRowSet>();
+        addLootRow(*group, row, "loot_groups");
     } while (result->nextRow());
 
     sLogger.info("{} loot groups loaded from loot_groups", m_lootGroups.size());
 }
 
-void LootMgr::expandLootRows(std::vector<LootRow> const& rows, float multiplier, uint8_t depth, std::unordered_map<uint32_t, LootRow>& items) const
+LootRowSet const* LootMgr::getLootGroup(uint32_t groupId) const
 {
-    // the rows of an exclusive group share one roll: explicit chances are their share, rows without a chance split the rest
-    std::unordered_map<uint8_t, std::pair<float, uint32_t>> groups;    // index -> (sum of explicit chances, rows without a chance)
-    for (const auto& row : rows)
-    {
-        if (row.groupIndex == 0)
-            continue;
+    const auto itr = m_lootGroups.find(groupId);
+    return itr != m_lootGroups.cend() ? itr->second.get() : nullptr;
+}
 
-        auto& group = groups[row.groupIndex];
-        if (row.chance > 0.0f)
-            group.first += row.chance;
-        else
-            ++group.second;
+bool LootMgr::addLootRow(LootRowSet& set, LootRow const& row, std::string const& tableName) const
+{
+    LootEntry entry;
+    if (row.groupId != 0)
+    {
+        // a reference rolls on its own, its group index picks the exclusive group of the referenced set
+        entry.groupId = row.groupId;
+        entry.rolls = std::max<uint32_t>(1, row.maxCount);
+        entry.referencedGroup = row.groupIndex;
+        entry.item.chance = row.chance;
+        set.addIndependent(entry);
+        return true;
+    }
+#if VERSION_STRING >= Cata
+    else if (row.isCurrency)
+    {
+        entry.item = LootStoreItem(row.itemId, row.chance, row.minCount, row.maxCount);
+    }
+#endif
+    else
+    {
+        const auto itemProto = sMySQLStore.getItemProperties(row.itemId);
+        if (itemProto == nullptr)
+        {
+            sLogger.debugDbTables("LootMgr::addLootRow : Invalid Item with entry {} set in {}.", row.itemId, tableName);
+            return false;
+        }
+
+        entry.item = LootStoreItem(itemProto, row.chance, row.minCount, row.maxCount);
     }
 
-    for (const auto& row : rows)
-    {
-        float chance = row.chance;
-        if (row.groupIndex != 0)
-        {
-            const auto& group = groups[row.groupIndex];
-            if (row.chance <= 0.0f)
-                chance = group.second != 0 ? std::max(0.0f, 100.0f - group.first) / static_cast<float>(group.second) : 0.0f;
-            else if (group.first > 100.0f)
-                chance = row.chance * 100.0f / group.first;
-        }
-        chance *= multiplier;
+    if (row.groupIndex == 0)
+        set.addIndependent(entry);
+    else
+        set.addExclusive(row.groupIndex, entry);
 
-        if (row.groupId != 0)
-        {
-            // a reference: its group's items with the chance of the reference, rolled as often as the count says
-            const auto group = m_lootGroups.find(row.groupId);
-            if (group == m_lootGroups.end() || depth >= 5)
-                continue;
-
-            const float rolls = static_cast<float>(std::max<uint32_t>(1, row.maxCount));
-            expandLootRows(group->second, std::min(100.0f, chance * rolls) / 100.0f, depth + 1, items);
-            continue;
-        }
-
-        if (chance <= 0.0f)
-            continue;
-
-        auto& item = items[row.itemId];
-        if (item.itemId == 0 || item.chance < chance)
-        {
-            item = row;
-            item.chance = chance;
-        }
-    }
+    return true;
 }
 
 void LootMgr::buildLootTemplate(uint32_t entry, std::vector<LootRow> const& rows, LootTemplateMap* lootTable, std::string const& tableName, uint32_t& count) const
 {
     // per chance index the rows of its own difficulty, the rows valid for every difficulty where there are none
-    std::array<std::vector<LootRow>, 4> rowsOfIndex;
+    std::array<std::vector<LootRow const*>, 4> rowsOfIndex;
     for (const auto& row : rows)
         if (row.difficulty != 0)
             for (uint8_t index = 0; index < 4; ++index)
                 if (chanceIndexMaskOfDifficulty(row.difficulty) & (1 << index))
-                    rowsOfIndex[index].push_back(row);
+                    rowsOfIndex[index].push_back(&row);
 
-    std::array<bool, 4> hasOwnRows{};
-    for (uint8_t index = 0; index < 4; ++index)
-        hasOwnRows[index] = !rowsOfIndex[index].empty();
-
-    for (const auto& row : rows)
-        if (row.difficulty == 0)
-            for (uint8_t index = 0; index < 4; ++index)
-                if (!hasOwnRows[index])
-                    rowsOfIndex[index].push_back(row);
-
-    // item -> chance per index, -1 where the item does not drop in that difficulty
-    std::unordered_map<uint32_t, std::pair<LootRow, std::array<float, 4>>> chances;
-    std::unordered_map<uint32_t, LootRow> sharedItems;      // the rows every difficulty shares expand once
-    bool sharedExpanded = false;
+    auto lootTemplate = std::make_unique<LootTemplate>();
+    std::shared_ptr<LootRowSet> shared;
     for (uint8_t index = 0; index < 4; ++index)
     {
-        std::unordered_map<uint32_t, LootRow> ownItems;
-        if (hasOwnRows[index])
+        if (!rowsOfIndex[index].empty())
         {
-            expandLootRows(rowsOfIndex[index], 1.0f, 0, ownItems);
-        }
-        else if (!sharedExpanded)
-        {
-            expandLootRows(rowsOfIndex[index], 1.0f, 0, sharedItems);
-            sharedExpanded = true;
+            auto set = std::make_shared<LootRowSet>();
+            for (const auto row : rowsOfIndex[index])
+                addLootRow(*set, *row, tableName);
+            lootTemplate->setRowSet(index, set);
+            continue;
         }
 
-        for (const auto& [itemId, item] : hasOwnRows[index] ? ownItems : sharedItems)
+        if (shared == nullptr)
         {
-            auto itr = chances.find(itemId);
-            if (itr == chances.end())
-                itr = chances.emplace(itemId, std::make_pair(item, std::array<float, 4>{ -1.0f, -1.0f, -1.0f, -1.0f })).first;
-            itr->second.second[index] = item.chance;
+            shared = std::make_shared<LootRowSet>();
+            for (const auto& row : rows)
+                if (row.difficulty == 0)
+                    addLootRow(*shared, row, tableName);
         }
+        lootTemplate->setRowSet(index, shared);
     }
 
-    if (chances.empty())
+    if (lootTemplate->size() == 0)
         return;
 
-    auto tab = lootTable->try_emplace(entry, Util::LazyInstanceCreator([] {
-        return std::make_unique<LootTemplate>();
-    })).first;
-
-    for (const auto& [itemId, item] : chances)
-    {
-#if VERSION_STRING >= Cata
-        if (item.first.isCurrency)
-        {
-            LootStoreItem storeItem(itemId, item.second, item.first.minCount, item.first.maxCount);
-            tab->second->addEntry(storeItem);
-            ++count;
-            continue;
-        }
-#endif
-        const auto itemProto = sMySQLStore.getItemProperties(itemId);
-        if (itemProto == nullptr)
-        {
-            sLogger.debugDbTables("LootMgr::buildLootTemplate : Invalid Item with entry {} set in {}.", itemId, tableName);
-            continue;
-        }
-
-        LootStoreItem storeItem(itemProto, item.second, item.first.minCount, item.first.maxCount);
-        tab->second->addEntry(storeItem);
-        ++count;
-    }
+    count += static_cast<uint32_t>(lootTemplate->size());
+    lootTable->insert_or_assign(entry, std::move(lootTemplate));
 }
 
 void LootMgr::loadLootTables(std::string const& szTableName, LootTemplateMap* lootTable)
@@ -475,26 +437,17 @@ void LootMgr::addLoot(Loot* loot, uint32_t itemid, std::vector<float> chance, ui
     if (itemprop == nullptr)
         return;
 
-    // Convert incoming std::vector to fixed std::array<float, 4>
-    std::array<float, 4> chanceArray{};
-    for (size_t i = 0; i < std::min(chance.size(), chanceArray.size()); ++i)
-    {
-        chanceArray[i] = chance[i];
-    }
-
-    LootStoreItem item = LootStoreItem(itemprop, chanceArray, mincount, maxcount);
-
-    // check difficulty level
-    if (item.chance[lootDifficulty] < 0.0f)
-    {
+    // the chance of the difficulty, the first one where the script gives fewer
+    if (chance.empty())
         return;
-    }
 
-    // Bad luck for the entry
-    if (!item.roll(0))
-    {
+    const float itemChance = lootDifficulty < chance.size() ? chance[lootDifficulty] : chance[0];
+    if (itemChance < 0.0f)
         return;
-    }
+
+    LootStoreItem item(itemprop, itemChance, mincount, maxcount);
+    if (!item.roll())
+        return;
 
     // add the Item to our Loot List
     loot->addLootItem(item);

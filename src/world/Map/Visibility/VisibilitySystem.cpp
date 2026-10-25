@@ -1663,7 +1663,7 @@ namespace visibility
                         /// are allowed to remain attached and keep the structural grid alive
                         /// without making the grid active or causing repeated unload passes.
                         g.idleSince = {};
-                        sLogger.debug("vis: UNLOAD grid={} activeCells=0 residentOnly={} idleFor={}ms",
+                        sLogger.debugMapCell("vis: UNLOAD grid={} activeCells=0 residentOnly={} idleFor={}ms",
                             gid,
                             gridHasPhysicalObjects(g) ? 1 : 0,
                             std::chrono::duration_cast<std::chrono::milliseconds>(idleFor).count());

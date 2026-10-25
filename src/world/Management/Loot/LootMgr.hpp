@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Loot/LootTemplate.hpp"
 
 #include <map>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -72,6 +73,9 @@ public:
     // return true when Gameobject is Fishable (has Loot in the Tempelate)
     bool isFishable(uint32_t zoneid) const;
 
+    // the rows of a loot group (loot_groups), referenced by the loot tables
+    LootRowSet const* getLootGroup(uint32_t groupId) const;
+
     // a row of loot_groups or of a loot table: an item (or currency) or a reference into loot_groups, the chance of the
     // roll, the exclusive group index of the set (0 = independent roll) and the counts
     struct LootRow
@@ -117,12 +121,12 @@ private:
     bool is_loading = false;
 
     // the loot groups of the build (loot_groups), referenced by the loot tables
-    std::unordered_map<uint32_t, std::vector<LootRow>> m_lootGroups;
+    std::unordered_map<uint32_t, std::shared_ptr<LootRowSet>> m_lootGroups;
 
-    // resolves the rows of one entry into independent item chances per difficulty index and adds them to the template
+    // a row joins its set as an item, currency or group reference; false for an unknown item
+    bool addLootRow(LootRowSet& set, LootRow const& row, std::string const& tableName) const;
+    // the template of one entry: own rows per difficulty index, the shared rows where there are none
     void buildLootTemplate(uint32_t entry, std::vector<LootRow> const& rows, LootTemplateMap* lootTable, std::string const& tableName, uint32_t& count) const;
-    // independent item chances of a row set: exclusive groups share their roll, references bring their group's items
-    void expandLootRows(std::vector<LootRow> const& rows, float multiplier, uint8_t depth, std::unordered_map<uint32_t, LootRow>& items) const;
 
     std::map<uint32_t, RandomPropertyVector> _randomprops;
     std::map<uint32_t, RandomSuffixVector> _randomsuffix;

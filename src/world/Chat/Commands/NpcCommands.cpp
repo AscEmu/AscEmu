@@ -706,7 +706,7 @@ bool ChatCommandHandler::HandleNpcListLootCommand(const char* args, WorldSession
     // the loaded template: the set of the build with the references of loot_groups resolved
     const auto& creatureLoot = sLootMgr.getCreatureLoot();
     const auto lootTemplate = creatureLoot.find(creature_target->getEntry());
-    if (lootTemplate != creatureLoot.end() && !lootTemplate->second->getEntries().empty())
+    if (lootTemplate != creatureLoot.end() && lootTemplate->second->size() != 0)
     {
         uint8_t numFound = 0;
 
@@ -716,16 +716,50 @@ bool ChatCommandHandler::HandleNpcListLootCommand(const char* args, WorldSession
 
         systemMessage(m_session, "Listing loot for Creature {} ({})", creature_target->GetCreatureProperties()->Name, creature_target->getEntry());
 
-        for (const auto& lootItem : lootTemplate->second->getEntries())
+        static const char* const indexNames[4] = { "N10", "N25", "H10", "H25" };
+        const auto listEntry = [&](LootEntry const& entry, uint8_t groupIndex)
         {
-            if (lootItem.itemproto == nullptr || lootItem.itemproto->Quality < minQuality)
+            if (entry.groupId != 0)
+            {
+                systemMessage(m_session, "-- loot group {} x{} chance ({}) group of the set ({})", entry.groupId, entry.rolls, entry.item.chance, entry.referencedGroup);
+                return;
+            }
+
+            if (entry.item.itemproto == nullptr || entry.item.itemproto->Quality < minQuality)
+                return;
+
+            redSystemMessage(m_session, "ItemID: {} {}", entry.item.itemproto->ItemId, sMySQLStore.getItemLinkByProto(entry.item.itemproto, m_session->language));
+            systemMessage(m_session, "-- chance ({}) min/max ({}/{}) exclusive group ({})", entry.item.chance, entry.item.mincount, entry.item.maxcount, groupIndex);
+            ++numFound;
+        };
+
+        for (uint8_t index = 0; index < 4 && numFound <= 25; ++index)
+        {
+            const auto set = lootTemplate->second->getRowSet(index);
+            if (set == nullptr)
                 continue;
 
-            redSystemMessage(m_session, "ItemID: {} {}", lootItem.itemproto->ItemId, sMySQLStore.getItemLinkByProto(lootItem.itemproto, m_session->language));
-            systemMessage(m_session, "-- N10 ({}) N25 ({}) H10 ({}) H25 ({}) min/max ({}/{})", lootItem.chance[0], lootItem.chance[1], lootItem.chance[2], lootItem.chance[3], lootItem.mincount, lootItem.maxcount);
+            // a set shared with an earlier index is listed there
+            std::string indexes = indexNames[index];
+            bool listed = false;
+            for (uint8_t other = 0; other < 4; ++other)
+            {
+                if (other == index || lootTemplate->second->getRowSet(other) != set)
+                    continue;
+                if (other < index)
+                    listed = true;
+                else
+                    indexes += std::string(" ") + indexNames[other];
+            }
+            if (listed)
+                continue;
 
-            if (++numFound > 25)
-                break;
+            systemMessage(m_session, "Difficulty {}:", indexes);
+            for (const auto& entry : set->getIndependent())
+                listEntry(entry, 0);
+            for (const auto& [groupIndex, entries] : set->getExclusive())
+                for (const auto& entry : entries)
+                    listEntry(entry, groupIndex);
         }
 
         if (numFound > 25)
