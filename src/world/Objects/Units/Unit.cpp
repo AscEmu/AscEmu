@@ -3366,9 +3366,9 @@ SpellProc* Unit::addProcTriggerSpell(SpellInfo const* spellInfo, SpellInfo const
     if (spellProcHolder == nullptr)
     {
         if (originalSpellInfo != nullptr)
-            sLogger.failure("Unit::addProcTriggerSpell : Spell id {} tried to add a non-existent spell to Unit {} as SpellProc", originalSpellInfo->getId(), fmt::ptr(this));
+            sLogger.debugAuraEffect("Unit::addProcTriggerSpell : Spell id {} tried to add a non-existent spell to Unit {} as SpellProc", originalSpellInfo->getId(), fmt::ptr(this));
         else
-            sLogger.failure("Unit::addProcTriggerSpell : Something tried to add a non-existent spell to Unit {} as SpellProc", fmt::ptr(this));
+            sLogger.debugAuraEffect("Unit::addProcTriggerSpell : Something tried to add a non-existent spell to Unit {} as SpellProc", fmt::ptr(this));
         return nullptr;
     }
 

@@ -99,7 +99,7 @@ void GameEventMgr::LoadFromDB()
             //    sLogger.debug("{} game event Entry: {} isn't a world event and has length = 0, thus it can't be used.", dbResult.description, dbResult.entry);
             //}
         } while (result->nextRow());
-        sLogger.info("GameEventMgr : {} events loaded from table event_properties", pCount);
+        sLogger.info("GameEventMgr : {} events loaded from table gameevent_properties", pCount);
     }
     // Loading event_saves from CharacterDB
     sLogger.info("GameEventMgr : Start loading gameevent_save");
@@ -218,7 +218,7 @@ void GameEventMgr::LoadFromDB()
 
             } while (result->nextRow());
         }
-        sLogger.info("GameEventMgr : {} creature spawns for {} events from table event_creature_spawns loaded.", pCount, static_cast<uint32_t>(mGameEvents.size()));
+        sLogger.info("GameEventMgr : {} creature spawns for {} events from table creature_spawns loaded.", pCount, static_cast<uint32_t>(mGameEvents.size()));
     }
     // Loading event_gameobject from WorldDB
     sLogger.info("GameEventMgr : Start loading game event gameobject spawns");

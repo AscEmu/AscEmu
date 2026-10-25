@@ -1756,7 +1756,7 @@ void Aura::SpellAuraProcTriggerSpell(AuraEffectModifier* aurEff, bool apply)
             spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
 #endif
 
-        sLogger.debug("{} is registering {} chance {} flags {} charges {}", getSpellInfo()->getId(), spellId, getSpellInfo()->getProcChance(), getSpellInfo()->getProcFlags(), getCharges());
+        sLogger.debugAuraEffect("{} is registering {} chance {} flags {} charges {}", getSpellInfo()->getId(), spellId, getSpellInfo()->getProcChance(), getSpellInfo()->getProcFlags(), getCharges());
     }
     else
     {
@@ -3146,7 +3146,7 @@ void Aura::SpellAuraAddClassTargetTrigger(AuraEffectModifier* aurEff, bool apply
 
         m_target->addProcTriggerSpell(sp->getId(), getSpellInfo()->getId(), m_casterGuid, getSpellInfo()->getEffectBasePoints(aurEff->getEffectIndex()) + 1, SpellProcFlags(getSpellInfo()->getProcFlags()), EXTRA_PROC_NULL, groupRelation, procClassMask, this);
 
-        sLogger.debug("{} is registering {} chance {} flags {} charges {}", getSpellInfo()->getId(), sp->getId(), getSpellInfo()->getProcChance(), getSpellInfo()->getProcFlags(), getCharges());
+        sLogger.debugAuraEffect("{} is registering {} chance {} flags {} charges {}", getSpellInfo()->getId(), sp->getId(), getSpellInfo()->getProcChance(), getSpellInfo()->getProcFlags(), getCharges());
     }
     else
     {

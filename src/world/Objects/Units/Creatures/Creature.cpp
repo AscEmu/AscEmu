@@ -866,7 +866,7 @@ void Creature::OnRemoveCorpse()
     // time to respawn!
     if (IsInWorld() && (int32_t)m_WorldMap->getInstanceId() == m_instanceId)
     {
-        sLogger.debug("Removing corpse of '{}' (Entry: {}, LowGuid: {})...", GetCreatureProperties()->Name, getEntry(), getGuidLow());
+        sLogger.debugMap("Removing corpse of '{}' (Entry: {}, LowGuid: {})...", GetCreatureProperties()->Name, getEntry(), getGuidLow());
 
         setDeathState(DEAD);
         m_position = m_spawnLocation;
@@ -902,7 +902,7 @@ void Creature::OnRespawn()
 
     getMovementManager()->clear();
 
-    sLogger.debug("Respawning '{}' (Entry: {}, LowGuid: {})...", GetCreatureProperties()->Name, getEntry(), getGuidLow());
+    sLogger.debugMap("Respawning '{}' (Entry: {}, LowGuid: {})...", GetCreatureProperties()->Name, getEntry(), getGuidLow());
 
     auto const [minLevel, maxLevel] = std::minmax(GetCreatureProperties()->MinLevel, GetCreatureProperties()->MaxLevel);
     const uint32_t level = minLevel == maxLevel || CreatureLevelTuning::isScaling(this) ? maxLevel : Util::getRandomUInt(minLevel, maxLevel);
@@ -2726,7 +2726,7 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32
     }
     else
     {
-        sLogger.debug("no loot owner found loot will not be filled for creature {}", getEntry());
+        sLogger.debugCreatureAi("no loot owner found loot will not be filled for creature {}", getEntry());
     }
 
     if (getCharmedByGuid() != 0)
