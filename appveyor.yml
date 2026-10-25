@@ -5,24 +5,9 @@ branches:
   except:
     - coverity_scan
 
+# the tools only: they detect the client version at runtime, the server versions build on GitHub
 environment:
   OPENSSL_ROOT_DIR: C:\OpenSSL-v32-Win64
-  matrix:
-  - ASC_VERSION: Classic
-  - ASC_VERSION: TBC
-  - ASC_VERSION: WotLK
-  - ASC_VERSION: Cata
-  - ASC_VERSION: Mop
-  - ASC_VERSION: WoD
-  - ASC_VERSION: Legion
-  - ASC_VERSION: BfA
-  - ASC_VERSION: Shadowlands
-  - ASC_VERSION: Dragonflight
-  - ASC_VERSION: TheWarWithin
-  - ASC_VERSION: Midnight
-
-matrix:
-  fast_finish: true # Abort all other Matrix builds if one fails
 
 platform:
   - x64
@@ -43,5 +28,9 @@ before_build:
 build_script:
   - cmd: mkdir ascemu_build
   - cmd: cd ascemu_build
-  - cmd: cmake ../ -G "Visual Studio 17 2022" -A %Platform% -DBUILD_WITH_WARNINGS=1 -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_TOOLS=0 -DASCEMU_VERSION=%ASC_VERSION%
-  - cmd: msbuild Ascemu.sln /m /v:m /p:WarningLevel=4
+  - cmd: cmake ../ -G "Visual Studio 17 2022" -A %Platform% -DBUILD_WITH_WARNINGS=1 -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_TOOLS=1
+  - cmd: msbuild src\tools\map_extractor\map_extractor.vcxproj /m /v:m /p:Configuration=%CONFIGURATION% /p:Platform=%Platform% /p:WarningLevel=4
+  - cmd: msbuild src\tools\vmap_tools\vmap4_extractor\vmap4_extractor.vcxproj /m /v:m /p:Configuration=%CONFIGURATION% /p:Platform=%Platform% /p:WarningLevel=4
+  - cmd: msbuild src\tools\vmap_tools\vmap4_assembler\vmap4_assembler.vcxproj /m /v:m /p:Configuration=%CONFIGURATION% /p:Platform=%Platform% /p:WarningLevel=4
+  - cmd: msbuild src\tools\mmaps_generator\mmaps_generator.vcxproj /m /v:m /p:Configuration=%CONFIGURATION% /p:Platform=%Platform% /p:WarningLevel=4
+  - cmd: msbuild src\tools\connection\connection_patcher.vcxproj /m /v:m /p:Configuration=%CONFIGURATION% /p:Platform=%Platform% /p:WarningLevel=4
