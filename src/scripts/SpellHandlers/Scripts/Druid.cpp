@@ -269,9 +269,11 @@ void setupDruidSpells(ScriptMgr* mgr)
     mgr->register_spell_script(SPELL_IMPROVED_LEADER_OF_THE_PACK_R1, new ImprovedLeaderOfThePackDummy);
 #endif
 
+#if VERSION_STRING < Legion
     mgr->register_spell_script(SPELL_LEADER_OF_THE_PACK_DUMMY, new LeaderOfThePackDummy);
     mgr->register_spell_script(SPELL_LEADER_OF_THE_PACK_AURA, new LeaderOfThePack);
     mgr->register_spell_script(SPELL_LEADER_OF_THE_PACK_HEAL, new LeaderOfThePackHeal);
+#endif
 #if VERSION_STRING == WotLK
     mgr->register_spell_script(SPELL_LEADER_OF_THE_PACK_MANA, new LeaderOfThePackMana);
 #endif

@@ -549,7 +549,7 @@ void setupDeathKnightSpells(ScriptMgr* mgr)
 #if VERSION_STRING == WotLK
     mgr->register_spell_script(SPELL_WILL_OF_THE_NECROPOLIS_ABSORB_R1, new WillOfTheNecropolisAbsorb);
     mgr->register_spell_script(SPELL_WILL_OF_THE_NECROPOLIS_DUMMY_R1, new WillOfTheNecropolisDummy);
-#else
+#elif VERSION_STRING < Legion
     mgr->register_spell_script(SPELL_WILL_OF_THE_NECROPOLIS_PROC, new WillOfTheNecropolisProc);
 #endif
 }

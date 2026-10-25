@@ -150,6 +150,8 @@ void setupShamanSpells(ScriptMgr* mgr)
     mgr->register_spell_script(SPELL_EARTH_SHIELD_HEAL, new EarthShield);
 #endif
 
+#if VERSION_STRING < Legion
     mgr->register_spell_script(SPELL_LIGHTNING_SHIELD_DUMMY_R1, new LightningShieldDummy);
     mgr->register_spell_script(SPELL_LIGHTNING_SHIELD_DMG_R1, new LightningShield);
+#endif
 }

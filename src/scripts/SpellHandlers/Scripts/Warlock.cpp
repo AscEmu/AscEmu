@@ -435,7 +435,7 @@ void setupWarlockSpells(ScriptMgr* mgr)
     // Call legacy script setup
     SetupLegacyWarlockSpells(mgr);
 
-#if VERSION_STRING >= TBC
+#if VERSION_STRING >= TBC && VERSION_STRING < Legion
     mgr->register_spell_script(SPELL_BACKLASH_PROC, new Backlash);
 #endif
 
@@ -480,7 +480,9 @@ void setupWarlockSpells(ScriptMgr* mgr)
     mgr->register_spell_script(SPELL_NIGHTFALL_R1, new NightfallDummy);
 #endif
 
+#if VERSION_STRING < Mop
     mgr->register_spell_script(SPELL_SOUL_LINK_DUMMY, new SoulLinkDummy);
+#endif
 
     mgr->register_spell_script(SPELL_SHADOW_TRANCE_PROC, new ShadowTrance);
 }

@@ -440,7 +440,7 @@ void setupMageSpells(ScriptMgr* mgr)
     // Call legacy script setup
     SetupLegacyMageSpells(mgr);
 
-#if VERSION_STRING >= Cata
+#if VERSION_STRING >= Cata && VERSION_STRING < BfA
     mgr->register_spell_script(SPELL_ARCANE_MISSILES_PROC, new ArcaneMissilesProc);
 #endif
 

@@ -1100,7 +1100,7 @@ void setupPaladinSpells(ScriptMgr* mgr)
     mgr->register_spell_script(sealOfBloodMartyrBackfire, new SealOfBloodAndMartyrBackfire);
 #endif
 
-#if VERSION_STRING >= Mop
+#if VERSION_STRING >= Mop && VERSION_STRING < Legion
     mgr->register_spell_script(SPELL_SEAL_OF_COMMAND_DUMMY_R1, new SealOfCommandDummy);
 #endif
 #if VERSION_STRING < WotLK || VERSION_STRING == Cata
@@ -1114,9 +1114,13 @@ void setupPaladinSpells(ScriptMgr* mgr)
     mgr->register_spell_script(SPELL_SEAL_OF_JUSTICE_EFFECT, new SealOfJusticeEffect);
 #endif
 
+#if VERSION_STRING < Legion
     mgr->register_spell_script(SPELL_SEAL_OF_LIGHT_HEAL_R1, new SealOfLightAndInsightHeal);
+#endif
 
+#if VERSION_STRING < Legion
     mgr->register_spell_script(SPELL_SEAL_OF_RIGHTEOUSNESS_DUMMY_R1, new SealOfRighteousnessDummy);
+#endif
 #if VERSION_STRING < Mop
     uint32_t sealOfRighteousnessDamage[] =
     {
@@ -1133,7 +1137,7 @@ void setupPaladinSpells(ScriptMgr* mgr)
     mgr->register_spell_script(SPELL_SEAL_OF_THE_CRUSADER_R1, new SealOfTheCrusader);
 #endif
 
-#if VERSION_STRING >= TBC
+#if VERSION_STRING >= TBC && VERSION_STRING < Legion
     uint32_t sealOfVengeanceCorruptionTruthDirect[] =
     {
         SPELL_SEAL_OF_VENGEANCE_DIRECT,

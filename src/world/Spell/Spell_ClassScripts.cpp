@@ -420,7 +420,9 @@ void SpellMgr::setupSpellClassScripts()
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Shaman
+#if VERSION_STRING < Shadowlands
     addSpellById(1535, FireNova::Create);   // Rank 1
+#endif
 #if VERSION_STRING < Cata
     addSpellById(8498, FireNova::Create);   // Rank 2
     addSpellById(8499, FireNova::Create);   // Rank 3
@@ -447,10 +449,14 @@ void SpellMgr::setupSpellClassScripts()
     //////////////////////////////////////////////////////////////////////////////////////////
     // DeathKnight
     addSpellById(55078, &BloodPlagueSpell::Create);
+#if VERSION_STRING < Legion
     addSpellById(45477, &IcyTouchSpell::Create);
+#endif
     addSpellById(55095, &FrostFeverSpell::Create);
 
+#if VERSION_STRING < Legion
     addSpellById(48721, &BloodBoilSpell::Create);           // Rank 1
+#endif
 #if VERSION_STRING == WotLK
     addSpellById(49939, &BloodBoilSpell::Create);           // Rank 2
     addSpellById(49940, &BloodBoilSpell::Create);           // Rank 3
@@ -471,13 +477,19 @@ void SpellMgr::setupSpellClassScripts()
     addSpellById(49894, &DeathCoilSpell::Create);           // Rank 4
     addSpellById(49895, &DeathCoilSpell::Create);           // Rank 5
 #endif
+#if VERSION_STRING < Legion
     addSpellById(56815, &RuneStrileSpell::Create);
+#endif
 
+#if VERSION_STRING < Legion
     addSpellById(50452, &BloodwormSpell::Create);
+#endif
 
     addSpellById(55233, &VampiricBloodSpell::Create);
 
+#if VERSION_STRING < Legion
     addSpellById(55050, &HeartStrikeSpell::Create);         // Rank 1
+#endif
 #if VERSION_STRING == WotLK
     addSpellById(55258, &HeartStrikeSpell::Create);         // Rank 2
     addSpellById(55259, &HeartStrikeSpell::Create);         // Rank 3

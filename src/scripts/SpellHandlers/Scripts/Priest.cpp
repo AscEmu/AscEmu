@@ -610,6 +610,8 @@ void setupPriestSpells(ScriptMgr* mgr)
 
 #if VERSION_STRING >= TBC
     mgr->register_spell_script(SPELL_VAMPIRIC_TOUCH_R1, new VampiricTouchDummy);
+#if VERSION_STRING < Legion
     mgr->register_spell_script(SPELL_VAMPIRIC_TOUCH_MANA, new VampiricTouch);
+#endif
 #endif
 }
