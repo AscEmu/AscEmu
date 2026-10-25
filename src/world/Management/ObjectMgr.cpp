@@ -1879,7 +1879,7 @@ void ObjectMgr::loadTrainers()
             const auto* trainerSpellSet = getTrainerSpellSetById(spellSetId);
             if (trainerSpellSet == nullptr)
             {
-                sLogger.debug("ObjectMgr::loadTrainers : trainer {} has no spells in spellset {} for this build, skipping.", entry, spellSetId);
+                sLogger.debugDbTables("ObjectMgr::loadTrainers : trainer {} has no spells in spellset {} for this build, skipping.", entry, spellSetId);
                 continue;
             }
 
