@@ -187,7 +187,7 @@ std::unique_ptr<WorldMap> MapMgr::createWorldMap(uint32_t mapId, uint32_t unload
     if (baseMap == nullptr)
         return nullptr;
 
-    sLogger.debug("MapMgr::createWorldMap Create Continent {} for Map {}", baseMap->getMapName(), mapId);
+    sLogger.debugMap("MapMgr::createWorldMap Create Continent {} for Map {}", baseMap->getMapName(), mapId);
 
     auto map = std::make_unique<WorldMap>(baseMap, mapId, unloadTime, 0, InstanceDifficulty::Difficulties::DUNGEON_NORMAL);
 

@@ -205,7 +205,7 @@ void SpawnManager::loadSpawns(bool reload)
 
     lk.unlock();
 
-    sLogger.info("SpawnMgr: Loaded {} creature spawns and {} gameobject spawns for map {}.",
+    sLogger.debugMap("SpawnMgr: Loaded {} creature spawns and {} gameobject spawns for map {}.",
         creatureCount, gameObjectCount, mapId);
 }
 

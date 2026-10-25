@@ -91,7 +91,7 @@ void GameEventMgr::LoadFromDB()
             //if (gameEvent.isValid())
             //{
                 mGameEvents.emplace(dbResult.entry, std::make_unique<GameEvent>(dbResult));
-                sLogger.debug("GameEventMgr : {}, Entry: {}, State: {}, Holiday: {} loaded", dbResult.description, dbResult.entry, dbResult.world_event, dbResult.holiday_id);
+                sLogger.debugDbTables("GameEventMgr : {}, Entry: {}, State: {}, Holiday: {} loaded", dbResult.description, dbResult.entry, dbResult.world_event, dbResult.holiday_id);
                 ++pCount;
             //}
             //else
