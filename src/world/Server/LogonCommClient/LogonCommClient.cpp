@@ -518,6 +518,10 @@ void LogonCommClientSocket::HandleModifyDatabaseResult(WorldPacket& recvData)
             {
                 pSession->systemMessage("Your password is now updated");
             }
+            else if (result_id == Result_Account_Not_Allowed)
+            {
+                pSession->systemMessage("This realm is not allowed to change accounts on the logonserver!");
+            }
             else
             {
                 sLogger.failure("HandleModifyDatabaseResult: Unknown logon result in Method_Account_Change_PW");
@@ -551,6 +555,10 @@ void LogonCommClientSocket::HandleModifyDatabaseResult(WorldPacket& recvData)
                 else if (result_id == Result_Account_Finished)
                 {
                     pSession->systemMessage("Account: '{}' created", created_string);
+                }
+                else if (result_id == Result_Account_Not_Allowed)
+                {
+                    pSession->systemMessage("This realm is not allowed to create accounts on the logonserver!");
                 }
                 else
                 {

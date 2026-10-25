@@ -560,6 +560,29 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
     uint32_t method;
     recvData >> method;
 
+    // only realms listed in AllowedModIPs change accounts, bans and passwords
+    if (!sMasterLogon.IsServerAllowedMod(getRemoteAddress().s_addr))
+    {
+        sLogger.failure("LogonComm: database change {} from {} DENIED, not an allowed mod IP.", method, getRemoteIp());
+        m_logDetail = fmt::format("method {} denied, not in AllowedModIPs", method);
+
+        // password change: old, new, account; account creation: name, password, account
+        if (method == Method_Account_Change_PW || method == Method_Account_Create)
+        {
+            std::string first;
+            std::string second;
+            std::string accountName;
+            recvData >> first >> second >> accountName;
+
+            WorldPacket data(LRSMSG_ACCOUNT_DB_MODIFY_RESULT, 100);
+            data << uint32_t(method) << uint8_t(Result_Account_Not_Allowed) << accountName;
+            if (method == Method_Account_Create)
+                data << first;
+            SendPacket(&data);
+        }
+        return;
+    }
+
     switch (method)
     {
         case Method_Account_Ban:

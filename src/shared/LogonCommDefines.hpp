@@ -132,7 +132,8 @@ enum AccountDatabaseResult
     Result_Account_PW_wrong = 1,
     Result_Account_SQL_error,
     Result_Account_Finished,
-    Result_Account_Exists
+    Result_Account_Exists,
+    Result_Account_Not_Allowed                  // the realm is not listed in AllowedModIPs
 };
 
 #pragma pack(push, 1)
