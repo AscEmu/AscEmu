@@ -976,9 +976,9 @@ void WorldSession::characterEnumProc(QueryResult* result)
             charEnum.race = fields[2].asUint8();
             charEnum.Class = fields[3].asUint8();
 
-            if (!isClassRaceCombinationPossible(static_cast<Classes>(charEnum.Class), static_cast<Races>(charEnum.race)))
+            if (sMySQLStore.getPlayerCreateInfo(charEnum.race, charEnum.Class) == nullptr)
             {
-                sLogger.debug("Class {} and race {} is not a valid combination for Version {} - skipped",
+                sLogger.debug("Class {} and race {} have no player create info for build {} - skipped",
                     static_cast<uint32_t>(charEnum.Class),
                     static_cast<uint32_t>(charEnum.race),
                     WoW::getConfigBuild());

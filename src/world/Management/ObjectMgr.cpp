@@ -2334,14 +2334,11 @@ void ObjectMgr::generateLevelUpInfo()
         for (uint8_t currentRace = RACE_HUMAN; currentRace < DBC_NUM_RACES; ++currentRace)
         {
             auto playerRace = static_cast<Races>(currentRace);
-            if (!isClassRaceCombinationPossible(playerClass, playerRace))
+
+            // the player create info of the build decides which class/race pairs exist
+            if (sMySQLStore.getPlayerCreateInfo(currentRace, currentClass) == nullptr)
             {
-                if (sMySQLStore.getPlayerLevelstats(1, currentRace, currentClass))
-                {
-                    sLogger.info("ObjectMgr : Invalid class/race combination (Class: {}, Race: {}), but level 1 values exist in DB!",
-                                 static_cast<uint32_t>(playerClass),
-                                 static_cast<uint32_t>(playerRace));
-                }
+                sLogger.debugDbTables("ObjectMgr : no player create info for class {} and race {}, no level info generated.", currentClass, currentRace);
                 continue;
             }
 
