@@ -4970,6 +4970,8 @@ void MySQLDataStore::loadCreatureSpawns()
                 }
 
                 cspawn->factionid = fields[11].asUint32();
+                if (cspawn->factionid == 0)
+                    cspawn->factionid = creature_properties->Faction;    // no spawn faction: the one of the creature
                 cspawn->flags = fields[12].asUint32();
                 cspawn->pvp_flagged = fields[13].asUint8();
                 cspawn->bytes0 = fields[14].asUint32();

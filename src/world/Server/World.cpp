@@ -1018,6 +1018,7 @@ void World::loadMySQLStores()
         });
     sMySQLStore.loadTransportDataTable();
     sMySQLStore.loadTransportEntrys();
+    sMySQLStore.loadTransportMaps();
     sMySQLStore.loadGossipMenuItemsTable();
     sMySQLStore.loadRecallTable();
     sMySQLStore.loadCreatureAIScriptsTable();
