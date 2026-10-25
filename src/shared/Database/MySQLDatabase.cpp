@@ -90,40 +90,16 @@ bool MySQLDatabase::initialize(const char* hostname, unsigned int port,
     m_password = password != nullptr ? password : "";
     m_databaseName = databaseName != nullptr ? databaseName : "";
     m_connectionCount = static_cast<int32_t>(connectionCount);
+    m_useLegacyAuth = useLegacyAuth;
 
-    bool reconnect = true;
     m_connections.clear();
     m_connections.reserve(connectionCount);
 
     for (uint32_t i = 0; i < connectionCount; ++i)
     {
-        MYSQL* mysql = mysql_init(nullptr);
-        if (mysql == nullptr)
-        {
-            rollbackInit();
-            return false;
-        }
-
-        mysql_options(mysql, MYSQL_SET_CHARSET_NAME, "utf8");
-        mysql_options(mysql, MYSQL_OPT_RECONNECT, &reconnect);
-
-        if (!useLegacyAuth)
-            mysql_options(mysql, MYSQL_DEFAULT_AUTH, "caching_sha2_password");
-
-        MYSQL* connected = mysql_real_connect(
-            mysql,
-            m_hostname.c_str(),
-            m_username.c_str(),
-            m_password.c_str(),
-            m_databaseName.c_str(),
-            m_port,
-            nullptr,
-            0);
-
+        MYSQL* connected = _connect();
         if (connected == nullptr)
         {
-            sLogger.failure("Connection failed due to: `{}`", mysql_error(mysql));
-            mysql_close(mysql);
             rollbackInit();
             return false;
         }
@@ -246,11 +222,16 @@ bool MySQLDatabase::_handleError(MySQLDatabaseConnection* con, uint32_t errorNum
     }
 }
 
-bool MySQLDatabase::_reconnect(MySQLDatabaseConnection* conn)
+MYSQL* MySQLDatabase::_connect()
 {
     MYSQL* mysql = mysql_init(nullptr);
     if (mysql == nullptr)
-        return false;
+        return nullptr;
+
+    mysql_options(mysql, MYSQL_SET_CHARSET_NAME, "utf8");
+
+    if (!m_useLegacyAuth)
+        mysql_options(mysql, MYSQL_DEFAULT_AUTH, "caching_sha2_password");
 
     MYSQL* connected = mysql_real_connect(
         mysql,
@@ -264,10 +245,19 @@ bool MySQLDatabase::_reconnect(MySQLDatabaseConnection* conn)
 
     if (connected == nullptr)
     {
-        sLogger.failure("Could not reconnect to database because of `{}`", mysql_error(mysql));
+        sLogger.failure("Connection to database `{}` at {}:{} failed due to: `{}`", m_databaseName, m_hostname, m_port, mysql_error(mysql));
         mysql_close(mysql);
-        return false;
+        return nullptr;
     }
+
+    return connected;
+}
+
+bool MySQLDatabase::_reconnect(MySQLDatabaseConnection* conn)
+{
+    MYSQL* connected = _connect();
+    if (connected == nullptr)
+        return false;
 
     if (conn->MySql != nullptr)
         mysql_close(conn->MySql);

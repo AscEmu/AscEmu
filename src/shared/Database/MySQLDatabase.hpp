@@ -43,6 +43,10 @@ protected:
     void _beginTransaction(DatabaseConnection* conn) override;
     void _endTransaction(DatabaseConnection* conn) override;
     bool _reconnect(MySQLDatabaseConnection* conn);
+    // a new connection with the options of this database, nullptr when it fails
+    MYSQL* _connect();
+
+    bool m_useLegacyAuth = false;
 
     std::unique_ptr<QueryResult> _storeQueryResult(DatabaseConnection* con) override;
 };
