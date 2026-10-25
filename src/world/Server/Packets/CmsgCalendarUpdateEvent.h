@@ -5,7 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "ManagedPacket.h"
+#include "CalendarPacketData.hpp"
+
 #include <cstdint>
 #include <string>
 
@@ -31,15 +32,49 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                // 8.x and later name the club of the event first
+                if (m_protocol.expansion >= WoW::Expansion::_BfA)
+                    packet.readSkip<uint64_t>();
+
+                uint64_t id;
+                uint64_t moderatorInviteId;
+                packet >> id >> moderatorInviteId >> type >> dungeonId;
+                eventPackedTime = packet.readPackedTime();
+
+                if (m_protocol.expansion >= WoW::Expansion::_TheWarWithin)
+                {
+                    uint16_t shortFlags;
+                    packet >> shortFlags;
+                    flags = shortFlags;
+                }
+                else
+                {
+                    packet >> flags;
+                }
+
+                const uint32_t titleLength = packet.readBits(8);
+                const uint32_t descriptionLength = packet.readBits(11);
+                packet.resetBitPos();
+                title = packet.readString(titleLength);
+                description = packet.readString(descriptionLength);
+
+                uint32_t maxSize;
+                packet >> maxSize;
+
+                eventId = static_cast<uint32_t>(id);
+                inviteId = static_cast<uint32_t>(moderatorInviteId);
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 uint32_t maxInvites;
                 int32_t signedDungeonId;
-
                 packet >> maxInvites >> signedDungeonId;
                 packet.readPackedTime(eventPackedTime);
                 packet >> flags >> type;
-
                 dungeonId = static_cast<uint32_t>(signedDungeonId);
 
                 WoWGuid eventGuid;
@@ -73,28 +108,24 @@ namespace AscEmu::Packets
                 packet.readByteSeq(eventGuid[6]);
                 packet.readByteSeq(inviteGuid[1]);
                 packet.readByteSeq(eventGuid[2]);
-
                 title = packet.readString(titleLength);
-
                 packet.readByteSeq(inviteGuid[5]);
                 packet.readByteSeq(inviteGuid[4]);
                 packet.readByteSeq(eventGuid[5]);
                 packet.readByteSeq(eventGuid[3]);
                 packet.readByteSeq(inviteGuid[0]);
                 packet.readByteSeq(eventGuid[4]);
-
                 description = packet.readString(descriptionLength);
-
                 packet.readByteSeq(eventGuid[1]);
                 packet.readByteSeq(inviteGuid[2]);
                 packet.readByteSeq(eventGuid[7]);
 
                 eventId = eventGuid.getCounter();
                 inviteId = inviteGuid.getCounter();
-
                 return true;
             }
-            else if (m_protocol.expansion <= WoW::Expansion::_Cata)
+
+            if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 uint64_t id;
                 uint64_t invId;
@@ -111,7 +142,6 @@ namespace AscEmu::Packets
                 eventId = static_cast<uint32_t>(id);
                 inviteId = static_cast<uint32_t>(invId);
                 dungeonId = static_cast<uint32_t>(signedDungeonId);
-
                 return true;
             }
 

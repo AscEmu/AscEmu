@@ -1062,8 +1062,9 @@ void WorldSession::characterEnumProc(QueryResult* result)
                 }
             }
 
+            // items outside the inventory (mail, auction) carry slot -1
             auto item_db_result = CharacterDatabase.query("SELECT slot, entry, enchantments FROM playeritems "
-                "WHERE ownerguid=%u AND containerslot = '-1' AND (slot < %u OR slot BETWEEN %u AND %u)",
+                "WHERE ownerguid=%u AND containerslot = '-1' AND slot >= 0 AND (slot < %u OR slot BETWEEN %u AND %u)",
                 WoWGuid::getLowGuidFromRaw(charEnum.guid), uint32_t(EQUIPMENT_SLOT_END), uint32_t(INVENTORY_SLOT_BAG_START), uint32_t(INVENTORY_SLOT_BAG_END - 1));
 
             memset(charEnum.player_items, 0, sizeof(PlayerItem) * DBC_PLAYER_ITEMS);
@@ -1075,6 +1076,8 @@ void WorldSession::characterEnumProc(QueryResult* result)
                     int8_t item_slot = item_db_result->fetch()[0].asInt8();
                     if (item_slot >= INVENTORY_SLOT_BAG_START)
                         item_slot = static_cast<int8_t>(EQUIPMENT_SLOT_END + (item_slot - INVENTORY_SLOT_BAG_START));   // the bags follow the equipment
+                    if (item_slot < 0 || item_slot >= DBC_PLAYER_ITEMS)
+                        continue;
                     const uint32_t itemId = item_db_result->fetch()[1].asUint32();
                     const auto itemProperties = sMySQLStore.getItemProperties(itemId);
                     if (itemProperties)

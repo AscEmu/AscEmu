@@ -6,7 +6,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CalendarMgr.hpp"
 #include "Database/Database.hpp"
 #include "Logging/Logger.hpp"
+#include "Management/ObjectMgr.hpp"
+#include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Server/DatabaseDefinition.hpp"
+
+#include <algorithm>
 
 CalendarMgr& CalendarMgr::getInstance()
 {
@@ -44,7 +48,6 @@ void CalendarMgr::loadFromDB()
 
                 const auto [eventItr, _] = m_events.emplace(std::make_unique<CalendarEvent>(static_cast<uint32_t>(entry), creator, title, description, type, dungeon, date, flags));
 
-                sLogger.debug("Title {} loaded", eventItr->get()->m_title); // remove me ;-)
 
                 if (static_cast<uint32_t>(entry) >= m_nextEventId)
                     m_nextEventId = static_cast<uint32_t>(entry) + 1;
@@ -136,6 +139,65 @@ CalendarInvite* CalendarMgr::getInvite(uint32_t eventId, uint32_t inviteId)
             return invite.get();
 
     return nullptr;
+}
+
+CalendarInvite* CalendarMgr::getInviteOfPlayer(uint32_t eventId, uint32_t playerLowGuid)
+{
+    for (const auto& invite : m_invites[eventId])
+        if (invite->m_invitee == playerLowGuid)
+            return invite.get();
+
+    return nullptr;
+}
+
+uint32_t CalendarMgr::getEventGuildId(CalendarEvent* calendarEvent)
+{
+    if (calendarEvent == nullptr || !calendarEvent->belongsToGuild())
+        return 0;
+
+    if (calendarEvent->m_guildId == 0)
+        if (const auto* owner = sObjectMgr.getCachedCharacterInfo(calendarEvent->m_creator))
+            calendarEvent->m_guildId = owner->m_guild;
+
+    return calendarEvent->m_guildId;
+}
+
+std::vector<CalendarEvent*> CalendarMgr::getCalendarEvents(uint32_t playerLowGuid, uint32_t guildId)
+{
+    std::vector<CalendarEvent*> result = getPlayerEvents(playerLowGuid);
+    if (guildId == 0)
+        return result;
+
+    for (const auto& calendarEvent : m_events)
+    {
+        if (getEventGuildId(calendarEvent.get()) != guildId)
+            continue;
+
+        if (std::find(result.begin(), result.end(), calendarEvent.get()) == result.end())
+            result.push_back(calendarEvent.get());
+    }
+
+    return result;
+}
+
+uint32_t CalendarMgr::getOwnedEventCount(uint32_t ownerLowGuid)
+{
+    uint32_t count = 0;
+    for (const auto& calendarEvent : m_events)
+        if (calendarEvent->m_creator == ownerLowGuid && !calendarEvent->belongsToGuild())
+            ++count;
+
+    return count;
+}
+
+uint32_t CalendarMgr::getGuildEventCount(uint32_t guildId)
+{
+    uint32_t count = 0;
+    for (const auto& calendarEvent : m_events)
+        if (getEventGuildId(calendarEvent.get()) == guildId)
+            ++count;
+
+    return count;
 }
 
 std::vector<CalendarInvite*> CalendarMgr::getEventInvites(uint32_t eventId)
@@ -230,7 +292,7 @@ CalendarInvite* CalendarMgr::addInvite(uint32_t eventId, std::unique_ptr<Calenda
     CalendarInvite* rawPtr = invite.get();
     m_invites[eventId].emplace_back(std::move(invite));
 
-    CharacterDatabase.execute("INSERT INTO calendar_invites (id, event, invitee, sender, status, statustime, rank, text) VALUES (%u, %u, %u, %u, %u, %u, %u, '%s')",
+    CharacterDatabase.execute("INSERT INTO calendar_invites (id, event, invitee, sender, status, statustime, `rank`, text) VALUES (%u, %u, %u, %u, %u, %u, %u, '%s')",
         rawPtr->m_inviteId, rawPtr->m_event, rawPtr->m_invitee, rawPtr->m_sender, static_cast<uint32_t>(rawPtr->m_status),
         static_cast<uint32_t>(rawPtr->m_statusTime), rawPtr->m_rank, CharacterDatabase.escapeString(rawPtr->m_text).c_str());
 
@@ -242,8 +304,9 @@ void CalendarMgr::updateInvite(CalendarInvite* invite)
     if (invite == nullptr)
         return;
 
-    CharacterDatabase.execute("UPDATE calendar_invites SET status = %u, statustime = %u, rank = %u WHERE id = %u",
-        static_cast<uint32_t>(invite->m_status), static_cast<uint32_t>(invite->m_statusTime), invite->m_rank, invite->m_inviteId);
+    CharacterDatabase.execute("UPDATE calendar_invites SET status = %u, statustime = %u, `rank` = %u, text = '%s' WHERE id = %u",
+        static_cast<uint32_t>(invite->m_status), static_cast<uint32_t>(invite->m_statusTime), invite->m_rank,
+        CharacterDatabase.escapeString(invite->m_text).c_str(), invite->m_inviteId);
 }
 
 void CalendarMgr::removeInvite(uint32_t eventId, uint32_t inviteId)

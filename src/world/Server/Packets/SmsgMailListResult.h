@@ -89,7 +89,7 @@ namespace AscEmu::Packets
                             break;
                         case MAIL_TYPE_COD:
                         case MAIL_TYPE_AUCTION:
-                        case MAIL_TYPE_ITEM:
+                        case MAIL_TYPE_CALENDAR:
                             packet << uint32_t(WoWGuid::getLowGuidFromRaw(message.second.sender_guid));
                             break;
                         case MAIL_TYPE_GAMEOBJECT:
@@ -298,7 +298,7 @@ namespace AscEmu::Packets
                         {
                             case MAIL_TYPE_COD:
                             case MAIL_TYPE_AUCTION:
-                            case MAIL_TYPE_ITEM:
+                            case MAIL_TYPE_CALENDAR:
                                 packet << uint32_t(WoWGuid::getLowGuidFromRaw(message.second.sender_guid));
                                 break;
                             case MAIL_TYPE_GAMEOBJECT:

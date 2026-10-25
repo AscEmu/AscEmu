@@ -1212,7 +1212,7 @@ namespace WDB::Structures
     struct HolidaysEntry
     {
         uint32_t Id;                                                // 0
-#if VERSION_STRING < Cata
+#if VERSION_STRING <= Cata
         uint32_t Duration[MAX_HOLIDAY_DURATIONS];                   // 1-10
         uint32_t Date[MAX_HOLIDAY_DATES];                           // 11-36
         uint32_t Region;                                            // 37

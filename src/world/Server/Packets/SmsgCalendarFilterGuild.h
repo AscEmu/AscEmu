@@ -5,7 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "ManagedPacket.h"
+#include "CalendarPacketData.hpp"
+
 #include <cstdint>
 #include <vector>
 
@@ -14,21 +15,24 @@ namespace AscEmu::Packets
     struct SmsgCalendarFilterGuildEntry
     {
         uint64_t guid = 0;
-        uint8_t level = 0; // Mop only: level of the member at the time of the mass invite
+        uint8_t level = 0;
     };
 
+    // the players the event planner invites at once: members of the guild or (3.x, 4.x) of an arena team
     class SmsgCalendarFilterGuild : public ManagedPacket
     {
     public:
         std::vector<SmsgCalendarFilterGuildEntry> guilds;
+        bool arenaTeam = false;
 
         SmsgCalendarFilterGuild() : SmsgCalendarFilterGuild(std::vector<SmsgCalendarFilterGuildEntry>{})
         {
         }
 
-        SmsgCalendarFilterGuild(std::vector<SmsgCalendarFilterGuildEntry> guilds) :
-            ManagedPacket(SMSG_CALENDAR_FILTER_GUILD, 4 + guilds.size() * 9),
-            guilds(std::move(guilds))
+        SmsgCalendarFilterGuild(std::vector<SmsgCalendarFilterGuildEntry> guilds, bool arenaTeam = false) :
+            ManagedPacket(arenaTeam ? SMSG_CALENDAR_ARENA_TEAM : SMSG_CALENDAR_FILTER_GUILD, 4 + guilds.size() * 9),
+            guilds(std::move(guilds)),
+            arenaTeam(arenaTeam)
         {
         }
 
@@ -37,27 +41,25 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion < WoW::Expansion::_Mop)
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
             {
                 packet << uint32_t(guilds.size());
-
                 for (const auto& g : guilds)
                 {
-                    packet.appendPackGuid(g.guid);
-                    packet << uint8_t(0);
+                    packet << WoWGuid(g.guid).toGuid128(m_protocol.realmId, 0);
+                    packet << g.level;
                 }
-
                 return true;
             }
-            else if (m_protocol.isMop())
+
+            if (m_protocol.isMop())
             {
                 ByteBuffer bufferData(guilds.size() * 9);
-                packet.writeBits(guilds.size(), 23);
 
+                packet.writeBits(guilds.size(), 23);
                 for (const auto& g : guilds)
                 {
                     const WoWGuid guid(g.guid);
-
                     packet.writeBit(guid[1]);
                     packet.writeBit(guid[7]);
                     packet.writeBit(guid[5]);
@@ -68,7 +70,6 @@ namespace AscEmu::Packets
                     packet.writeBit(guid[2]);
 
                     bufferData << uint8_t(g.level);
-
                     bufferData.writeByteSeq(guid[3]);
                     bufferData.writeByteSeq(guid[5]);
                     bufferData.writeByteSeq(guid[4]);
@@ -81,7 +82,17 @@ namespace AscEmu::Packets
 
                 packet.flushBits();
                 packet.append(bufferData);
+                return true;
+            }
 
+            if (m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
+                packet << uint32_t(guilds.size());
+                for (const auto& g : guilds)
+                {
+                    packet.appendPackGuid(g.guid);
+                    packet << g.level;
+                }
                 return true;
             }
 

@@ -2597,5 +2597,6 @@ namespace Version::Tables
         { "CMSG_GET_CHARACTER_CURRENCY_TRANSFER_LOG", OpcodeDevelopmentState::Okay },
         { "CMSG_GET_LANDING_PAGE_SHIPMENTS", OpcodeDevelopmentState::Okay },
         { "SMSG_PLAY_SPELL_VISUAL_TARGETED", OpcodeDevelopmentState::Okay },
+        { "CMSG_CALENDAR_EVENT_INVITE_NOTES", OpcodeDevelopmentState::Unchecked },
     };
 }

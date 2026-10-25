@@ -5,7 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "ManagedPacket.h"
+#include "CalendarPacketData.hpp"
+
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -31,17 +32,15 @@ namespace AscEmu::Packets
                 uint64_t id;
                 packet >> id;
                 eventId = static_cast<uint32_t>(id);
-
                 return true;
             }
-            else if (m_protocol.expansion <= WoW::Expansion::_Cata)
+
+            if (m_protocol.expansion <= WoW::Expansion::_Cata || m_protocol.expansion >= WoW::Expansion::_WoD)
             {
+                // the event leads, moderator invite, club and flags follow and are not used by us
                 uint64_t id;
                 packet >> id;
                 eventId = static_cast<uint32_t>(id);
-
-                // remaining flags/invite id are not used by us
-
                 return true;
             }
 

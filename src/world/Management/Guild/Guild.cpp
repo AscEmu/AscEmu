@@ -29,6 +29,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/MsgGuildBankLogQuery.h"
 #include "Server/Packets/SmsgGuildPermissionsQueryResults.h"
 #include "Server/Packets/MsgGuildPermissions.h"
+#include "Server/Packets/SmsgCalendarCommandResult.h"
 #include "Server/Packets/SmsgCalendarFilterGuild.h"
 #include "Server/Packets/SmsgGuildBankList.h"
 #include "Server/Packets/SmsgGuildRanksUpdate.h"
@@ -1346,6 +1347,14 @@ void Guild::massInviteToEvent(WorldSession* session, uint32_t minLevel, uint32_t
             entry.level = static_cast<uint8_t>(level);
             guilds.push_back(entry);
         }
+    }
+
+    // the planner takes at most the invite limit of an event
+    if (guilds.size() > CALENDAR_MAX_INVITES)
+    {
+        SmsgCalendarCommandResult result(CALENDAR_ERROR_INVITES_EXCEEDED);
+        session->sendManagedPacket(result);
+        return;
     }
 
     SmsgCalendarFilterGuild managedPacket(guilds);

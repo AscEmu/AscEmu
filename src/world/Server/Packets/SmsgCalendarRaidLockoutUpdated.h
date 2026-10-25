@@ -5,30 +5,34 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "ManagedPacket.h"
+#include "CalendarPacketData.hpp"
+
 #include <cstdint>
 #include <ctime>
 
 namespace AscEmu::Packets
 {
+    // the reset of a raid save moved (extended save), the remaining seconds before and after the change
     class SmsgCalendarRaidLockoutUpdated : public ManagedPacket
     {
     public:
         time_t currTime;
         uint32_t mapId;
         uint32_t difficulty;
-        uint32_t resetTimeDiff;
+        int32_t oldSecondsLeft;
+        int32_t newSecondsLeft;
 
-        SmsgCalendarRaidLockoutUpdated() : SmsgCalendarRaidLockoutUpdated(0, 0, 0, 0)
+        SmsgCalendarRaidLockoutUpdated() : SmsgCalendarRaidLockoutUpdated(0, 0, 0, 0, 0)
         {
         }
 
-        SmsgCalendarRaidLockoutUpdated(time_t currTime, uint32_t mapId, uint32_t difficulty, uint32_t resetTimeDiff) :
+        SmsgCalendarRaidLockoutUpdated(time_t currTime, uint32_t mapId, uint32_t difficulty, int32_t oldSecondsLeft, int32_t newSecondsLeft) :
             ManagedPacket(SMSG_CALENDAR_RAID_LOCKOUT_UPDATED, 4 + 4 + 4 + 4 + 8),
             currTime(currTime),
             mapId(mapId),
             difficulty(difficulty),
-            resetTimeDiff(resetTimeDiff)
+            oldSecondsLeft(oldSecondsLeft),
+            newSecondsLeft(newSecondsLeft)
         {
         }
 
@@ -37,25 +41,41 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            // the opcode exists since Cata
-            if (m_protocol.isCata())
+            if (m_protocol.expansion >= WoW::Expansion::_Shadowlands)
             {
-                packet.appendPackedTime(currTime);
-                packet << mapId;
-                packet << difficulty;
-                packet << uint32_t(0);    // Amount of seconds that has changed to the reset time
-                packet << resetTimeDiff;
-
+                // 9.x and later: packed server time, the old remaining time before the new one
+                CalendarWire::writeDate(packet, m_protocol, currTime);
+                packet << int32_t(mapId);
+                if (m_protocol.expansion >= WoW::Expansion::_Midnight)
+                    packet << int16_t(difficulty);
+                else
+                    packet << difficulty;
+                packet << oldSecondsLeft << newSecondsLeft;
                 return true;
             }
-            else if (m_protocol.isMop())
-            {
-                packet << resetTimeDiff;
-                packet << mapId;
-                packet << difficulty;
-                packet.appendPackedTime(currTime);
-                packet << uint32_t(0);    // Amount of seconds that has changed to the reset time
 
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                packet << uint32_t(currTime);
+                packet << int32_t(mapId) << difficulty;
+                packet << newSecondsLeft << oldSecondsLeft;
+                return true;
+            }
+
+            if (m_protocol.isMop())
+            {
+                packet << newSecondsLeft << mapId << difficulty;
+                packet.appendPackedTime(currTime);
+                packet << oldSecondsLeft;
+                return true;
+            }
+
+            if (m_protocol.expansion >= WoW::Expansion::_WotLK && m_protocol.expansion <= WoW::Expansion::_Cata)
+            {
+                packet.appendPackedTime(currTime);
+                packet << mapId << difficulty;
+                packet << int32_t(newSecondsLeft - oldSecondsLeft);   // shift of the reset
+                packet << newSecondsLeft;
                 return true;
             }
 

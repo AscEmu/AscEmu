@@ -58,7 +58,7 @@ enum MailTypes
     MAIL_TYPE_AUCTION     = 2,
     MAIL_TYPE_CREATURE    = 3,
     MAIL_TYPE_GAMEOBJECT  = 4,
-    MAIL_TYPE_ITEM        = 5
+    MAIL_TYPE_CALENDAR    = 5     // the sender is the event
 };
 
 enum MailError
@@ -102,6 +102,7 @@ enum MailCheckMask
     MAIL_CHECK_MASK_COPIED              = 0x04,
     MAIL_CHECK_MASK_COD_PAYMENT         = 0x08,
     MAIL_CHECK_MASK_HAS_BODY            = 0x10,
+    MAIL_CHECK_MASK_CALENDAR_INVITE     = 0x100,
 };
 
 struct MailMessage

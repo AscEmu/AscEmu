@@ -5,25 +5,25 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "ManagedPacket.h"
-#include "Management/CalendarMgr.hpp"
-#include "Management/Guild/Guild.hpp"
-#include "Management/Guild/GuildMgr.hpp"
+#include "CalendarPacketData.hpp"
+
 #include <cstdint>
+#include <vector>
 
 namespace AscEmu::Packets
 {
+    // an event with all its invites, answer to a request, a new or a copied event
     class SmsgCalendarSendEvent : public ManagedPacket
     {
     public:
         uint8_t sendType = 0;
-        const CalendarEvent* calendarEvent = nullptr;
-        std::vector<CalendarInvite*> invites;
+        CalendarEventData calendarEvent;
+        std::vector<CalendarInviteData> invites;
 
-        SmsgCalendarSendEvent(uint8_t sendType, const CalendarEvent* calendarEvent, std::vector<CalendarInvite*> invites) :
+        SmsgCalendarSendEvent(uint8_t sendType, CalendarEventData calendarEvent, std::vector<CalendarInviteData> invites) :
             ManagedPacket(SMSG_CALENDAR_SEND_EVENT, 0),
             sendType(sendType),
-            calendarEvent(calendarEvent),
+            calendarEvent(std::move(calendarEvent)),
             invites(std::move(invites))
         {
         }
@@ -31,152 +31,42 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (calendarEvent == nullptr)
-                return false;
-
-            const WoWGuid creatorGuid(uint64_t(calendarEvent->m_creator));
-            Guild* guild = calendarEvent->isGuildEvent() ? sGuildMgr.getGuildById(calendarEvent->m_guildId) : nullptr;
-            const WoWGuid guildGuid(guild != nullptr ? guild->getGUID() : uint64_t(0));
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+                return writeModern(packet);
 
             if (m_protocol.isMop())
+                return writeMop(packet);
+
+            if (m_protocol.expansion >= WoW::Expansion::_WotLK && m_protocol.expansion <= WoW::Expansion::_Cata)
             {
-                packet.writeBits(invites.size(), 20);
-
-                ByteBuffer inviteeData;
-                for (const auto* invite : invites)
-                {
-                    const WoWGuid inviteeGuid(uint64_t(invite->m_invitee));
-
-                    packet.writeBit(inviteeGuid[1]);
-                    packet.writeBit(inviteeGuid[2]);
-                    packet.writeBit(inviteeGuid[0]);
-                    packet.writeBit(inviteeGuid[7]);
-                    packet.writeBit(inviteeGuid[3]);
-                    packet.writeBit(inviteeGuid[5]);
-                    packet.writeBit(inviteeGuid[6]);
-                    packet.writeBits(invite->m_text.size(), 8);
-                    packet.writeBit(inviteeGuid[4]);
-
-                    if (invite->m_statusTime)
-                        inviteeData.appendPackedTime(invite->m_statusTime);
-                    else
-                        inviteeData << uint32_t(0);
-
-                    inviteeData.writeByteSeq(inviteeGuid[5]);
-                    inviteeData << uint8_t(calendarEvent->isGuildEvent() ? 1 : 0);
-                    inviteeData.writeByteSeq(inviteeGuid[1]);
-                    inviteeData.writeByteSeq(inviteeGuid[2]);
-                    inviteeData.writeByteSeq(inviteeGuid[6]);
-
-                    if (invite->m_text.length())
-                        inviteeData.append(reinterpret_cast<const uint8_t*>(invite->m_text.c_str()), invite->m_text.length() + 1);
-                    else
-                        inviteeData << uint8_t(0);
-
-                    inviteeData << uint8_t(0); // invitee level, not tracked
-                    inviteeData.writeByteSeq(inviteeGuid[7]);
-                    inviteeData << uint8_t(invite->m_rank);
-                    inviteeData << uint64_t(invite->m_inviteId);
-                    inviteeData.writeByteSeq(inviteeGuid[0]);
-                    inviteeData.writeByteSeq(inviteeGuid[3]);
-                    inviteeData.writeByteSeq(inviteeGuid[4]);
-                    inviteeData << uint8_t(invite->m_status);
-                }
-
-                packet.writeBits(calendarEvent->m_title.size(), 8);
-                packet.writeBit(creatorGuid[2]);
-                packet.writeBit(creatorGuid[0]);
-                packet.writeBit(guildGuid[4]);
-                packet.writeBit(guildGuid[5]);
-                packet.writeBit(creatorGuid[1]);
-                packet.writeBit(creatorGuid[5]);
-                packet.writeBit(creatorGuid[3]);
-                packet.writeBit(guildGuid[6]);
-                packet.writeBits(calendarEvent->m_description.size(), 11);
-                packet.writeBit(guildGuid[1]);
-                packet.writeBit(guildGuid[7]);
-                packet.writeBit(creatorGuid[6]);
-                packet.writeBit(guildGuid[2]);
-                packet.writeBit(guildGuid[0]);
-                packet.writeBit(creatorGuid[4]);
-                packet.writeBit(guildGuid[3]);
-                packet.writeBit(creatorGuid[7]);
-                packet.flushBits();
-
-                packet.append(inviteeData);
-                packet.writeByteSeq(creatorGuid[0]);
-                packet.writeByteSeq(creatorGuid[5]);
-                packet << uint32_t(calendarEvent->m_flags);
-                packet.writeByteSeq(guildGuid[1]);
-                packet.writeByteSeq(creatorGuid[7]);
-                packet.writeByteSeq(creatorGuid[3]);
-                packet.appendPackedTime(calendarEvent->m_date);
-                packet.writeByteSeq(guildGuid[6]);
-                packet.writeByteSeq(creatorGuid[4]);
-                packet.writeByteSeq(creatorGuid[6]);
-                packet << int32_t(calendarEvent->m_dungeon);
-                packet << uint32_t(0); // lock date, always 0
-                packet.writeByteSeq(guildGuid[4]);
-                packet << uint8_t(calendarEvent->m_type);
-
-                if (calendarEvent->m_title.length())
-                    packet.append(reinterpret_cast<const uint8_t*>(calendarEvent->m_title.c_str()), calendarEvent->m_title.length() + 1);
-                else
-                    packet << uint8_t(0);
-
-                packet.writeByteSeq(guildGuid[3]);
-                packet.writeByteSeq(creatorGuid[2]);
-                packet.writeByteSeq(guildGuid[7]);
-                packet.writeByteSeq(creatorGuid[1]);
-
-                if (calendarEvent->m_description.length())
-                    packet.append(reinterpret_cast<const uint8_t*>(calendarEvent->m_description.c_str()), calendarEvent->m_description.length() + 1);
-                else
-                    packet << uint8_t(0);
-
-                packet.writeByteSeq(guildGuid[2]);
-                packet.writeByteSeq(guildGuid[5]);
-                packet.writeByteSeq(guildGuid[0]);
-                packet << uint64_t(calendarEvent->m_entry);
-                packet << uint8_t(sendType);
-
-                return true;
-            }
-            else if (m_protocol.expansion <= WoW::Expansion::_Cata)
-            {
-                packet << uint8_t(sendType);
-                packet << creatorGuid;
-                packet << uint64_t(calendarEvent->m_entry);
-                packet << calendarEvent->m_title;
-                packet << calendarEvent->m_description;
-                packet << uint8_t(calendarEvent->m_type);
-                packet << uint8_t(0); // repeatable
-                packet << uint32_t(100); // max invites
-                packet << int32_t(calendarEvent->m_dungeon);
-                packet << uint32_t(calendarEvent->m_flags);
-                packet.appendPackedTime(calendarEvent->m_date);       // event time
-                packet.appendPackedTime(calendarEvent->m_date);       // time zone time, unknown - reuse event time
+                packet << sendType;
+                CalendarWire::writePlayer(packet, m_protocol, calendarEvent.ownerGuid);
+                packet << calendarEvent.eventId;
+                packet << calendarEvent.title;
+                packet << calendarEvent.description;
+                packet << calendarEvent.type;
+                packet << uint8_t(0);                       // never repeats
+                packet << uint32_t(CALENDAR_MAX_INVITES);
+                packet << calendarEvent.textureId;
+                packet << calendarEvent.flags;
+                packet.appendPackedTime(calendarEvent.date);
+                packet.appendPackedTime(calendarEvent.date); // lock date in 3.x, time zone date in 4.x
 
                 if (m_protocol.isCata())
-                    packet << uint64_t(guild != nullptr ? guild->getGUID() : uint64_t(0));
+                    packet << CalendarWire::guildGuid(calendarEvent.guildId).getRawGuid();
                 else
-                    packet << uint32_t(calendarEvent->m_guildId);
+                    packet << calendarEvent.guildId;
 
                 packet << uint32_t(invites.size());
-                for (const auto* invite : invites)
+                for (const auto& invite : invites)
                 {
-                    const WoWGuid inviteeGuid(uint64_t(invite->m_invitee));
-
-                    packet << inviteeGuid;
-                    packet << uint8_t(0); // invitee level, not tracked
-                    packet << uint8_t(invite->m_status);
-                    packet << uint8_t(invite->m_rank);
-                    packet << uint8_t(calendarEvent->isGuildEvent() ? 1 : 0);
-                    packet << uint64_t(invite->m_inviteId);
-                    packet.appendPackedTime(invite->m_statusTime);
-                    packet << invite->m_text;
+                    CalendarWire::writePlayer(packet, m_protocol, invite.inviteeGuid);
+                    packet << invite.level << invite.status << invite.rank;
+                    packet << uint8_t(invite.guildMember ? 1 : 0);
+                    packet << invite.inviteId;
+                    packet.appendPackedTime(invite.responseTime);
+                    packet << invite.notes;
                 }
-
                 return true;
             }
 
@@ -184,5 +74,148 @@ namespace AscEmu::Packets
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
+
+    private:
+        void writeInvite(WorldPacket& packet, CalendarInviteData const& invite) const
+        {
+            CalendarWire::writePlayer(packet, m_protocol, invite.inviteeGuid);
+            packet << invite.inviteId << invite.level << invite.status << invite.rank;
+            packet << uint8_t(invite.guildMember ? 1 : 0);
+            CalendarWire::writeDate(packet, m_protocol, invite.responseTime);
+            packet.writeBits(invite.notes.size(), 8);
+            CalendarWire::writeRaw(packet, invite.notes);
+        }
+
+        bool writeModern(WorldPacket& packet)
+        {
+            packet << sendType;
+            CalendarWire::writePlayer(packet, m_protocol, calendarEvent.ownerGuid);
+            packet << calendarEvent.eventId << calendarEvent.type << calendarEvent.textureId;
+            CalendarWire::writeFlags(packet, m_protocol, calendarEvent.flags);
+            CalendarWire::writeDate(packet, m_protocol, calendarEvent.date);
+
+            // the event is never locked
+            if (m_protocol.expansion >= WoW::Expansion::_Dragonflight)
+                CalendarWire::writeUnsetDate(packet, m_protocol);
+            else
+                packet << uint32_t(0);
+
+            CalendarWire::writeEventGuild(packet, m_protocol, calendarEvent.guildId);
+            packet << uint32_t(invites.size());
+
+            // 7.x to 11.x announce the text lengths before the invites, 6.x and 12.x after them
+            const bool lengthsFirst = m_protocol.expansion >= WoW::Expansion::_Legion && m_protocol.expansion < WoW::Expansion::_Midnight;
+            if (lengthsFirst)
+            {
+                packet.writeBits(calendarEvent.title.size(), 8);
+                packet.writeBits(calendarEvent.description.size(), 11);
+                packet.flushBits();
+            }
+
+            for (const auto& invite : invites)
+                writeInvite(packet, invite);
+
+            if (!lengthsFirst)
+            {
+                packet.writeBits(calendarEvent.title.size(), 8);
+                packet.writeBits(calendarEvent.description.size(), 11);
+            }
+
+            CalendarWire::writeRaw(packet, calendarEvent.title);
+            CalendarWire::writeRaw(packet, calendarEvent.description);
+            return true;
+        }
+
+        bool writeMop(WorldPacket& packet)
+        {
+            const WoWGuid owner = CalendarWire::playerGuid(calendarEvent.ownerGuid);
+            const WoWGuid guild = CalendarWire::guildGuid(calendarEvent.guildId);
+
+            packet.writeBits(invites.size(), 20);
+
+            ByteBuffer inviteData;
+            for (const auto& invite : invites)
+            {
+                const WoWGuid invitee = CalendarWire::playerGuid(invite.inviteeGuid);
+
+                packet.writeBit(invitee[1]);
+                packet.writeBit(invitee[2]);
+                packet.writeBit(invitee[0]);
+                packet.writeBit(invitee[7]);
+                packet.writeBit(invitee[3]);
+                packet.writeBit(invitee[5]);
+                packet.writeBit(invitee[6]);
+                packet.writeBits(invite.notes.size(), 8);
+                packet.writeBit(invitee[4]);
+
+                if (invite.responseTime != 0)
+                    inviteData.appendPackedTime(invite.responseTime);
+                else
+                    inviteData << uint32_t(0);
+
+                inviteData.writeByteSeq(invitee[5]);
+                inviteData << uint8_t(invite.guildMember ? 1 : 0);
+                inviteData.writeByteSeq(invitee[1]);
+                inviteData.writeByteSeq(invitee[2]);
+                inviteData.writeByteSeq(invitee[6]);
+                CalendarWire::writeRaw(inviteData, invite.notes);
+                inviteData << invite.level;
+                inviteData.writeByteSeq(invitee[7]);
+                inviteData << invite.rank;
+                inviteData << invite.inviteId;
+                inviteData.writeByteSeq(invitee[0]);
+                inviteData.writeByteSeq(invitee[3]);
+                inviteData.writeByteSeq(invitee[4]);
+                inviteData << invite.status;
+            }
+
+            packet.writeBits(calendarEvent.title.size(), 8);
+            packet.writeBit(owner[2]);
+            packet.writeBit(owner[0]);
+            packet.writeBit(guild[4]);
+            packet.writeBit(guild[5]);
+            packet.writeBit(owner[1]);
+            packet.writeBit(owner[5]);
+            packet.writeBit(owner[3]);
+            packet.writeBit(guild[6]);
+            packet.writeBits(calendarEvent.description.size(), 11);
+            packet.writeBit(guild[1]);
+            packet.writeBit(guild[7]);
+            packet.writeBit(owner[6]);
+            packet.writeBit(guild[2]);
+            packet.writeBit(guild[0]);
+            packet.writeBit(owner[4]);
+            packet.writeBit(guild[3]);
+            packet.writeBit(owner[7]);
+            packet.flushBits();
+
+            packet.append(inviteData);
+            packet.writeByteSeq(owner[0]);
+            packet.writeByteSeq(owner[5]);
+            packet << calendarEvent.flags;
+            packet.writeByteSeq(guild[1]);
+            packet.writeByteSeq(owner[7]);
+            packet.writeByteSeq(owner[3]);
+            packet.appendPackedTime(calendarEvent.date);
+            packet.writeByteSeq(guild[6]);
+            packet.writeByteSeq(owner[4]);
+            packet << calendarEvent.textureId;
+            packet << uint32_t(0);                          // lock date
+            packet.writeByteSeq(guild[4]);
+            packet << calendarEvent.type;
+            CalendarWire::writeRaw(packet, calendarEvent.title);
+            packet.writeByteSeq(owner[6]);
+            packet.writeByteSeq(guild[3]);
+            packet.writeByteSeq(owner[2]);
+            packet.writeByteSeq(guild[7]);
+            packet.writeByteSeq(owner[1]);
+            CalendarWire::writeRaw(packet, calendarEvent.description);
+            packet.writeByteSeq(guild[2]);
+            packet.writeByteSeq(guild[5]);
+            packet.writeByteSeq(guild[0]);
+            packet << calendarEvent.eventId;
+            packet << sendType;
+            return true;
+        }
     };
 }

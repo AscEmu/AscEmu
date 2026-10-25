@@ -5,7 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "ManagedPacket.h"
+#include "CalendarPacketData.hpp"
+
 #include <cstdint>
 #include <string>
 
@@ -31,38 +32,43 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            const bool hasParam = (error == 4  /* CALENDAR_ERROR_OTHER_INVITES_EXCEEDED */
-                || error == 10 /* CALENDAR_ERROR_ALREADY_INVITED_TO_EVENT_S */
-                || error == 13 /* CALENDAR_ERROR_IGNORING_YOU_S */);
+            // only these errors name a player
+            const bool hasParam = error == CALENDAR_ERROR_OTHER_INVITES_EXCEEDED || error == CALENDAR_ERROR_ALREADY_INVITED_TO_EVENT_S
+                || error == CALENDAR_ERROR_IGNORING_YOU_S;
+            const std::string name = hasParam ? param : std::string();
+
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                packet << uint8_t(1);                       // command
+                packet << uint8_t(error);
+                packet.writeBits(name.size(), 9);
+                CalendarWire::writeRaw(packet, name);
+                return true;
+            }
 
             if (m_protocol.isMop())
             {
-                const uint32_t length = hasParam ? static_cast<uint32_t>(param.size()) : 0;
-
+                const uint32_t length = static_cast<uint32_t>(name.size());
                 packet.writeBits(length / 2, 8);
                 packet.writeBit((length % 2) != 0);
                 packet.flushBits();
 
-                packet << uint8_t(0); // command
+                packet << uint8_t(0);                       // command
                 packet << uint8_t(error);
-
-                if (hasParam)
-                    packet.append(reinterpret_cast<const uint8_t*>(param.c_str()), param.size() + 1);
-
+                packet.writeString(name);
                 return true;
             }
-            else if (m_protocol.expansion <= WoW::Expansion::_Cata)
+
+            if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
                 packet << uint32_t(0);
                 packet << uint8_t(0);
-
                 if (hasParam)
                     packet << param;
                 else
                     packet << uint8_t(0);
 
                 packet << error;
-
                 return true;
             }
 

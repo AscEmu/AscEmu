@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AEVersion.hpp"
 
+#include <cstdint>
+#include <ctime>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -28,8 +30,26 @@ enum CalendarEventType
     CALENDAR_TYPE_DUNGEON = 1,
     CALENDAR_TYPE_PVP = 2,
     CALENDAR_TYPE_MEETING = 3,
-    CALENDAR_TYPE_OTHER = 4
+    CALENDAR_TYPE_OTHER = 4,
+    CALENDAR_TYPE_HEROIC = 5        // Cata and MoP
 };
+
+enum CalendarModerationRank : uint8_t
+{
+    CALENDAR_RANK_PLAYER = 0,
+    CALENDAR_RANK_MODERATOR = 1,
+    CALENDAR_RANK_OWNER = 2
+};
+
+enum CalendarLimits : uint32_t
+{
+    CALENDAR_MAX_EVENTS = 30,       // own events without guild
+    CALENDAR_MAX_GUILD_EVENTS = 100,
+    CALENDAR_MAX_INVITES = 100
+};
+
+// the answer time of an invite nobody answered yet: 2000-01-01
+constexpr time_t CALENDAR_DEFAULT_RESPONSE_TIME = 946684800;
 
 enum CalendarSendEventType
 {
@@ -40,11 +60,38 @@ enum CalendarSendEventType
 
 enum CalendarError
 {
-    CALENDAR_OK                              = 0,
-    CALENDAR_ERROR_EVENT_INVALID             = 6,
-    CALENDAR_ERROR_INTERNAL                  = 8,
-    CALENDAR_ERROR_PERMISSIONS               = 5,
-    CALENDAR_ERROR_DELETE_CREATOR_FAILED     = 22
+    CALENDAR_OK                                 = 0,
+    CALENDAR_ERROR_GUILD_EVENTS_EXCEEDED        = 1,
+    CALENDAR_ERROR_EVENTS_EXCEEDED              = 2,
+    CALENDAR_ERROR_SELF_INVITES_EXCEEDED        = 3,
+    CALENDAR_ERROR_OTHER_INVITES_EXCEEDED       = 4,    // with the name
+    CALENDAR_ERROR_PERMISSIONS                  = 5,
+    CALENDAR_ERROR_EVENT_INVALID                = 6,
+    CALENDAR_ERROR_NOT_INVITED                  = 7,
+    CALENDAR_ERROR_INTERNAL                     = 8,
+    CALENDAR_ERROR_GUILD_PLAYER_NOT_IN_GUILD    = 9,
+    CALENDAR_ERROR_ALREADY_INVITED_TO_EVENT_S   = 10,   // with the name
+    CALENDAR_ERROR_PLAYER_NOT_FOUND             = 11,
+    CALENDAR_ERROR_NOT_ALLIED                   = 12,
+    CALENDAR_ERROR_IGNORING_YOU_S               = 13,   // with the name
+    CALENDAR_ERROR_INVITES_EXCEEDED             = 14,
+    CALENDAR_ERROR_INVALID_DATE                 = 16,
+    CALENDAR_ERROR_INVALID_TIME                 = 17,
+    CALENDAR_ERROR_NEEDS_TITLE                  = 19,
+    CALENDAR_ERROR_EVENT_PASSED                 = 20,
+    CALENDAR_ERROR_EVENT_LOCKED                 = 21,
+    CALENDAR_ERROR_DELETE_CREATOR_FAILED        = 22,
+    CALENDAR_ERROR_SYSTEM_DISABLED              = 24,
+    CALENDAR_ERROR_RESTRICTED_ACCOUNT           = 25,
+    CALENDAR_ERROR_ARENA_EVENTS_EXCEEDED        = 26,
+    CALENDAR_ERROR_RESTRICTED_LEVEL             = 27,
+    CALENDAR_ERROR_USER_SQUELCHED               = 28,
+    CALENDAR_ERROR_NO_INVITE                    = 29,
+    CALENDAR_ERROR_EVENT_WRONG_SERVER           = 36,
+    CALENDAR_ERROR_INVITE_WRONG_SERVER          = 37,
+    CALENDAR_ERROR_NO_GUILD_INVITES             = 38,
+    CALENDAR_ERROR_INVALID_SIGNUP               = 39,
+    CALENDAR_ERROR_NO_MODERATOR                 = 40
 };
 
 enum CalendarInviteStatus
@@ -81,6 +128,10 @@ struct CalendarEvent
     uint32_t m_guildId;             // guild id, only meaningful when CALENDAR_FLAG_GUILD_EVENT is set
 
     bool isGuildEvent() const { return (m_flags & CALENDAR_FLAG_GUILD_EVENT) != 0; }
+    // a guild announcement has no invites, every member of the guild sees it
+    bool isGuildAnnouncement() const { return (m_flags & CALENDAR_FLAG_WITHOUT_INVITES) != 0; }
+    bool isLocked() const { return (m_flags & CALENDAR_FLAG_INVITES_LOCKED) != 0; }
+    bool belongsToGuild() const { return isGuildEvent() || isGuildAnnouncement(); }
 };
 
 struct CalendarInvite
@@ -129,9 +180,17 @@ public:
     std::vector<CalendarEvent*> getPlayerEvents(uint32_t playerLowGuid);
 
     CalendarInvite* getInvite(uint32_t eventId, uint32_t inviteId);
+    CalendarInvite* getInviteOfPlayer(uint32_t eventId, uint32_t playerLowGuid);
     std::vector<CalendarInvite*> getEventInvites(uint32_t eventId);
     std::vector<CalendarInvite*> getPlayerInvites(uint32_t playerLowGuid);
     uint32_t getPlayerNumPending(uint32_t playerLowGuid);
+
+    // the guild of a guild event or announcement, taken from the owner when it is not known yet
+    uint32_t getEventGuildId(CalendarEvent* calendarEvent);
+    // the events of the calendar of a player: own, invited and those of the guild
+    std::vector<CalendarEvent*> getCalendarEvents(uint32_t playerLowGuid, uint32_t guildId);
+    uint32_t getOwnedEventCount(uint32_t ownerLowGuid);
+    uint32_t getGuildEventCount(uint32_t guildId);
 
     CalendarEvent* addEvent(std::unique_ptr<CalendarEvent> calendarEvent);
     void updateEvent(CalendarEvent* calendarEvent);

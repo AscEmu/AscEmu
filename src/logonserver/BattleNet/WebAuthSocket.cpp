@@ -26,6 +26,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cctype>
 #include <chrono>
 #include <ctime>
+#include <exception>
 #include <mutex>
 #include <string>
 #include <string_view>
@@ -366,8 +367,7 @@ namespace AscEmu::Battlenet
 
     void WebAuthSocket::onConnect()
     {
-        m_httpBuffer.clear();
-
+        // the first read may already run on a worker thread, the buffer is not touched here
         sLogger.info("BNet WebAuth: connection #{} from {}:{}", m_connectionId, getRemoteIp(), getRemotePort());
     }
 
@@ -539,10 +539,18 @@ namespace AscEmu::Battlenet
 
         // a kept connection delivers the requests one after another
         bool handled = true;
-        while (handled)
+        try
         {
-            if (!handleBufferedHttpRequest(handled))
-                return false;
+            while (handled)
+            {
+                if (!handleBufferedHttpRequest(handled))
+                    return false;
+            }
+        }
+        catch (const std::exception& error)
+        {
+            sLogger.failure("BNet WebAuth: connection #{} malformed HTTP request: {}", m_connectionId, error.what());
+            return false;
         }
 
         return true;

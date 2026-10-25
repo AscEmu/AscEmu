@@ -357,6 +357,9 @@ public:
         void handleCalendarEventRemoveInvite(WorldPacket& recvPacket);  //> TBC
         void handleCalendarEventStatus(WorldPacket& recvPacket);        //> TBC
         void handleCalendarEventModeratorStatus(WorldPacket& recvPacket);   //> TBC
+        void handleCalendarEventSignup(WorldPacket& recvPacket);        //> TBC
+        void handleCalendarEventInviteNotes(WorldPacket& recvPacket);   //> TBC
+        void handleSetSavedInstanceExtend(WorldPacket& recvPacket);     //> TBC
 
 public:
         void sendCalendarRaidLockout(InstanceSaved const* save, bool add);  //> TBC

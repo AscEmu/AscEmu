@@ -1348,23 +1348,25 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_ALTER_APPEARANCE, &WorldSession::handleBarberShopResult, false, false, true, true, false);
     registry.registerOpcode(CMSG_GET_MIRRORIMAGE_DATA, &WorldSession::HandleMirrorImageOpcode, true, false, true, true, true);
 
-    // Calendar - Unhandled
-    registry.registerOpcode(CMSG_CALENDAR_GET_CALENDAR, &WorldSession::handleCalendarGetCalendar, false, false, true, true, true);
-    registry.registerOpcode(CMSG_CALENDAR_COMPLAIN, &WorldSession::handleCalendarComplain, false, false, true, false, false);
-    registry.registerOpcode(CMSG_CALENDAR_GET_NUM_PENDING, &WorldSession::handleCalendarGetNumPending, false, false, true, true, true);
-    registry.registerOpcode(CMSG_CALENDAR_ADD_EVENT, &WorldSession::handleCalendarAddEvent, false, false, true, true, true);
-
-    registry.registerOpcode(CMSG_CALENDAR_GET_EVENT, &WorldSession::handleCalendarGetEvent, false, false, true, true, true);
-    registry.registerOpcode(CMSG_CALENDAR_GUILD_FILTER, &WorldSession::handleCalendarGuildFilter, false, false, true, false, false);
-    registry.registerOpcode(CMSG_CALENDAR_ARENA_TEAM, &WorldSession::handleCalendarArenaTeam, false, false, true, false, false);
-    registry.registerOpcode(CMSG_CALENDAR_UPDATE_EVENT, &WorldSession::handleCalendarUpdateEvent, false, false, true, true, true);
-    registry.registerOpcode(CMSG_CALENDAR_REMOVE_EVENT, &WorldSession::handleCalendarRemoveEvent, false, false, true, true, true);
-    registry.registerOpcode(CMSG_CALENDAR_COPY_EVENT, &WorldSession::handleCalendarCopyEvent, false, false, true, false, false);
-    registry.registerOpcode(CMSG_CALENDAR_EVENT_INVITE, &WorldSession::handleCalendarEventInvite, false, false, true, false, false);
-    registry.registerOpcode(CMSG_CALENDAR_EVENT_RSVP, &WorldSession::handleCalendarEventRsvp, false, false, true, false, false);
-    registry.registerOpcode(CMSG_CALENDAR_EVENT_REMOVE_INVITE, &WorldSession::handleCalendarEventRemoveInvite, false, false, true, false, false);
-    registry.registerOpcode(CMSG_CALENDAR_EVENT_STATUS, &WorldSession::handleCalendarEventStatus, false, false, true, false, false);
-    registry.registerOpcode(CMSG_CALENDAR_EVENT_MODERATOR_STATUS, &WorldSession::handleCalendarEventModeratorStatus, false, false, true, false, false);
+    // Calendar
+    registry.registerOpcode(CMSG_CALENDAR_GET_CALENDAR, &WorldSession::handleCalendarGetCalendar, false, false, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CALENDAR_COMPLAIN, &WorldSession::handleCalendarComplain, false, false, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CALENDAR_GET_NUM_PENDING, &WorldSession::handleCalendarGetNumPending, false, false, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CALENDAR_ADD_EVENT, &WorldSession::handleCalendarAddEvent, false, false, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CALENDAR_GET_EVENT, &WorldSession::handleCalendarGetEvent, false, false, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CALENDAR_GUILD_FILTER, &WorldSession::handleCalendarGuildFilter, false, false, true, true, false, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CALENDAR_ARENA_TEAM, &WorldSession::handleCalendarArenaTeam, false, false, true, true, false, false, false);
+    registry.registerOpcode(CMSG_CALENDAR_UPDATE_EVENT, &WorldSession::handleCalendarUpdateEvent, false, false, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CALENDAR_REMOVE_EVENT, &WorldSession::handleCalendarRemoveEvent, false, false, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CALENDAR_COPY_EVENT, &WorldSession::handleCalendarCopyEvent, false, false, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CALENDAR_EVENT_INVITE, &WorldSession::handleCalendarEventInvite, false, false, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CALENDAR_EVENT_RSVP, &WorldSession::handleCalendarEventRsvp, false, false, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CALENDAR_EVENT_REMOVE_INVITE, &WorldSession::handleCalendarEventRemoveInvite, false, false, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CALENDAR_EVENT_STATUS, &WorldSession::handleCalendarEventStatus, false, false, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CALENDAR_EVENT_MODERATOR_STATUS, &WorldSession::handleCalendarEventModeratorStatus, false, false, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CALENDAR_EVENT_SIGNUP, &WorldSession::handleCalendarEventSignup, false, false, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CALENDAR_EVENT_INVITE_NOTES, &WorldSession::handleCalendarEventInviteNotes, false, false, true, false, false);
+    registry.registerOpcode(CMSG_SET_SAVED_INSTANCE_EXTEND, &WorldSession::handleSetSavedInstanceExtend, false, false, true, true, false, true, true, true, true, true, true, true);
 
     //Misc - Unhandled
     registry.registerOpcode(CMSG_FAR_SIGHT, &WorldSession::handleFarSightOpcode, true, true, true, true, true);

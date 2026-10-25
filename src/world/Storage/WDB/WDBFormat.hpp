@@ -493,7 +493,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*Classic*/,
                 ""/*BC*/,
                 "niiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiixxsiix"/*WotLK*/,
-                "nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"/*Cata*/,
+                "niiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiixxsiix"/*Cata*/,
                 "nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"/*Mop*/
             }
         },
