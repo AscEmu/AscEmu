@@ -372,6 +372,9 @@ public:
 
     void loadTrainerSpellSets();
     std::vector<TrainerSpell> const* getTrainerSpellSetById(uint32_t _id) const;
+    // resolves the cast/learn spells of a set row, false when the row teaches nothing
+    bool resolveTrainerSpell(uint32_t _setId, uint32_t _castSpellId, uint32_t _learnSpellId, TrainerSpell& ts) const;
+    void addTrainerSpell(uint32_t _setId, TrainerSpell const& _spell);
 
     void loadTrainers();
     Trainer const* getTrainer(uint32_t _entry) const;

@@ -594,8 +594,6 @@ namespace MySQLStructure
         uint32_t race_specific_id;
     };
 
-    //trainer_spells
-
     //transport_data
     struct TransportData
     {

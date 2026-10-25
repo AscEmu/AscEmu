@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Units/Players/Player.hpp"
+#include "Server/ClientProtocol.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/EventMgr.h"
 #include "Server/WorldSession.h"
@@ -138,9 +139,9 @@ bool ChatCommandHandler::HandleNpcAppearCommand(const char* /*_*/, WorldSession*
 }
 
 //.npc addtrainerspell
-bool ChatCommandHandler::HandleNpcAddTrainerSpellCommand(const char* /*args*/, WorldSession* /*m_session*/)
+bool ChatCommandHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession* m_session)
 {
-    /*auto creature_target = GetSelectedCreature(m_session, true);
+    auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
         return true;
 
@@ -152,43 +153,63 @@ bool ChatCommandHandler::HandleNpcAddTrainerSpellCommand(const char* /*args*/, W
 
     if (sscanf(args, "%u %u %u %u %u", &spellid, &cost, &reqspell, &reqlevel, &delspell) != 5)
     {
-        redSystemMessage(m_session, "Command must be in format: .npc add trainerspell <spell_id> <cost> <required_spell> <required_player_level> <delete_spell_id>.");
+        redSystemMessage(m_session, "Command must be in format: .npc addtrainerspell <spell_id> <cost> <required_spell> <required_player_level> <delete_spell_id>.");
         return true;
     }
 
-    auto creature_trainer = creature_target->GetTrainer();
+    // the spell joins the spell set of the trainer for the build of this server
+    const auto creature_trainer = creature_target->GetTrainer();
     if (creature_trainer == nullptr)
     {
-        redSystemMessage(m_session, "{} ({}) is not a trainer!", creature_target->GetCreatureProperties()->Name, creature_target->getEntry());
+        redSystemMessage(m_session, "{} ({}) is not a trainer, it has no spell set!", creature_target->GetCreatureProperties()->Name, creature_target->getEntry());
         return true;
     }
 
-    auto learn_spell = sSpellMgr.getSpellInfo(spellid);
+    const auto learn_spell = sSpellMgr.getSpellInfo(spellid);
     if (learn_spell == nullptr)
     {
         redSystemMessage(m_session, "Invalid spell {}.", spellid);
         return true;
     }
 
-    if (learn_spell->getEffect(0) == SPELL_EFFECT_INSTANT_KILL || learn_spell->getEffect(1) == SPELL_EFFECT_INSTANT_KILL || learn_spell->getEffect(2) == SPELL_EFFECT_INSTANT_KILL)
+    if (learn_spell->hasEffect(SPELL_EFFECT_INSTANT_KILL))
     {
         redSystemMessage(m_session, "You are not allowed to learn spells with instant kill effect!");
         return true;
     }
 
+    if (const auto spellSet = sObjectMgr.getTrainerSpellSetById(creature_trainer->spellset_id))
+    {
+        for (const auto& trainerSpell : *spellSet)
+        {
+            const auto taught = trainerSpell.castSpell != nullptr ? trainerSpell.castSpell : trainerSpell.learnSpell;
+            if (taught != nullptr && taught->getId() == spellid)
+            {
+                redSystemMessage(m_session, "Spell {} is already in spell set {}.", spellid, creature_trainer->spellset_id);
+                return true;
+            }
+        }
+    }
+
     TrainerSpell sp;
     sp.cost = cost;
-    sp.learnSpell = learn_spell;
-    sp.requiredLevel = reqlevel;
     sp.requiredSpell[0] = reqspell;
+    sp.requiredLevel = reqlevel;
     sp.deleteSpell = delspell;
+    if (!sObjectMgr.resolveTrainerSpell(creature_trainer->spellset_id, 0, spellid, sp))
+    {
+        redSystemMessage(m_session, "Spell {} teaches nothing.", spellid);
+        return true;
+    }
 
-    creature_trainer->Spells.push_back(sp);
-    creature_trainer->SpellCount++;
+    sObjectMgr.addTrainerSpell(creature_trainer->spellset_id, sp);
 
-    systemMessage(m_session, "Added spell {} ({}) to trainer {} (entry: {}).", learn_spell->getName(), learn_spell->getId(), creature_target->GetCreatureProperties()->Name, creature_target->getEntry());
-    sGMLog.writefromsession(m_session, "Added spell {} ({}) to trainer {} (entry: {}).", learn_spell->getName(), learn_spell->getId(), creature_target->GetCreatureProperties()->Name, creature_target->getEntry());
-    WorldDatabase.Execute("REPLACE INTO trainer_spells VALUES(%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)", creature_target->getEntry(), 0, learn_spell->getId(), cost, reqspell, 0, 0, reqlevel, delspell, 0);*/
+    const auto build = WoW::getConfigBuild();
+    WorldDatabase.execute("REPLACE INTO trainer_properties_spellset (id, min_build, max_build, cast_spell, learn_spell, spellcost, reqspell, reqskill, reqskillvalue, reqlevel, deletespell, static) VALUES(%u, %u, %u, 0, %u, %u, %u, 0, 0, %u, %u, 0)",
+        creature_trainer->spellset_id, build, build, spellid, cost, reqspell, reqlevel, delspell);
+
+    systemMessage(m_session, "Added spell {} ({}) to spell set {} of trainer {} (entry: {}) for build {}.", learn_spell->getName(), spellid, creature_trainer->spellset_id, creature_target->GetCreatureProperties()->Name, creature_target->getEntry(), build);
+    sGMLog.writefromsession(m_session, "Added spell {} ({}) to spell set {} of trainer {} (entry: {}).", learn_spell->getName(), spellid, creature_trainer->spellset_id, creature_target->GetCreatureProperties()->Name, creature_target->getEntry());
 
     return true;
 }

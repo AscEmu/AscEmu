@@ -1749,61 +1749,7 @@ void ObjectMgr::loadTrainerSpellSets()
 
             auto* const fields2 = spellSetResult->fetch();
 
-            auto castSpellID = fields2[3].asUint32();
-            auto learnSpellID = fields2[4].asUint32();
-
             TrainerSpell ts;
-            auto abrt = false;
-            if (castSpellID != 0)
-            {
-                ts.castSpell = sSpellMgr.getSpellInfo(castSpellID);
-                if (ts.castSpell != nullptr)
-                {
-                    // Check that the castable spell has learn spell effect
-                    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                    {
-                        if (ts.castSpell->getEffect(i) == SPELL_EFFECT_LEARN_SPELL)
-                        {
-                            ts.castRealSpell = sSpellMgr.getSpellInfo(ts.castSpell->getEffectTriggerSpell(i));
-                            if (ts.castRealSpell == nullptr)
-                            {
-                                sLogger.failure("LoadTrainers : TrainerSpellSet {} contains cast spell {} that is non-teaching", fields[0].asUint32(), castSpellID);
-                                abrt = true;
-                            }
-
-                            break;
-                        }
-                    }
-                }
-
-                if (abrt)
-                    continue;
-            }
-
-            if (learnSpellID != 0)
-                ts.learnSpell = sSpellMgr.getSpellInfo(learnSpellID);
-
-            // a teaching spell is cast: its learn effects give the real spells, its skill effects the skill lines
-            if (ts.castSpell == nullptr && ts.learnSpell != nullptr && ts.learnSpell->hasEffect(SPELL_EFFECT_LEARN_SPELL))
-            {
-                ts.castSpell = ts.learnSpell;
-                ts.learnSpell = nullptr;
-                for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                {
-                    if (ts.castSpell->getEffect(i) == SPELL_EFFECT_LEARN_SPELL)
-                    {
-                        ts.castRealSpell = sSpellMgr.getSpellInfo(ts.castSpell->getEffectTriggerSpell(i));
-                        break;
-                    }
-                }
-            }
-
-            if (ts.castSpell == nullptr && ts.learnSpell == nullptr)
-                continue;
-
-            if (ts.castSpell != nullptr && ts.castRealSpell == nullptr)
-                continue;
-
             ts.cost = fields2[5].asUint32();
             ts.requiredSpell[0] = fields2[6].asUint32();
             ts.requiredSkillLine = fields2[7].asUint16();
@@ -1812,33 +1758,101 @@ void ObjectMgr::loadTrainerSpellSets()
             ts.deleteSpell = fields2[10].asUint32();
             ts.isStatic = fields2[11].asUint32();
 
-            // Check if spell teaches a primary profession skill
-            if (ts.requiredSkillLine == 0 && ts.castRealSpell != nullptr)
-                ts.isPrimaryProfession = ts.castRealSpell->isPrimaryProfession();
-
-            // Add all required spells
-            const auto spellInfo = ts.castRealSpell != nullptr ? ts.castSpell : ts.learnSpell;
-            const auto requiredSpells = sSpellMgr.getSpellsRequiredRangeForSpell(spellInfo->getId());
-            for (const auto& itr : requiredSpells)
-            {
-                for (auto& requiredSpell : ts.requiredSpell)
-                {
-                    if (requiredSpell == itr.second)
-                        break;
-
-                    if (requiredSpell != 0)
-                        continue;
-
-                    requiredSpell = itr.second;
-                    break;
-                }
-            }
+            if (!resolveTrainerSpell(fields[0].asUint32(), fields2[3].asUint32(), fields2[4].asUint32(), ts))
+                continue;
 
             trainerSpells->push_back(ts);
         } while (spellSetResult->nextRow());
 
         sLogger.info("LoadTrainers : {} TrainerSpellSet loaded", static_cast<uint32_t>(m_trainerSpellSet.size()));
     }
+}
+
+bool ObjectMgr::resolveTrainerSpell(uint32_t _setId, uint32_t _castSpellId, uint32_t _learnSpellId, TrainerSpell& ts) const
+{
+    if (_castSpellId != 0)
+    {
+        ts.castSpell = sSpellMgr.getSpellInfo(_castSpellId);
+        if (ts.castSpell != nullptr)
+        {
+            // Check that the castable spell has learn spell effect
+            for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+            {
+                if (ts.castSpell->getEffect(i) == SPELL_EFFECT_LEARN_SPELL)
+                {
+                    ts.castRealSpell = sSpellMgr.getSpellInfo(ts.castSpell->getEffectTriggerSpell(i));
+                    if (ts.castRealSpell == nullptr)
+                    {
+                        sLogger.failure("LoadTrainers : TrainerSpellSet {} contains cast spell {} that is non-teaching", _setId, _castSpellId);
+                        return false;
+                    }
+
+                    break;
+                }
+            }
+        }
+    }
+
+    if (_learnSpellId != 0)
+        ts.learnSpell = sSpellMgr.getSpellInfo(_learnSpellId);
+
+    // a teaching spell is cast: its learn effects give the real spells, its skill effects the skill lines
+    if (ts.castSpell == nullptr && ts.learnSpell != nullptr && ts.learnSpell->hasEffect(SPELL_EFFECT_LEARN_SPELL))
+    {
+        ts.castSpell = ts.learnSpell;
+        ts.learnSpell = nullptr;
+        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            if (ts.castSpell->getEffect(i) == SPELL_EFFECT_LEARN_SPELL)
+            {
+                ts.castRealSpell = sSpellMgr.getSpellInfo(ts.castSpell->getEffectTriggerSpell(i));
+                break;
+            }
+        }
+    }
+
+    if (ts.castSpell == nullptr && ts.learnSpell == nullptr)
+        return false;
+
+    if (ts.castSpell != nullptr && ts.castRealSpell == nullptr)
+        return false;
+
+    // Check if spell teaches a primary profession skill
+    if (ts.requiredSkillLine == 0 && ts.castRealSpell != nullptr)
+        ts.isPrimaryProfession = ts.castRealSpell->isPrimaryProfession();
+
+    // Add all required spells
+    const auto spellInfo = ts.castRealSpell != nullptr ? ts.castSpell : ts.learnSpell;
+    const auto requiredSpells = sSpellMgr.getSpellsRequiredRangeForSpell(spellInfo->getId());
+    for (const auto& itr : requiredSpells)
+    {
+        for (auto& requiredSpell : ts.requiredSpell)
+        {
+            if (requiredSpell == itr.second)
+                break;
+
+            if (requiredSpell != 0)
+                continue;
+
+            requiredSpell = itr.second;
+            break;
+        }
+    }
+
+    return true;
+}
+
+void ObjectMgr::addTrainerSpell(uint32_t _setId, TrainerSpell const& _spell)
+{
+    const auto [spellSetItr, _] = m_trainerSpellSet.try_emplace(_setId, Util::LazyInstanceCreator([] {
+        return std::make_unique<std::vector<TrainerSpell>>();
+    }));
+    spellSetItr->second->push_back(_spell);
+
+    // every trainer of the set offers one spell more
+    for (const auto& trainer : m_trainers | std::views::values)
+        if (trainer->spellset_id == _setId)
+            trainer->SpellCount = static_cast<uint32_t>(spellSetItr->second->size());
 }
 
 std::vector<TrainerSpell> const* ObjectMgr::getTrainerSpellSetById(uint32_t _id) const
@@ -1861,10 +1875,11 @@ void ObjectMgr::loadTrainers()
             const auto entry = fields[0].asUint32();
             const auto spellSetId = fields[12].asUint32();
 
+            // a set without rows for this build means the creature does not train in this build
             const auto* trainerSpellSet = getTrainerSpellSetById(spellSetId);
             if (trainerSpellSet == nullptr)
             {
-                sLogger.warning("ObjectMgr::loadTrainers : trainer {} references spellset {} which doesn't exist for this build, skipping.", entry, spellSetId);
+                sLogger.debug("ObjectMgr::loadTrainers : trainer {} has no spells in spellset {} for this build, skipping.", entry, spellSetId);
                 continue;
             }
 
