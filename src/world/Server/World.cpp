@@ -934,27 +934,29 @@ void World::loadMySQLStores()
     auto startTime = Util::TimeNow();
 
     sMySQLStore.loadAdditionalTableConfig();
-
     sMySQLStore.loadItemRandomPropertiesTables();
     sMySQLStore.loadSkillLinesTable();
-    sMySQLStore.loadItemPagesTable();
-    sMySQLStore.loadItemPropertiesTable();
-    sMySQLStore.loadItemPropertiesDisplayTable();
-    sMySQLStore.loadItemPropertiesSpellsTable();
-    sMySQLStore.loadItemPropertiesStatsTable();
-    sMySQLStore.loadCreaturePropertiesMovementTable();
-    sMySQLStore.loadCreaturePropertiesTable();
-    sMySQLStore.loadCurrencyCreatureOnKillTable();
-    sMySQLStore.loadGameObjectPropertiesTable();
-    sMySQLStore.loadQuestPropertiesTable();
-    sMySQLStore.loadGameObjectQuestItemBindingTable();
-    sMySQLStore.loadGameObjectQuestPickupBindingTable();
 
+    // stage 1: the item and creature chains, the waypoints and every table without a store dependency
     runParallel({
         []{
+            sMySQLStore.loadItemPagesTable();
+            sMySQLStore.loadItemPropertiesTable();
+            sMySQLStore.loadItemPropertiesDisplayTable();
+            sMySQLStore.loadItemPropertiesSpellsTable();
+            sMySQLStore.loadItemPropertiesStatsTable();
+        },
+        []{
+            sMySQLStore.loadCreaturePropertiesMovementTable();
+            sMySQLStore.loadCreaturePropertiesTable();
+            sMySQLStore.loadCurrencyCreatureOnKillTable();
             sMySQLStore.loadCreatureDifficultyTable();
             sMySQLStore.loadDisplayBoundingBoxesTable();
             sMySQLStore.loadVendorRestrictionsTable();
+        },
+        []{
+            sWaypointMgr->load();
+            sWaypointMgr->loadCustomWaypoints();
         },
         []{
             sMySQLStore.loadNpcTextTable();
@@ -967,18 +969,15 @@ void World::loadMySQLStores()
             sMySQLStore.loadZoneGuardsTable();
             sMySQLStore.loadBattleMastersTable();
             sMySQLStore.loadTotemDisplayIdsTable();
-            sMySQLStore.loadSpellClickSpellsTable();
         },
         []{
             sMySQLStore.loadWorldStringsTable();
             sMySQLStore.loadPointsOfInterestTable();
             sMySQLStore.loadItemSetLinkedSetBonusTable();
-            sMySQLStore.loadCreatureInitialEquipmentTable();
         },
         []{
             sMySQLStore.loadPlayerCreateInfoTable();
             sMySQLStore.loadPlayerCreateInfoBars();
-            sMySQLStore.loadPlayerCreateInfoItems();
             sMySQLStore.loadPlayerCreateInfoSkills();
             sMySQLStore.loadPlayerCreateInfoSpellLearn();
             sMySQLStore.loadPlayerCreateInfoSpellCast();
@@ -988,8 +987,6 @@ void World::loadMySQLStores()
         },
         []{
             sMySQLStore.loadSpellOverrideTable();
-
-            sMySQLStore.loadNpcGossipTextIdTable();
             sMySQLStore.loadPetLevelAbilitiesTable();
             sMySQLStore.loadBroadcastTable();
 
@@ -1016,6 +1013,23 @@ void World::loadMySQLStores()
             sMySQLStore.loadProfessionDiscoveriesTable();
         }
         });
+
+    // stage 2: the tables that look up items or creatures
+    runParallel({
+        []{
+            sMySQLStore.loadGameObjectPropertiesTable();
+            sMySQLStore.loadQuestPropertiesTable();
+            sMySQLStore.loadGameObjectQuestItemBindingTable();
+            sMySQLStore.loadGameObjectQuestPickupBindingTable();
+        },
+        []{
+            sMySQLStore.loadCreatureInitialEquipmentTable();
+            sMySQLStore.loadPlayerCreateInfoItems();
+            sMySQLStore.loadSpellClickSpellsTable();
+            sMySQLStore.loadNpcGossipTextIdTable();
+        }
+        });
+
     sMySQLStore.loadTransportDataTable();
     sMySQLStore.loadTransportEntrys();
     sMySQLStore.loadTransportMaps();
@@ -1027,8 +1041,6 @@ void World::loadMySQLStores()
     sLogger.info("Done. MySQLStore loaded in {} ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
     sFormationMgr->loadCreatureFormations();
-    sWaypointMgr->load();
-    sWaypointMgr->loadCustomWaypoints();
     sObjectMgr.loadCreatureMovementOverrides();
 }
 
