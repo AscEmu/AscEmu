@@ -419,18 +419,18 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
         }
     }
 
+    // items for a character of another account arrive after an hour, mails between guild members at once
     msg.delivery_time = static_cast<uint32_t>(UNIXTIME);
-    if (srlPacket.money != 0 || srlPacket.cod != 0 || (attachedItems.empty() && playerReceiverInfo->acct != _player->getSession()->GetAccountId()))
-    {
-        if (!sMailSystem.MailOption(MAIL_FLAG_DISABLE_HOUR_DELAY_FOR_ITEMS))
-            msg.delivery_time += HOUR;
-    }
+    const bool otherAccount = playerReceiverInfo->acct != GetAccountId();
+    const bool sameGuild = _player->getGuildId() != 0 && playerReceiverInfo->m_guild == _player->getGuildId();
+    if (!msg.items.empty() && otherAccount && !sameGuild && !sMailSystem.MailOption(MAIL_FLAG_DISABLE_HOUR_DELAY_FOR_ITEMS))
+        msg.delivery_time += HOUR;
 
     msg.player_guid = playerReceiverInfo->guid;
     msg.sender_guid = _player->getGuid();
     msg.stationery = srlPacket.stationery;
     msg.money = static_cast<uint32_t>(srlPacket.money);
-    msg.cod = static_cast<uint32_t>(srlPacket.cod);
+    msg.cod = msg.items.empty() ? 0 : static_cast<uint32_t>(srlPacket.cod);     // no cash on delivery without items
     msg.subject = srlPacket.subject;
     msg.body = srlPacket.body;
 

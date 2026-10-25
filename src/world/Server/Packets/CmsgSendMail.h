@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "MailPacketHelpers.h"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -39,6 +40,39 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            // 6.x and later: mailbox, stationery, money, cod, the text lengths and attachment count, the texts, the attachments
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                gobjGuid = WoWGuid(MailWire::readGuid(packet));
+
+                int32_t stationeryId;
+                int64_t sendMoney;
+                int64_t sendCod;
+                packet >> stationeryId >> sendMoney >> sendCod;
+                stationery = static_cast<uint32_t>(stationeryId);
+                money = static_cast<uint64_t>(sendMoney);
+                cod = static_cast<uint64_t>(sendCod);
+
+                const uint32_t receiverLength = packet.readBits(9);
+                const uint32_t subjectLength = packet.readBits(9);
+                const uint32_t bodyLength = packet.readBits(11);
+                itemCount = static_cast<uint8_t>(packet.readBits(5));
+                packet.resetBitPos();
+                if (itemCount > 12)
+                    return false;
+
+                receiverName = packet.readString(receiverLength);
+                subject = packet.readString(subjectLength);
+                body = packet.readString(bodyLength);
+
+                for (uint8_t i = 0; i < itemCount; ++i)
+                {
+                    packet >> itemSlot;
+                    itemGuid[i] = MailWire::readGuid(packet);
+                }
+                return true;
+            }
+
             if (m_protocol.expansion < WoW::Expansion::_Cata)
             {
                 uint64_t rawGobjGuid;

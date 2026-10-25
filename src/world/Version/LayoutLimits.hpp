@@ -14,7 +14,7 @@ namespace Version
 {
     inline constexpr uint16_t kMaxObjectValues = 12;
     inline constexpr uint16_t kMaxUnitValues = 234;
-    inline constexpr uint16_t kMaxPlayerValues = 4625;
+    inline constexpr uint16_t kMaxPlayerValues = 4705;
     inline constexpr uint16_t kMaxItemValues = 85;
     inline constexpr uint16_t kMaxContainerValues = 230;
     inline constexpr uint16_t kMaxGameObjectValues = 33;

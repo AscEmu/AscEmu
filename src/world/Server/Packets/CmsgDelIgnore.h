@@ -28,6 +28,16 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            // 6.x and later: the realm and the 128 bit guid of the contact
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                packet.readSkip<uint32_t>();        // realm of the contact
+                WoWGuid128 player;
+                packet >> player;
+                guid = WoWGuid::fromGuid128(player).getRawGuid();
+                return true;
+            }
+
             if (m_protocol.expansion >= WoW::Expansion::_Classic)
             {
                 packet >> guid;

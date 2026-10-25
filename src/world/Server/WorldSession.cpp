@@ -932,13 +932,13 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_CANCEL_MOUNT_AURA, &WorldSession::handleDismountOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
 
     // Friends
-    registry.registerOpcode(CMSG_CONTACT_LIST, &WorldSession::handleFriendListOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_ADD_FRIEND, &WorldSession::handleAddFriendOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_DEL_FRIEND, &WorldSession::handleDelFriendOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_ADD_IGNORE, &WorldSession::handleAddIgnoreOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_DEL_IGNORE, &WorldSession::handleDelIgnoreOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CONTACT_LIST, &WorldSession::handleFriendListOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_ADD_FRIEND, &WorldSession::handleAddFriendOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_DEL_FRIEND, &WorldSession::handleDelFriendOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_ADD_IGNORE, &WorldSession::handleAddIgnoreOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_DEL_IGNORE, &WorldSession::handleDelIgnoreOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_BUG, &WorldSession::handleBugOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_SET_CONTACT_NOTES, &WorldSession::handleSetFriendNote, false, true, true, true, true);
+    registry.registerOpcode(CMSG_SET_CONTACT_NOTES, &WorldSession::handleSetFriendNote, false, true, true, true, true, true, true, true, true, true, true, true);
 
     // Areatrigger
     registry.registerOpcode(CMSG_AREATRIGGER, &WorldSession::handleAreaTriggerOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
@@ -1175,16 +1175,16 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_AUCTION_LIST_PENDING_SALES, &WorldSession::handleAuctionListPendingSales, false, true, true, true, false);
 
     // Mail System
-    registry.registerOpcode(CMSG_GET_MAIL_LIST, &WorldSession::handleGetMailOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_GET_MAIL_LIST, &WorldSession::handleGetMailOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_ITEM_TEXT_QUERY, &WorldSession::handleItemTextQueryOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
-    registry.registerOpcode(CMSG_SEND_MAIL, &WorldSession::handleSendMailOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_MAIL_TAKE_MONEY, &WorldSession::handleTakeMoneyOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_MAIL_TAKE_ITEM, &WorldSession::handleTakeItemOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_MAIL_MARK_AS_READ, &WorldSession::handleMarkAsReadOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_MAIL_RETURN_TO_SENDER, &WorldSession::handleReturnToSenderOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_MAIL_DELETE, &WorldSession::handleMailDeleteOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_SEND_MAIL, &WorldSession::handleSendMailOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_MAIL_TAKE_MONEY, &WorldSession::handleTakeMoneyOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_MAIL_TAKE_ITEM, &WorldSession::handleTakeItemOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_MAIL_MARK_AS_READ, &WorldSession::handleMarkAsReadOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_MAIL_RETURN_TO_SENDER, &WorldSession::handleReturnToSenderOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
+    registry.registerOpcode(CMSG_MAIL_DELETE, &WorldSession::handleMailDeleteOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(MSG_QUERY_NEXT_MAIL_TIME, &WorldSession::handleMailTimeOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
-    registry.registerOpcode(CMSG_MAIL_CREATE_TEXT_ITEM, &WorldSession::handleMailCreateTextItemOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_MAIL_CREATE_TEXT_ITEM, &WorldSession::handleMailCreateTextItemOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
 
     // Guild Query (called when not logged in sometimes)
     registry.registerOpcode<STATUS_AUTHED>(CMSG_GUILD_QUERY, &WorldSession::handleGuildQuery, true, true, true, true, false, true, true, true, true, true, true, true);

@@ -1458,17 +1458,17 @@ namespace
     // the inventory of the server layout in the order of the client slots
     uint64_t activeInvSlot(Player* player, uint16_t slot)
     {
-        struct Range { PlayerField field; uint16_t count; };
+        struct Range { PlayerField field; uint16_t count; bool mapped; };
         static constexpr Range ranges[] =
         {
-            { PlayerField::InventorySlot, 23 }, { PlayerField::PackSlot, 16 }, { PlayerField::BankSlot, 28 },
-            { PlayerField::BankBagSlot, 7 }, { PlayerField::VendorBuyBackSlot, 12 }
+            { PlayerField::InventorySlot, 23, true }, { PlayerField::PackSlot, 20, true }, { PlayerField::PackSlot, 8, false },
+            { PlayerField::BankSlot, 28, true }, { PlayerField::BankBagSlot, 7, true }, { PlayerField::VendorBuyBackSlot, 12, true }
         };
 
         for (const Range& range : ranges)
         {
             if (slot < range.count)
-                return player->getField<uint64_t>(range.field, slot);
+                return range.mapped ? player->getField<uint64_t>(range.field, slot) : 0;
             slot -= range.count;
         }
 
@@ -1477,17 +1477,17 @@ namespace
 
     bool activeInvSlotChanged(ChangedFields const& changed, uint16_t slot)
     {
-        struct Range { PlayerField field; uint16_t count; };
+        struct Range { PlayerField field; uint16_t count; bool mapped; };
         static constexpr Range ranges[] =
         {
-            { PlayerField::InventorySlot, 23 }, { PlayerField::PackSlot, 16 }, { PlayerField::BankSlot, 28 },
-            { PlayerField::BankBagSlot, 7 }, { PlayerField::VendorBuyBackSlot, 12 }
+            { PlayerField::InventorySlot, 23, true }, { PlayerField::PackSlot, 20, true }, { PlayerField::PackSlot, 8, false },
+            { PlayerField::BankSlot, 28, true }, { PlayerField::BankBagSlot, 7, true }, { PlayerField::VendorBuyBackSlot, 12, true }
         };
 
         for (const Range& range : ranges)
         {
             if (slot < range.count)
-                return changed.changed(range.field, slot);
+                return range.mapped && changed.changed(range.field, slot);
             slot -= range.count;
         }
 
@@ -1639,7 +1639,7 @@ namespace
         data << player->getField<float>(PlayerField::OverrideApBySpellPowerPct);
         data << int32_t(player->getField<uint32_t>(PlayerField::FieldModTargetResistance));
         data << int32_t(player->getField<uint32_t>(PlayerField::FieldModTargetPhysicalResistance));
-        data << uint32_t(0);                                                // local flags
+        data << uint32_t(PLAYER_LOCAL_FLAG_ACCOUNT_SECURED);                // local flags
         data << uint8_t(player->getField<uint8_t>(PlayerField::PlayerFieldBytesRafLevel));
         data << uint8_t(player->getEnabledActionBars());
         data << uint8_t(player->getField<uint8_t>(PlayerField::PlayerFieldBytesMaxPvpRank));
@@ -1680,7 +1680,7 @@ namespace
         data << int8_t(0);                                                  // jailers tower level
         data << uint8_t(0);                                                 // local regen flags
         data << uint8_t(player->getField<uint8_t>(PlayerField::PlayerFieldBytes2AuraVision));
-        data << uint8_t(16);                                                // backpack slots
+        data << uint8_t(20);                                                // backpack slots, 16 and 4 of a secured account
         data << int32_t(player->getField<uint32_t>(PlayerField::OverrideSpellId));
         data << uint16_t(player->getField<uint16_t>(PlayerField::LootSpecId));
         data << uint32_t(player->getField<uint32_t>(PlayerField::OverrideZonePvpType));
@@ -1955,7 +1955,7 @@ namespace
             if (mask[94])
                 data << uint8_t(player->getField<uint8_t>(PlayerField::PlayerFieldBytes2AuraVision));
             if (mask[95])
-                data << uint8_t(16);
+                data << uint8_t(20);
             if (mask[96])
                 data << int32_t(player->getField<uint32_t>(PlayerField::OverrideSpellId));
             if (mask[97])

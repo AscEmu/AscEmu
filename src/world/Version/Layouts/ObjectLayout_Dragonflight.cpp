@@ -157,7 +157,7 @@ namespace Version::Tables
         { UnitField::InteractSpellId,                   {  788,    4,   1,    0 } },
     };
 
-    // WoWPlayer: 123 fields, 18500 bytes
+    // WoWPlayer: 123 fields, 18820 bytes
     static const FieldEntry<PlayerField> dragonflightPlayerFields[] =
     {
         { PlayerField::DuelArbiter,                            {  852,   16,   1,    0 } },
@@ -203,7 +203,7 @@ namespace Version::Tables
         { PlayerField::TaxiMountAnimKitId,                     { 4312,    4,   1,    0 } },
         { PlayerField::CurrentBattlePetBreedQuality,           { 4332,    4,   1,    0 } },
         { PlayerField::InventorySlot,                          { 4344,   16,  23,   16 } },
-        { PlayerField::PackSlot,                               { 4712,   16,  16,   16 } },
+        { PlayerField::PackSlot,                               { 18500,   16,  20,   16 } },    // behind the client fields
         { PlayerField::BankSlot,                               { 4968,   16,  28,   16 } },
         { PlayerField::BankBagSlot,                            { 5416,   16,   7,   16 } },
         { PlayerField::VendorBuyBackSlot,                      { 5528,   16,  12,   16 } },
@@ -397,7 +397,7 @@ namespace Version::Tables
     {
         { dragonflightObjectFields, static_cast<uint16_t>(std::size(dragonflightObjectFields)), 48 },  // object
         { dragonflightUnitFields, static_cast<uint16_t>(std::size(dragonflightUnitFields)), 852 },  // unit
-        { dragonflightPlayerFields, static_cast<uint16_t>(std::size(dragonflightPlayerFields)), 18500 },  // player
+        { dragonflightPlayerFields, static_cast<uint16_t>(std::size(dragonflightPlayerFields)), 18820 },  // player
         { dragonflightItemFields, static_cast<uint16_t>(std::size(dragonflightItemFields)), 340 },  // item
         { dragonflightContainerFields, static_cast<uint16_t>(std::size(dragonflightContainerFields)), 920 },  // container
         { dragonflightGameObjectFields, static_cast<uint16_t>(std::size(dragonflightGameObjectFields)), 132 },  // gameObject

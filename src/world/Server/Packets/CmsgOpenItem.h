@@ -30,13 +30,7 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
-            {
-                // slot before its container
-                packet >> slot >> containerSlot;
-                return true;
-            }
-
+            // the container (255 for the backpack) before the slot in every version
             if (m_protocol.expansion >= WoW::Expansion::_Classic)
             {
                 packet >> containerSlot >> slot;

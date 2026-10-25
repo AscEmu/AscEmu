@@ -29,6 +29,17 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            // 6.x and later: the lengths of name and note, then both; the note takes 9 bits from 10.x on
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                const uint32_t nameLength = packet.readBits(9);
+                const uint32_t noteLength = packet.readBits(m_protocol.expansion >= WoW::Expansion::_Dragonflight ? 9 : 10);
+                packet.resetBitPos();
+                name = packet.readString(nameLength);
+                note = packet.readString(noteLength);
+                return true;
+            }
+
             if (m_protocol.expansion >= WoW::Expansion::_Classic)
             {
                 packet >> name >> note;

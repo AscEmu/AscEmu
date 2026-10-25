@@ -88,6 +88,7 @@ enum InventoryLayout : uint8_t
 #if VERSION_STRING >= Midnight
     INVENTORY_LAYOUT_BAG_START          = 30,
     INVENTORY_LAYOUT_ITEM_START         = 35,
+    INVENTORY_LAYOUT_ITEM_COUNT         = 20,
     INVENTORY_LAYOUT_BANK_ITEM_START    = 63,
     INVENTORY_LAYOUT_BANK_ITEM_COUNT    = 0,
     INVENTORY_LAYOUT_BANK_BAG_START     = 63,
@@ -96,6 +97,7 @@ enum InventoryLayout : uint8_t
 #elif VERSION_STRING >= Dragonflight
     INVENTORY_LAYOUT_BAG_START          = 30,
     INVENTORY_LAYOUT_ITEM_START         = 35,
+    INVENTORY_LAYOUT_ITEM_COUNT         = 20,
     INVENTORY_LAYOUT_BANK_ITEM_START    = 63,
     INVENTORY_LAYOUT_BANK_ITEM_COUNT    = 28,
     INVENTORY_LAYOUT_BANK_BAG_START     = 91,
@@ -104,6 +106,7 @@ enum InventoryLayout : uint8_t
 #elif VERSION_STRING >= Shadowlands
     INVENTORY_LAYOUT_BAG_START          = 19,
     INVENTORY_LAYOUT_ITEM_START         = 23,
+    INVENTORY_LAYOUT_ITEM_COUNT         = 20,
     INVENTORY_LAYOUT_BANK_ITEM_START    = 51,
     INVENTORY_LAYOUT_BANK_ITEM_COUNT    = 28,
     INVENTORY_LAYOUT_BANK_BAG_START     = 79,
@@ -112,6 +115,7 @@ enum InventoryLayout : uint8_t
 #else
     INVENTORY_LAYOUT_BAG_START          = 19,
     INVENTORY_LAYOUT_ITEM_START         = 23,
+    INVENTORY_LAYOUT_ITEM_COUNT         = 16,
     INVENTORY_LAYOUT_BANK_ITEM_START    = 39,
     INVENTORY_LAYOUT_BANK_ITEM_COUNT    = 28,
     INVENTORY_LAYOUT_BANK_BAG_START     = 67,
@@ -156,7 +160,7 @@ enum InventorySlots                                         // 4 slots
     INVENTORY_SLOT_BAG_END      = INVENTORY_LAYOUT_BAG_START + 4
 };
 
-enum InventoryPackSlots                                     // 16 slots
+enum InventoryPackSlots                                     // 16 slots, from 9.x on 20 with the slots of a secured account
 {
     INVENTORY_SLOT_ITEM_START   = INVENTORY_LAYOUT_ITEM_START,
     INVENTORY_SLOT_ITEM_1       = INVENTORY_LAYOUT_ITEM_START,
@@ -175,7 +179,7 @@ enum InventoryPackSlots                                     // 16 slots
     INVENTORY_SLOT_ITEM_14      = INVENTORY_LAYOUT_ITEM_START + 13,
     INVENTORY_SLOT_ITEM_15      = INVENTORY_LAYOUT_ITEM_START + 14,
     INVENTORY_SLOT_ITEM_16      = INVENTORY_LAYOUT_ITEM_START + 15,
-    INVENTORY_SLOT_ITEM_END     = INVENTORY_LAYOUT_ITEM_START + 16
+    INVENTORY_SLOT_ITEM_END     = INVENTORY_LAYOUT_ITEM_START + INVENTORY_LAYOUT_ITEM_COUNT
 };
 
 enum BankItemSlots                                          // 28 slots, none from 12.x on

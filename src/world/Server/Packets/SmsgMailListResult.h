@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "ItemInstanceHelpers.h"
+#include "MailPacketHelpers.h"
 #include "Management/MailMgr.h"
 #include "Objects/Item.hpp"
 #include "Management/ObjectMgr.hpp"
@@ -30,6 +32,9 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
             const uint32_t now = static_cast<uint32_t>(UNIXTIME);
+
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+                return writeModern(packet, now);
 
             if (m_protocol.expansion <= WoW::Expansion::_Cata)
             {
@@ -328,5 +333,149 @@ namespace AscEmu::Packets
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
+
+    private:
+        // the sender of a mail: a player for a normal mail, the id of the auction house, creature, game object or event else
+        static bool hasSenderGuid(MailMessage const& message) { return message.message_type == MAIL_TYPE_NORMAL; }
+        static bool hasAltSender(MailMessage const& message)
+        {
+            return message.message_type == MAIL_TYPE_AUCTION || message.message_type == MAIL_TYPE_CREATURE
+                || message.message_type == MAIL_TYPE_GAMEOBJECT || message.message_type == MAIL_TYPE_CALENDAR;
+        }
+
+        void writeSender(WorldPacket& packet, MailMessage const& message) const
+        {
+            if (hasSenderGuid(message))
+                packet << WoWGuid(message.sender_guid).toGuid128(m_protocol.realmId, 0);
+            else if (hasAltSender(message))
+                packet << int32_t(static_cast<uint32_t>(message.sender_guid));
+        }
+
+        void writeAttachment(WorldPacket& packet, Item const* item, uint8_t position) const
+        {
+            packet << position;
+
+            if (m_protocol.isWoD())
+            {
+                // 6.x: the item, eight enchantments, then the state of the item
+                packet << uint32_t(item->getGuidLow());
+                writeItemInstance(packet, m_protocol, item->getEntry(), int32_t(item->getRandomPropertiesId()), int32_t(item->getPropertySeed()));
+                for (uint8_t i = 0; i < 8; ++i)
+                {
+                    const bool known = i < MAX_INSPECTED_ENCHANTMENT_SLOT;
+                    packet << int32_t(known ? item->getEnchantmentId(i) : 0);
+                    packet << int32_t(known ? item->getEnchantmentDuration(i) : 0);
+                    packet << int32_t(known ? item->getEnchantmentCharges(i) : 0);
+                }
+                packet << int32_t(item->getStackCount()) << int32_t(item->getChargesLeft());
+                packet << int32_t(item->getMaxDurability()) << int32_t(item->getDurability());
+                packet.writeBit(!item->m_isLocked);
+                packet.flushBits();
+                return;
+            }
+
+            MailWire::writeId(packet, m_protocol, item->getGuidLow());
+
+            // 12.x moves the item in front of its state
+            if (m_protocol.isMidnight())
+                writeItemInstance(packet, m_protocol, item->getEntry());
+
+            packet << int32_t(item->getStackCount()) << int32_t(item->getChargesLeft());
+            packet << uint32_t(item->getMaxDurability()) << int32_t(item->getDurability());
+
+            if (!m_protocol.isMidnight())
+                writeItemInstance(packet, m_protocol, item->getEntry(), int32_t(item->getRandomPropertiesId()), int32_t(item->getPropertySeed()));
+
+            packet.writeBits(0, 4);                     // enchantments
+            packet.writeBits(0, 2);                     // gems
+            packet.writeBit(!item->m_isLocked);
+            packet.flushBits();
+        }
+
+        static std::vector<std::unique_ptr<Item>> loadAttachments(MailMessage const& message)
+        {
+            std::vector<std::unique_ptr<Item>> items;
+            for (const auto itemLowGuid : message.items)
+                if (auto item = sObjectMgr.loadItem(itemLowGuid))
+                    items.push_back(std::move(item));
+
+            return items;
+        }
+
+        void writeAttachments(WorldPacket& packet, std::vector<std::unique_ptr<Item>> const& items) const
+        {
+            for (size_t i = 0; i < items.size(); ++i)
+                writeAttachment(packet, items[i].get(), static_cast<uint8_t>(i));
+        }
+
+        // 6.x and later: count and total, then every mail; the order of sender, attachments and texts changes with 7.x, 10.x and 12.x
+        bool writeModern(WorldPacket& packet, uint32_t now) const
+        {
+            std::vector<MailMessage const*> mails;
+            int32_t total = 0;
+            for (const auto& [_, message] : messageMap)
+            {
+                if ((message.expire_time && now > message.expire_time) || now < message.delivery_time)
+                    continue;
+
+                ++total;
+                if (mails.size() < 50)
+                    mails.push_back(&message);
+            }
+
+            packet << uint32_t(mails.size()) << total;
+
+            for (const auto* message : mails)
+            {
+                const auto items = loadAttachments(*message);
+                const auto attachments = static_cast<uint32_t>(items.size());
+                const float daysLeft = float(message->expire_time - now) / static_cast<float>(TimeVars::Day);
+
+                if (m_protocol.expansion >= WoW::Expansion::_Dragonflight)
+                {
+                    packet << uint64_t(message->message_id) << uint32_t(message->message_type);
+                    packet << uint64_t(message->cod) << int32_t(message->stationery) << uint64_t(message->money);
+                    packet << int32_t(message->checked_flag) << daysLeft << int32_t(0) << attachments;
+                    writeSender(packet, *message);
+
+                    if (m_protocol.isMidnight())
+                        writeAttachments(packet, items);
+
+                    packet.writeBits(message->subject.size(), 8);
+                    packet.writeBits(message->body.size(), 13);
+                    packet.flushBits();
+
+                    if (!m_protocol.isMidnight())
+                        writeAttachments(packet, items);
+
+                    packet.writeString(message->subject);
+                    packet.writeString(message->body);
+                    continue;
+                }
+
+                packet << int32_t(message->message_id) << uint8_t(message->message_type);
+                packet << uint64_t(message->cod) << int32_t(message->stationery) << uint64_t(message->money);
+                packet << int32_t(message->checked_flag) << daysLeft << int32_t(0) << attachments;
+
+                // 6.x sends the attachments first, 7.x to 9.x after the flags
+                if (m_protocol.isWoD())
+                    writeAttachments(packet, items);
+
+                packet.writeBit(hasSenderGuid(*message));
+                packet.writeBit(hasAltSender(*message));
+                packet.writeBits(message->subject.size(), 8);
+                packet.writeBits(message->body.size(), 13);
+                packet.flushBits();
+
+                if (!m_protocol.isWoD())
+                    writeAttachments(packet, items);
+
+                writeSender(packet, *message);
+                packet.writeString(message->subject);
+                packet.writeString(message->body);
+            }
+
+            return true;
+        }
     };
 }

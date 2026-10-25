@@ -751,7 +751,8 @@ void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
 
     sLogger.debugOpcode("Received CMSG_OPEN_ITEM: {} (containerSlot), {} (slot).", srlPacket.containerSlot, srlPacket.slot);
 
-    auto item = _player->getItemInterface()->GetInventoryItem(srlPacket.containerSlot, srlPacket.slot);
+    // 255 is the backpack, the inventory counts it as -1
+    auto item = _player->getItemInterface()->GetInventoryItem(static_cast<int8_t>(srlPacket.containerSlot), srlPacket.slot);
     if (item == nullptr)
         return;
 

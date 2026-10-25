@@ -1559,7 +1559,7 @@ namespace
     constexpr InvSlotRange InvSlotRanges[] =
     {
         { PlayerField::InventorySlot, 0, 19, true }, { PlayerField::ProfessionSlot, 0, 11, true }, { PlayerField::InventorySlot, 19, 4, true },
-        { PlayerField::InventorySlot, 0, 1, false }, { PlayerField::PackSlot, 0, 16, true }, { PlayerField::PackSlot, 0, 12, false },
+        { PlayerField::InventorySlot, 0, 1, false }, { PlayerField::PackSlot, 0, 20, true }, { PlayerField::PackSlot, 0, 8, false },
         { PlayerField::BankSlot, 0, 28, true }, { PlayerField::BankBagSlot, 0, 7, true }, { PlayerField::VendorBuyBackSlot, 0, 12, true }
     };
 
@@ -1759,7 +1759,7 @@ namespace
         data << player->getField<float>(PlayerField::OverrideApBySpellPowerPct);
         data << int32_t(player->getField<uint32_t>(PlayerField::FieldModTargetResistance));
         data << int32_t(player->getField<uint32_t>(PlayerField::FieldModTargetPhysicalResistance));
-        data << uint32_t(0);                                                // local flags
+        data << uint32_t(PLAYER_LOCAL_FLAG_ACCOUNT_SECURED);                // local flags
         data << uint8_t(player->getField<uint8_t>(PlayerField::PlayerFieldBytesRafLevel));
         data << uint8_t(player->getEnabledActionBars());
         data << uint8_t(player->getField<uint8_t>(PlayerField::PlayerFieldBytesMaxPvpRank));
@@ -1801,7 +1801,7 @@ namespace
         data << int8_t(0);                                                  // jailers tower level
         data << uint8_t(0);                                                 // local regen flags
         data << uint8_t(player->getField<uint8_t>(PlayerField::PlayerFieldBytes2AuraVision));
-        data << uint8_t(16);                                                // backpack slots
+        data << uint8_t(20);                                                // backpack slots, 16 and 4 of a secured account
         data << int32_t(player->getField<uint32_t>(PlayerField::OverrideSpellId));
         data << uint16_t(player->getField<uint16_t>(PlayerField::LootSpecId));
         data << uint32_t(player->getField<uint32_t>(PlayerField::OverrideZonePvpType));
@@ -2118,7 +2118,7 @@ namespace
             if (mask[109])
                 data << uint8_t(player->getField<uint8_t>(PlayerField::PlayerFieldBytes2AuraVision));
             if (mask[110])
-                data << uint8_t(16);
+                data << uint8_t(20);
             if (mask[111])
                 data << int32_t(player->getField<uint32_t>(PlayerField::OverrideSpellId));
             if (mask[112])

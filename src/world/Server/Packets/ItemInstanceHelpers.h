@@ -91,6 +91,36 @@ namespace AscEmu::Packets
             skipItemBonuses(packet);
     }
 
+    // an item instance without bonuses and modifiers for a 6.x+ client
+    inline void writeItemInstance(WorldPacket& packet, WoW::ClientProtocol const& protocol, uint32_t itemId, int32_t randomProperties = 0, int32_t propertySeed = 0)
+    {
+        packet << itemId;
+
+        if (protocol.isWoD() || protocol.isLegion() || protocol.isBfA())
+        {
+            if (!protocol.isBfA())
+                packet << propertySeed << randomProperties;
+            packet.writeBit(false);                 // item bonus
+            packet.writeBit(false);                 // modifications
+            packet.flushBits();
+            return;
+        }
+
+        if (protocol.isMidnight())
+        {
+            packet.writeBits(0, 7);                 // modifications
+            packet.flushBits();
+            packet.writeBit(false);                 // item bonus
+            packet.flushBits();
+            return;
+        }
+
+        packet.writeBit(false);                     // item bonus
+        packet.flushBits();
+        packet.writeBits(0, 6);                     // modifications
+        packet.flushBits();
+    }
+
     // a guid of a 6.x+ client: packed on 6.x, 128 bit from 7.x
     inline WoWGuid readClientGuid(WorldPacket& packet, WoW::ClientProtocol const& protocol)
     {

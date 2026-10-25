@@ -317,6 +317,12 @@ static inline constexpr Standing getReputationRankFromStanding(int32_t value)
     return Standing::HATED;
 }
 
+// 9.x and later: flags only the own client receives
+enum PlayerLocalFlags : uint32_t
+{
+    PLAYER_LOCAL_FLAG_ACCOUNT_SECURED   = 0x00001000  // the account counts as secured, unlocks four backpack slots
+};
+
 enum PlayerFlags : uint32_t
 {
     PLAYER_FLAG_NONE                    = 0x00000000,

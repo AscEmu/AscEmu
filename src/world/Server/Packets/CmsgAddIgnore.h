@@ -27,6 +27,20 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            // 6.x and later: the name with its length, 9.x sends the account of the player between both
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                const uint32_t nameLength = packet.readBits(9);
+                packet.resetBitPos();
+                if (m_protocol.expansion >= WoW::Expansion::_Shadowlands)
+                {
+                    WoWGuid128 account;
+                    packet >> account;
+                }
+                name = packet.readString(nameLength);
+                return true;
+            }
+
             if (m_protocol.expansion >= WoW::Expansion::_Classic)
             {
                 packet >> name;

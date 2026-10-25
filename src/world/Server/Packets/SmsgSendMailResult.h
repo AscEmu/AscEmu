@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "MailPacketHelpers.h"
 #include "Network/WorldPacket.hpp"
 
 #include <cstdint>
@@ -70,6 +71,16 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            // 6.x and later: every field, 64 bit mail and attachment ids from 10.x on
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                MailWire::writeId(packet, m_protocol, messageId);
+                packet << int32_t(result) << int32_t(error) << int32_t(inventoryError);
+                MailWire::writeId(packet, m_protocol, itemGuidLow);
+                packet << int32_t(itemStackCount);
+                return true;
+            }
+
             packet << messageId << result << error;
 
             if (error == 1)         // MAIL_ERR_BAG_FULL

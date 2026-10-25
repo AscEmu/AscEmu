@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
+#include "MailPacketHelpers.h"
 #include <cstdint>
 
 namespace AscEmu::Packets
@@ -34,6 +35,15 @@ namespace AscEmu::Packets
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
+            // 6.x and later: the mailbox, the mail and the money
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                gobjGuid = WoWGuid(MailWire::readGuid(packet));
+                messageId = MailWire::readId(packet, m_protocol);
+                packet >> money;
+                return true;
+            }
+
             if (m_protocol.isMop())
             {
                 packet >> messageId;
