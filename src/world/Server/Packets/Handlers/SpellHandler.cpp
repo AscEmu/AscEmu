@@ -169,7 +169,7 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
     if (!srlPacket.hasSrcLocation)
     {
         if (_player->getTransGuid())
-            srlPacket.targets.setSource({ _player->GetTransOffsetX(), _player->GetTransOffsetY(), _player->GetTransOffsetZ() });
+            srlPacket.targets.setSource({_player->GetTransOffsetX(), _player->GetTransOffsetY(), _player->GetTransOffsetZ()});
         else
             srlPacket.targets.setSource(_player->GetPosition());
     }
@@ -177,7 +177,7 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
     if (!srlPacket.hasDestLocation)
     {
         if (_player->getTransGuid())
-            srlPacket.targets.setDestination({ _player->GetTransOffsetX(), _player->GetTransOffsetY(), _player->GetTransOffsetZ() });
+            srlPacket.targets.setDestination({_player->GetTransOffsetX(), _player->GetTransOffsetY(), _player->GetTransOffsetZ()});
         else
             srlPacket.targets.setDestination(_player->GetPosition());
     }

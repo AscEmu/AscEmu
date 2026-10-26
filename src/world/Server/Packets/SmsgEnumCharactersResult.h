@@ -652,7 +652,7 @@ namespace AscEmu::Packets
             packet << int32_t(0);                               // save version
             packet << int64_t(0);                               // creation time
             packet << int64_t(0);                               // last active time
-            packet << uint32_t(m_protocol.expansion == WoW::Expansion::_Midnight ? WoW::Build::MIDNIGHT_BUILD : WoW::Build::THEWARWITHIN_BUILD); // build of the last login
+            packet << uint32_t(m_protocol.expansion == WoW::Expansion::_Midnight ? WoW::Build::MIDNIGHT_BUILD : WoW::Build::TWW_BUILD); // build of the last login
             for (uint8_t i = 0; i < 5; ++i)
                 packet << int32_t(-1);                          // personal tabard (none)
             packet << uint32_t(0);                              // profession 1
