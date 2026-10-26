@@ -109,7 +109,7 @@ namespace AscEmu::Packets
                 for (uint32_t bgId : bgInstanceIds)
                     packet << bgId;
             }
-            else if (m_protocol.isLegacy())
+            else if (m_protocol.isClassic() || m_protocol.isTbc())
             {
                 packet << uint64_t(playerGuid);
                 packet << battlegroundType;

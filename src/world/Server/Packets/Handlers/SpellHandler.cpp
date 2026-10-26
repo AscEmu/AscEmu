@@ -165,11 +165,10 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
     // A location the request did not carry defaults to the caster for the missile math below. The
     // 6.x and later clients play the impact at a destination they are sent, so the defaults stay out
     // of the target flags there and the cast packets name only the targets of the request.
-    uint32_t const requestedTargetMask = srlPacket.targets.getTargetMask();
     if (!srlPacket.hasSrcLocation)
     {
         if (_player->getTransGuid())
-            srlPacket.targets.setSource({ _player->GetTransOffsetX(), _player->GetTransOffsetY(), _player->GetTransOffsetZ() });
+            srlPacket.targets.setSource({_player->GetTransOffsetX(), _player->GetTransOffsetY(), _player->GetTransOffsetZ()});
         else
             srlPacket.targets.setSource(_player->GetPosition());
     }
@@ -177,12 +176,13 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
     if (!srlPacket.hasDestLocation)
     {
         if (_player->getTransGuid())
-            srlPacket.targets.setDestination({ _player->GetTransOffsetX(), _player->GetTransOffsetY(), _player->GetTransOffsetZ() });
+            srlPacket.targets.setDestination({_player->GetTransOffsetX(), _player->GetTransOffsetY(), _player->GetTransOffsetZ()});
         else
             srlPacket.targets.setDestination(_player->GetPosition());
     }
 
 #if VERSION_STRING >= WoD
+    uint32_t const requestedTargetMask = srlPacket.targets.getTargetMask();
     srlPacket.targets.setTargetMask(requestedTargetMask);
 #endif
 

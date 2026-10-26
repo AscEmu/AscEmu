@@ -383,11 +383,10 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
 
 #if VERSION_STRING >= Mop
     // defaults for the missile math, kept out of the target flags of the 6.x and later clients (see SpellHandler.cpp)
-    uint32_t const requestedTargetMask = srlPacket.targets.getTargetMask();
     if (!srlPacket.hasSrcLocation)
     {
         if (_player->getTransGuid())
-            srlPacket.targets.setSource({ _player->GetTransOffsetX(), _player->GetTransOffsetY(), _player->GetTransOffsetZ() });
+            srlPacket.targets.setSource({_player->GetTransOffsetX(), _player->GetTransOffsetY(), _player->GetTransOffsetZ()});
         else
             srlPacket.targets.setSource(_player->GetPosition());
     }
@@ -395,12 +394,13 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.hasDestLocation)
     {
         if (_player->getTransGuid())
-            srlPacket.targets.setDestination({ _player->GetTransOffsetX(), _player->GetTransOffsetY(), _player->GetTransOffsetZ() });
+            srlPacket.targets.setDestination({_player->GetTransOffsetX(), _player->GetTransOffsetY(), _player->GetTransOffsetZ()});
         else
             srlPacket.targets.setDestination(_player->GetPosition());
     }
 
 #if VERSION_STRING >= WoD
+    uint32_t const requestedTargetMask = srlPacket.targets.getTargetMask();
     srlPacket.targets.setTargetMask(requestedTargetMask);
 #endif
 #endif

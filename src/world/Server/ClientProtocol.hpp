@@ -18,18 +18,33 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace WoW::Build {
     // Suffix prevents collision with legacy bareword macros like '#define Classic 5875'
-    inline constexpr uint32_t CLASSIC_BUILD = 5875;
-    inline constexpr uint32_t TBC_BUILD = 8606;
-    inline constexpr uint32_t WOTLK_BUILD = 12340;
-    inline constexpr uint32_t CATA_BUILD = 15595;
-    inline constexpr uint32_t MOP_BUILD = 18414;
-    inline constexpr uint32_t WOD_BUILD = 21742;
-    inline constexpr uint32_t LEGION_BUILD = 26972;
-    inline constexpr uint32_t BFA_BUILD = 35662;
-    inline constexpr uint32_t SHADOWLANDS_BUILD = 45745;
-    inline constexpr uint32_t DRAGONFLIGHT_BUILD = 55664;
-    inline constexpr uint32_t THEWARWITHIN_BUILD = 65299;
-    inline constexpr uint32_t MIDNIGHT_BUILD = 70391;
+
+    // Legacy Builds (Final Patch)
+    inline constexpr uint32_t CLASSIC_BUILD = 5875; // 1.12.1
+    inline constexpr uint32_t TBC_BUILD = 8606; // 2.4.3
+    inline constexpr uint32_t WOTLK_BUILD = 12340; // 3.3.5a
+    inline constexpr uint32_t CATA_BUILD = 15595; // 4.4.0
+    inline constexpr uint32_t MOP_BUILD = 18414; // 5.4.8
+
+    // Mainline / Retail Builds (Final Patch)
+    inline constexpr uint32_t WOD_BUILD = 21742; // 6.2.4
+    inline constexpr uint32_t LEGION_BUILD = 26972; // 7.3.5
+    inline constexpr uint32_t BFA_BUILD = 35662; // 8.3.7
+    inline constexpr uint32_t SHADOWLANDS_BUILD = 45745; // 9.2.7
+    inline constexpr uint32_t DRAGONFLIGHT_BUILD = 55664; // 10.2.7
+    inline constexpr uint32_t TWW_BUILD = 65299; // 11.2.7
+    inline constexpr uint32_t MIDNIGHT_BUILD = 70575; // 12.1.5
+
+    // TODO: Check versions and builds for the following expansions, they are not final and may change in the future
+    // Modern Classic Timeline
+    inline constexpr uint32_t CLASSIC_ERA_BUILD = 70003;  // 1.15.9
+    inline constexpr uint32_t TBC_CLASSIC_BUILD = 44833;  // 2.5.4
+    inline constexpr uint32_t WOTLK_CLASSIC_BUILD = 58936;  // 3.4.3
+    inline constexpr uint32_t CATA_CLASSIC_BUILD = 59069;  // 4.4.1
+    inline constexpr uint32_t MOP_CLASSIC_BUILD = 70579; //  5.5.4
+
+    // WoW Forever (1.60) is a special case, it is a modern client with a legacy major version (1.x) and a build higher than the last MoP build (5.4.8)
+    inline constexpr uint32_t FOREVER_BUILD = 70532; // 1.60.1 (starts 2026-11-04)
 }
 
 namespace WoW {
@@ -47,15 +62,89 @@ namespace WoW {
         _Dragonflight,
         _TheWarWithin,
         _Midnight,
+
+        // Modern classic timeline (own space begin with 50)
+        // (1.14.4 Classic Era, 2.5 TBC Classic, 3.4 WotLK Classic, 4.4 Cata Classic, 5.x MoP Classic, 1.60 WoW Forever
+        _Classic_Era = 50,
+        _TBC_Classic,
+        _WotLK_Classic,
+        _Cata_Classic,
+        _MoP_Classic,
+        _WoWForever,
         Unknown = 255
+    };
+
+    enum class ClientFlavor : uint8_t
+    {
+        LEGACY,         // Original 1.12, 2.4.3, 3.3.5a, 5.4.8
+        MODERN_CLASSIC, // TBC Classic (2.5), WotLK Classic (3.4), WoW Forever (1.60)
+        MAINLINE,       // WoD (6.x) to Midnight (12.x) and future expansions
+        Unknown         // Unrecognized client flavor
     };
 
     struct ClientVersion
     {
-        uint8_t major;
-        uint8_t minor;
-        uint8_t patch;
+        uint8_t major{0};
+        uint8_t minor{0};
+        uint8_t patch{0};
+        uint32_t build{0};
+
+        [[nodiscard]] constexpr bool isLegacy() const noexcept
+        {
+            // Original clients (2004–2014) had low builds
+            return build <= Build::MOP_BUILD; // <= 5.4.8 (MoP)
+        }
+
+        [[nodiscard]] constexpr bool isModernClassic() const noexcept
+        {
+            // Modern Client-Core (Build > 20000) but Legacy-Major (Classic, TBC, WotLK, Cata, MoP)
+            return !isLegacy() && major <= 5;
+        }
     };
+
+    inline Expansion resolveExpansion(const ClientVersion& clientVersion)
+    {
+        // Legacy Clients (Classic/Vanilla, TBC, WotLK, Cata, MoP)
+        if (clientVersion.isLegacy())
+        {
+            switch (clientVersion.build)
+            {
+                case Build::CLASSIC_BUILD: return Expansion::_Classic;
+                case Build::TBC_BUILD:     return Expansion::_TBC;
+                case Build::WOTLK_BUILD:   return Expansion::_WotLK;
+                case Build::CATA_BUILD:    return Expansion::_Cata;
+                case Build::MOP_BUILD:     return Expansion::_Mop;
+                default:                   return Expansion::Unknown;
+            }
+        }
+
+        // Modern Classic Clients (overlapping builds, but Major <= 5)
+        if (clientVersion.isModernClassic())
+        {
+            switch (clientVersion.major)
+            {
+                case 1: return (clientVersion.minor >= 60) ? Expansion::_WoWForever : Expansion::_Classic_Era;
+                case 2: return Expansion::_TBC_Classic;   // 2.5.x
+                case 3: return Expansion::_WotLK_Classic; // 3.4.x
+                case 4: return Expansion::_Cata_Classic;  // 4.4.x
+                case 5: return Expansion::_MoP_Classic;   // 5.x Classic
+                default: return Expansion::Unknown;
+            }
+        }
+
+        // Retail / Mainline (Major >= 6)
+        switch (clientVersion.major)
+        {
+            case 6:  return Expansion::_WoD;
+            case 7:  return Expansion::_Legion;
+            case 8:  return Expansion::_BfA;
+            case 9:  return Expansion::_Shadowlands;
+            case 10: return Expansion::_Dragonflight;
+            case 11: return Expansion::_TheWarWithin;
+            case 12: return Expansion::_Midnight;
+            default: return Expansion::Unknown;
+        }
+    }
 
     /// Protocol and expansion information for an active client connection
     struct ClientProtocol
@@ -65,7 +154,8 @@ namespace WoW {
         uint32_t battlegroupId{0};
         uint32_t realmId{0};
 
-        [[nodiscard]] WoW::Expansion getExpansion() const { return expansion; }
+        [[nodiscard]] Expansion getExpansion() const { return expansion; }
+
         [[nodiscard]] uint32_t getVirtualRealmAddress() const noexcept
         {
             return ((regionId & 0xFFU) << 24U) | ((battlegroupId & 0xFFU) << 16U) | (realmId & 0xFFFFU);
@@ -74,21 +164,24 @@ namespace WoW {
         // index inside the version tables, the configured expansion when the client version is unknown
         [[nodiscard]] int32_t versionId() const noexcept;
 
-        [[nodiscard]] bool isClassic() const { return expansion == WoW::Expansion::_Classic; }
-        [[nodiscard]] bool isTbc() const { return expansion == WoW::Expansion::_TBC; }
-        [[nodiscard]] bool isWotlk() const { return expansion == WoW::Expansion::_WotLK; }
-        [[nodiscard]] bool isCata() const { return expansion == WoW::Expansion::_Cata; }
-        [[nodiscard]] bool isMop() const { return expansion == WoW::Expansion::_Mop; }
-        [[nodiscard]] bool isWoD() const { return expansion == WoW::Expansion::_WoD; }
-        [[nodiscard]] bool isLegion() const { return expansion == WoW::Expansion::_Legion; }
-        [[nodiscard]] bool isBfA() const { return expansion == WoW::Expansion::_BfA; }
-        [[nodiscard]] bool isShadowlands() const { return expansion == WoW::Expansion::_Shadowlands; }
-        [[nodiscard]] bool isDragonflight() const { return expansion == WoW::Expansion::_Dragonflight; }
-        [[nodiscard]] bool isTheWarWithin() const { return expansion == WoW::Expansion::_TheWarWithin; }
-        [[nodiscard]] bool isMidnight() const { return expansion == WoW::Expansion::_Midnight; }
+        [[nodiscard]] bool isClassic() const { return expansion == Expansion::_Classic; }
+        [[nodiscard]] bool isTbc() const { return expansion == Expansion::_TBC; }
+        [[nodiscard]] bool isWotlk() const { return expansion == Expansion::_WotLK; }
+        [[nodiscard]] bool isCata() const { return expansion == Expansion::_Cata; }
+        [[nodiscard]] bool isMop() const { return expansion == Expansion::_Mop; }
+        [[nodiscard]] bool isWoD() const { return expansion == Expansion::_WoD; }
+        [[nodiscard]] bool isLegion() const { return expansion == Expansion::_Legion; }
+        [[nodiscard]] bool isBfA() const { return expansion == Expansion::_BfA; }
+        [[nodiscard]] bool isShadowlands() const { return expansion == Expansion::_Shadowlands; }
+        [[nodiscard]] bool isDragonflight() const { return expansion == Expansion::_Dragonflight; }
+        [[nodiscard]] bool isTheWarWithin() const { return expansion == Expansion::_TheWarWithin; }
+        [[nodiscard]] bool isMidnight() const { return expansion == Expansion::_Midnight; }
+        [[nodiscard]] bool isForever() const { return expansion == Expansion::_WoWForever; }
         // the 11.2.7 layouts are the baseline of every later client, the branches of 11.x serve 12.x as well
-        [[nodiscard]] bool isTheWarWithinOrLater() const { return expansion != WoW::Expansion::Unknown && expansion >= WoW::Expansion::_TheWarWithin; }
-        [[nodiscard]] bool isLegacy() const { return isClassic() || isTbc(); }
+        [[nodiscard]] bool isTheWarWithinOrLater() const
+        {
+            return expansion != Expansion::Unknown && expansion >= Expansion::_TheWarWithin && expansion <= Expansion::_Midnight;
+        }
     };
 
     /// Global protocol state configured for this server instance
@@ -106,26 +199,6 @@ namespace WoW {
             }
 
             return expansion >= exp;
-        }
-
-        [[nodiscard]] constexpr bool isLessThan(Expansion exp) const noexcept
-        {
-            if (expansion == Expansion::Unknown || exp == Expansion::Unknown)
-            {
-                return false;
-            }
-
-            return expansion < exp;
-        }
-
-        [[nodiscard]] constexpr bool isBetween(Expansion min, Expansion max) const noexcept
-        {
-            if (expansion == Expansion::Unknown || min == Expansion::Unknown || max == Expansion::Unknown)
-            {
-                return false;
-            }
-
-            return expansion >= min && expansion <= max;
         }
     };
 
@@ -174,6 +247,16 @@ namespace WoW {
         return expansion != Expansion::Unknown && expansion <= COMPILED_EXPANSION;
     }
 
+    [[nodiscard]] constexpr bool isModernClassic(Expansion expansion) noexcept
+    {
+        return expansion >= Expansion::_Classic_Era && expansion <= Expansion::_WoWForever;
+    }
+
+    [[nodiscard]] constexpr bool isMainline(Expansion expansion) noexcept
+    {
+        return expansion >= Expansion::_WoD && expansion <= Expansion::_Midnight;
+    }
+
     [[nodiscard]] constexpr uint32_t getBuildForExpansion(Expansion const expansion) noexcept
     {
         switch (expansion)
@@ -183,12 +266,12 @@ namespace WoW {
             case Expansion::_WotLK:   return Build::WOTLK_BUILD;
             case Expansion::_Cata:    return Build::CATA_BUILD;
             case Expansion::_Mop:     return Build::MOP_BUILD;
-            case Expansion::_WoD:      return Build::WOD_BUILD;
-            case Expansion::_Legion:   return Build::LEGION_BUILD;
-            case Expansion::_BfA:       return Build::BFA_BUILD;
+            case Expansion::_WoD:     return Build::WOD_BUILD;
+            case Expansion::_Legion:  return Build::LEGION_BUILD;
+            case Expansion::_BfA:     return Build::BFA_BUILD;
             case Expansion::_Shadowlands:         return Build::SHADOWLANDS_BUILD;
             case Expansion::_Dragonflight:        return Build::DRAGONFLIGHT_BUILD;
-            case Expansion::_TheWarWithin:        return Build::THEWARWITHIN_BUILD;
+            case Expansion::_TheWarWithin:        return Build::TWW_BUILD;
             case Expansion::_Midnight:            return Build::MIDNIGHT_BUILD;
             default:                  return 0;
         }
@@ -199,7 +282,7 @@ namespace WoW {
     /// The database rows are filtered with the build of the expansion itself, see getDBDataBuildExpansion().
     [[nodiscard]] constexpr Expansion getDataExpansion(Expansion const expansion) noexcept
     {
-        if (expansion == Expansion::_WoD || expansion == Expansion::_Legion || expansion == Expansion::_BfA || expansion == Expansion::_Shadowlands || expansion == Expansion::_Dragonflight || expansion == Expansion::_TheWarWithin || expansion == Expansion::_Midnight)
+        if (expansion >= Expansion::_WoD && expansion <= Expansion::_Midnight)
             return Expansion::_Mop;
 
         return expansion;
@@ -232,10 +315,8 @@ namespace WoW {
             case Build::BFA_BUILD:     return Expansion::_BfA;
             case Build::SHADOWLANDS_BUILD: return Expansion::_Shadowlands;
             case Build::DRAGONFLIGHT_BUILD: return Expansion::_Dragonflight;
-            case Build::THEWARWITHIN_BUILD: return Expansion::_TheWarWithin;
+            case Build::TWW_BUILD: return Expansion::_TheWarWithin;
             case Build::MIDNIGHT_BUILD: return Expansion::_Midnight;
-            case 70529:                                         // 12.1.5 client updates, same protocol as 70391
-            case 70575: return Expansion::_Midnight;
             default:                   return Expansion::Unknown;
         }
     }
@@ -255,24 +336,32 @@ namespace WoW {
 
     [[nodiscard]] inline bool isServerExpansionAtLeast(Expansion const expansion) noexcept
     {
-        Expansion const serverExp = getServerExpansion();
-        if (serverExp == Expansion::Unknown || expansion == Expansion::Unknown)
+        Expansion const serverExpansion = getServerExpansion();
+        if (serverExpansion == Expansion::Unknown || expansion == Expansion::Unknown)
         {
             return false;
         }
 
-        return serverExp >= expansion;
+        // Prevent false comparisons between modern classic and legacy expansions
+        if (isModernClassic(serverExpansion) != isModernClassic(expansion))
+            return false;
+
+        return serverExpansion >= expansion;
     }
 
     [[nodiscard]] inline bool isServerExpansionBetween(Expansion const minExpansion, Expansion const maxExpansion) noexcept
     {
-        Expansion const serverExp = getServerExpansion();
-        if (serverExp == Expansion::Unknown || minExpansion == Expansion::Unknown || maxExpansion == Expansion::Unknown)
+        Expansion const serverExpansion = getServerExpansion();
+        if (serverExpansion == Expansion::Unknown || minExpansion == Expansion::Unknown || maxExpansion == Expansion::Unknown)
         {
             return false;
         }
 
-        return serverExp >= minExpansion && serverExp <= maxExpansion;
+        // Prevent false comparisons between modern classic and legacy expansions
+        if (isModernClassic(serverExpansion) != isModernClassic(minExpansion))
+            return false;
+
+        return serverExpansion >= minExpansion && serverExpansion <= maxExpansion;
     }
 
     /// Converts world.conf integer setting (0 = Classic ... 4 = MoP) to enum
@@ -306,23 +395,6 @@ namespace WoW {
 
         return static_cast<int32_t>(expansion);
     }
-
-//
-//    [[nodiscard]] constexpr ClientVersion getClientVersion(Expansion expansion) noexcept
-//    {
-//        switch (expansion)
-//        {
-//            case Expansion::_Classic: return ClientVersion{1, 12, 1};
-//            case Expansion::_TBC: return ClientVersion{2, 4, 3};
-//            case Expansion::_WotLK: return ClientVersion{3, 3, 5};
-//            case Expansion::_Cata: return ClientVersion{4, 3, 4};
-//            case Expansion::_Mop: return ClientVersion{5, 4, 8};
-//
-//            // Default placeholder for expansions beyond the core project scope
-//            default: return ClientVersion{ 0, 0, 0 };
-//        }
-//    }
-//
 
     /// Returns the full name of an expansion (useful for logs and messages)
     [[nodiscard]] constexpr std::string_view getExpansionName(Expansion const expansion) noexcept
@@ -361,7 +433,7 @@ namespace WoW {
             case Expansion::_BfA:      return "BfA";
             case Expansion::_Shadowlands:       return "Shadowlands";
             case Expansion::_Dragonflight:      return "Dragonflight";
-            case Expansion::_TheWarWithin:      return "TheWarWithin";
+            case Expansion::_TheWarWithin:      return "TWW";
             case Expansion::_Midnight:          return "Midnight";
             case Expansion::Unknown:
             default:                  return "Unknown";
