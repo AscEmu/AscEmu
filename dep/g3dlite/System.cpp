@@ -33,9 +33,8 @@
 #include <cstring>
 #include <cstdio>
 
-// Uncomment the following line to turn off G3D::System memory
-// allocation and use the operating system's malloc.
-//#define NO_BUFFERPOOL
+// G3D::System memory allocation is turned off, the buffer pool is not thread safe and the map threads allocate concurrently
+#define NO_BUFFERPOOL
 
 #include <cstdlib>
 

@@ -269,14 +269,14 @@ namespace Version::Tables
         { ItemField::MaxDurability,       {  188,    4,   1,    0 } },
     };
 
-    // WoWContainer: 5 fields, 432 bytes
+    // WoWContainer: 5 fields, 488 bytes
     static const FieldEntry<ContainerField> classicContainerFields[] =
     {
         { ContainerField::SlotCount,        {  192,    4,   1,    0 } },
         { ContainerField::PaddingContainer, {  196,    4,   1,    0 } },
-        { ContainerField::ItemSlot,         {  200,    8,  29,    8 } },
-        { ContainerField::ItemSlotLow,      {  200,    4,  29,    8 } },
-        { ContainerField::ItemSlotHigh,     {  204,    4,  29,    8 } },
+        { ContainerField::ItemSlot,         {  200,    8,  36,    8 } },
+        { ContainerField::ItemSlotLow,      {  200,    4,  36,    8 } },
+        { ContainerField::ItemSlotHigh,     {  204,    4,  36,    8 } },
     };
 
     // WoWGameObject: 18 fields, 104 bytes
@@ -355,7 +355,7 @@ namespace Version::Tables
         { classicUnitFields, static_cast<uint16_t>(std::size(classicUnitFields)), 752 },  // unit
         { classicPlayerFields, static_cast<uint16_t>(std::size(classicPlayerFields)), 5128 },  // player
         { classicItemFields, static_cast<uint16_t>(std::size(classicItemFields)), 192 },  // item
-        { classicContainerFields, static_cast<uint16_t>(std::size(classicContainerFields)), 432 },  // container
+        { classicContainerFields, static_cast<uint16_t>(std::size(classicContainerFields)), 488 },  // container
         { classicGameObjectFields, static_cast<uint16_t>(std::size(classicGameObjectFields)), 104 },  // gameObject
         { classicDynamicObjectFields, static_cast<uint16_t>(std::size(classicDynamicObjectFields)), 64 },  // dynamicObject
         { classicCorpseFields, static_cast<uint16_t>(std::size(classicCorpseFields)), 160 },  // corpse

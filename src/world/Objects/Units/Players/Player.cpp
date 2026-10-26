@@ -1077,6 +1077,17 @@ void Player::setQuestLogExpireTimeBySlot(uint8_t slot, uint32_t expireTime) { se
 //QuestLog end
 
 //VisibleItem start
+namespace
+{
+    // before WotLK the enchantments follow the entry inside the visible item
+    uint32_t visibleItemEnchantmentOffset(uint8_t pos)
+    {
+        const auto& layout = Version::layoutFor<PlayerField>();
+        const uint32_t entryOffset = static_cast<uint32_t>(layout.get(PlayerField::VisibleItemsEntry).offset - layout.get(PlayerField::VisibleItems).offset);
+        return entryOffset + 4u * (1u + pos);
+    }
+}
+
 uint32_t Player::getVisibleItemEntry(uint32_t slot) const { return getField<uint32_t>(PlayerField::VisibleItemsEntry, slot); }
 void Player::setVisibleItemEntry(uint32_t slot, uint32_t entry) { setField<uint32_t>(PlayerField::VisibleItemsEntry, entry, slot); }
 
@@ -1091,7 +1102,7 @@ uint32_t Player::getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const
         return getField<uint16_t>(PlayerField::VisibleItemsEnchantment, slot, pos * 2);
     }
 
-    return getField<uint32_t>(PlayerField::VisibleItems, slot, pos * 4);
+    return getField<uint32_t>(PlayerField::VisibleItems, slot, visibleItemEnchantmentOffset(pos));
 }
 
 void Player::setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint32_t enchantment)
@@ -1105,7 +1116,7 @@ void Player::setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint32_t ench
         return;
     }
 
-    setField<uint32_t>(PlayerField::VisibleItems, enchantment, slot, pos * 4);
+    setField<uint32_t>(PlayerField::VisibleItems, enchantment, slot, visibleItemEnchantmentOffset(pos));
 }
 //VisibleItem end
 
