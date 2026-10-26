@@ -7,11 +7,23 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Logging/Logger.hpp"
 #include "Management/Achievements/AchievementConverter.hpp"
+#include "Map/Management/TerrainMgr.hpp"
+#include "Map/Visibility/VisibilityTypes.hpp"
+#include "Movement/MovementDefines.h"
 #include "Server/ClientProtocol.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/World.h"
+#include "VMapManager2.h"
 
+#include <cmath>
+#include <cstdio>
+#include <filesystem>
 #include <iterator>
+#include <memory>
+#include <set>
 #include <sstream>
+#include <tuple>
+#include <unordered_map>
 
 namespace
 {
@@ -30,6 +42,16 @@ namespace
 
         return static_cast<uint32_t>(std::size(LevelSquishOldMax));
     }
+
+    // the feet of a placed character above the found floor
+    constexpr float StandOffset = 0.1f;
+    // smaller differences keep the stored height
+    constexpr float HeightTolerance = 0.5f;
+    // a floor is searched from this far above the stored height
+    constexpr float FloorProbeHeight = 2.0f;
+    constexpr float FloorSearchDistance = 100.0f;
+    // deeper liquid lifts the character to its surface
+    constexpr float SwimDepth = 2.0f;
 
     // the characters of a step: last played before the build the step brings, the server runs that build or a later one
     std::vector<CharacterBuildUpdater::OldCharacter> crossing(std::vector<CharacterBuildUpdater::OldCharacter> const& characters, uint32_t stepBuild, uint32_t serverBuild)
@@ -54,7 +76,7 @@ CharacterBuildUpdater& CharacterBuildUpdater::getInstance()
 void CharacterBuildUpdater::run()
 {
     uint32_t const serverBuild = WoW::getConfigBuild();
-    auto result = CharacterDatabase.query("SELECT guid, acct, last_login_build, level FROM characters WHERE last_login_build < %u", serverBuild);
+    auto result = CharacterDatabase.query("SELECT guid, acct, last_login_build, level, mapId, positionX, positionY, positionZ, transporter FROM characters WHERE last_login_build < %u", serverBuild);
     if (result == nullptr)
         return;
 
@@ -62,9 +84,12 @@ void CharacterBuildUpdater::run()
     do
     {
         Field* fields = result->fetch();
-        characters.push_back({ fields[0].asUint32(), fields[1].asUint32(), fields[2].asUint32(), fields[3].asUint32() });
+        characters.push_back({ fields[0].asUint32(), fields[1].asUint32(), fields[2].asUint32(), fields[3].asUint32(),
+            fields[4].asUint32(), fields[5].asFloat(), fields[6].asFloat(), fields[7].asFloat(), fields[8].asUint32() != 0 });
     }
     while (result->nextRow());
+
+    placeOnCurrentTerrain(crossing(characters, WoW::Build::CATA_BUILD, serverBuild), serverBuild);
 
     // the criteria trees of 5.4: the progress of the criteria rows moves to the trees, the account wide parts to the logonserver
     auto const achievementCharacters = crossing(characters, WoW::Build::MOP_BUILD, serverBuild);
@@ -94,6 +119,91 @@ void CharacterBuildUpdater::run()
     CharacterDatabase.waitExecuteNA((query.str() + ")").c_str());
 
     sLogger.info("CharacterBuildUpdater : {} characters brought to build {}", characters.size(), serverBuild);
+}
+
+void CharacterBuildUpdater::placeOnCurrentTerrain(std::vector<OldCharacter> const& characters, uint32_t serverBuild)
+{
+    if (characters.empty())
+        return;
+
+    using visibility::Terrain;
+    std::string const dataDir = worldConfig.server.dataDir;
+    std::string const vmapPath = dataDir + "vmaps";
+
+    // own terrain and model data, the map threads keep theirs untouched
+    std::unordered_map<uint32_t, std::unique_ptr<TerrainHolder>> terrains;
+    std::unique_ptr<VMAP::VMapManager2> models;
+    if (worldConfig.terrainCollision.isCollisionEnabled)
+        models = std::make_unique<VMAP::VMapManager2>();
+    std::set<std::tuple<uint32_t, int32_t, int32_t>> loadedTiles;
+
+    uint32_t placed = 0;
+    for (auto const& character : characters)
+    {
+        // a passenger moves with its transport
+        if (character.onTransport)
+            continue;
+
+        int32_t const tileX = static_cast<int32_t>(Terrain::MapCenter - character.x / Terrain::TileSize);
+        int32_t const tileY = static_cast<int32_t>(Terrain::MapCenter - character.y / Terrain::TileSize);
+        if (tileX < 0 || tileY < 0 || tileX >= Terrain::TilesCount || tileY >= Terrain::TilesCount)
+            continue;
+
+        auto& terrain = terrains[character.mapId];
+        if (!terrain)
+            terrain = std::make_unique<TerrainHolder>(character.mapId);
+
+        if (loadedTiles.emplace(character.mapId, tileX, tileY).second)
+        {
+            char tileFile[32];
+            std::snprintf(tileFile, sizeof(tileFile), "maps/%04u_%02i_%02i.map", character.mapId, tileX, tileY);
+            if (std::filesystem::exists(dataDir + tileFile))
+                terrain->loadTile(tileX, tileY);
+            if (models)
+                models->loadMap(vmapPath.c_str(), character.mapId, tileX, tileY);
+        }
+
+        float terrainZ = INVALID_HEIGHT;
+        float liquidZ = INVALID_HEIGHT;
+        if (TerrainTile* tile = terrain->getTile(tileX, tileY))
+        {
+            terrainZ = tile->m_map.getHeight(character.x, character.y);
+            liquidZ = tile->m_map.getLiquidLevel(character.x, character.y);
+        }
+
+        float const probeZ = character.z + FloorProbeHeight;
+        float const modelZ = models ? models->getHeight(character.mapId, character.x, character.y, probeZ, FloorSearchDistance) : VMAP_INVALID_HEIGHT_VALUE;
+
+        // the highest floor under the character, a model floor keeps a character under the terrain (caves, cities below ground)
+        bool const terrainBelow = terrainZ > INVALID_HEIGHT && terrainZ <= probeZ;
+        bool const modelBelow = modelZ > INVALID_HEIGHT;
+        float floorZ = INVALID_HEIGHT;
+        bool onTerrain = true;
+        if (terrainBelow && (!modelBelow || terrainZ > modelZ))
+            floorZ = terrainZ;
+        else if (modelBelow)
+        {
+            floorZ = modelZ;
+            onTerrain = false;
+        }
+        else if (terrainZ > INVALID_HEIGHT)
+            floorZ = terrainZ; // the terrain covers the character now
+        else
+            continue;
+
+        if (onTerrain && liquidZ > floorZ + SwimDepth)
+            floorZ = liquidZ;
+
+        float const newZ = floorZ + StandOffset;
+        if (std::fabs(newZ - character.z) <= HeightTolerance)
+            continue;
+
+        CharacterDatabase.waitExecute("UPDATE characters SET positionZ = %f WHERE guid = %u", newZ, character.guid);
+        sLogger.info("CharacterBuildUpdater : character {} on map {} was last played with build {}, height {} became {}", character.guid, character.mapId, character.lastLoginBuild, character.z, newZ);
+        ++placed;
+    }
+
+    sLogger.info("CharacterBuildUpdater : {} of {} characters placed on the terrain of build {}", placed, characters.size(), serverBuild);
 }
 
 void CharacterBuildUpdater::squishLevels(std::vector<OldCharacter> const& characters)

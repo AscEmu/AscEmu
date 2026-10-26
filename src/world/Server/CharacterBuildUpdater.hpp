@@ -31,9 +31,17 @@ public:
         uint32_t accountId = 0;
         uint32_t lastLoginBuild = 0;
         uint32_t level = 0;
+        uint32_t mapId = 0;
+        float x = 0.0f;
+        float y = 0.0f;
+        float z = 0.0f;
+        bool onTransport = false;
     };
 
 private:
+    // the reshaped terrain of 4.0: the character stands on the ground of the current map data
+    void placeOnCurrentTerrain(std::vector<OldCharacter> const& characters, uint32_t serverBuild);
+
     // the level squish of 9.0: the old level becomes the new one, the experience starts over
     void squishLevels(std::vector<OldCharacter> const& characters);
 };

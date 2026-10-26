@@ -181,12 +181,12 @@ bool ChatCommandHandler::HandleLookupAchievementCommand([[maybe_unused]]const ch
     if (lookupcriteria && numFound < 25)
     {
         std::set<uint32_t> foundList;
-        for (auto const& [criteriaId, criteria] : sAchievementCriteriaStore)
+        for (auto const& [criteriaId, criteriaRow] : sAchievementCriteriaStore)
         {
             if (numFound >= 25)
                 break;
 
-            if (auto const* criteriaEntry = &criteria)
+            if (auto const* criteriaEntry = &criteriaRow)
             {
                 if (foundList.find(criteriaEntry->ID) != foundList.end())
                 {
