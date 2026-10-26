@@ -172,7 +172,7 @@ namespace WoW {
         [[nodiscard]] bool isWoD() const { return expansion == Expansion::_WoD; }
         [[nodiscard]] bool isLegion() const { return expansion == Expansion::_Legion; }
         [[nodiscard]] bool isBfA() const { return expansion == Expansion::_BfA; }
-        [[nodiscard]] bool isShadowlands() const { return expansion == Expansion::_Shadowlands; }
+        [[nodiscard]] bool isShadowlands() const noexcept { return expansion == Expansion::_Shadowlands; }
         [[nodiscard]] bool isDragonflight() const { return expansion == Expansion::_Dragonflight; }
         [[nodiscard]] bool isTheWarWithin() const { return expansion == Expansion::_TheWarWithin; }
         [[nodiscard]] bool isMidnight() const { return expansion == Expansion::_Midnight; }
@@ -181,6 +181,41 @@ namespace WoW {
         [[nodiscard]] bool isTheWarWithinOrLater() const
         {
             return expansion != Expansion::Unknown && expansion >= Expansion::_TheWarWithin && expansion <= Expansion::_Midnight;
+        }
+
+        [[nodiscard]] bool isValid() const noexcept
+        {
+            return expansion != Expansion::Unknown;
+        }
+
+        [[nodiscard]] bool isMainlineAtLeast(Expansion exp) const noexcept
+        {
+            return isValid() && expansion >= exp && expansion < Expansion::_Classic_Era;
+        }
+
+        [[nodiscard]] bool isMainlineAtMost(Expansion exp) const noexcept
+        {
+            return isValid() && expansion <= exp;
+        }
+
+        /// Content expansion is the expansion of the content the client can access
+        [[nodiscard]] Expansion getContentExpansion() const noexcept
+        {
+            switch (expansion)
+            {
+                case Expansion::_Classic_Era:   return Expansion::_Classic;
+                case Expansion::_TBC_Classic:   return Expansion::_TBC;
+                case Expansion::_WotLK_Classic: return Expansion::_WotLK;
+                case Expansion::_Cata_Classic:  return Expansion::_Cata;
+                case Expansion::_MoP_Classic:   return Expansion::_Mop;
+                default:                        return expansion; // Retail is content == expansion
+            }
+        }
+
+        bool isContentAtLeast(Expansion exp) const noexcept
+        {
+            const auto base = getContentExpansion();
+            return isValid() && base >= exp && base < Expansion::_Classic_Era;
         }
     };
 

@@ -470,13 +470,13 @@ void WorldSocket::sendAuthenticated(std::unique_ptr<WorldSession> sessionHolder)
     sendManagedPacket(response);
 
     // 10.x and 11.x: the time zones before the glue screen status
-    if (m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+    if (m_protocol.isMainlineAtLeast(WoW::Expansion::_Dragonflight))
     {
         SmsgSetTimeZoneInformation timeZonePacket("Etc/UTC");
         sendManagedPacket(timeZonePacket);
     }
 
-    if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+    if (m_protocol.isMainlineAtLeast(WoW::Expansion::_BfA))
     {
         SmsgFeatureSystemStatusGlueScreen glueScreen(static_cast<uint8_t>(m_protocol.expansion));
         sendManagedPacket(glueScreen);
@@ -491,11 +491,13 @@ void WorldSocket::sendAuthenticated(std::unique_ptr<WorldSession> sessionHolder)
 
     m_session->sendAddonInfo();
 
-    if (m_protocol.expansion > WoW::Expansion::_TBC)
+    if (m_protocol.isMainlineAtLeast(WoW::Expansion::_WotLK))
+    {
         m_session->sendClientCacheVersion(BUILD_VERSION);
+    }
 
     // 10.x and 11.x: the hotfix list, the global account data times and the account tutorials after the cache version
-    if (m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+    if (m_protocol.isMainlineAtLeast(WoW::Expansion::_Dragonflight))
     {
         SmsgAvailableHotfixes availableHotfixes;
         sendManagedPacket(availableHotfixes);
@@ -508,7 +510,7 @@ void WorldSocket::sendAuthenticated(std::unique_ptr<WorldSession> sessionHolder)
         sendManagedPacket(tutorialFlags);
 
         // 11.x: the Battle.net connection state closes the glue sequence
-        if (m_protocol.isTheWarWithinOrLater())
+        if (m_protocol.isMainlineAtLeast(WoW::Expansion::_TheWarWithin))
         {
             SmsgBattleNetConnectionStatus connectionStatus(1, false);
             sendManagedPacket(connectionStatus);
@@ -520,16 +522,18 @@ void WorldSocket::sendAuthenticated(std::unique_ptr<WorldSession> sessionHolder)
     sWorld.addGlobalSession(m_session);
     sWorld.addSession(std::move(sessionHolder));
 
-#if VERSION_STRING >= Mop
-    // the answer finds the session by its account
-    m_session->getBattlePets().requestLoad();
-    m_session->getAccountAchievements().requestLoad();
-#endif
+    if (isServerExpansionAtLeast(WoW::Expansion::_Mop) &&
+        m_protocol.isContentAtLeast(WoW::Expansion::_Mop))
+    {
+        // the answer finds the session by its account
+        m_session->getBattlePets().requestLoad();
+        m_session->getAccountAchievements().requestLoad();
+    }
 }
 
 void WorldSocket::sendClientConnectionPacket()
 {
-    if (m_protocol.expansion <= WoW::Expansion::_WotLK)
+    if (m_protocol.isMainlineAtMost(WoW::Expansion::_WotLK))
         sendAuthChallengePacket();
     else
         sendVerifyConnectPacket();
