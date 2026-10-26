@@ -1305,9 +1305,7 @@ bool ChatCommandHandler::HandleCharSetAllExploredCommand(const char* /*args*/, W
         player_target->setExploredZone(i, 0xFFFFFFFF);
     }
 
-#if VERSION_STRING > TBC
-    player_target->getAchievementMgr()->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA); // update
-#endif
+    player_target->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA); // update
     return true;
 }
 

@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LogonCommDefines.hpp"
 #include "Logging/Log.hpp"
 #include "Logging/Logger.hpp"
+#include "Management/AchievementMgr.h"
 #include "Map/Maps/WorldMap.hpp"
 #include "Network/WorldPacket.hpp"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
@@ -29,6 +30,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/utf8.hpp"
 
 #include <algorithm>
+#include <set>
 
 using namespace AscEmu::Packets;
 using Version::PlayerField;
@@ -97,6 +99,15 @@ void BattlePetCollection::onAddResult(uint8_t result, LogonComm::BattlePetRecord
 
 void BattlePetCollection::update()
 {
+    size_t const added = updateLocked();
+
+    Player* player = m_session.GetPlayer();
+    for (size_t i = 0; i < added && player != nullptr && player->IsInWorld(); ++i)
+        player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARNED_NEW_PET);
+}
+
+size_t BattlePetCollection::updateLocked()
+{
     std::lock_guard lock(m_mutex);
     if (m_loaded && m_journalWanted && !m_journalSent)
         sendJournalLocked();
@@ -108,6 +119,7 @@ void BattlePetCollection::update()
             if (const auto* pet = findKnown(id))
                 sendUpdate(*pet, true);
     }
+    size_t const added = m_addedPets.size();
     m_addedPets.clear();
 
     for (const auto& [error, creatureId] : m_refusedPets)
@@ -116,6 +128,7 @@ void BattlePetCollection::update()
         m_session.sendManagedPacket(errorPacket);
     }
     m_refusedPets.clear();
+    return added;
 }
 
 void BattlePetCollection::sendJournal()
@@ -478,6 +491,35 @@ bool BattlePetCollection::getPetName(uint32_t petId, std::string& name, uint64_t
     timestamp = pet->record.nameTimestamp;
     creatureId = pet->creatureId;
     return true;
+}
+
+uint32_t BattlePetCollection::getUniqueSpeciesCount() const
+{
+    std::lock_guard lock(m_mutex);
+    std::set<uint32_t> species;
+    for (const auto& [id, pet] : m_pets)
+        if (pet.known)
+            species.insert(pet.record.species);
+    return static_cast<uint32_t>(species.size());
+}
+
+uint32_t BattlePetCollection::getPetCountAtLevel(uint16_t level) const
+{
+    std::lock_guard lock(m_mutex);
+    return static_cast<uint32_t>(std::count_if(m_pets.begin(), m_pets.end(), [level](auto const& entry) { return entry.second.known && entry.second.record.level >= level; }));
+}
+
+uint16_t BattlePetCollection::getLowestSlotLevel() const
+{
+    std::lock_guard lock(m_mutex);
+    uint16_t lowest = BattlePets::MaxLevel;
+    for (const auto& slot : m_slots)
+    {
+        // an empty slot has no level
+        const auto* pet = findKnown(slot.petId);
+        lowest = std::min<uint16_t>(lowest, pet != nullptr ? pet->record.level : 0);
+    }
+    return lowest;
 }
 
 void BattlePetCollection::save(std::vector<uint32_t> const& changed, std::vector<uint32_t> const& removed)

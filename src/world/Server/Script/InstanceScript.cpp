@@ -39,7 +39,6 @@ bool InstanceScript::arePhasesLinked(Object const* objectA, Object const* object
     return (objectA->GetPhase() & objectB->GetPhase()) != 0;
 }
 
-#if VERSION_STRING > TBC
 // Update Achievement Criteria for all players in instance
 void InstanceScript::updateAchievementCriteria(AchievementCriteriaTypes type, uint32_t miscValue1 /*= 0*/, uint32_t miscValue2 /*= 0*/, Unit* unit /*= nullptr*/)
 {
@@ -50,7 +49,6 @@ void InstanceScript::updateAchievementCriteria(AchievementCriteriaTypes type, ui
         if (Player* player = itr.second)
             player->updateAchievementCriteria(type, miscValue1, miscValue2, 0, unit);
 }
-#endif
 
 void InstanceScript::setZoneMusic(uint32_t zoneId, uint32_t musicId)
 {

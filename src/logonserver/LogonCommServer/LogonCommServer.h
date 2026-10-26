@@ -56,6 +56,9 @@ public:
     void HandleBattlePetRequest(WorldPacket& recvData);
     void HandleBattlePetSave(WorldPacket& recvData);
     void HandleBattlePetAdd(WorldPacket& recvData);
+    void HandleAchievementRequest(WorldPacket& recvData);
+    void HandleAchievementSave(WorldPacket& recvData);
+    void HandleAchievementReset(WorldPacket& recvData);
     void HandlePopulationRespond(WorldPacket& recvData);
     void HandleRequestCheckAccount(WorldPacket& recvData);
     void HandleRequestAllAccounts(WorldPacket& recvData);

@@ -161,6 +161,55 @@ struct DBCPosition3D
 
 namespace WDB::Structures
 {
+    struct AchievementCategoryEntry
+    {
+        uint32_t id{0};
+        int32_t parent{-1};
+    };
+
+    // a criteria of an achievement before 5.4, from 5.4 on the criteria trees replace it
+    struct AchievementCriteriaEntry
+    {
+        uint32_t ID{0};
+        uint32_t referredAchievement{0};
+        uint32_t requiredType{0};
+        uint32_t asset{0};                                          // creature, item, quest, map, ... of the type
+        uint32_t quantity{0};
+        uint32_t startEvent{0};
+        uint32_t startAsset{0};
+        uint32_t failEvent{0};
+        uint32_t failAsset{0};
+        std::string name;
+        uint32_t flags{0};
+        uint32_t timerStartEvent{0};
+        uint32_t timerAsset{0};
+        uint32_t timerTime{0};                                      // time limit in seconds
+        uint32_t order{0};
+        uint32_t worldStateId{0};                                   // 4.x and later
+        int32_t worldStateValue{0};
+        std::array<uint32_t, 3> conditionType{0, 0, 0};            // 4.x and later, the modifier types of 5.4
+        std::array<uint32_t, 3> conditionValue{0, 0, 0};
+    };
+
+    struct AchievementEntry
+    {
+        uint32_t ID{0};
+        int32_t factionFlag{-1};                                    // -1 both, 0 Horde, 1 Alliance
+        int32_t mapID{-1};                                          // -1 every map
+        uint32_t parentAchievement{0};
+        std::string name;
+        std::string description;
+        uint32_t categoryId{0};
+        uint32_t points{0};
+        uint32_t orderInCategory{0};
+        uint32_t flags{0};
+        uint32_t icon{0};
+        std::string rewardName;
+        uint32_t count{0};
+        uint32_t refAchievement{0};
+        uint32_t criteriaTreeID{0};                                 // 5.4 and later
+    };
+
     struct AreaGroupEntry
     {
         uint32_t id{0};
@@ -349,6 +398,44 @@ namespace WDB::Structures
         std::array<uint32_t, 4> cooldowns{0, 0, 0, 0};
     };
 
+    // the criteria of achievements from 5.4 on: the leaves of the criteria trees
+    struct CriteriaEntry
+    {
+        uint32_t id{0};
+        uint32_t type{0};
+        int32_t asset{0};
+        uint32_t startEvent{0};
+        int32_t startAsset{0};
+        uint32_t startTimer{0};
+        uint32_t failEvent{0};
+        int32_t failAsset{0};
+        uint32_t modifierTreeId{0};
+        uint32_t flags{0};
+        uint32_t eligibilityWorldStateId{0};
+        int32_t eligibilityWorldStateValue{0};
+    };
+
+    struct CriteriaTreeEntry
+    {
+        uint32_t id{0};
+        uint32_t criteriaId{0};
+        uint32_t amount{0};
+        uint32_t operatorType{0};
+        uint32_t parent{0};
+        uint32_t flags{0};
+    };
+
+    struct CurrencyTypesEntry
+    {
+        uint32_t item_id{0};                                        // the currency, in 3.x the item of the currency
+        uint32_t bit_index{0};                                      // 3.x: bit in the known currencies (1 << (index - 1))
+        uint32_t Category{0};                                       // 4.x and later
+        std::string name;
+        uint32_t TotalCap{0};
+        uint32_t WeekCap{0};
+        uint32_t Flags{0};
+    };
+
     struct DurabilityCostsEntry
     {
         uint32_t itemLevel{0};
@@ -449,6 +536,20 @@ namespace WDB::Structures
         {
             return (factionFlags & FACTION_TEMPLATE_FLAG_CONTESTED_GUARD) != 0;
         }
+    };
+
+    // the reputation steps of a friendship faction
+    struct FriendshipRepReactionEntry
+    {
+        uint32_t id{0};
+        uint32_t friendshipRepId{0};
+        uint32_t reactionThreshold{0};
+    };
+
+    struct FriendshipReputationEntry
+    {
+        uint32_t id{0};
+        uint32_t factionId{0};
     };
 
     struct GameObjectDisplayInfoEntry
@@ -556,6 +657,24 @@ namespace WDB::Structures
         [[nodiscard]] uint32_t getResetTimeHeroic() const { return resetHeroicTime; }
     };
 
+    struct ModifierTreeEntry
+    {
+        uint32_t id{0};
+        uint32_t type{0};
+        int32_t asset{0};
+        int32_t secondaryAsset{0};
+        uint32_t operatorType{0};
+        uint32_t amount{0};
+        uint32_t parent{0};
+    };
+
+    // the 136 columns of the 5.2 to 5.4 rows, the failure text at column 132 skipped
+    struct PlayerConditionEntry
+    {
+        uint32_t id{0};
+        std::array<int32_t, 134> values{};
+    };
+
     struct StableSlotPricesEntry
     {
         uint32_t id{0};
@@ -576,6 +695,13 @@ namespace WDB::Structures
         int32_t continentMapId{-1};
     };
 
+    // the byte code of an expression over world states, written as hex text
+    struct WorldStateExpressionEntry
+    {
+        uint32_t id{0};
+        std::string expression;
+    };
+
 #if VERSION_STRING <= Classic
 #define NAME_PATTERN 8
 #else
@@ -587,480 +713,6 @@ namespace WDB::Structures
 #endif
 
 #pragma pack(push, 1)
-    struct AchievementCategoryEntry
-    {
-        uint32_t ID;                                                // 0
-        uint32_t parentCategory;                                    // 1 -1 for main category
-        const char* name;                                           // 2-17
-        uint32_t name_flags;                                        // 18
-        uint32_t sortOrder;                                         // 19
-    };
-
-#if VERSION_STRING >= WotLK
-    struct AchievementCriteriaEntry
-    {
-        uint32_t ID;                                                // 0
-        uint32_t referredAchievement;                               // 1
-        uint32_t requiredType;                                      // 2
-        union
-        {
-            // ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE = 0
-            ///\todo also used for player deaths.
-            struct
-            {
-                uint32_t creatureID;                                // 3
-                uint32_t creatureCount;                             // 4
-            } kill_creature;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_WIN_BG = 1
-            ///\todo there are further criterias instead just winning
-            struct
-            {
-                uint32_t bgMapID;                                   // 3
-                uint32_t winCount;                                  // 4
-            } win_bg;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL = 5
-            struct
-            {
-                uint32_t unused;                                    // 3
-                uint32_t level;                                     // 4
-            } reach_level;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL = 7
-            struct
-            {
-                uint32_t skillID;                                   // 3
-                uint32_t skillLevel;                                // 4
-            } reach_skill_level;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_ACHIEVEMENT = 8
-            struct
-            {
-                uint32_t linkedAchievement;                         // 3
-            } complete_achievement;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT = 9
-            struct
-            {
-                uint32_t unused;                                    // 3
-                uint32_t totalQuestCount;                           // 4
-            } complete_quest_count;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_DAILY_QUEST_DAILY = 10
-            struct
-            {
-                uint32_t unused;                                    // 3
-                uint32_t numberOfDays;                              // 4
-            } complete_daily_quest_daily;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE = 11
-            struct
-            {
-                uint32_t zoneID;                                    // 3
-                uint32_t questCount;                                // 4
-            } complete_quests_in_zone;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_CURRENCY = 12
-            struct
-            {
-                uint32_t currency;
-                uint32_t count;
-            } currencyGain;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_DAILY_QUEST = 14
-            struct
-            {
-                uint32_t unused;                                    // 3
-                uint32_t questCount;                                // 4
-            } complete_daily_quest;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_BATTLEGROUND = 15
-            struct
-            {
-                uint32_t mapID;                                     // 3
-            } complete_battleground;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_DEATH_AT_MAP= 16
-            struct
-            {
-                uint32_t mapID;                                     // 3
-            } death_at_map;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_DEATH_IN_DUNGEON = 18
-            struct
-            {
-                uint32_t  manLimit;                                 // 3
-            } death_in_dungeon;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_RAID = 19
-            struct
-            {
-                uint32_t groupSize;                                 // 3 can be 5, 10 or 25
-            } complete_raid;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_CREATURE = 20
-            struct
-            {
-                uint32_t creatureEntry;                             // 3
-            } killed_by_creature;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING = 24
-            struct
-            {
-                uint32_t unused;                                    // 3
-                uint32_t fallHeight;                                // 4
-            } fall_without_dying;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_DEATHS_FROM = 26
-            struct
-            {
-                uint32_t type;                                      // 3, see enum EnviromentalDamage
-            } death_from;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST = 27
-            struct
-            {
-                uint32_t questID;                                   // 3
-                uint32_t questCount;                                // 4
-            } complete_quest;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET = 28
-            // ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2 = 69
-            struct
-            {
-                uint32_t spellID;                                   // 3
-                uint32_t spellCount;                                // 4
-            } be_spell_target;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL = 29
-            // ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2 = 110
-            struct
-            {
-                uint32_t spellID;                                   // 3
-                uint32_t castCount;                                 // 4
-            } cast_spell;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_BG_OBJECTIVE_CAPTURE
-            struct
-            {
-                uint32_t objectiveId;                               // 3
-                uint32_t completeCount;                             // 4
-            } bg_objective;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA = 31
-            struct
-            {
-                uint32_t areaID;                                    // 3 Reference to AreaTable.dbc
-                uint32_t killCount;                                 // 4
-            } honorable_kill_at_area;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_WIN_ARENA = 32
-            struct
-            {
-                uint32_t mapID;                                     // 3 Reference to Map.dbc
-            } win_arena;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_PLAY_ARENA = 33
-            struct
-            {
-                uint32_t mapID;                                     // 3 Reference to Map.dbc
-            } play_arena;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_LEARN_SPELL = 34
-            struct
-            {
-                uint32_t spellID;                                   // 3 Reference to Map.dbc
-            } learn_spell;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM = 36
-            struct
-            {
-                uint32_t itemID;                                    // 3
-                uint32_t itemCount;                                 // 4
-            } own_item;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA = 37
-            struct
-            {
-                uint32_t unused;                                    // 3
-                uint32_t count;                                     // 4
-                uint32_t flag;                                      // 5 4=in a row
-            } win_rated_arena;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_TEAM_RATING = 38
-            struct
-            {
-                uint32_t teamtype;                                  // 3 {2,3,5}
-            } highest_team_rating;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_REACH_TEAM_RATING = 39
-            struct
-            {
-                uint32_t teamtype;                                  // 3 {2,3,5}
-                uint32_t teamrating;                                // 4
-            } reach_team_rating;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_PERSONAL_RATING = 39
-            struct
-            {
-                uint32_t teamtype; // 3 {2, 3, 5}
-                uint32_t PersonalRating; // 4
-            } highest_personal_rating;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL = 40
-            struct
-            {
-                uint32_t skillID;                                   // 3
-                uint32_t skillLevel;                                // 4 apprentice=1, journeyman=2, expert=3, artisan=4, master=5, grand master=6
-            } learn_skill_level;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_USE_ITEM = 41
-            struct
-            {
-                uint32_t itemID;                                    // 3
-                uint32_t itemCount;                                 // 4
-            } use_item;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM = 42
-            struct
-            {
-                uint32_t itemID;                                    // 3
-                uint32_t itemCount;                                 // 4
-            } loot_item;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA = 43
-            struct
-            {
-                uint32_t areaReference;                             // 3 - this is an index to WorldMapOverlay
-            } explore_area;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_OWN_RANK= 44
-            struct
-            {
-                ///\todo This rank is _NOT_ the index from CharTitles.dbc
-                uint32_t rank;                                      // 3
-            } own_rank;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT= 45
-            struct
-            {
-                uint32_t unused;                                    // 3
-                uint32_t numberOfSlots;                             // 4
-            } buy_bank_slot;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION= 46
-            struct
-            {
-                uint32_t factionID;                                 // 3
-                uint32_t reputationAmount;                          // 4 Total reputation amount, so 42000 = exalted
-            } gain_reputation;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION= 47
-            struct
-            {
-                uint32_t unused;                                    // 3
-                uint32_t numberOfExaltedFactions;                   // 4
-            } gain_exalted_reputation;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM = 49
-            ///\todo where is the required itemlevel stored?
-            struct
-            {
-                uint32_t itemSlot;                                  // 3
-            } equip_epic_item;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_ROLL_NEED_ON_LOOT= 50
-            struct
-            {
-                uint32_t rollValue;                                 // 3
-                uint32_t count;                                     // 4
-            } roll_need_on_loot;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_HK_CLASS = 52
-            struct
-            {
-                uint32_t classID;                                   // 3
-                uint32_t count;                                     // 4
-            } hk_class;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_HK_RACE = 53
-            struct
-            {
-                uint32_t raceID;                                    // 3
-                uint32_t count;                                     // 4
-            } hk_race;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE = 54
-            ///\todo where is the information about the target stored?
-            struct
-            {
-                uint32_t emoteID;                                   // 3
-            } do_emote;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_HEALING_DONE = 55
-            struct
-            {
-                uint32_t unused;                                    // 3
-                uint32_t count;                                     // 4
-                uint32_t flag;                                      // 5 =3 for battleground healing
-                uint32_t mapid;                                     // 6
-            } healing_done;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM = 57
-            struct
-            {
-                uint32_t itemID;                                    // 3
-            } equip_item;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD = 62
-            struct
-            {
-                uint32_t unknown;                                   // 3
-                uint32_t goldInCopper;                              // 4
-            } quest_reward_money;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY = 67
-            struct
-            {
-                uint32_t unused;                                    // 3
-                uint32_t goldInCopper;                              // 4
-            } loot_money;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_USE_GAMEOBJECT = 68
-            struct
-            {
-                uint32_t goEntry;                                   // 3
-                uint32_t useCount;                                  // 4
-            } use_gameobject;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_SPECIAL_PVP_KILL= 70
-            ///\todo are those special criteria stored in the dbc or do we have to add another sql table?
-            struct
-            {
-                uint32_t unused;                                    // 3
-                uint32_t killCount;                                 // 4
-            } special_pvp_kill;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_FISH_IN_GAMEOBJECT = 72
-            struct
-            {
-                uint32_t goEntry;                                   // 3
-                uint32_t lootCount;                                 // 4
-            } fish_in_gameobject;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_NUMBER_OF_MOUNTS= 75
-            struct
-            {
-                uint32_t unknown;                                   // 3 777=?
-                uint32_t mountCount;                                // 4
-            } number_of_mounts;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_WIN_DUEL = 76
-            struct
-            {
-                uint32_t unused;                                    // 3
-                uint32_t duelCount;                                 // 4
-            } win_duel;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_POWER = 96
-            struct
-            {
-                uint32_t powerType;                                 // 3 mana= 0, 1=rage, 3=energy, 6=runic power
-            } highest_power;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_STAT = 97
-            struct
-            {
-                uint32_t statType;                                  // 3 4=spirit, 3=int, 2=stamina, 1=agi, 0=strength
-            } highest_stat;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_SPELLPOWER = 98
-            struct
-            {
-                uint32_t spellSchool;                               // 3
-            } highest_spellpower;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_RATING = 100
-            struct
-            {
-                uint32_t ratingType;                                // 3
-            } highest_rating;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_LOOT_TYPE = 109
-            struct
-            {
-                uint32_t lootType;                                  // 3 3=fishing, 2=pickpocket, 4=disentchant
-                uint32_t lootTypeCount;                             // 4
-            } loot_type;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2 = 110
-            struct
-            {
-                uint32_t skillLine;                                 // 3
-                uint32_t spellCount;                                // 4
-            } cast_spell2;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LINE= 112
-            struct
-            {
-                uint32_t skillLine;                                 // 3
-                uint32_t spellCount;                                // 4
-            } learn_skill_line;
-
-            // ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL = 113
-            struct
-            {
-                uint32_t unused;                                    // 3
-                uint32_t killCount;                                 // 4
-            } honorable_kill;
-
-            struct
-            {
-                uint32_t field3;                                    // 3 main requirement
-                uint32_t field4;                                    // 4 main requirement count
-                uint32_t additionalRequirement1_type;               // 5 additional requirement 1 type
-                uint32_t additionalRequirement1_value;              // 6 additional requirement 1 value
-                uint32_t additionalRequirement2_type;               // 7 additional requirement 2 type
-                uint32_t additionalRequirement2_value;              // 8 additional requirement 1 value
-            } raw;
-        };
-
-        char* name[NAME_PATTERN];                                   // 9-24
-        //uint32_t name_flags;                                      // 25
-        uint32_t completionFlag;                                    // 26
-        uint32_t groupFlag;                                         // 27
-        uint32_t unk1;                                              // 28
-        uint32_t timeLimit;                                         // 29 time limit in seconds
-        uint32_t index;                                             // 30
-    };
-
-    struct AchievementEntry
-    {
-        uint32_t ID;                                                // 0
-        int32_t factionFlag;                                        // 1 -1=all, 0=horde, 1=alliance
-        int32_t mapID;                                              // 2 -1=none
-        uint32_t parentAchievement;                                 // 3
-        char* name[NAME_PATTERN];                                   // 4-19
-        //uint32_t name_flags;                                      // 20
-        char* description[NAME_PATTERN];                            // 21-36
-        //uint32_t desc_flags;                                      // 37
-        uint32_t categoryId;                                        // 38
-        uint32_t points;                                            // 39 reward points
-        uint32_t orderInCategory;                                   // 8
-        uint32_t flags;                                             // 41
-        uint32_t icon;                                              // 10
-        char* rewardName[NAME_PATTERN];                             // 43-58 title/item reward name
-        //uint32_t rewardName_flags;                                // 59
-        uint32_t count;                                             // 60
-        uint32_t refAchievement;                                    // 61
-#if VERSION_STRING >= Mop
-        uint32_t criteriaTreeID;
-#endif
-    };
-
-#if VERSION_STRING >= Mop
-    // the battle pet journal: species, the stat states of breeds and species, the quality multipliers
     struct BattlePetSpeciesEntry
     {
         uint32_t id;                                                // 0
@@ -1074,6 +726,8 @@ namespace WDB::Structures
         //char* sourceText;                                         // 8
     };
 
+#if VERSION_STRING >= Mop
+    // the battle pet journal: species, the stat states of breeds and species, the quality multipliers
     struct BattlePetBreedStateEntry
     {
         uint32_t id;                                                // 0
@@ -1104,28 +758,6 @@ namespace WDB::Structures
         uint32_t speciesId;                                         // 1
     };
 #endif
-#endif
-
-    struct CurrencyTypesEntry
-    {
-        //uint32_t ID;                                              // 0 not used
-        uint32_t item_id;                                           // 1 used as index
-        //uint32_t Category;                                        // 2 may be category
-#if VERSION_STRING == WotLK
-        uint32_t bit_index;                                         // 3 bit index in PLAYER_FIELD_KNOWN_CURRENCIES (1 << (index-1))
-#else
-        uint32_t Category;                                          // 1
-        char* name;                                                 // 2
-        //char* unk                                                 // 3
-        //char* unk2                                                // 4
-        //uint32_t unk5;                                            // 5
-        //uint32_t unk6;                                            // 6
-        uint32_t TotalCap;                                          // 7
-        uint32_t WeekCap;                                           // 8
-        uint32_t Flags;                                             // 9
-        //char* description;                                        // 10
-#endif
-    };
 
 #if VERSION_STRING >= WotLK
     struct DungeonEncounterEntry
@@ -2061,7 +1693,6 @@ namespace WDB::Structures
 #endif
     };
 
-#if VERSION_STRING >= Mop
     struct ChrSpecializationEntry
     {
         uint32_t Id;                                                // 0
@@ -2070,7 +1701,6 @@ namespace WDB::Structures
         uint32_t tabPage;                                           // 5
         uint32_t petTabPage;                                        // 6
     };
-#endif
 
 #if VERSION_STRING >= Cata
     struct TalentTreePrimarySpells

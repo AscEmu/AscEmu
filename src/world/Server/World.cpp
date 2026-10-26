@@ -59,6 +59,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <exception>
 
+#include "Management/Achievements/AchievementTrees.hpp"
+#include "Server/CharacterBuildUpdater.hpp"
+#include "Management/Conditions/PlayerConditions.hpp"
+#include "Management/Conditions/WorldStateExpressions.hpp"
+
 #if VERSION_STRING >= Cata
 #include "Management/Guild/GuildFinderMgr.hpp"
 #include "Management/BattlePets/BattlePetMgr.hpp"
@@ -827,10 +832,13 @@ bool World::setInitialWorldSettings()
     sSpellMgr.calculateSpellCoefficients();
 #endif
 
-#if VERSION_STRING > TBC
     sLogger.info("World : Starting Achievement System...");
-    sObjectMgr.loadAchievementCriteriaList();
-#endif
+    Conditions::initializeWorldStateExpressions();
+    Conditions::initializePlayerConditions();
+    sAchievementTrees.initialize();
+
+    // the characters last played with an older build, after the achievement trees they convert to
+    sCharacterBuildUpdater.run();
 
     sLogger.info("World : Starting Mail System...");
     sMailSystem.StartMailSystem();

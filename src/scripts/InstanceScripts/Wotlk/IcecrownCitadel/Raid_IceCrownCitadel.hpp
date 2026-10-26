@@ -960,7 +960,7 @@ enum AdditionalData
     DATA_SAURFANG_DOOR                          = 16,
 };
 
-enum Achievements
+enum IcecrownAchievements
 {
     IM_ON_A_BOAT_10                             = 4536,
     IM_ON_A_BOAT_25                             = 4612

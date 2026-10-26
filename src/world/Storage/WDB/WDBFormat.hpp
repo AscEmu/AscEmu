@@ -28,13 +28,23 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
             }
         },
         {
+            "Achievement_Category.dbc",
+            {
+                ""/*Classic*/,
+                ""/*BC*/,
+                ""/*WotLK*/,
+                ""/*Cata*/,
+                "nixx"/*Mop*/
+            }
+        },
+        {
             "Achievement_Criteria.dbc",
             {
                 ""/*Classic*/,
                 ""/*BC*/,
                 "niiiiiiiissssssssssssssssxiiiii"/*WotLK*/,
-                "niiiiiiiixsiiiiixxxxxxx"/*Cata*/,
-                "niiiiiiiixsiiiiixxxxxxx"/*Mop*/
+                "niiiixiiiisiiiiiiiiiiiii"/*Cata*/,
+                "niiiixiiiisiiiiiiiiiiiii"/*Mop*/
             }
         },
         {
@@ -275,6 +285,26 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "niiiiiiii"/*WotLK*/,
                 "niiiiiiii"/*Cata*/,
                 "niiiiiiii"/*Mop*/
+            }
+        },
+        {
+            "Criteria.dbc",
+            {
+                ""/*Classic*/,
+                ""/*BC*/,
+                ""/*WotLK*/,
+                ""/*Cata*/,
+                "niiiiiiiiiii"/*Mop*/
+            }
+        },
+        {
+            "CriteriaTree.dbc",
+            {
+                ""/*Classic*/,
+                ""/*BC*/,
+                ""/*WotLK*/,
+                ""/*Cata*/,
+                "niixiiix"/*Mop*/
             }
         },
         {
@@ -638,6 +668,26 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
             }
         },
         {
+            "FriendshipRepReaction.dbc",
+            {
+                ""/*Classic*/,
+                ""/*BC*/,
+                ""/*WotLK*/,
+                ""/*Cata*/,
+                "niix"/*Mop*/
+            }
+        },
+        {
+            "FriendshipReputation.dbc",
+            {
+                ""/*Classic*/,
+                ""/*BC*/,
+                ""/*WotLK*/,
+                ""/*Cata*/,
+                "nixx"/*Mop*/
+            }
+        },
+        {
             "LFGDungeons.dbc",
             {
                 "nssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx"/*Classic*/,
@@ -698,6 +748,16 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
             }
         },
         {
+            "ModifierTree.dbc",
+            {
+                ""/*Classic*/,
+                ""/*BC*/,
+                ""/*WotLK*/,
+                ""/*Cata*/,
+                "niiiiii"/*Mop*/
+            }
+        },
+        {
             "MountCapability.dbc",
             {
                 ""/*Classic*/,
@@ -735,6 +795,16 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*WotLK*/,
                 "df"/*Cata*/,
                 "df"/*Mop*/
+            }
+        },
+        {
+            "PlayerCondition.dbc",
+            {
+                ""/*Classic*/,
+                ""/*BC*/,
+                ""/*WotLK*/,
+                ""/*Cata*/,
+                "niiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiixiii"/*Mop*/
             }
         },
         {
@@ -1195,6 +1265,16 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "niiffffffffffiiiiiifffffffiiifffiiiiiiiffiiiiixxxxxxxxxxxx"/*WotLK*/,
                 "niiffffffffffiiiiiifffffffiiifffiiiiiiiffiiiiixxxxxxxxxxxxxxxxxxxx"/*Cata*/,
                 "niiffffffffffiiiiiifffffffiiifffiiiiiiiffiiiiixxxxxxxxxxxxxxxxxxxx"/*Mop*/
+            }
+        },
+        {
+            "WorldStateExpression.dbc",
+            {
+                ""/*Classic*/,
+                ""/*BC*/,
+                ""/*WotLK*/,
+                ""/*Cata*/,
+                "ns"/*Mop*/
             }
         },
         {

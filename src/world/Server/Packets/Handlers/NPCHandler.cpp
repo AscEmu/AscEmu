@@ -666,8 +666,6 @@ void WorldSession::handleBuyBankSlotOpcode(WorldPacket& recvPacket)
 
     _player->setBankSlots(slots);
     _player->modCoinage(-static_cast<int32_t>(price));
-#if VERSION_STRING > TBC
     _player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT, 1, 0, 0);
-#endif
 
 }

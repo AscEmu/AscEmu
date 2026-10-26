@@ -44,9 +44,7 @@ enum ScriptTypes
     SCRIPT_TYPE_SCRIPT_ENGINE   = 0x20
 };
 
-#ifdef FT_ACHIEVEMENTS
 typedef std::unordered_map<uint32_t, AchievementCriteriaScript*> AchievementCriteriaScripts;
-#endif
 typedef std::unordered_map<uint32_t, SpellScript*> SpellScripts;
 
 // Factory Imports (from script lib)

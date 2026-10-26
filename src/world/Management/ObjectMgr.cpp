@@ -665,29 +665,6 @@ std::vector<CreatureItem>* ObjectMgr::createVendorList(uint32_t _entry)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Achievement
-#if VERSION_STRING > TBC
-void ObjectMgr::loadAchievementCriteriaList()
-{
-    for (uint32_t rowId = 0; rowId < sAchievementCriteriaStore.getNumRows(); ++rowId)
-    {
-        auto criteria = sAchievementCriteriaStore.lookupEntry(rowId);
-        if (!criteria)
-            continue;
-
-        // the lists are indexed by the criteria type, a type the core does not know has no list
-        if (criteria->requiredType >= ACHIEVEMENT_CRITERIA_TYPE_TOTAL)
-            continue;
-
-#if VERSION_STRING > WotLK
-        auto achievement = sAchievementStore.lookupEntry(criteria->referredAchievement);
-        if (achievement && achievement->flags & ACHIEVEMENT_FLAG_GUILD)
-            m_GuildAchievementCriteriasByType[criteria->requiredType].push_back(criteria);
-        else
-#endif
-            m_AchievementCriteriasByType[criteria->requiredType].push_back(criteria);
-    }
-}
-
 void ObjectMgr::loadAchievementRewards()
 {
     m_achievementRewards.clear();
@@ -827,11 +804,6 @@ AchievementReward const* ObjectMgr::getAchievementReward(uint32_t _entry, uint8_
     return nullptr;
 }
 
-AchievementCriteriaEntryList const& ObjectMgr::getAchievementCriteriaByType(AchievementCriteriaTypes _type)
-{
-    return m_AchievementCriteriasByType[_type];
-}
-
 void ObjectMgr::addCompletedAchievement(uint32_t _achievementId)
 {
     m_allCompletedAchievements.insert(_achievementId);
@@ -844,7 +816,6 @@ bool ObjectMgr::isInCompletedAchievements(uint32_t _achievementId)
         return true;
     return false;
 }
-#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Reputation Mods

@@ -35,6 +35,9 @@
 #include "Server/DatabaseDefinition.hpp"
 #include "LogonCommBattlePets.hpp"
 #include "Management/BattlePets/BattlePetCollection.hpp"
+#include "Management/Achievements/AccountAchievements.hpp"
+#include "Management/Achievements/AchievementConverter.hpp"
+#include "LogonCommAchievements.hpp"
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Server/WorldSocket.hpp"
@@ -137,6 +140,10 @@ void LogonCommClientSocket::HandlePacket(WorldPacket& recvData)
         NULL,                                                   // LRCMSG_BATTLE_PET_SAVE
         NULL,                                                   // LRCMSG_BATTLE_PET_ADD
         &LogonCommClientSocket::HandleBattlePetAddResult,       // LRSMSG_BATTLE_PET_ADD_RESULT
+        NULL,                                                   // LRCMSG_ACHIEVEMENT_REQUEST
+        &LogonCommClientSocket::HandleAchievementResult,        // LRSMSG_ACHIEVEMENT_RESULT
+        NULL,                                                   // LRCMSG_ACHIEVEMENT_SAVE
+        NULL,                                                   // LRCMSG_ACHIEVEMENT_RESET
     };
 
     if (recvData.getOpcode() >= LRMSG_MAX_OPCODES || Handlers[recvData.getOpcode()] == 0)
@@ -173,6 +180,10 @@ void LogonCommClientSocket::HandleRegister(WorldPacket& recvData)
     sLogger.info("Realm `{}` registered as realm {}.", realmname, realmlid);
 
     sLogonCommHandler.addRealmToRealmlistResult(_id, realmlid);
+
+#if VERSION_STRING >= Mop
+    Achievements::sendPendingConversions();
+#endif
     realm_ids.insert(realmlid);
 }
 
@@ -745,5 +756,25 @@ void LogonCommClientSocket::HandleBattlePetAddResult(WorldPacket& recvData)
 #if VERSION_STRING >= Mop
     if (WorldSession* session = sWorld.getSessionByAccountId(accountId))
         session->getBattlePets().onAddResult(result, std::move(pet));
+#endif
+}
+
+void LogonCommClientSocket::HandleAchievementResult(WorldPacket& recvData)
+{
+    uint32_t accountId = 0;
+    recvData >> accountId;
+
+    std::vector<LogonComm::AccountAchievementRecord> achievements;
+    std::vector<LogonComm::AccountCriteriaRecord> criteria;
+    LogonComm::readAccountAchievements(recvData, achievements, criteria);
+    if (recvData.hadReadFailure())
+    {
+        sLogger.failure("LogonCommClient: malformed account achievements for account {}", accountId);
+        return;
+    }
+
+#if VERSION_STRING >= Mop
+    if (WorldSession* session = sWorld.getSessionByAccountId(accountId))
+        session->getAccountAchievements().onLoaded(std::move(achievements), std::move(criteria));
 #endif
 }

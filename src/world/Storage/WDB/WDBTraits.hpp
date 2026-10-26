@@ -68,6 +68,92 @@ namespace WDB
     };
 
     template <>
+    struct DbcTraits<Structures::AchievementEntry> :
+        DbcVersionLayouts<
+            UnsupportedVersion,
+            UnsupportedVersion,
+            Structures::Raw::AchievementEntryWotlk,
+            Structures::Raw::AchievementEntryCata,
+            Structures::Raw::AchievementEntryMop>,
+        StandardDbcFile<"Achievement">
+    {};
+
+    template <>
+    struct DbcTraits<Structures::AchievementCategoryEntry> :
+        DbcVersionLayouts<
+            UnsupportedVersion,
+            UnsupportedVersion,
+            UnsupportedVersion,
+            UnsupportedVersion,
+            Structures::Raw::AchievementCategoryEntryMop>,
+        StandardDbcFile<"Achievement_Category">
+    {};
+
+    template <>
+    struct DbcTraits<Structures::AchievementCriteriaEntry> :
+        DbcVersionLayouts<
+            UnsupportedVersion,
+            UnsupportedVersion,
+            Structures::Raw::AchievementCriteriaEntryWotlk,
+            Structures::Raw::AchievementCriteriaEntryCata,
+            Structures::Raw::AchievementCriteriaEntryMop>,
+        StandardDbcFile<"Achievement_Criteria">
+    {};
+
+    template <>
+    struct DbcTraits<Structures::CriteriaEntry> :
+        DbcVersionLayouts<UnsupportedVersion, UnsupportedVersion, UnsupportedVersion, UnsupportedVersion, Structures::Raw::CriteriaEntryMop>,
+        StandardDbcFile<"Criteria">
+    {};
+
+    template <>
+    struct DbcTraits<Structures::CriteriaTreeEntry> :
+        DbcVersionLayouts<UnsupportedVersion, UnsupportedVersion, UnsupportedVersion, UnsupportedVersion, Structures::Raw::CriteriaTreeEntryMop>,
+        StandardDbcFile<"CriteriaTree">
+    {};
+
+    template <>
+    struct DbcTraits<Structures::CurrencyTypesEntry> :
+        DbcVersionLayouts<
+            UnsupportedVersion,
+            UnsupportedVersion,
+            Structures::Raw::CurrencyTypesEntryWotlk,
+            Structures::Raw::CurrencyTypesEntryCata,
+            Structures::Raw::CurrencyTypesEntryMop>,
+        StandardDbcFile<"CurrencyTypes">
+    {};
+
+    template <>
+    struct DbcTraits<Structures::FriendshipRepReactionEntry> :
+        DbcVersionLayouts<UnsupportedVersion, UnsupportedVersion, UnsupportedVersion, UnsupportedVersion, Structures::Raw::FriendshipRepReactionEntryMop>,
+        StandardDbcFile<"FriendshipRepReaction">
+    {};
+
+    template <>
+    struct DbcTraits<Structures::FriendshipReputationEntry> :
+        DbcVersionLayouts<UnsupportedVersion, UnsupportedVersion, UnsupportedVersion, UnsupportedVersion, Structures::Raw::FriendshipReputationEntryMop>,
+        StandardDbcFile<"FriendshipReputation">
+    {};
+
+    template <>
+    struct DbcTraits<Structures::ModifierTreeEntry> :
+        DbcVersionLayouts<UnsupportedVersion, UnsupportedVersion, UnsupportedVersion, UnsupportedVersion, Structures::Raw::ModifierTreeEntryMop>,
+        StandardDbcFile<"ModifierTree">
+    {};
+
+    template <>
+    struct DbcTraits<Structures::PlayerConditionEntry> :
+        DbcVersionLayouts<UnsupportedVersion, UnsupportedVersion, UnsupportedVersion, UnsupportedVersion, Structures::Raw::PlayerConditionEntryMop>,
+        StandardDbcFile<"PlayerCondition">
+    {};
+
+    template <>
+    struct DbcTraits<Structures::WorldStateExpressionEntry> :
+        DbcVersionLayouts<UnsupportedVersion, UnsupportedVersion, UnsupportedVersion, UnsupportedVersion, Structures::Raw::WorldStateExpressionEntryMop>,
+        StandardDbcFile<"WorldStateExpression">
+    {};
+
+    template <>
     struct DbcTraits<Structures::AreaGroupEntry> :
         DbcVersionLayouts<
             UnsupportedVersion,

@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "AchievementDataEntries.h"
+#include "AchievementDataWriter.h"
 
 #include <vector>
 
@@ -36,6 +37,12 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.expansion >= WoW::Expansion::_WoD)
+            {
+                AchievementWire::writeAll(packet, m_protocol, guid, completedAchievements, criteriaProgress);
+                return true;
+            }
+
             if (m_protocol.isCata())
             {
                 ByteBuffer criteriaData(criteriaProgress.size() * (4 + 4 + 4 + 4 + 8 + 8));

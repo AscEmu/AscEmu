@@ -611,9 +611,7 @@ std::tuple<AddItemResult, std::unique_ptr<Item>> ItemInterface::m_AddItem(std::u
         }
     }
 
-#if VERSION_STRING > TBC
     m_pOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, item->getEntry(), 1, 0);
-#endif
     ////////////////////////////////////////////////////// existingduration stuff /////////////////////////////////////////////////////
     if (item->getItemProperties()->ExistingDuration != 0)
     {
@@ -4400,9 +4398,7 @@ bool ItemInterface::AddItemById(uint32_t itemid, uint32_t count, int32_t randomp
             SlotResult* lr = LastSearchResult();
 
             chr->sendItemPushResultPacket(false, true, false, lr->ContainerSlot, lr->Slot, toadd, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), GetItemCount(item->getEntry()), item->getGuid());
-#if VERSION_STRING > TBC
             chr->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, itemid, 1, 0);
-#endif
             sQuestMgr.OnPlayerItemPickup(m_pOwner, item);
             count -= toadd;
         }
@@ -4532,35 +4528,18 @@ bool ItemInterface::SwapItems(int8_t DstInvSlot, int8_t DstSlot, int8_t SrcInvSl
         if (SrcItem->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
             SrcItem->addFlags(ITEM_FLAG_SOULBOUND);
 
-#if VERSION_STRING > TBC
         m_pOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, SrcItem->getItemProperties()->ItemId, 0, 0);
-
-        if (DstSlot < INVENTORY_SLOT_BAG_START) // check Superior/Epic achievement
-        {
-            // Achievement ID:556 description Equip an epic item in every slot with a minimum item level of 213.
-            // "213" value not found in achievement or criteria entries, have to hard-code it here? :(
-            // Achievement ID:557 description Equip a superior item in every slot with a minimum item level of 187.
-            // "187" value not found in achievement or criteria entries, have to hard-code it here? :(
-            if ((SrcItem->getItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && SrcItem->getItemProperties()->ItemLevel >= 187) ||
-                (SrcItem->getItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && SrcItem->getItemProperties()->ItemLevel >= 213))
-                m_pOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, DstSlot, SrcItem->getItemProperties()->Quality, 0);
-        }
-#endif
+        if (DstSlot < INVENTORY_SLOT_BAG_START)
+            m_pOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, DstSlot, SrcItem->getItemProperties()->ItemId, 0);
     }
 
     if (DstItem && SrcSlot < INVENTORY_SLOT_BAG_END && SrcInvSlot == INVENTORY_SLOT_NOT_SET)   //equip - make sure to soulbind items swapped from equip slot to bag slot
     {
         if (DstItem->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
             DstItem->addFlags(ITEM_FLAG_SOULBOUND);
-#if VERSION_STRING > TBC
         m_pOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, DstItem->getItemProperties()->ItemId, 0, 0);
-        if (SrcSlot < INVENTORY_SLOT_BAG_START) // check Superior/Epic achievement
-        {
-            if ((DstItem->getItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && DstItem->getItemProperties()->ItemLevel >= 187) ||
-                (DstItem->getItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && DstItem->getItemProperties()->ItemLevel >= 213))
-                m_pOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, SrcSlot, DstItem->getItemProperties()->Quality, 0);
-        }
-#endif
+        if (SrcSlot < INVENTORY_SLOT_BAG_START)
+            m_pOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, SrcSlot, DstItem->getItemProperties()->ItemId, 0);
     }
 
     if (SrcInvSlot == DstInvSlot) //in 1 bag

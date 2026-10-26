@@ -126,6 +126,14 @@ namespace WDB
         inline const WDC5TableSchema Achievement = makeScalarSchema("Achievement.db2", 0x6FC5281B, 3, 19);
         inline const WDC5TableSchema Criteria = makeScalarSchema("Criteria.db2", 0x53D03513, 0, 12);
         inline const WDC5TableSchema CriteriaTree = makeScalarSchema("CriteriaTree.db2", 0xFF97AE12, -1, 7);
+        inline const WDC5TableSchema ModifierTree = makeScalarSchema("ModifierTree.db2", 0xF13BB1D8, -1, 7);
+        inline const WDC5TableSchema AchievementCategory = makeScalarSchema("Achievement_Category.db2", 0x67B2B4BD, 1, 4);
+        inline const WDC5TableSchema WorldStateExpression = makeScalarSchema("WorldStateExpression.db2", 0xCA33F540, -1, 1);
+        inline const WDC5TableSchema PlayerCondition = makeSchemaWithArrays("PlayerCondition.db2", 0x1D743D99, -1, 86, {
+            { 59, 4 }, { 60, 4 }, { 61, 4 }, { 62, 3 }, { 63, 3 }, { 64, 4 }, { 65, 4 }, { 66, 4 }, { 67, 4 }, { 68, 4 }, { 69, 4 }, { 70, 2 }, { 71, 2 },
+            { 72, 4 }, { 73, 4 }, { 74, 4 }, { 75, 4 }, { 76, 4 }, { 77, 4 }, { 78, 4 }, { 79, 4 }, { 80, 4 }, { 81, 6 }, { 82, 2 }, { 83, 4 }, { 84, 4 }, { 85, 4 } });
+        inline const WDC5TableSchema FriendshipRepReaction = makeScalarSchema("FriendshipRepReaction.db2", 0x1BC0DC59, -1, 4);
+        inline const WDC5TableSchema FriendshipReputation = makeScalarSchema("FriendshipReputation.db2", 0x3D52E27A, 3, 7);
 
         // Battle pets: the breed and species states take their breed and species from the relation data
         inline const WDC5TableSchema BattlePetSpecies = makeScalarSchema("BattlePetSpecies.db2", 0x589BE282, 2, 12);

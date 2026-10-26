@@ -1708,6 +1708,8 @@ public:
     bool addNewFaction(WDB::Structures::FactionEntry const* factionEntry, int32_t standing, bool base);
     void onModStanding(WDB::Structures::FactionEntry const* factionEntry, FactionReputation* reputation);
     uint32_t getExaltedCount() const;
+    uint32_t getFactionCountAtLeast(int32_t standing) const;
+    uint32_t getVisibleFactionCount() const;
 
     void sendSmsgInitialFactions();
     void initialiseReputation();
@@ -1727,20 +1729,24 @@ private:
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // Currency (Cata+, CurrencyTypes.dbc-driven, non-itemized)
+public:
+    uint32_t getCurrency(uint32_t id, bool usePrecision = true) const;
+    // the amount gained in the current season
+    uint32_t getTrackedCurrency(uint32_t id) const;
+    bool hasCurrency(uint32_t id, uint32_t count) const;
+
+private:
+    CurrencyMap m_currencies;
+
 #if VERSION_STRING >= Cata
 public:
     bool loadCurrencies(QueryResult* result);
     bool saveCurrencies(bool newCharacter, QueryBuffer* buf);
 
-    uint32_t getCurrency(uint32_t id, bool usePrecision = true) const;
-    bool hasCurrency(uint32_t id, uint32_t count) const;
     void setCurrency(uint32_t id, uint32_t count);
     void modifyCurrency(uint32_t id, int32_t count, bool printLog = true, bool ignoreMultipliers = false);
     void resetCurrencyWeekCap();
     void sendSmsgSetupCurrency();
-
-private:
-    CurrencyMap m_currencies;
 #endif
 
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -1940,10 +1946,11 @@ public:
 
     void tagUnit(Object* object);
 
-#if VERSION_STRING > TBC
     void updateAchievementCriteria(AchievementCriteriaTypes type, int32_t miscValue1 = 0, int32_t miscValue2 = 0, uint32_t miscValue3 = 0, Unit* unit = nullptr);
+    // the start and fail events of criteria with timers
+    void startAchievementCriteria(uint8_t startEvent, uint32_t asset);
+    void failAchievementCriteria(uint8_t failEvent, uint32_t asset);
     AchievementMgr* getAchievementMgr();
-#endif
 
     void sendUpdateDataToSet(ByteBuffer* groupBuf, ByteBuffer* nonGroupBuf, bool sendToSelf);
     void sendWorldStateUpdate(uint32_t worldState, uint32_t value);
@@ -1967,9 +1974,7 @@ private:
     uint16_t m_partyUpdateTimer = 1000;
     uint32_t m_itemUpdateTimer = 0;
 
-#if VERSION_STRING > TBC
     std::unique_ptr<AchievementMgr> m_achievementMgr;
-#endif
 
     uint32_t m_timeSyncCounter = 0;
     uint32_t m_timeSyncTimer = 0;

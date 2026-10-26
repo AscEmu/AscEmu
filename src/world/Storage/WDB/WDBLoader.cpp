@@ -189,6 +189,10 @@ namespace WDB
             return false;
         }
 
+        // a 64 bit column counts as one field, the format names both of its halves
+        if (const auto formatLength = static_cast<uint32_t>(strlen(_dbcFormat)); formatLength > m_field_count && formatLength * sizeof(uint32_t) == m_record_size)
+            m_field_count = formatLength;
+
         m_fields_offset = std::make_unique<uint32_t[]>(m_field_count);
         m_fields_offset[0] = 0;
 

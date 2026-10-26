@@ -50,6 +50,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Objects/Units/Creatures/Vehicle.hpp"
 #include "Objects/Units/Players/Player.hpp"
+#include "Management/Achievements/AchievementEvents.hpp"
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Server/Packets/SmsgAttackStart.h"
@@ -2448,7 +2449,6 @@ void Unit::handleFall(MovementInfo const& movementInfo)
         {
             health_loss = getHealth();
         }
-#if VERSION_STRING > TBC
         else if ((falldistance >= 65))
         {
             if (isPlayer())
@@ -2460,7 +2460,6 @@ void Unit::handleFall(MovementInfo const& movementInfo)
                     0);
             }
         }
-#endif
 
         sendEnvironmentalDamageLogPacket(getGuid(), DAMAGE_FALL, health_loss);
         addSimpleEnvironmentalDamageBatchEvent(DAMAGE_FALL, health_loss);
@@ -4184,6 +4183,21 @@ void Unit::addAura(std::unique_ptr<Aura> auraHolder)
 
     auto* aur = auraHolder.get();
     _addAura(std::move(auraHolder));
+
+    if (isPlayer())
+    {
+        auto* const player = static_cast<Player*>(this);
+        player->failAchievementCriteria(Achievements::FailGainAura, aur->getSpellId());
+        player->startAchievementCriteria(Achievements::StartGainAura, aur->getSpellId());
+        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            const auto effectType = aur->getAuraEffect(i)->getAuraEffectType();
+            if (effectType == SPELL_AURA_NONE)
+                continue;
+            player->failAchievementCriteria(Achievements::FailGainAuraEffect, effectType);
+            player->startAchievementCriteria(Achievements::StartGainAuraEffect, effectType);
+        }
+    }
 
     if (visualSlot < AuraSlots::NEGATIVE_VISUAL_SLOT_END)
     {
@@ -6768,9 +6782,7 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
 #if VERSION_STRING >= Cata
                 plrOwner->onKillUnitCurrency(this, false);
 #endif
-#ifdef FT_ACHIEVEMENTS
-                plrOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLING_BLOW, attacker->GetMapId(), 0, 0);
-#endif
+                plrOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLING_BLOW, attacker->GetMapId(), 0, 0, this);
             }
 
             // Check is the unit gray level for attacker
@@ -6778,10 +6790,9 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
             {
                 if (isPlayer())
                 {
-#ifdef FT_ACHIEVEMENTS
-                    plrOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, plrOwner->getAreaId(), 1, 0);
-                    plrOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL, 1, 0, 0);
-#endif
+                    plrOwner->startAchievementCriteria(Achievements::StartKillPlayer, 0);
+                    plrOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, plrOwner->getAreaId(), 1, 0, this);
+                    plrOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL, 1, 0, 0, this);
                     HonorHandler::OnPlayerKilled(plrOwner, dynamic_cast<Player*>(this));
                 }
 
@@ -6886,7 +6897,6 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
                     {
                         sQuestMgr.OnPlayerKill(tagger, dynamic_cast<Creature*>(this), true);
 
-#ifdef FT_ACHIEVEMENTS
                         if (tagger->isInGroup())
                         {
                             tagger->getGroup()->UpdateAchievementCriteriaForInrange(this, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
@@ -6894,23 +6904,22 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
                         }
                         else
                         {
-                            tagger->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
-                            tagger->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
+                            tagger->startAchievementCriteria(Achievements::StartKillCreature, getEntry());
+                            tagger->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0, this);
+                            tagger->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0, this);
                         }
-#endif
                     }
                 }
             }
-#ifdef FT_ACHIEVEMENTS
             else if (isCritter())
             {
                 if (auto* const plrOwner = attacker->getPlayerOwnerOrSelf())
                 {
-                    plrOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
-                    plrOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
+                    plrOwner->startAchievementCriteria(Achievements::StartKillCreature, getEntry());
+                    plrOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0, this);
+                    plrOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0, this);
                 }
             }
-#endif
         }
 
         // The unit has died so no need to proceed any further
@@ -7726,13 +7735,7 @@ uint64_t Unit::getTaggerGuid() const
 
 bool Unit::isTagged() const
 {
-    // U_DYN_FLAG_TAGGED_BY_OTHER is only ever computed transiently per-viewer while
-    // building an outgoing update packet (see Object::buildValuesUpdate's per-target
-    // creature recompute) - it is never written back into this object's own stored
-    // dynamic-flags field, so hasDynamicFlags() here was always false for a normal
-    // (non-summon) tag and made isLootable()/isTagged() effectively unreachable.
-    // Check the actual stored tagger guid directly instead, matching the reference's
-    // hasLootRecipient() (m_lootRecipient || m_lootRecipientGroup).
+    // the tagged by other flag exists only in the outgoing update of each viewer, the stored tagger decides
     return m_taggerGuid != 0;
 }
 

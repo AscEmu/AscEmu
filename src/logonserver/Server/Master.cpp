@@ -35,7 +35,7 @@ using std::chrono::milliseconds;
 std::unique_ptr<Database> sLogonSQL;
 std::atomic<bool> mrunning(true);
 
-static constexpr char REQUIRED_LOGON_DB_VERSION[] = "20261025-01_logoncomm_log";
+static constexpr char REQUIRED_LOGON_DB_VERSION[] = "20261026-00_account_achievements";
 
 MasterLogon& MasterLogon::getInstance()
 {

@@ -98,6 +98,7 @@
 #include "Server/PacketBroadcast.hpp"
 #include "Management/BattlePets/BattlePetCollection.hpp"
 #include "Management/BattlePets/BattlePetMgr.hpp"
+#include "Management/Achievements/AchievementEvents.hpp"
 #include "Server/Packets/SmsgBattlePetError.h"
 
 using namespace AscEmu::Packets;
@@ -4314,6 +4315,13 @@ void Spell::SpellEffectOpenLockItem(uint8_t /*effectIndex*/)
 void Spell::SpellEffectSendEvent(uint8_t effectIndex) //Send Event
 {
     //This is mostly used to trigger events on quests or some places
+
+    if (p_caster != nullptr)
+    {
+        uint32_t const eventId = static_cast<uint32_t>(m_spellInfo->getEffectMiscValue(effectIndex));
+        p_caster->failAchievementCriteria(Achievements::FailSendEvent, eventId);
+        p_caster->startAchievementCriteria(Achievements::StartSendEvent, eventId);
+    }
 
     if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->getId(), effectIndex, this))
         return;

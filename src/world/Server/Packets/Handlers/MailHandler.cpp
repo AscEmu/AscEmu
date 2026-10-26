@@ -447,6 +447,8 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
 
     // charge and save gold
     _player->modCoinage(-static_cast<int32_t>(cost));
+    // the postage without the money that travels with the mail
+    _player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GOLD_SPENT_FOR_MAIL, static_cast<int32_t>(cost - static_cast<uint32_t>(srlPacket.money)));
 
     CharacterDatabase.execute("UPDATE characters SET gold = %u WHERE guid = %u", _player->getCoinage(), _player->m_playerInfo->guid);
 

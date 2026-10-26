@@ -1078,6 +1078,14 @@ static inline constexpr uint16_t PLAYER_REPUTATION_COUNT = 256;
 static inline constexpr uint8_t PLAYER_REPUTATION_COUNT = 128;
 #endif
 
+enum CurrencyTypeFlags : uint32_t
+{
+    CURRENCY_FLAG_USES_PRECISION = 0x008, // stored/sent at x100 scale
+    CURRENCY_FLAG_TRACK_QUANTITY = 0x080
+};
+
+static inline constexpr uint32_t CURRENCY_PRECISION = 100;
+
 #if VERSION_STRING >= Cata
 enum CurrencyIds : uint32_t
 {
@@ -1087,16 +1095,11 @@ enum CurrencyIds : uint32_t
     CURRENCY_TYPE_VALOR_POINTS = 396
 };
 
-enum CurrencyTypeFlags : uint32_t
-{
-    CURRENCY_FLAG_USES_PRECISION = 0x008, // stored/sent at x100 scale
-    CURRENCY_FLAG_TRACK_QUANTITY = 0x080
-};
-
-static inline constexpr uint32_t CURRENCY_PRECISION = 100;
 // Justice Points over the total cap convert to money at 47s50c per point.
 static inline constexpr uint32_t JUSTICE_POINTS_CONVERSION_MONEY = 4750;
+#endif
 
+// the currencies of a character, filled from 4.x on
 struct PlayerCurrency
 {
     enum class State : uint8_t
@@ -1112,7 +1115,6 @@ struct PlayerCurrency
     uint32_t trackedQuantity = 0;
     uint8_t flags = 0;
 };
-#endif
 
 struct PetCache
 {
@@ -1269,9 +1271,7 @@ typedef std::map<uint32_t, std::shared_ptr<ScriptOverrideList>> SpellOverrideMap
 typedef std::map<uint32_t, std::unique_ptr<FactionReputation>>  ReputationMap;
 typedef std::map<uint16_t, PlayerSkill>                         SkillMap;
 typedef std::map<uint32_t, PlayerCooldown>                      PlayerCooldownMap;
-#if VERSION_STRING >= Cata
 typedef std::map<uint32_t, PlayerCurrency>                      CurrencyMap;
-#endif
 
 struct PlayerCheat
 {

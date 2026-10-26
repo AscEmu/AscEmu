@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Spell.hpp"
+#include "Management/Achievements/AchievementEvents.hpp"
 
 #include "SpellAura.hpp"
 #include "SpellTarget.h"
@@ -1248,17 +1249,17 @@ void Spell::finish(bool successful)
                     ++targetCount;
                     sQuestMgr.OnPlayerCast(getPlayerCaster(), getSpellInfo()->getId(), target.first);
                 }
-#ifdef FT_ACHIEVEMENTS
                 else if (wowGuid.isPlayer())
                 {
                     auto* const targetPlayer = getUnitCaster()->getWorldMapPlayer(target.first);
                     if (targetPlayer != nullptr)
                     {
+                        targetPlayer->failAchievementCriteria(Achievements::FailBeSpellTarget, getSpellInfo()->getId());
+                        targetPlayer->startAchievementCriteria(Achievements::StartBeSpellTarget, getSpellInfo()->getId());
                         targetPlayer->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET, getSpellInfo()->getId(), 0, 0, u_caster);
                         targetPlayer->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2, getSpellInfo()->getId(), 0, 0, u_caster);
                     }
                 }
-#endif
             }
 
             if (getPlayerCaster() != nullptr && getPlayerCaster()->IsInWorld())
@@ -1269,7 +1270,6 @@ void Spell::finish(bool successful)
                     sQuestMgr.OnPlayerCast(getPlayerCaster(), getSpellInfo()->getId(), guid);
                 }
 
-#ifdef FT_ACHIEVEMENTS
                 // Set target for spell cast achievement only if spell had one target
                 Object* spellTarget = nullptr;
                 if (m_uniqueHittedTargets.size() == 1)
@@ -1277,7 +1277,14 @@ void Spell::finish(bool successful)
 
                 if (spellTarget && spellTarget->isCreatureOrPlayer())
                     getPlayerCaster()->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2, getSpellInfo()->getId(), 0, 0, spellTarget->ToUnit());
-#endif
+
+                // the cast itself: its criteria, the timers it starts and fails
+                if (i_caster != nullptr)
+                    getPlayerCaster()->startAchievementCriteria(Achievements::StartUseItem, i_caster->getEntry());
+                getPlayerCaster()->failAchievementCriteria(Achievements::FailCastSpell, getSpellInfo()->getId());
+                getPlayerCaster()->startAchievementCriteria(Achievements::StartCastSpell, getSpellInfo()->getId());
+                getPlayerCaster()->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL, getSpellInfo()->getId(), 0, 0,
+                    spellTarget != nullptr && spellTarget->isCreatureOrPlayer() ? spellTarget->ToUnit() : nullptr);
             }
         }
     }

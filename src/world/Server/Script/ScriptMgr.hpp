@@ -48,10 +48,8 @@ public:
     ScriptMgr& operator=(ScriptMgr&&) = delete;
     ScriptMgr& operator=(ScriptMgr const&) = delete;
 
-#ifdef FT_ACHIEVEMENTS
     // Achievement criteria script hooks
     bool callScriptedAchievementCriteriaCanComplete(uint32_t criteriaId, Player* player, Object* target) const;
-#endif
 
     // Spell script hooks
     SpellCastResult callScriptedSpellCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2) const;
@@ -84,11 +82,9 @@ public:
     bool callScriptedSpellCanProcOnTriggered(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, Aura* triggeredFromAura) const;
     SpellScriptExecuteState callScriptedSpellProcCastSpell(SpellProc* spellProc, Unit* caster, Unit* victim, Spell* spellToProc) const;
 
-#ifdef FT_ACHIEVEMENTS
     AchievementCriteriaScript* getAchievementCriteriaScript(uint32_t criteriaId) const;
     void register_achievement_criteria_script(uint32_t criteriaId, AchievementCriteriaScript* acs);
     void register_achievement_criteria_script(uint32_t* criteriaIds, AchievementCriteriaScript* acs);
-#endif
 
     SpellScript* getSpellScript(uint32_t spellId) const;
     // By default this will register spell script to spell's all different ranks and difficulties (if they exist)
@@ -101,9 +97,7 @@ public:
     CreatureAIScript* getCreatureAIScript(Creature* pCreature) const;
 
 protected:
-#ifdef FT_ACHIEVEMENTS
     AchievementCriteriaScripts _achievementCriteriaScripts;
-#endif
     SpellScripts _spellScripts;
 
 private:

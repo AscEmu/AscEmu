@@ -15,6 +15,7 @@ namespace AscEmu::Packets
     {
         uint32_t achievementId = 0;
         time_t date = 0;
+        bool accountWide = false;               // 6.x and later name no earner
     };
 
     struct CriteriaProgressEntry

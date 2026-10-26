@@ -18,6 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Management/Achievements/AchievementEvents.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Management/HonorHandler.h"
@@ -381,6 +382,11 @@ std::recursive_mutex& Battleground::GetMutex()
 void Battleground::startBattleground()
 {
     this->OnStart();
+
+    for (auto const& team : m_players)
+        for (Player* player : team)
+            if (player != nullptr)
+                player->startAchievementCriteria(Achievements::StartBattleground, player->GetMapId());
 }
 
 //todo Move reward calculations to seperate functions
@@ -424,6 +430,34 @@ void Battleground::endBattleground(PlayerTeam winningTeam)
     }
 
     this->playSoundToAll(winningTeam == TEAM_ALLIANCE ? BattlegroundDef::ALLIANCEWINS : BattlegroundDef::HORDEWINS);
+
+    for (uint8_t team = 0; team < 2; ++team)
+    {
+        for (Player* player : m_players[team])
+        {
+            if (player == nullptr)
+                continue;
+
+            int32_t const mapId = static_cast<int32_t>(player->GetMapId());
+            bool const won = team == static_cast<uint8_t>(winningTeam);
+            if (isArena())
+            {
+                player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_PLAY_ARENA, mapId);
+                if (won)
+                {
+                    player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_WIN_ARENA, mapId);
+                    if (Rated())
+                        player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA, 1);
+                }
+            }
+            else
+            {
+                player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_BATTLEGROUND, mapId);
+                if (won)
+                    player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_WIN_BG, mapId);
+            }
+        }
+    }
 
     this->updatePvPData();
 }
@@ -549,6 +583,8 @@ void Battleground::removePlayer(Player* plr, bool logout, bool teleport)
 {
     if (!plr)
         return;
+
+    plr->failAchievementCriteria(Achievements::FailLeaveBattleground, 0);
 
     // Never call packet distribution or virtual battleground hooks while
     // holding m_mutex. Both paths may legitimately call back into

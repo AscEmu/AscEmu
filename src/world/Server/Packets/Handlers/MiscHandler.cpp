@@ -1201,6 +1201,8 @@ void WorldSession::handleSummonResponseOpcode(WorldPacket& recvPacket)
     _player->safeTeleport(_player->m_summonData.mapId, _player->m_summonData.instanceId, _player->m_summonData.position);
 
     _player->m_summonData.summonerId = _player->m_summonData.instanceId = _player->m_summonData.mapId = 0;
+
+    _player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_ACCEPTED_SUMMONINGS, 1);
 }
 
 void WorldSession::handleLogoutCancelOpcode(WorldPacket& /*recvPacket*/)

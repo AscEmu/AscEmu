@@ -289,9 +289,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     Player* GetRandomPlayerInRangeButSkip(Player* plr, float range, Player* plr_skip);
 
-#if VERSION_STRING > TBC
     void UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTypes type, int32_t miscvalue1, int32_t miscvalue2, uint32_t time);
-#endif
     void teleport(WorldSession* m_session);
     bool isRaidGroup() { return (m_GroupType & GROUP_TYPE_RAID) != 0; }
     bool isBGGroup() { return (m_GroupType & GROUP_TYPE_BG) != 0; }

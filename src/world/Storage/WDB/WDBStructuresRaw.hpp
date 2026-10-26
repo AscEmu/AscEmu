@@ -11,6 +11,112 @@ namespace WDB::Structures::Raw
     inline constexpr size_t namePatternTbcWotlk = 16;
 
 #pragma pack(push, 1)
+    struct AchievementEntryWotlk
+    {
+        uint32_t id;
+        int32_t factionFlag;
+        int32_t mapId;
+        uint32_t parentAchievement;
+        char* name[namePatternTbcWotlk];
+        char* description[namePatternTbcWotlk];
+        uint32_t categoryId;
+        uint32_t points;
+        uint32_t orderInCategory;
+        uint32_t flags;
+        uint32_t icon;
+        char* rewardName[namePatternTbcWotlk];
+        uint32_t count;
+        uint32_t refAchievement;
+    };
+
+    struct AchievementEntryCata
+    {
+        uint32_t id;
+        int32_t factionFlag;
+        int32_t mapId;
+        uint32_t parentAchievement;
+        char* name;
+        char* description;
+        uint32_t categoryId;
+        uint32_t points;
+        uint32_t orderInCategory;
+        uint32_t flags;
+        uint32_t icon;
+        char* rewardName;
+        uint32_t count;
+        uint32_t refAchievement;
+    };
+
+    struct AchievementEntryMop
+    {
+        uint32_t id;
+        int32_t factionFlag;
+        int32_t mapId;
+        uint32_t parentAchievement;
+        char* name;
+        char* description;
+        uint32_t categoryId;
+        uint32_t points;
+        uint32_t orderInCategory;
+        uint32_t flags;
+        uint32_t icon;
+        char* rewardName;
+        uint32_t count;
+        uint32_t refAchievement;
+        uint32_t criteriaTreeId;
+    };
+
+    struct AchievementCategoryEntryMop
+    {
+        uint32_t id;
+        int32_t parent;
+    };
+
+    struct AchievementCriteriaEntryWotlk
+    {
+        uint32_t id;
+        uint32_t achievementId;
+        uint32_t type;
+        uint32_t asset;
+        uint32_t quantity;
+        uint32_t startEvent;
+        uint32_t startAsset;
+        uint32_t failEvent;
+        uint32_t failAsset;
+        char* name[namePatternTbcWotlk];
+        uint32_t flags;
+        uint32_t timerStartEvent;
+        uint32_t timerAsset;
+        uint32_t timerTime;
+        uint32_t order;
+    };
+
+    // the quantity is 64 bit from 4.x on, its high half is skipped
+    struct AchievementCriteriaEntryCata
+    {
+        uint32_t id;
+        uint32_t achievementId;
+        uint32_t type;
+        uint32_t asset;
+        uint32_t quantity;
+        uint32_t startEvent;
+        uint32_t startAsset;
+        uint32_t failEvent;
+        uint32_t failAsset;
+        char* name;
+        uint32_t flags;
+        uint32_t timerStartEvent;
+        uint32_t timerAsset;
+        uint32_t timerTime;
+        uint32_t order;
+        uint32_t worldStateId;
+        int32_t worldStateValue;
+        uint32_t conditionType[3];
+        uint32_t conditionValue[3];
+    };
+
+    using AchievementCriteriaEntryMop = AchievementCriteriaEntryCata;
+
     struct AreaGroupEntryWotlkCataMop
     {
         uint32_t id;
@@ -488,6 +594,50 @@ namespace WDB::Structures::Raw
     using DurabilityQualityEntryCata = DurabilityQualityEntryClassic;
     using DurabilityQualityEntryMop = DurabilityQualityEntryClassic;
 
+    struct CriteriaEntryMop
+    {
+        uint32_t id;
+        uint32_t type;
+        int32_t asset;
+        uint32_t startEvent;
+        int32_t startAsset;
+        uint32_t startTimer;
+        uint32_t failEvent;
+        int32_t failAsset;
+        uint32_t modifierTreeId;
+        uint32_t flags;
+        uint32_t eligibilityWorldStateId;
+        int32_t eligibilityWorldStateValue;
+    };
+
+    struct CriteriaTreeEntryMop
+    {
+        uint32_t id;
+        uint32_t criteriaId;
+        uint32_t amount;
+        uint32_t operatorType;
+        uint32_t parent;
+        uint32_t flags;
+    };
+
+    struct CurrencyTypesEntryWotlk
+    {
+        uint32_t id;                                                // the item of the currency
+        uint32_t bitIndex;
+    };
+
+    struct CurrencyTypesEntryCata
+    {
+        uint32_t id;
+        uint32_t category;
+        char* name;
+        uint32_t totalCap;
+        uint32_t weekCap;
+        uint32_t flags;
+    };
+
+    using CurrencyTypesEntryMop = CurrencyTypesEntryCata;
+
     struct EmotesTextEntryClassic
     {
         uint32_t id;
@@ -498,6 +648,43 @@ namespace WDB::Structures::Raw
     using EmotesTextEntryWotlk = EmotesTextEntryClassic;
     using EmotesTextEntryCata = EmotesTextEntryClassic;
     using EmotesTextEntryMop = EmotesTextEntryClassic;
+
+    struct FriendshipRepReactionEntryMop
+    {
+        uint32_t id;
+        uint32_t friendshipRepId;
+        uint32_t reactionThreshold;
+    };
+
+    struct FriendshipReputationEntryMop
+    {
+        uint32_t id;
+        uint32_t factionId;
+    };
+
+    struct ModifierTreeEntryMop
+    {
+        uint32_t id;
+        uint32_t type;
+        int32_t asset;
+        int32_t secondaryAsset;
+        uint32_t operatorType;
+        uint32_t amount;
+        uint32_t parent;
+    };
+
+    // the 136 columns of the 5.2 to 5.4 rows, the failure text at column 132 skipped
+    struct PlayerConditionEntryMop
+    {
+        uint32_t id;
+        int32_t values[134];
+    };
+
+    struct WorldStateExpressionEntryMop
+    {
+        uint32_t id;
+        char* expression;
+    };
 
     struct FactionEntryClassic
     {

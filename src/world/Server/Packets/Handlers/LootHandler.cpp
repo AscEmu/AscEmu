@@ -281,9 +281,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
 
                 SmsgLootMoneyNotify managedPacket(money, 1);
                 sendManagedPacket(managedPacket);
-#if VERSION_STRING > TBC
                 _player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, money);
-#endif
             }
             sHookInterface.OnLoot(_player, pt, money, 0);
         }
@@ -328,9 +326,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
                     SmsgLootMoneyNotify managedPacket(sharedMoney, groupMembers.size() <= 1);
                     player->getSession()->sendManagedPacket(managedPacket);
 
-#if VERSION_STRING > TBC
                     player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, sharedMoney);
-#endif
                 }
             }
         }

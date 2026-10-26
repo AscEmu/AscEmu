@@ -63,6 +63,11 @@ void LfgPlayerData::SetSelectedDungeons(const LfgDungeonSet& dungeons)
     m_SelectedDungeons = dungeons;
 }
 
+void LfgPlayerData::SetPartyMembersAtJoin(uint8_t members)
+{
+    m_PartyMembersAtJoin = members;
+}
+
 void LfgPlayerData::ClearSelectedDungeons()
 {
     m_SelectedDungeons.clear();
@@ -91,4 +96,9 @@ const std::string& LfgPlayerData::GetComment() const
 const LfgDungeonSet& LfgPlayerData::GetSelectedDungeons() const
 {
     return m_SelectedDungeons;
+}
+
+uint8_t LfgPlayerData::GetPartyMembersAtJoin() const
+{
+    return m_PartyMembersAtJoin;
 }

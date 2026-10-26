@@ -24,6 +24,7 @@
 
 #include "LogonCommDefines.hpp"
 #include "LogonCommBattlePets.hpp"
+#include "LogonCommAchievements.hpp"
 #include "Server/LogonServerDefines.hpp"
 
 #include "Logging/Log.hpp"
@@ -175,6 +176,10 @@ void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
         &LogonCommServerSocket::HandleBattlePetSave,        // LRCMSG_BATTLE_PET_SAVE
         &LogonCommServerSocket::HandleBattlePetAdd,         // LRCMSG_BATTLE_PET_ADD
         NULL,                                               // LRSMSG_BATTLE_PET_ADD_RESULT
+        &LogonCommServerSocket::HandleAchievementRequest,   // LRCMSG_ACHIEVEMENT_REQUEST
+        NULL,                                               // LRSMSG_ACHIEVEMENT_RESULT
+        &LogonCommServerSocket::HandleAchievementSave,      // LRCMSG_ACHIEVEMENT_SAVE
+        &LogonCommServerSocket::HandleAchievementReset,     // LRCMSG_ACHIEVEMENT_RESET
     };
 
     if (recvData.getOpcode() >= LRMSG_MAX_OPCODES || Handlers[recvData.getOpcode()] == 0)
@@ -1042,4 +1047,90 @@ void LogonCommServerSocket::HandleBattlePetAdd(WorldPacket& recvData)
     data << accountId << result;
     LogonComm::writeBattlePet(data, pet);
     SendPacket(&data);
+}
+
+void LogonCommServerSocket::HandleAchievementRequest(WorldPacket& recvData)
+{
+    uint32_t accountId = 0;
+    recvData >> accountId;
+
+    std::vector<LogonComm::AccountAchievementRecord> achievements;
+    if (auto result = sLogonSQL->query("SELECT achievement, date FROM account_achievement WHERE account_id = %u", accountId))
+    {
+        do
+        {
+            Field* fields = result->fetch();
+            achievements.push_back({ fields[0].asUint32(), fields[1].asUint64() });
+        }
+        while (result->nextRow());
+    }
+
+    std::vector<LogonComm::AccountCriteriaRecord> criteria;
+    if (auto result = sLogonSQL->query("SELECT criteria, counter, date FROM account_achievement_progress WHERE account_id = %u", accountId))
+    {
+        do
+        {
+            Field* fields = result->fetch();
+            criteria.push_back({ fields[0].asUint32(), fields[1].asUint32(), fields[2].asUint64() });
+        }
+        while (result->nextRow());
+    }
+
+    m_logAccountId = accountId;
+    m_logDetail = fmt::format("load {} achievements, {} criteria", achievements.size(), criteria.size());
+
+    WorldPacket data(LRSMSG_ACHIEVEMENT_RESULT, 12 + achievements.size() * 12 + criteria.size() * 16);
+    data << accountId;
+    LogonComm::writeAccountAchievements(data, achievements, criteria);
+    SendPacket(&data);
+}
+
+void LogonCommServerSocket::HandleAchievementSave(WorldPacket& recvData)
+{
+    uint32_t accountId = 0;
+    recvData >> accountId;
+
+    std::vector<LogonComm::AccountAchievementRecord> achievements;
+    std::vector<LogonComm::AccountCriteriaRecord> criteria;
+    LogonComm::readAccountAchievements(recvData, achievements, criteria);
+
+    // the earliest completion and the highest progress of every realm stay
+    for (auto const& achievement : achievements)
+    {
+        sLogonSQL->waitExecute("INSERT INTO account_achievement (account_id, achievement, date) VALUES (%u, %u, %llu) ON DUPLICATE KEY UPDATE date = LEAST(date, VALUES(date))",
+            accountId, achievement.achievementId, static_cast<unsigned long long>(achievement.date));
+    }
+
+    for (auto const& progress : criteria)
+    {
+        sLogonSQL->waitExecute("INSERT INTO account_achievement_progress (account_id, criteria, counter, date) VALUES (%u, %u, %u, %llu) "
+            "ON DUPLICATE KEY UPDATE date = IF(VALUES(counter) > counter, VALUES(date), date), counter = GREATEST(counter, VALUES(counter))",
+            accountId, progress.criteriaId, progress.counter, static_cast<unsigned long long>(progress.date));
+    }
+
+    m_logAccountId = accountId;
+    m_logDetail = fmt::format("save {} achievements, {} criteria", achievements.size(), criteria.size());
+    for (auto const& achievement : achievements)
+        m_logDetail += fmt::format(" {}", achievement.achievementId);
+}
+
+void LogonCommServerSocket::HandleAchievementReset(WorldPacket& recvData)
+{
+    uint32_t accountId = 0;
+    uint32_t achievementId = 0;
+    uint32_t criteriaId = 0;
+    recvData >> accountId >> achievementId >> criteriaId;
+
+    m_logAccountId = accountId;
+    if (achievementId != 0)
+    {
+        sLogonSQL->waitExecute("DELETE FROM account_achievement WHERE account_id = %u AND achievement = %u", accountId, achievementId);
+        m_logDetail = fmt::format("reset achievement {}", achievementId);
+    }
+
+    if (criteriaId != 0)
+    {
+        sLogonSQL->waitExecute("DELETE FROM account_achievement_progress WHERE account_id = %u AND criteria = %u", accountId, criteriaId);
+        m_logDetail = fmt::format("reset criteria {}", criteriaId);
+    }
 }

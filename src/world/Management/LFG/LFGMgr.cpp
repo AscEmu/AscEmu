@@ -655,7 +655,10 @@ void LfgMgr::Join(Player* player, uint8_t roles, const LfgDungeonSet& selectedDu
                 SetState(pguid, LFG_STATE_ROLECHECK);
 
                 if (!isContinue)
+                {
                     SetSelectedDungeons(pguid, dungeons);
+                    SetPartyMembersAtJoin(pguid, static_cast<uint8_t>(group->MemberCount()));
+                }
 
                 roleCheck->roles[pguid] = 0;
             }
@@ -695,6 +698,7 @@ void LfgMgr::Join(Player* player, uint8_t roles, const LfgDungeonSet& selectedDu
             }
 
             SetSelectedDungeons(guid, dungeons);
+            SetPartyMembersAtJoin(guid, 0);
         }
 
         AddToQueue(guid, uint8_t(player->getTeam()));
@@ -1874,11 +1878,13 @@ void LfgMgr::RewardDungeonDoneFor(const uint32_t dungeonId, Player* player)
         return;
     }
 
-#if VERSION_STRING > TBC
-    // Update achievements
-    if (dungeon->difficulty == 1) // Heroic
-        player->getAchievementMgr()->updateAchievementCriteria(player, 13029, 1); // Done LFG Dungeon with random Players
-#endif
+    player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_LFG_DUNGEON, 1);
+    if (dungeon->difficulty == 1)
+    {
+        // the players the finder added to the party of the join
+        uint8_t const partyMembers = GetPartyMembersAtJoin(guid);
+        player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_LFD_TO_GROUP_WITH_PLAYERS, partyMembers != 0 ? 5 - partyMembers : 4);
+    }
 
     LfgReward const* reward = GetRandomDungeonReward(rDungeonId, static_cast<uint8_t>(player->getLevel()));
     if (!reward)
@@ -1957,9 +1963,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32_t dungeonId, Player* player)
         // if daily then append to finished dailies
         if (qReward->is_repeatable == DEFINE_QUEST_REPEATABLE_DAILY)
             player->addQuestIdToFinishedDailies(qReward->id);
-#if VERSION_STRING > TBC
         player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT, 1, 0, 0);
-#endif
         if (qReward->reward_money > 0)
         {
             // Money reward
@@ -1968,14 +1972,10 @@ void LfgMgr::RewardDungeonDoneFor(const uint32_t dungeonId, Player* player)
             {
                 player->modCoinage(qReward->reward_money);
             }
-#if VERSION_STRING > TBC
             player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qReward->reward_money, 0, 0);
-#endif
         }
-#if VERSION_STRING > TBC
         player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE, qReward->zone_id, 0, 0);
         player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qReward->id, 0, 0);
-#endif
     }
     else
     {
@@ -2050,9 +2050,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32_t dungeonId, Player* player)
         if (qReward->is_repeatable == DEFINE_QUEST_REPEATABLE_DAILY)
             player->addQuestIdToFinishedDailies(qReward->id);
 
-#if VERSION_STRING > TBC
         player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT, 1, 0, 0);
-#endif
         if (qReward->reward_money > 0)
         {
             // Money reward
@@ -2061,14 +2059,10 @@ void LfgMgr::RewardDungeonDoneFor(const uint32_t dungeonId, Player* player)
             {
                 player->modCoinage(qReward->reward_money);
             }
-#if VERSION_STRING > TBC
             player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qReward->reward_money, 0, 0);
-#endif
         }
-#if VERSION_STRING > TBC
         player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE, qReward->zone_id, 0, 0);
         player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qReward->id, 0, 0);
-#endif
     }
 
     // Give rewards
@@ -2193,6 +2187,11 @@ const LfgDungeonSet& LfgMgr::GetSelectedDungeons(uint64_t guid)
     return m_Players[guid].GetSelectedDungeons();
 }
 
+uint8_t LfgMgr::GetPartyMembersAtJoin(uint64_t guid)
+{
+    return m_Players[guid].GetPartyMembersAtJoin();
+}
+
 const LfgLockMap& LfgMgr::GetLockedDungeons(uint64_t guid)
 {
     sLogger.debug("{}", guid);
@@ -2259,6 +2258,11 @@ void LfgMgr::SetSelectedDungeons(uint64_t guid, const LfgDungeonSet& dungeons)
 {
     sLogger.debug("{}", guid);
     m_Players[guid].SetSelectedDungeons(dungeons);
+}
+
+void LfgMgr::SetPartyMembersAtJoin(uint64_t guid, uint8_t members)
+{
+    m_Players[guid].SetPartyMembersAtJoin(members);
 }
 
 void LfgMgr::SetLockedDungeons(uint64_t guid, const LfgLockMap& lock)

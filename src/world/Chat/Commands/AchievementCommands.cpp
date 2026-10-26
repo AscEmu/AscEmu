@@ -129,11 +129,25 @@ bool ChatCommandHandler::handleAchievementResetCommand(const char* args, WorldSe
     }
 
     if (reset_achievement)
+    {
         selected_player->getAchievementMgr()->gmResetAchievement(achievement_id, resetAll);
+        if (resetAll)
+            systemMessage(m_session, "Reset all achievements for player {}.", selected_player->getName());
+        else
+            systemMessage(m_session, "Reset achievement {} for player {}.", achievement_id, selected_player->getName());
+    }
 
     if (reset_criteria)
+    {
+        // the id names the criteria here
         selected_player->getAchievementMgr()->gmResetCriteria(achievement_id, resetAll);
+        if (resetAll)
+            systemMessage(m_session, "Reset all achievement criteria for player {}.", selected_player->getName());
+        else
+            systemMessage(m_session, "Reset achievement criterion {} for player {}.", achievement_id, selected_player->getName());
+    }
 
+    sGMLog.writefromsession(m_session, "Reset achievement data ({}) for player {}.", args, selected_player->getName());
     return true;
 }
 #endif

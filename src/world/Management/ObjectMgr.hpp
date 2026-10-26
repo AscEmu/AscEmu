@@ -13,9 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <string>
 #include <atomic>
 
-#if VERSION_STRING >= WotLK
-    #include "AchievementMgr.h"
-#endif
+#include "AchievementMgr.h"
 
 namespace WDB::Structures
 {
@@ -259,27 +257,19 @@ private:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Achievement - global achievement information
-#if VERSION_STRING > TBC
 public:
-    void loadAchievementCriteriaList();
     void loadAchievementRewards();
     void loadCompletedAchievements();
 
     AchievementReward const* getAchievementReward(uint32_t _entry, uint8_t _gender);
-    AchievementCriteriaEntryList const& getAchievementCriteriaByType(AchievementCriteriaTypes _type);
 
     void addCompletedAchievement(uint32_t _achievementId);
     bool isInCompletedAchievements(uint32_t _achievementId);
 
 private:
     AchievementRewardsMap m_achievementRewards;
-    AchievementCriteriaEntryList m_AchievementCriteriasByType[ACHIEVEMENT_CRITERIA_TYPE_TOTAL];
-#if VERSION_STRING > WotLK
-    AchievementCriteriaEntryList m_GuildAchievementCriteriasByType[ACHIEVEMENT_CRITERIA_TYPE_TOTAL];
-#endif
 
     std::set<uint32_t> m_allCompletedAchievements;
-#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Reputation Mods

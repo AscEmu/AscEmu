@@ -109,12 +109,10 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::GtRegenHPPerSptEntry> sGtRegenHPP
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemDisplayInfo> sItemDisplayInfoStore;
 #endif
 
-SERVER_DECL WDB::WDBContainer<WDB::Structures::CurrencyTypesEntry> sCurrencyTypesStore;
+
+SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrSpecializationEntry> sChrSpecializationStore;
 
 #if VERSION_STRING >= WotLK
-SERVER_DECL WDB::WDBContainer<WDB::Structures::AchievementEntry> sAchievementStore;
-SERVER_DECL WDB::WDBContainer<WDB::Structures::AchievementCriteriaEntry> sAchievementCriteriaStore;
-
 SERVER_DECL WDB::WDBContainer<WDB::Structures::DungeonEncounterEntry> sDungeonEncounterStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::TransportRotationEntry> sTransportRotationStore;
@@ -183,7 +181,6 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemReforgeEntry> sItemReforgeSto
 
 #if VERSION_STRING >= Mop
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellMiscEntry> sSpellMiscStore;
-SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrSpecializationEntry> sChrSpecializationStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetSpeciesEntry> sBattlePetSpeciesStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetBreedStateEntry> sBattlePetBreedStateStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetSpeciesStateEntry> sBattlePetSpeciesStateStore;
@@ -401,9 +398,7 @@ namespace {
             if (spellPower == nullptr || spellPower->spellId == 0)
                 continue;
 
-            // A spell can own several rows (one per shapeshift form). Without a caster there is
-            // no form to match against, so keep the first row that does not require one - this
-            // is the row the reference picks for a caster without that shapeshift aura.
+            // one row per shapeshift form, without a caster the first row without a form counts
             auto itr = sSpellPowerMap.find(spellPower->spellId);
             if (itr == sSpellPowerMap.end())
                 sSpellPowerMap[spellPower->spellId] = spellPower;
@@ -412,6 +407,24 @@ namespace {
         }
     }
 #endif
+}
+
+namespace
+{
+    // the text of the locale of the server, the files before 4.x carry one per locale
+    template <typename Text>
+    std::string localizedText(Text const& text)
+    {
+        if constexpr (std::is_array_v<Text>)
+        {
+            char const* const value = text[sWorld.getDbcLocaleLanguageId()];
+            return value != nullptr ? value : "";
+        }
+        else
+        {
+            return text != nullptr ? text : "";
+        }
+    }
 }
 
 bool loadDBCs()
@@ -767,6 +780,164 @@ bool loadDBCs()
         {
             entry.id = raw.id;
             entry.qualityModifier = raw.qualityModifier;
+        });
+
+    // achievements and their conditions, a version without the file keeps the store empty
+    WDB::loadUnifiedWDBStore<WDB::Structures::AchievementEntry>(
+        bad_dbc_files, sAchievementStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::AchievementEntry& entry)
+        {
+            entry.ID = raw.id;
+            entry.factionFlag = raw.factionFlag;
+            entry.mapID = raw.mapId;
+            entry.parentAchievement = raw.parentAchievement;
+            entry.name = localizedText(raw.name);
+            entry.description = localizedText(raw.description);
+            entry.categoryId = raw.categoryId;
+            entry.points = raw.points;
+            entry.orderInCategory = raw.orderInCategory;
+            entry.flags = raw.flags;
+            entry.icon = raw.icon;
+            entry.rewardName = localizedText(raw.rewardName);
+            entry.count = raw.count;
+            entry.refAchievement = raw.refAchievement;
+            if constexpr (requires { raw.criteriaTreeId; })
+                entry.criteriaTreeID = raw.criteriaTreeId;
+        });
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::AchievementCategoryEntry>(
+        bad_dbc_files, sAchievementCategoryStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::AchievementCategoryEntry& entry)
+        {
+            entry.id = raw.id;
+            entry.parent = raw.parent;
+        });
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::AchievementCriteriaEntry>(
+        bad_dbc_files, sAchievementCriteriaStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::AchievementCriteriaEntry& entry)
+        {
+            entry.ID = raw.id;
+            entry.referredAchievement = raw.achievementId;
+            entry.requiredType = raw.type;
+            entry.asset = raw.asset;
+            entry.quantity = raw.quantity;
+            entry.startEvent = raw.startEvent;
+            entry.startAsset = raw.startAsset;
+            entry.failEvent = raw.failEvent;
+            entry.failAsset = raw.failAsset;
+            entry.name = localizedText(raw.name);
+            entry.flags = raw.flags;
+            entry.timerStartEvent = raw.timerStartEvent;
+            entry.timerAsset = raw.timerAsset;
+            entry.timerTime = raw.timerTime;
+            entry.order = raw.order;
+            if constexpr (requires { raw.worldStateId; })
+            {
+                entry.worldStateId = raw.worldStateId;
+                entry.worldStateValue = raw.worldStateValue;
+                for (size_t i = 0; i < entry.conditionType.size(); ++i)
+                {
+                    entry.conditionType[i] = raw.conditionType[i];
+                    entry.conditionValue[i] = raw.conditionValue[i];
+                }
+            }
+        });
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::CriteriaEntry>(
+        bad_dbc_files, sCriteriaStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::CriteriaEntry& entry)
+        {
+            entry.id = raw.id;
+            entry.type = raw.type;
+            entry.asset = raw.asset;
+            entry.startEvent = raw.startEvent;
+            entry.startAsset = raw.startAsset;
+            entry.startTimer = raw.startTimer;
+            entry.failEvent = raw.failEvent;
+            entry.failAsset = raw.failAsset;
+            entry.modifierTreeId = raw.modifierTreeId;
+            entry.flags = raw.flags;
+            entry.eligibilityWorldStateId = raw.eligibilityWorldStateId;
+            entry.eligibilityWorldStateValue = raw.eligibilityWorldStateValue;
+        });
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::CriteriaTreeEntry>(
+        bad_dbc_files, sCriteriaTreeStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::CriteriaTreeEntry& entry)
+        {
+            entry.id = raw.id;
+            entry.criteriaId = raw.criteriaId;
+            entry.amount = raw.amount;
+            entry.operatorType = raw.operatorType;
+            entry.parent = raw.parent;
+            entry.flags = raw.flags;
+        });
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::ModifierTreeEntry>(
+        bad_dbc_files, sModifierTreeStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::ModifierTreeEntry& entry)
+        {
+            entry.id = raw.id;
+            entry.type = raw.type;
+            entry.asset = raw.asset;
+            entry.secondaryAsset = raw.secondaryAsset;
+            entry.operatorType = raw.operatorType;
+            entry.amount = raw.amount;
+            entry.parent = raw.parent;
+        });
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::PlayerConditionEntry>(
+        bad_dbc_files, sPlayerConditionStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::PlayerConditionEntry& entry)
+        {
+            entry.id = raw.id;
+            for (size_t i = 0; i < entry.values.size(); ++i)
+                entry.values[i] = raw.values[i];
+        });
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::WorldStateExpressionEntry>(
+        bad_dbc_files, sWorldStateExpressionStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::WorldStateExpressionEntry& entry)
+        {
+            entry.id = raw.id;
+            entry.expression = localizedText(raw.expression);
+        });
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::CurrencyTypesEntry>(
+        bad_dbc_files, sCurrencyTypesStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::CurrencyTypesEntry& entry)
+        {
+            entry.item_id = raw.id;
+            if constexpr (requires { raw.bitIndex; })
+            {
+                entry.bit_index = raw.bitIndex;
+            }
+            else
+            {
+                entry.Category = raw.category;
+                entry.name = localizedText(raw.name);
+                entry.TotalCap = raw.totalCap;
+                entry.WeekCap = raw.weekCap;
+                entry.Flags = raw.flags;
+            }
+        });
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::FriendshipRepReactionEntry>(
+        bad_dbc_files, sFriendshipRepReactionStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::FriendshipRepReactionEntry& entry)
+        {
+            entry.id = raw.id;
+            entry.friendshipRepId = raw.friendshipRepId;
+            entry.reactionThreshold = raw.reactionThreshold;
+        });
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::FriendshipReputationEntry>(
+        bad_dbc_files, sFriendshipReputationStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::FriendshipReputationEntry& entry)
+        {
+            entry.id = raw.id;
+            entry.factionId = raw.factionId;
         });
 
     WDB::loadUnifiedWDBStore<WDB::Structures::EmotesTextEntry>(
@@ -1223,9 +1394,6 @@ bool loadDBCs()
     /////////////////////////////////////////////////////////////////////////////////////////
     // Load multi version specific dbcs available since WotLK
 #if VERSION_STRING >= WotLK
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sAchievementStore, dbc_path, "Achievement.dbc");
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sAchievementCriteriaStore, dbc_path, "Achievement_Criteria.dbc");
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sCurrencyTypesStore, dbc_path, "CurrencyTypes.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sDungeonEncounterStore, dbc_path, "DungeonEncounter.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sTransportRotationStore, dbc_path, "TransportRotation.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGlyphPropertiesStore, dbc_path, "GlyphProperties.dbc");

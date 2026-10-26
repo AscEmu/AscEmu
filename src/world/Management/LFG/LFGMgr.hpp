@@ -290,6 +290,7 @@ public:
     const LfgLockMap& GetLockedDungeons(uint64_t guid);
     LfgState GetState(uint64_t guid);
     const LfgDungeonSet& GetSelectedDungeons(uint64_t guid);
+    uint8_t GetPartyMembersAtJoin(uint64_t guid);
     void SetDungeon(uint64_t guid, uint32_t dungeon);
     uint32_t GetDungeon(uint64_t guid, bool asId = true);
     void SetState(uint64_t guid, LfgState state);
@@ -302,6 +303,7 @@ public:
     void SetRoles(uint64_t guid, uint8_t roles);
     uint8_t GetRoles(uint64_t guid);
     void SetSelectedDungeons(uint64_t guid, const LfgDungeonSet& dungeons);
+    void SetPartyMembersAtJoin(uint64_t guid, uint8_t members);
     uint32_t GetLFGDungeon(uint32_t id);
     const std::string& GetComment(uint64_t gguid);
     time_t getQueueJoinTime(uint64_t guid) const;

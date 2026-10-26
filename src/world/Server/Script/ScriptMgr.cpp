@@ -24,6 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "BuildInfo.hpp"
 
 #include "AchievementScript.hpp"
+#include "Management/Achievements/AchievementTrees.hpp"
 #include "Platform/DynamicLibrary.hpp"
 #include "QuestScript.hpp"
 #include "Logging/Logger.hpp"
@@ -43,7 +44,6 @@ ScriptMgr& ScriptMgr::getInstance()
     return mInstance;
 }
 
-#ifdef FT_ACHIEVEMENTS
 bool ScriptMgr::callScriptedAchievementCriteriaCanComplete(uint32_t criteriaId, Player* player, Object* target) const
 {
     const auto achievementCriteriaScript = getAchievementCriteriaScript(criteriaId);
@@ -52,7 +52,6 @@ bool ScriptMgr::callScriptedAchievementCriteriaCanComplete(uint32_t criteriaId, 
 
     return achievementCriteriaScript->canCompleteCriteria(criteriaId, player, target);
 }
-#endif
 
 SpellCastResult ScriptMgr::callScriptedSpellCanCast(Spell* spell, uint32_t* parameter1, uint32_t* parameter2) const
 {
@@ -289,7 +288,6 @@ SpellScriptExecuteState ScriptMgr::callScriptedSpellProcCastSpell(SpellProc* spe
     return spellScript->onCastProcSpell(spellProc, caster, victim, spellToProc);
 }
 
-#ifdef FT_ACHIEVEMENTS
 AchievementCriteriaScript* ScriptMgr::getAchievementCriteriaScript(uint32_t criteriaId) const
 {
     for (const auto& itr : _achievementCriteriaScripts)
@@ -301,8 +299,8 @@ AchievementCriteriaScript* ScriptMgr::getAchievementCriteriaScript(uint32_t crit
 
 void ScriptMgr::register_achievement_criteria_script(uint32_t criteriaId, AchievementCriteriaScript* acs)
 {
-    const auto criteriaEntry = sAchievementCriteriaStore.lookupEntry(criteriaId);
-    if (criteriaEntry == nullptr)
+    // the criteria of every version, the trees are loaded before the scripts
+    if (sAchievementTrees.getCriteria(criteriaId) == nullptr)
     {
         sLogger.failure("ScriptMgr tried to register a script for achievement criteria id {} but criteria does not exist!", criteriaId);
         return;
@@ -322,7 +320,6 @@ void ScriptMgr::register_achievement_criteria_script(uint32_t* criteriaIds, Achi
     for (uint32_t i = 0; criteriaIds[i] != 0; ++i)
         register_achievement_criteria_script(criteriaIds[i], acs);
 }
-#endif
 
 SpellScript* ScriptMgr::getSpellScript(uint32_t spellId) const
 {
@@ -529,10 +526,8 @@ void ScriptMgr::UnloadScripts()
         delete *itr;
     _questscripts.clear();
 
-#ifdef FT_ACHIEVEMENTS
     for (auto itr = _achievementCriteriaScripts.begin(); itr != _achievementCriteriaScripts.end();)
         itr = _achievementCriteriaScripts.erase(itr);
-#endif
 
     for (auto itr = _spellScripts.begin(); itr != _spellScripts.end();)
         itr = _spellScripts.erase(itr);

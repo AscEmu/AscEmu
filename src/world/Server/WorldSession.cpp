@@ -47,6 +47,7 @@
 #include "Objects/Units/Players/Player.hpp"
 #include "Script/HookInterface.hpp"
 #include "Management/BattlePets/BattlePetCollection.hpp"
+#include "Management/Achievements/AccountAchievements.hpp"
 #include <cstdarg>
 #include "OpcodeHandlerRegistry.hpp"
 
@@ -88,9 +89,8 @@ WorldSession::WorldSession(uint32_t id, std::string name, WorldSocket* sock) :
     isAddonMessageFiltered = false;
 #endif
 
-#if VERSION_STRING >= Mop
     m_battlePets = std::make_unique<BattlePetCollection>(*this);
-#endif
+    m_accountAchievements = std::make_unique<Achievements::AccountAchievements>(*this);
 
     for (uint8_t x = 0; x < 8; x++)
         sAccountData[x].data = nullptr;
@@ -195,9 +195,8 @@ uint8_t WorldSession::Update(uint32_t InstanceID)
     if (InstanceID != GetInstance())
         return 2;
 
-#if VERSION_STRING >= Mop
     m_battlePets->update();
-#endif
+    m_accountAchievements->update();
 
     if (_logoutTime && (m_currMsTime >= _logoutTime) && GetInstance() == InstanceID)
     {
@@ -288,9 +287,7 @@ void WorldSession::LogoutPlayer(bool Save)
 
     if (_player != nullptr)
     {
-#if VERSION_STRING >= Mop
         m_battlePets->dismiss();
-#endif
 
         // Logout must not leave a possessed NPC behind as a temporary
         // visibility viewer/activator. Do this before aura/spell/session cleanup.
@@ -856,7 +853,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_GAMEOBJECT_QUERY, &WorldSession::handleGameObjectQueryOpcode, false, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_PAGE_TEXT_QUERY, &WorldSession::handlePageTextQueryOpcode, false, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_ITEM_NAME_QUERY, &WorldSession::handleItemNameQueryOpcode, false, true, true, true, false);
-    registry.registerOpcode(CMSG_QUERY_INSPECT_ACHIEVEMENTS, &WorldSession::handleAchievmentQueryOpcode, false, false, true, true, false);
+    registry.registerOpcode(CMSG_QUERY_INSPECT_ACHIEVEMENTS, &WorldSession::handleAchievmentQueryOpcode, false, false, true, true, true, true, true, true, true, true, true, true);
 
     // Movement
     registry.registerOpcode(MSG_MOVE_HEARTBEAT, &WorldSession::handleMovementOpcodes, true, true, true, true, true, true, true, true, true, true, true, true);

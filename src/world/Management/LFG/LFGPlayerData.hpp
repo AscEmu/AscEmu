@@ -25,6 +25,7 @@ public:
     void SetComment(const std::string& comment);
     void SetSelectedDungeons(const LfgDungeonSet& dungeons);
     void ClearSelectedDungeons();
+    void SetPartyMembersAtJoin(uint8_t members);
 
     // General
     LfgState GetState() const;
@@ -33,6 +34,7 @@ public:
     uint8_t GetRoles() const;
     const std::string& GetComment() const;
     const LfgDungeonSet& GetSelectedDungeons() const;
+    uint8_t GetPartyMembersAtJoin() const;
 
 private:
     // General
@@ -44,4 +46,5 @@ private:
     uint8_t m_Roles;                                   ///< Roles the player selected when joined LFG
     std::string m_Comment;                             ///< Player comment used when joined LFG
     LfgDungeonSet m_SelectedDungeons;                  ///< Selected Dungeons when joined LFG
+    uint8_t m_PartyMembersAtJoin = 0;                  ///< Members of the party that joined, 0 alone
 };

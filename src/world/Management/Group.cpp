@@ -19,6 +19,7 @@
  */
 
 #include "Group.h"
+#include "Management/Achievements/AchievementEvents.hpp"
 
 #include "ItemInterface.h"
 #include "Management/Loot/LootDefines.hpp"
@@ -141,6 +142,8 @@ bool Group::AddMember(CachedCharacterInfo* info, int32_t subgroupid/* =-1 */)
         std::lock_guard lock(m_groupLock);
 
         Player* pPlayer = sObjectMgr.getPlayer(info->guid);
+        if (pPlayer != nullptr)
+            pPlayer->failAchievementCriteria(Achievements::FailPartyStatus, 0);
 
         if (m_isqueued)
         {
@@ -472,6 +475,8 @@ void Group::RemovePlayer(CachedCharacterInfo* info)
         return;
 
     Player* pPlayer = sObjectMgr.getPlayer(info->guid);
+    if (pPlayer != nullptr)
+        pPlayer->failAchievementCriteria(Achievements::FailPartyStatus, 0);
 
     m_groupLock.lock();
 
@@ -1480,7 +1485,6 @@ Player* Group::GetRandomPlayerInRangeButSkip(Player* plr, float range, Player* p
     return new_plr;
 }
 
-#if VERSION_STRING > TBC
 void Group::UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTypes type, int32_t miscvalue1, int32_t miscvalue2, uint32_t time)
 {
     Lock();
@@ -1492,13 +1496,16 @@ void Group::UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTy
         {
             if (Player* loggedInPlayer = sObjectMgr.getPlayer(itr2->guid))
                 if (loggedInPlayer->seesGuid(o->GetNewGUID()))
-                    loggedInPlayer->updateAchievementCriteria(type, miscvalue1, miscvalue2, time);
+                {
+                    if (type == ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE)
+                        loggedInPlayer->startAchievementCriteria(Achievements::StartKillCreature, static_cast<uint32_t>(miscvalue1));
+                    loggedInPlayer->updateAchievementCriteria(type, miscvalue1, miscvalue2, time, o->ToUnit());
+                }
         }
     }
 
     Unlock();
 }
-#endif
 
 void Group::teleport(WorldSession* m_session)
 {

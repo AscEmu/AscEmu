@@ -21,6 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Version/VersionRegistry.hpp"
 #include "WorldSession.h"
 #include "Management/BattlePets/BattlePetCollection.hpp"
+#include "Management/Achievements/AccountAchievements.hpp"
 #include "Utilities/Random.hpp"
 #include "Packets/CmsgAuthSession.h"
 
@@ -522,6 +523,7 @@ void WorldSocket::sendAuthenticated(std::unique_ptr<WorldSession> sessionHolder)
 #if VERSION_STRING >= Mop
     // the answer finds the session by its account
     m_session->getBattlePets().requestLoad();
+    m_session->getAccountAchievements().requestLoad();
 #endif
 }
 

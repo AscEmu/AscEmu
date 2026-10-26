@@ -55,6 +55,10 @@ struct LfgRoleCheck;
 struct Loot;
 class WoWGuid;
 class BattlePetCollection;
+namespace Achievements
+{
+    class AccountAchievements;
+}
 class Query;
 class QueryResult;
 
@@ -906,9 +910,8 @@ protected:
         //////////////////////////////////////////////////////////////////////////////////////////
         // BattlePetHandler.cpp
     public:
-#if VERSION_STRING >= Mop
         BattlePetCollection& getBattlePets() { return *m_battlePets; }
-#endif
+        Achievements::AccountAchievements& getAccountAchievements() { return *m_accountAchievements; }
 
     protected:
         void handleBattlePetRequestJournal(WorldPacket& recvPacket);
@@ -1105,9 +1108,8 @@ protected:
         std::atomic_bool m_updateInProgress{ false };
         uint32_t m_skippedUpdates = 0;
 
-#if VERSION_STRING >= Mop
         std::unique_ptr<BattlePetCollection> m_battlePets;
-#endif
+        std::unique_ptr<Achievements::AccountAchievements> m_accountAchievements;
 
 public:
     static void registerOpcodeHandler();

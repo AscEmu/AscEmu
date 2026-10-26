@@ -68,10 +68,9 @@ namespace WDB::Structures
     struct ItemDisplayInfo;
 #endif
 
+    struct ChrSpecializationEntry;
+
 #if VERSION_STRING >= WotLK
-    struct AchievementEntry;
-    struct AchievementCriteriaEntry;
-    struct CurrencyTypesEntry;
     struct DungeonEncounterEntry;
     struct TransportRotationEntry;
     struct GlyphPropertiesEntry;
@@ -123,7 +122,6 @@ namespace WDB::Structures
 
 #if VERSION_STRING >= Mop
     struct SpellMiscEntry;
-    struct ChrSpecializationEntry;
     struct BattlePetSpeciesEntry;
     struct BattlePetBreedStateEntry;
     struct BattlePetSpeciesStateEntry;
@@ -151,6 +149,9 @@ using TaxiPathNodesByPath = std::vector<TaxiPathNodeList>;
     return dur ? dur->Duration1 : 0;
 }
 
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::AchievementCategoryEntry> sAchievementCategoryStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::AchievementCriteriaEntry> sAchievementCriteriaStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::AchievementEntry> sAchievementStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::AreaTableEntry> sAreaStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::AreaTriggerEntry> sAreaTriggerStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::AuctionHouseEntry> sAuctionHouseStore;
@@ -164,11 +165,16 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::CreatureDisplayInfoExtraEntry>
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::CreatureModelDataEntry> sCreatureModelDataStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::CreatureSpellDataEntry> sCreatureSpellDataStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::CreatureFamilyEntry> sCreatureFamilyStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::CriteriaEntry> sCriteriaStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::CriteriaTreeEntry> sCriteriaTreeStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::CurrencyTypesEntry> sCurrencyTypesStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::DurabilityCostsEntry> sDurabilityCostsStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::DurabilityQualityEntry> sDurabilityQualityStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::EmotesTextEntry> sEmotesTextStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::FactionEntry> sFactionStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::FactionTemplateEntry> sFactionTemplateStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::FriendshipRepReactionEntry> sFriendshipRepReactionStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::FriendshipReputationEntry> sFriendshipReputationStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::GameObjectDisplayInfoEntry> sGameObjectDisplayInfoStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemSetEntry> sItemSetStore;
 
@@ -179,6 +185,9 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::LockEntry> sLockStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::MailTemplateEntry> sMailTemplateStore;
 
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::MapEntry> sMapStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ModifierTreeEntry> sModifierTreeStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::PlayerConditionEntry> sPlayerConditionStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::WorldStateExpressionEntry> sWorldStateExpressionStore;
 inline MapDifficultyMap sMapDifficultyMap;
 
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::NameGenEntry> sNameGenStore;
@@ -250,11 +259,10 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStable
     inline SERVER_DECL WDB::WDBStore<WDB::Structures::BarberShopStyleEntry> sBarberShopStyleStore;
     inline SERVER_DECL WDB::WDBStore<WDB::Structures::MapDifficultyEntry> sMapDifficultyStore;
 
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::CurrencyTypesEntry> sCurrencyTypesStore;
+
+    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrSpecializationEntry> sChrSpecializationStore;
 
 #if VERSION_STRING >= WotLK
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::AchievementEntry> sAchievementStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::AchievementCriteriaEntry> sAchievementCriteriaStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::DungeonEncounterEntry> sDungeonEncounterStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::TransportRotationEntry> sTransportRotationStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GlyphPropertiesEntry> sGlyphPropertiesStore;
@@ -311,7 +319,6 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStable
 
 #if VERSION_STRING >= Mop
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellMiscEntry> sSpellMiscStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrSpecializationEntry> sChrSpecializationStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetSpeciesEntry> sBattlePetSpeciesStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetBreedStateEntry> sBattlePetBreedStateStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetSpeciesStateEntry> sBattlePetSpeciesStateStore;

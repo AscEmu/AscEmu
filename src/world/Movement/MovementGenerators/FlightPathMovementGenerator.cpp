@@ -163,9 +163,7 @@ bool FlightPathMovementGenerator::doUpdate(Player* player, uint32_t /*diff*/)
                 player->getTaxiData()->nextTaxiDestination();
                 if (!_pointsForPathSwitch.empty())
                 {
-#if VERSION_STRING > TBC
                     player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GOLD_SPENT_FOR_TRAVELLING, _pointsForPathSwitch.front().Cost);
-#endif
                     player->modCoinage(-_pointsForPathSwitch.front().Cost);
                 }
             }

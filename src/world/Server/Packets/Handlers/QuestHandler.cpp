@@ -947,6 +947,8 @@ void WorldSession::handleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
 
     qEntry->finishAndRemove();
 
+    _player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_ABANDONED, static_cast<int32_t>(qPtr->id));
+
     for (uint8_t i = 0; i < 4; ++i)
     {
         if (qPtr->receive_items[i])

@@ -160,6 +160,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgEquipmentSetList.h"
 #include "Server/Packets/SmsgLoadCufProfiles.h"
 #include "Management/BattlePets/BattlePetCollection.hpp"
+#include "Management/Achievements/AchievementEvents.hpp"
 #include "Server/Packets/SmsgWorldServerInfo.h"
 #include "Server/Packets/SmsgUpdateActionButtons.h"
 #include "Server/Packets/SmsgLootList.h"
@@ -193,9 +194,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Narrow.hpp"
 #include "Utilities/MathConstants.hpp"
 
-#if VERSION_STRING > TBC
-    #include "Management/AchievementMgr.h"
-#endif
+#include "Management/AchievementMgr.h"
 #include <Server/Packets/SmsgMoveUpdateTeleport.h>
 #include <Server/Packets/MsgMoveTeleport.h>
 #include <Server/Packets/MsgMoveTeleportAck.h>
@@ -331,10 +330,8 @@ Player::Player(uint32_t guid) :
 
     // Zyres: initialise here because ItemInterface needs the guid from object data
     m_itemInterface = std::make_unique<ItemInterface>(this);
-#if VERSION_STRING > TBC
     // make_unique does not work with private ctor -Appled
     m_achievementMgr = std::unique_ptr<AchievementMgr>(new AchievementMgr(this));
-#endif
     m_taxi = std::make_unique<TaxiPath>();
 
     m_underwaterLastDamage = Util::getMSTime();
@@ -461,6 +458,8 @@ void Player::Update(unsigned long time_passed)
 
     Unit::Update(time_passed);
     uint32_t mstime = Util::getMSTime();
+
+    m_achievementMgr->updateCriteriaTimers(static_cast<uint32_t>(time_passed));
 
     if (m_attacking)
     {
@@ -2357,9 +2356,7 @@ void Player::eventExploration()
             uint32_t explore_xp = areaTableEntry->area_level * 10;
             explore_xp *= Util::float2int32(worldConfig.getFloatRate(RATE_EXPLOREXP));
 
-#if VERSION_STRING > TBC
             updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA, getAreaId());
-#endif
 
             if (getLevel() < getMaxLevel() && explore_xp > 0)
             {
@@ -2810,8 +2807,9 @@ void Player::applyLevelInfo(uint32_t newLevel)
 
 #if VERSION_STRING >= WotLK
     updateGlyphs();
-    updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
 #endif
+    updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
+    startAchievementCriteria(Achievements::StartReachLevel, getLevel());
 
     if (m_firstLogin)
         sHookInterface.OnFirstEnterWorld(this);
@@ -3971,6 +3969,30 @@ bool Player::loadReputations(QueryResult* result)
     return true;
 }
 
+uint32_t Player::getCurrency(uint32_t id, bool usePrecision/* = true*/) const
+{
+    const auto itr = m_currencies.find(id);
+    if (itr == m_currencies.end())
+        return 0;
+
+    const auto* const currency = sCurrencyTypesStore.lookupEntry(id);
+    const uint32_t precision = (usePrecision && currency != nullptr && (currency->Flags & CURRENCY_FLAG_USES_PRECISION)) ? CURRENCY_PRECISION : 1;
+
+    return itr->second.quantity / precision;
+}
+
+uint32_t Player::getTrackedCurrency(uint32_t id) const
+{
+    const auto itr = m_currencies.find(id);
+    return itr != m_currencies.end() ? itr->second.trackedQuantity : 0;
+}
+
+bool Player::hasCurrency(uint32_t id, uint32_t count) const
+{
+    const auto itr = m_currencies.find(id);
+    return itr != m_currencies.end() && itr->second.quantity >= count;
+}
+
 #if VERSION_STRING >= Cata
 bool Player::loadCurrencies(QueryResult* result)
 {
@@ -4959,10 +4981,8 @@ void Player::advanceSkillLine(uint16_t skillLine, uint16_t amount/* = 1*/)
 
     sHookInterface.OnAdvanceSkillLine(this, skillLine, itr->second.CurrentValue);
 
-#ifdef FT_ACHIEVEMENTS
     updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, skillLine, skillStep);
     updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, skillLine, itr->second.CurrentValue);
-#endif
 
     learnSkillSpells(skillLine, itr->second.CurrentValue);
 }
@@ -5028,10 +5048,8 @@ void Player::addSkillLine(uint16_t skillLine, uint16_t currentValue, uint16_t ma
         if (!noSpellLearning)
             learnSkillSpells(skillLine, curVal);
 
-#ifdef FT_ACHIEVEMENTS
         updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, skillLine, skillStep, 0);
         updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, skillLine, currentValue, 0);
-#endif
     };
 
     auto itr = m_skills.find(skillLine);
@@ -5255,9 +5273,7 @@ void Player::modifySkillMaximum(uint16_t skillLine, uint16_t maxValue)
             _updateSkillFieldOnValueChange(itr->second.FieldPosition, skillStep, itr->second.CurrentValue, itr->second.MaximumValue);
         }
 
-#ifdef FT_ACHIEVEMENTS
         updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, skillLine, skillStep, 0);
-#endif
 
         // Current skill value did not change
         if (oldCurValue == itr->second.CurrentValue)
@@ -5265,9 +5281,7 @@ void Player::modifySkillMaximum(uint16_t skillLine, uint16_t maxValue)
 
         sHookInterface.OnAdvanceSkillLine(this, skillLine, itr->second.CurrentValue);
 
-#ifdef FT_ACHIEVEMENTS
         updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, skillLine, itr->second.CurrentValue, 0);
-#endif
 
         learnSkillSpells(skillLine, itr->second.CurrentValue);
     }
@@ -5809,7 +5823,6 @@ void Player::_addSpell(uint32_t spellId, uint16_t fromSkill/* = 0*/, bool learni
         }
     }
 
-#ifdef FT_ACHIEVEMENTS
     if (!IsInWorld())
         return;
 
@@ -5829,7 +5842,6 @@ void Player::_addSpell(uint32_t spellId, uint16_t fromSkill/* = 0*/, bool learni
                 updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_NUMBER_OF_MOUNTS, 778, 0, 0);
         }
     }
-#endif
 }
 
 bool Player::_removeSpell(uint32_t spellId, bool moveToDeleted, bool silently/* = false*/, bool removingPreviousRank/* = false*/, bool forceRemoveHigherRanks/* = false*/)
@@ -7449,18 +7461,17 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
     callExitVehicle();
 #endif
 
-#if VERSION_STRING > TBC
     if (unitAttacker != nullptr)
     {
         updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DEATH, 1, 0, 0);
         updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DEATH_AT_MAP, GetMapId(), 1, 0);
 
         if (unitAttacker->isPlayer())
-            updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_PLAYER, 1, 0, 0);
+            updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_PLAYER, 1, 0, 0, unitAttacker);
         else if (unitAttacker->isCreature())
-            updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_CREATURE, 1, 0, 0);
+            updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_CREATURE, 1, 0, 0, unitAttacker);
     }
-#endif
+    failAchievementCriteria(Achievements::FailDeath, 0);
 
     if (unitAttacker != nullptr && !sHookInterface.OnPreUnitDie(unitAttacker, this))
         return;
@@ -9192,8 +9203,11 @@ QuestLogEntry* Player::getQuestLogBySlotId(uint32_t slotId) const
 
 void Player::addQuestIdToFinishedDailies(uint32_t questId)
 {
-    std::lock_guard<std::mutex> lock(m_mutextDailies);
-    m_finishedDailies.insert(questId);
+    {
+        std::lock_guard<std::mutex> lock(m_mutextDailies);
+        m_finishedDailies.insert(questId);
+    }
+    startAchievementCriteria(Achievements::StartCompleteDailyQuest, 0);
 }
 
 std::set<uint32_t> Player::getFinishedDailies() const
@@ -9210,8 +9224,11 @@ bool Player::hasQuestInFinishedDailies(uint32_t questId) const
 
 void Player::resetFinishedDailies()
 {
-    std::lock_guard<std::mutex> lock(m_mutextDailies);
-    m_finishedDailies.clear();
+    {
+        std::lock_guard<std::mutex> lock(m_mutextDailies);
+        m_finishedDailies.clear();
+    }
+    failAchievementCriteria(Achievements::FailDailyQuestsCleared, 0);
 }
 
 bool Player::hasTimedQuestInQuestSlot() const
@@ -10535,9 +10552,7 @@ void Player::tagUnit(Object* object)
     }
 }
 
-#if VERSION_STRING > TBC
 AchievementMgr* Player::getAchievementMgr() { return m_achievementMgr.get(); }
-#endif
 
 void Player::sendUpdateDataToSet(ByteBuffer* groupBuf, ByteBuffer* nonGroupBuf, bool sendToSelf)
 {
@@ -11004,15 +11019,11 @@ bool Player::activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* np
     }
 
     //Checks and preparations done, DO FLIGHT
-#if VERSION_STRING > TBC
     updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_FLIGHT_PATHS_TAKEN, 1);
-#endif
 
     // prevent stealth flight
     modCoinage(-(int64_t)firstcost);
-#if VERSION_STRING > TBC
     updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GOLD_SPENT_FOR_TRAVELLING, firstcost);
-#endif
     getSession()->sendActivateTaxiReply(TaxiNodeError::ERR_Ok);
     getSession()->sendDoFlight(mount_display_id, sourcepath);
     return true;
@@ -11611,11 +11622,9 @@ Item* Player::storeItem(LootItem const* lootItem)
         {
             sendItemPushResultPacket(false, true, true, slotResult.ContainerSlot, slotResult.Slot, lootItem->count, newItem->getEntry(), newItem->getPropertySeed(), newItem->getRandomPropertiesId(), getItemInterface()->GetItemCount(newItem->getEntry()), newItem->getGuid());
             sQuestMgr.OnPlayerItemPickup(this, newItem);
-#if VERSION_STRING > TBC
             updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, newItem->getEntry(), lootItem->count, 0);
             updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_TYPE, newItem->getEntry(), lootItem->count, 0);
             updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_EPIC_ITEM, newItem->getEntry(), lootItem->count);
-#endif
         }
         else
         {
@@ -11644,9 +11653,7 @@ Item* Player::storeItem(LootItem const* lootItem)
 
         sendItemPushResultPacket(false, true, true, slotResult.ContainerSlot, slotResult.Slot, lootItem->count, add->getEntry(), add->getPropertySeed(), add->getRandomPropertiesId(), getItemInterface()->GetItemCount(add->getEntry()), add->getGuid());
         sQuestMgr.OnPlayerItemPickup(this, add);
-#if VERSION_STRING > TBC
         updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, add->getEntry(), 1, 0);
-#endif
         return add;
     }
 }
@@ -11686,12 +11693,10 @@ void Player::setFactionStanding(uint32_t faction, int32_t value)
 
         reputation = std::as_const(m_reputation).find(faction);
 
-#ifdef FT_ACHIEVEMENTS
         if (reputation->second->standing >= StandingValues::EXALTED)
             updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0);
 
         updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->id, reputation->second->standing, 0);
-#endif
 
         onModStanding(factionEntry, reputation->second.get());
     }
@@ -11699,18 +11704,14 @@ void Player::setFactionStanding(uint32_t faction, int32_t value)
     {
         if (hasReputationRankChangedFlat(reputation->second->standing, value))
         {
-#ifdef FT_ACHIEVEMENTS
             if ((reputation->second->standing - value) >= StandingValues::EXALTED)
                updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, -1, 0, 0);
             else if (value >= StandingValues::EXALTED)
                 updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0);
-#endif
 
             reputation->second->standing = value;
     
-#ifdef FT_ACHIEVEMENTS
             updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->id, value, 0);
-#endif
         }
         else
         {
@@ -11764,12 +11765,10 @@ void Player::modFactionStanding(uint32_t faction, int32_t value)
 
         itr = std::as_const(m_reputation).find(faction);
 
-#ifdef FT_ACHIEVEMENTS
         if (itr->second->standing >= StandingValues::EXALTED)
             updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0);
 
         updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->id, itr->second->standing, 0);
-#endif
 
         onModStanding(factionEntry, itr->second.get());
     }
@@ -11788,13 +11787,11 @@ void Player::modFactionStanding(uint32_t faction, int32_t value)
 
         if (hasReputationRankChanged(oldStanding, value))
         {
-#ifdef FT_ACHIEVEMENTS
             updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->id, itr->second->standing, 0);
             if (itr->second->standing >= StandingValues::EXALTED)
                 updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0);
             else if ((itr->second->standing - value) >= StandingValues::EXALTED)
                 updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, -1, 0, 0);
-#endif
         }
 
         onModStanding(factionEntry, itr->second.get());
@@ -12045,6 +12042,20 @@ uint32_t Player::getExaltedCount() const
     return static_cast<uint32_t>(exaltedCount);
 }
 
+uint32_t Player::getFactionCountAtLeast(int32_t standing) const
+{
+    return static_cast<uint32_t>(std::ranges::count_if(m_reputation, [standing](const auto& pair) {
+        return pair.second->standing >= standing;
+    }));
+}
+
+uint32_t Player::getVisibleFactionCount() const
+{
+    return static_cast<uint32_t>(std::ranges::count_if(m_reputation, [](const auto& pair) {
+        return (pair.second->flag & FACTION_FLAG_VISIBLE) != 0;
+    }));
+}
+
 void Player::sendSmsgInitialFactions()
 {
     SmsgInitializeFactions managedPacket(m_reputationByListId);
@@ -12271,6 +12282,9 @@ void Player::endDuel(uint8_t condition)
 
     SmsgDuelComplete completedPacket(1);
     PacketBroadcast::sendToSet(*this, completedPacket, true);
+
+    m_duelPlayer->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_WIN_DUEL, 1, 0, 0, this);
+    updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOSE_DUEL, 1, 0, 0, m_duelPlayer);
 
     if (condition != 0)
         sHookInterface.OnDuelFinished(m_duelPlayer, this);
@@ -13639,24 +13653,6 @@ bool Player::saveCurrencies(bool newCharacter, QueryBuffer* buf)
     return true;
 }
 
-uint32_t Player::getCurrency(uint32_t id, bool usePrecision/* = true*/) const
-{
-    const auto itr = m_currencies.find(id);
-    if (itr == m_currencies.end())
-        return 0;
-
-    const auto* const currency = sCurrencyTypesStore.lookupEntry(id);
-    const uint32_t precision = (usePrecision && currency != nullptr && (currency->Flags & CURRENCY_FLAG_USES_PRECISION)) ? CURRENCY_PRECISION : 1;
-
-    return itr->second.quantity / precision;
-}
-
-bool Player::hasCurrency(uint32_t id, uint32_t count) const
-{
-    const auto itr = m_currencies.find(id);
-    return itr != m_currencies.end() && itr->second.quantity >= count;
-}
-
 void Player::setCurrency(uint32_t id, uint32_t count)
 {
     // No-op if the currency already has an entry - init-only seeding.
@@ -14901,7 +14897,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
     ss << uint32_t(m_specs[SPEC_PRIMARY].getSpecializationId()) << " " << uint32_t(MAX_SPEC_COUNT > 1 ? m_specs[SPEC_SECONDARY].getSpecializationId() : 0);
     ss << "'";
 
-    // the build of the client the character is played with, checked against the level squish at load
+    // the build of the client the character is played with, the CharacterBuildUpdater takes it at the start
     ss << ", " << uint32_t(getSession()->GetClientBuild());
 
     ss << ")";
@@ -15043,38 +15039,6 @@ bool Player::loadFromDB(uint32_t guid)
     return true;
 }
 
-namespace
-{
-    // The level squish of 9.0: a character last played before it keeps its old level in the database, the level is
-    // converted when the server runs a client of 9.0 or later. The table lists the highest old level of every new
-    // level (the old level 50 counts to the new level 21), old levels above 120 become the new maximum
-    constexpr uint32_t LevelSquishBuild = WoW::Build::SHADOWLANDS_BUILD;
-    constexpr uint8_t LevelSquishOldMax[] =
-    {
-        1, 4, 7, 9, 11, 13, 15, 17, 19, 22, 25, 28, 31, 34, 36, 38, 40, 42, 44, 47, 50, 53, 56, 59, 63,
-        67, 71, 75, 79, 81, 83, 85, 87, 89, 91, 93, 95, 97, 99, 101, 103, 105, 107, 109, 111, 113, 115, 117, 119, 120
-    };
-
-    bool levelSquishRequired(uint32_t lastLoginBuild)
-    {
-#if VERSION_STRING >= Shadowlands
-        return lastLoginBuild < LevelSquishBuild;
-#else
-        (void)lastLoginBuild;
-        return false;
-#endif
-    }
-
-    uint32_t squishedLevel(uint32_t level)
-    {
-        for (size_t newLevel = 0; newLevel < std::size(LevelSquishOldMax); ++newLevel)
-            if (level <= LevelSquishOldMax[newLevel])
-                return static_cast<uint32_t>(newLevel + 1);
-
-        return static_cast<uint32_t>(std::size(LevelSquishOldMax));
-    }
-}
-
 void Player::loadFromDBProc(QueryResultVector& results)
 {
     auto startTime = Util::TimeNow();
@@ -15155,12 +15119,8 @@ void Player::loadFromDBProc(QueryResultVector& results)
         return;
     }
 
-    // set level: a character last played before the level squish gets its level converted
-    const uint32_t lastLoginBuild = field[96].asUint32();
-    const bool levelSquished = levelSquishRequired(lastLoginBuild);
-    setLevel(levelSquished ? squishedLevel(field[7].asUint32()) : field[7].asUint32());
-    if (levelSquished)
-        sLogger.info("Player guid {} was last played with build {}: level {} converted to {}", getGuidLow(), lastLoginBuild, field[7].asUint32(), getLevel());
+    // set level, the CharacterBuildUpdater converted it at the start when the level squish lies between
+    setLevel(field[7].asUint32());
 
     // obtain level/stats information
     m_levelInfo = sObjectMgr.getLevelInfo(getRace(), getClass(), getLevel());
@@ -15179,8 +15139,8 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
     setInitialPlayerData();
 
-    // set xp, a converted level starts without experience
-    setXp(levelSquished ? 0 : field[8].asUint32());
+    // set xp
+    setXp(field[8].asUint32());
 
     // Load active cheats
     uint32_t active_cheats = field[9].asUint32();
@@ -15210,7 +15170,8 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
     // 9.x and later: the look as customization choices when the character was created with them
     m_customizations.clear();
-    if (auto* customizationResult = results[PlayerQuery::Customizations].result.get())
+    // builds before 4.x run no customization query
+    if (auto* customizationResult = results.size() > PlayerQuery::Customizations ? results[PlayerQuery::Customizations].result.get() : nullptr)
     {
         do
         {
@@ -17546,7 +17507,16 @@ uint32_t Player::getMainMeleeDamage(uint32_t attackPowerOverride)
     return Util::float2int32(result);
 }
 
-#if VERSION_STRING > TBC
+void Player::startAchievementCriteria(uint8_t startEvent, uint32_t asset)
+{
+    m_achievementMgr->startCriteria(startEvent, asset);
+}
+
+void Player::failAchievementCriteria(uint8_t failEvent, uint32_t asset)
+{
+    m_achievementMgr->failCriteria(failEvent, asset);
+}
+
 void Player::updateAchievementCriteria(AchievementCriteriaTypes type, int32_t miscValue1 /*= 0*/, int32_t miscValue2 /*= 0*/, uint32_t miscValue3 /*= 0*/, Unit* unit /*= nullptr*/)
 {
     m_achievementMgr->updateAchievementCriteria(type, miscValue1, miscValue2, miscValue3, unit);
@@ -17562,7 +17532,6 @@ void Player::updateAchievementCriteria(AchievementCriteriaTypes type, int32_t mi
     // ToDo Cata Has Guild Achievements
     //guild->updateAchievementCriteria(type, miscValue1, miscValue2, miscValue3, unit, this);
 }
-#endif
 
 Creature* Player::getCreatureWhenICanInteract(WoWGuid const& guid, uint32_t npcflagmask)
 {

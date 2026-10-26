@@ -17,112 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <unordered_map>
 #include <list>
 #include <memory>
-
-#if VERSION_STRING > TBC
-
-class WorldSession;
-class Object;
-class QueryResult;
-
-namespace WDB::Structures
-{
-    struct AchievementEntry;
-    struct AchievementCriteriaEntry;
-}
-
-class QueryBuffer;
-struct AchievementEntry;
-struct AchievementCriteriaEntry;
-
-enum AchievementRewardTypes
-{
-    ACHIEVEMENT_REWARDTYPE_NONE     = 0,
-    ACHIEVEMENT_REWARDTYPE_ITEM     = 1,
-    ACHIEVEMENT_REWARDTYPE_TITLE    = 2,
-    ACHIEVEMENT_REWARDTYPE_SPELL    = 4
-};
-
-enum AchievementFlags
-{
-    ACHIEVEMENT_FLAG_COUNTER                = 0x00000001,    // Just count statistic (never stop and complete)
-    ACHIEVEMENT_FLAG_HIDDEN                 = 0x00000002,    // Not sent to client - internal use only
-    ACHIEVEMENT_FLAG_PLAY_NO_VISUAL         = 0x00000004,    // Client does not play achievement earned visual
-    ACHIEVEMENT_FLAG_SUMM                   = 0x00000008,    // Use summ criteria value from all requirements (and calculate max value)
-    ACHIEVEMENT_FLAG_MAX_USED               = 0x00000010,    // Show max criteria (and calculate max value ??)
-    ACHIEVEMENT_FLAG_REQ_COUNT              = 0x00000020,    // Use not zero req count (and calculate max value)
-    ACHIEVEMENT_FLAG_AVERAGE                = 0x00000040,    // Show as average value (value / time_in_days) depend from other flag (by def use last criteria value)
-    ACHIEVEMENT_FLAG_BAR                    = 0x00000080,    // Show as progress bar (value / max vale) depend from other flag (by def use last criteria value)
-    ACHIEVEMENT_FLAG_REALM_FIRST_REACH      = 0x00000100,    //
-    ACHIEVEMENT_FLAG_REALM_FIRST_KILL       = 0x00000200,    //
-    ACHIEVEMENT_FLAG_UNK3                   = 0x00000400,    // ACHIEVEMENT_FLAG_HIDE_NAME_IN_TIE
-    ACHIEVEMENT_FLAG_REALM_FIRST_GUILD      = 0x00000800,    // first guild on realm done something
-    ACHIEVEMENT_FLAG_SHOW_IN_GUILD_NEWS     = 0x00001000,    // Shows in guild news
-    ACHIEVEMENT_FLAG_SHOW_IN_GUILD_HEADER   = 0x00002000,    // Shows in guild news header
-    ACHIEVEMENT_FLAG_GUILD                  = 0x00004000,    //
-    ACHIEVEMENT_FLAG_SHOW_GUILD_MEMBERS     = 0x00008000,    //
-    ACHIEVEMENT_FLAG_SHOW_CRITERIA_MEMBERS  = 0x00010000     //
-};
-
-inline uint32_t secsToTimeBitFields(time_t secs)
-{
-    tm* lt = localtime(&secs);
-    return static_cast<uint32_t>((lt->tm_year - 100) << 24 | lt->tm_mon << 20 | (lt->tm_mday - 1) << 14 | lt->tm_wday << 11 | lt->tm_hour << 6 | lt->tm_min);
-}
-
-struct CriteriaProgress
-{
-    CriteriaProgress(uint32_t iid, uint32_t icounter, time_t tdate = time(nullptr))
-        :
-        id(iid),
-        counter(icounter),
-        date(tdate)
-    { }
-
-    uint32_t id;     ///< Criteria ID
-    uint32_t counter; ///< Completed count: how many times the criteria has been completed
-    time_t date;   ///< Date/time
-};
-
-struct AchievementReward
-{
-    uint8_t gender;
-    uint32_t titel_A;
-    uint32_t titel_H;
-    uint32_t itemId;
-    uint32_t sender;
-    std::string subject;
-    std::string text;
-};
-
-typedef std::unordered_map<uint32_t, std::unique_ptr<CriteriaProgress>> CriteriaProgressMap;
-typedef std::unordered_map<uint32_t, time_t> CompletedAchievementMap;
-typedef std::multimap<uint32_t, AchievementReward> AchievementRewardsMap;
-typedef std::pair<AchievementRewardsMap::const_iterator, AchievementRewardsMap::const_iterator> AchievementRewardsMapBounds;
-typedef std::set<uint32_t> AchievementSet;
-typedef std::list<WDB::Structures::AchievementCriteriaEntry const*> AchievementCriteriaEntryList;
-
-class Player;
-class WorldPacket;
-class ObjectMgr;
-
-enum AchievementCompletionState
-{
-    ACHIEVEMENT_COMPLETED_NONE,                 ///< #0# Achievement is not completed
-    ACHIEVEMENT_COMPLETED_COMPLETED_NOT_STORED, ///< #1# Achievement is completed, but not stored yet
-    ACHIEVEMENT_COMPLETED_COMPLETED_STORED,     ///< #2# Achievement is completed and has been stored
-};
-
-/// \note Currently these are not being used at all.
-enum AchievementCriteriaCondition
-{
-    ACHIEVEMENT_CRITERIA_CONDITION_NONE      = 0,  ///< #0# No condition
-    ACHIEVEMENT_CRITERIA_CONDITION_NO_DEATH  = 1,  ///< #1# Must not die?
-    ACHIEVEMENT_CRITERIA_CONDITION_UNK1      = 2,  ///< #2# only used in "Complete a daily quest every day for five consecutive days"
-    ACHIEVEMENT_CRITERIA_CONDITION_MAP       = 3,  ///< #3# requires you to be on specific map
-    ACHIEVEMENT_CRITERIA_CONDITION_NO_LOOSE  = 4,  ///< #4# only used in "Win 10 arenas without losing"
-    ACHIEVEMENT_CRITERIA_CONDITION_UNK2      = 9,  ///< #9# unk
-    ACHIEVEMENT_CRITERIA_CONDITION_UNK3      = 13, ///< #13# unk
-};
+#include <vector>
 
 enum AchievementCriteriaTypes : uint8_t
 {
@@ -227,10 +122,6 @@ enum AchievementCriteriaTypes : uint8_t
     ACHIEVEMENT_CRITERIA_TYPE_ACCEPTED_SUMMONINGS               = 114,
     ACHIEVEMENT_CRITERIA_TYPE_EARN_ACHIEVEMENT_POINTS           = 115,
     ACHIEVEMENT_CRITERIA_TYPE_USE_LFD_TO_GROUP_WITH_PLAYERS     = 119,
-#if VERSION_STRING == WotLK
-    ACHIEVEMENT_CRITERIA_TYPE_TOTAL                             = 124,
-#endif
-#if VERSION_STRING > WotLK
     ACHIEVEMENT_CRITERIA_TYPE_SPENT_GOLD_GUILD_REPAIRS          = 124,
     ACHIEVEMENT_CRITERIA_TYPE_REACH_GUILD_LEVEL                 = 125,
     ACHIEVEMENT_CRITERIA_TYPE_CRAFT_ITEMS_GUILD                 = 126,
@@ -245,8 +136,124 @@ enum AchievementCriteriaTypes : uint8_t
     ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE_GUILD          = 136,
     ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_GUILD_CHALLENGE_TYPE     = 138,  //struct { Flag flag; uint32_t count; } 1: Guild Dungeon, 2:Guild Challenge, 3:Guild battlefield
     ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_GUILD_CHALLENGE          = 139,  //struct { uint32_t count; } Guild Challenge
-    ACHIEVEMENT_CRITERIA_TYPE_TOTAL                             = 140,
-#endif
+    ACHIEVEMENT_CRITERIA_TYPE_LOGIN                             = 74,   // the player logged in
+    ACHIEVEMENT_CRITERIA_TYPE_MONEY_FROM_VENDORS                = 59,   // copper of items sold to vendors
+    ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_LFG_DUNGEON              = 118,  // a dungeon of the dungeon finder was completed
+    ACHIEVEMENT_CRITERIA_TYPE_LEARNED_NEW_PET                   = 155,  // the journal learned a battle pet
+    ACHIEVEMENT_CRITERIA_TYPE_BATTLE_PET_LEVEL                  = 160,  // a battle pet of the journal changed its level
+};
+
+class WorldSession;
+class Object;
+class QueryResult;
+
+namespace WDB::Structures
+{
+    struct AchievementEntry;
+    struct AchievementCriteriaEntry;
+}
+
+class QueryBuffer;
+struct AchievementEntry;
+struct AchievementCriteriaEntry;
+
+namespace Achievements
+{
+    class AccountAchievements;
+    struct Criteria;
+    struct EventSubject;
+    struct ProgressNode;
+    struct ProgressUpdate;
+}
+
+enum AchievementRewardTypes
+{
+    ACHIEVEMENT_REWARDTYPE_NONE     = 0,
+    ACHIEVEMENT_REWARDTYPE_ITEM     = 1,
+    ACHIEVEMENT_REWARDTYPE_TITLE    = 2,
+    ACHIEVEMENT_REWARDTYPE_SPELL    = 4
+};
+
+enum AchievementFlags
+{
+    ACHIEVEMENT_FLAG_COUNTER                = 0x00000001,    // Just count statistic (never stop and complete)
+    ACHIEVEMENT_FLAG_HIDDEN                 = 0x00000002,    // Not sent to client - internal use only
+    ACHIEVEMENT_FLAG_PLAY_NO_VISUAL         = 0x00000004,    // Client does not play achievement earned visual
+    ACHIEVEMENT_FLAG_SUMM                   = 0x00000008,    // Use summ criteria value from all requirements (and calculate max value)
+    ACHIEVEMENT_FLAG_MAX_USED               = 0x00000010,    // Show max criteria (and calculate max value ??)
+    ACHIEVEMENT_FLAG_REQ_COUNT              = 0x00000020,    // Use not zero req count (and calculate max value)
+    ACHIEVEMENT_FLAG_AVERAGE                = 0x00000040,    // Show as average value (value / time_in_days) depend from other flag (by def use last criteria value)
+    ACHIEVEMENT_FLAG_BAR                    = 0x00000080,    // Show as progress bar (value / max vale) depend from other flag (by def use last criteria value)
+    ACHIEVEMENT_FLAG_REALM_FIRST_REACH      = 0x00000100,    //
+    ACHIEVEMENT_FLAG_REALM_FIRST_KILL       = 0x00000200,    //
+    ACHIEVEMENT_FLAG_UNK3                   = 0x00000400,    // ACHIEVEMENT_FLAG_HIDE_NAME_IN_TIE
+    ACHIEVEMENT_FLAG_REALM_FIRST_GUILD      = 0x00000800,    // first guild on realm done something
+    ACHIEVEMENT_FLAG_SHOW_IN_GUILD_NEWS     = 0x00001000,    // Shows in guild news
+    ACHIEVEMENT_FLAG_SHOW_IN_GUILD_HEADER   = 0x00002000,    // Shows in guild news header
+    ACHIEVEMENT_FLAG_GUILD                  = 0x00004000,    //
+    ACHIEVEMENT_FLAG_SHOW_GUILD_MEMBERS     = 0x00008000,    //
+    ACHIEVEMENT_FLAG_SHOW_CRITERIA_MEMBERS  = 0x00010000     //
+};
+
+inline uint32_t secsToTimeBitFields(time_t secs)
+{
+    tm* lt = localtime(&secs);
+    return static_cast<uint32_t>((lt->tm_year - 100) << 24 | lt->tm_mon << 20 | (lt->tm_mday - 1) << 14 | lt->tm_wday << 11 | lt->tm_hour << 6 | lt->tm_min);
+}
+
+struct CriteriaProgress
+{
+    CriteriaProgress(uint32_t iid, uint32_t icounter, time_t tdate = time(nullptr))
+        :
+        id(iid),
+        counter(icounter),
+        date(tdate)
+    { }
+
+    uint32_t id;     ///< Criteria ID
+    uint32_t counter; ///< Completed count: how many times the criteria has been completed
+    time_t date;   ///< Date/time
+};
+
+struct AchievementReward
+{
+    uint8_t gender;
+    uint32_t titel_A;
+    uint32_t titel_H;
+    uint32_t itemId;
+    uint32_t sender;
+    std::string subject;
+    std::string text;
+};
+
+typedef std::unordered_map<uint32_t, std::unique_ptr<CriteriaProgress>> CriteriaProgressMap;
+typedef std::unordered_map<uint32_t, time_t> CompletedAchievementMap;
+typedef std::multimap<uint32_t, AchievementReward> AchievementRewardsMap;
+typedef std::pair<AchievementRewardsMap::const_iterator, AchievementRewardsMap::const_iterator> AchievementRewardsMapBounds;
+typedef std::set<uint32_t> AchievementSet;
+typedef std::list<WDB::Structures::AchievementCriteriaEntry const*> AchievementCriteriaEntryList;
+
+class Player;
+class WorldPacket;
+class ObjectMgr;
+
+enum AchievementCompletionState
+{
+    ACHIEVEMENT_COMPLETED_NONE,                 ///< #0# Achievement is not completed
+    ACHIEVEMENT_COMPLETED_COMPLETED_NOT_STORED, ///< #1# Achievement is completed, but not stored yet
+    ACHIEVEMENT_COMPLETED_COMPLETED_STORED,     ///< #2# Achievement is completed and has been stored
+};
+
+/// \note Currently these are not being used at all.
+enum AchievementCriteriaCondition
+{
+    ACHIEVEMENT_CRITERIA_CONDITION_NONE      = 0,  ///< #0# No condition
+    ACHIEVEMENT_CRITERIA_CONDITION_NO_DEATH  = 1,  ///< #1# Must not die?
+    ACHIEVEMENT_CRITERIA_CONDITION_UNK1      = 2,  ///< #2# only used in "Complete a daily quest every day for five consecutive days"
+    ACHIEVEMENT_CRITERIA_CONDITION_MAP       = 3,  ///< #3# requires you to be on specific map
+    ACHIEVEMENT_CRITERIA_CONDITION_NO_LOOSE  = 4,  ///< #4# only used in "Win 10 arenas without losing"
+    ACHIEVEMENT_CRITERIA_CONDITION_UNK2      = 9,  ///< #9# unk
+    ACHIEVEMENT_CRITERIA_CONDITION_UNK3      = 13, ///< #13# unk
 };
 
 /**
@@ -312,9 +319,6 @@ public:
     void loadFromDb(QueryResult* _achievementResult, QueryResult* _criteriaResult);
     void saveToDb(QueryBuffer* _buffer);
 
-    bool canCompleteCriteria(WDB::Structures::AchievementCriteriaEntry const* _achievementCriteria, AchievementCriteriaTypes _type, Player* _player) const;
-    bool canCompleteCriteria(WDB::Structures::AchievementCriteriaEntry const* _achievementCriteria, AchievementCriteriaTypes _type, int32_t _miscValue1, int32_t _miscValue2, Player* _player) const;
-
     void updateAllAchievementCriteria();
 
     void updateAchievementCriteria(AchievementCriteriaTypes _type, int32_t _miscvalue1, int32_t _miscvalue2, uint32_t _time, Object* _reference = nullptr);
@@ -328,9 +332,7 @@ public:
     void gmResetCriteria(uint32_t _criteriaId, bool _finishAll = false);
 
     void sendAllAchievementData(Player* _player);
-#if VERSION_STRING >= Cata
     void sendRespondInspectAchievements(Player* _player);
-#endif
 
     bool gmCompleteAchievement(WorldSession* _gmSession, uint32_t _achievementId, bool _finishAll = false);
     void gmResetAchievement(uint32_t _achievementId, bool _finishAll = false);
@@ -338,6 +340,19 @@ public:
     time_t getCompletedTime(WDB::Structures::AchievementEntry const* _achievement);
     uint32_t getCompletedAchievementsCount() const;
     bool hasCompleted(uint32_t _achievementId) const;
+
+    bool hasCompletedOnAccount(uint32_t _achievementId) const;
+    bool hasCompletedOnCharacter(uint32_t _achievementId) const;
+    std::vector<uint32_t> getCompletedAchievementIds() const;
+    uint32_t getAchievementPoints() const;
+
+    // the account wide achievements arrived after the login
+    void onAccountDataLoaded();
+
+    // the timers of criteria with a start event and the reset of criteria with a fail event
+    void startCriteria(uint8_t _startEvent, uint32_t _asset);
+    void failCriteria(uint8_t _failEvent, uint32_t _asset);
+    void updateCriteriaTimers(uint32_t _diffMs);
 
     Player* getPlayer() const;
 
@@ -348,21 +363,43 @@ private:
     void giveAchievementReward(WDB::Structures::AchievementEntry const* _entry);
     void sendAchievementEarned(WDB::Structures::AchievementEntry const* _entry);
 
-    AchievementCompletionState getAchievementCompletionState(WDB::Structures::AchievementEntry const* _entry);
+    Achievements::AccountAchievements* getAccount() const;
 
-    bool canSendAchievementProgress(const CriteriaProgress* _criteriaProgress);
-    bool canSaveAchievementProgressToDB(const CriteriaProgress* _criteriaProgress);
-    void sendCriteriaUpdate(const CriteriaProgress* _criteriaProgress);
-    void setCriteriaProgress(WDB::Structures::AchievementCriteriaEntry const* _entry, int32_t _newValue, bool _relative = false);
-    void updateCriteriaProgress(WDB::Structures::AchievementCriteriaEntry const* _entry, int32_t _updateByValue);
+    // account wide achievements and criteria of the character tables belong to the account
+    void moveAccountData();
 
-    void completedCriteria(WDB::Structures::AchievementCriteriaEntry const* _entry);
-    bool isCompletedCriteria(WDB::Structures::AchievementCriteriaEntry const* _entry);
+    // an achievement the player may still earn: faction, map, counter and realm first
+    bool canEarn(WDB::Structures::AchievementEntry const* _achievement) const;
+    bool isOpenCriteria(Achievements::Criteria const* _criteria) const;
 
-    std::mutex m_lock;
+    uint32_t getProgress(Achievements::Criteria const* _criteria, bool _accountWide) const;
+    void applyProgress(Achievements::Criteria const* _criteria, Achievements::ProgressUpdate const& _update);
+    void storeProgress(Achievements::Criteria const* _criteria, uint32_t _counter, bool _accountWide);
+
+    bool isCriteriaComplete(Achievements::Criteria const* _criteria, uint64_t _amount, bool _accountWide) const;
+    bool isTreeComplete(Achievements::ProgressNode const* _node, bool _accountWide) const;
+    uint64_t sumOfTree(Achievements::ProgressNode const* _node, bool _accountWide, bool _weighted) const;
+    uint64_t highestOfTree(Achievements::ProgressNode const* _node, bool _accountWide) const;
+
+    void checkAchievementsOf(Achievements::Criteria const* _criteria);
+    void checkAchievement(uint32_t _achievementId);
+    void deriveAll();
+
+    void sendCriteriaUpdate(uint32_t _criteriaId, uint32_t _counter, time_t _date, bool _accountWide);
+    void sendAllAchievementDataInChunks(Player* _player);
+
+    bool m_sentWithAccountData = false;
+
+    // criteria with a running start event, the remaining time in milliseconds
+    std::unordered_map<uint32_t, int64_t> m_criteriaTimers;
+    void removeProgress(Achievements::Criteria const* _criteria);
+
+    // the checks of the client data and the world database beyond the event itself
+    bool areChecksMet(Achievements::Criteria const* _criteria, Achievements::EventSubject const& _subject) const;
+
+    std::recursive_mutex m_lock;
     Player* m_player;
     CriteriaProgressMap m_criteriaProgress;
     CompletedAchievementMap m_completedAchievements;
     bool isCharacterLoading;
 };
-#endif

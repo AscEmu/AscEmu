@@ -55,7 +55,13 @@ public:
     // name and name time of a pet for the name query of other clients
     bool getPetName(uint32_t petId, std::string& name, uint64_t& timestamp, uint32_t& creatureId) const;
 
+    // the achievements of the journal, pets of this realm only
+    uint32_t getUniqueSpeciesCount() const;
+    uint32_t getPetCountAtLevel(uint16_t level) const;
+    uint16_t getLowestSlotLevel() const;
+
 private:
+    size_t updateLocked();
     BattlePets::BattlePet* findKnown(uint32_t petId);
     BattlePets::BattlePet const* findKnown(uint32_t petId) const;
     AscEmu::Packets::BattlePetData toPacket(BattlePets::BattlePet const& pet) const;

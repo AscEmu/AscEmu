@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "SpellAura.hpp"
+#include "Management/Achievements/AchievementEvents.hpp"
 
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "Definitions/SpellEffects.hpp"
@@ -255,6 +256,9 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
     sLogger.debugAura("Removing aura {} from unit {}", getSpellId(), getOwner()->getGuid());
 
     m_isGarbage = true;
+
+    if (getOwner()->isPlayer())
+        static_cast<Player*>(getOwner())->failAchievementCriteria(Achievements::FailLoseAura, getSpellId());
 
     // Reset diminishing return timer
     getOwner()->removeDiminishingReturnTimer(getSpellInfo());

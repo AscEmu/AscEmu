@@ -182,9 +182,7 @@ void Container::forceCreationUpdate(Item* item)
         m_owner->getUpdateMgr().pushCreationData(&buf, count);
     }
 
-#if VERSION_STRING > TBC
     m_owner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, item->getItemProperties()->ItemId, item->getStackCount(), 0);
-#endif
 }
 
 Item* Container::getItem(int16_t slot)

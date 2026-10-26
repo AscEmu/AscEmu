@@ -182,9 +182,8 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
             srlPacket.targets.setDestination(_player->GetPosition());
     }
 
-#if VERSION_STRING >= WoD
-    srlPacket.targets.setTargetMask(requestedTargetMask);
-#endif
+    if (getClientProtocol().expansion >= WoW::Expansion::_WoD)
+        srlPacket.targets.setTargetMask(requestedTargetMask);
 
     if (srlPacket.hasDestLocation)
     {

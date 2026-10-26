@@ -50,6 +50,10 @@ enum LogonRealmOpcodes
     LRCMSG_BATTLE_PET_SAVE            = 0x01C,  // changed and released battle pets of an account
     LRCMSG_BATTLE_PET_ADD             = 0x01D,  // new battle pet, the logonserver hands out its id
     LRSMSG_BATTLE_PET_ADD_RESULT      = 0x01E,  // the new battle pet with its id or the reason it was refused
+    LRCMSG_ACHIEVEMENT_REQUEST        = 0x01F,  // request the account wide achievements of an account
+    LRSMSG_ACHIEVEMENT_RESULT         = 0x020,  // the account wide achievements and criteria progress
+    LRCMSG_ACHIEVEMENT_SAVE           = 0x021,  // new account wide achievements and raised criteria progress
+    LRCMSG_ACHIEVEMENT_RESET          = 0x022,  // a game master removed an account wide achievement or criteria progress
 
     LRMSG_MAX_OPCODES                           // max opcodes
 };
@@ -88,6 +92,10 @@ inline const char* getLogonRealmOpcodeName(uint32_t opcode)
         case LRCMSG_BATTLE_PET_SAVE:            return "LRCMSG_BATTLE_PET_SAVE";
         case LRCMSG_BATTLE_PET_ADD:             return "LRCMSG_BATTLE_PET_ADD";
         case LRSMSG_BATTLE_PET_ADD_RESULT:      return "LRSMSG_BATTLE_PET_ADD_RESULT";
+        case LRCMSG_ACHIEVEMENT_REQUEST:        return "LRCMSG_ACHIEVEMENT_REQUEST";
+        case LRSMSG_ACHIEVEMENT_RESULT:         return "LRSMSG_ACHIEVEMENT_RESULT";
+        case LRCMSG_ACHIEVEMENT_SAVE:           return "LRCMSG_ACHIEVEMENT_SAVE";
+        case LRCMSG_ACHIEVEMENT_RESET:          return "LRCMSG_ACHIEVEMENT_RESET";
         default:                                return "UNKNOWN";
     }
 }

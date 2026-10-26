@@ -104,10 +104,8 @@ public:
     virtual void TransporterEvents(Transporter* /*transport*/, uint32_t /*eventId*/) {}
     uint8_t Difficulty;
 
-#if VERSION_STRING > TBC
     // Update Achievement Criteria for all players in instance
     void updateAchievementCriteria(AchievementCriteriaTypes type, uint32_t miscValue1 = 0, uint32_t miscValue2 = 0, Unit* unit = nullptr);
-#endif
 
     void setZoneMusic(uint32_t zoneId, uint32_t musicId);
 

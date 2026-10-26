@@ -20,6 +20,7 @@
  */
 
 #include "QuestMgr.h"
+#include "Management/Achievements/AchievementEvents.hpp"
 #include "Server/ClientProtocol.hpp"
 
 #include "Group.h"
@@ -786,8 +787,11 @@ void QuestMgr::GiveQuestRewardReputation(Player* plr, QuestProperties const* qst
     }
 }
 
-void QuestMgr::OnQuestAccepted(Player* /*plr*/, QuestProperties const* /*qst*/, Object* /*qst_giver*/)
-{}
+void QuestMgr::OnQuestAccepted([[maybe_unused]] Player* plr, [[maybe_unused]] QuestProperties const* qst, Object* /*qst_giver*/)
+{
+    if (plr != nullptr && qst != nullptr)
+        plr->startAchievementCriteria(Achievements::StartAcceptQuest, qst->id);
+}
 
 void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* qst_giver, uint32_t reward_slot)
 {
@@ -1091,13 +1095,11 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         }
 #endif
 
-#if VERSION_STRING > TBC
         plr->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT, 1, 0, 0);
         if (qst->reward_money)
             plr->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qst->reward_money, 0, 0);
         plr->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE, qst->zone_id, 0, 0);
         plr->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qst->id, 0, 0);
-#endif
         // Remove quests that are listed to be removed on quest complete.
         std::set<uint32_t>::iterator iter = qst->remove_quest_list.begin();
         for (; iter != qst->remove_quest_list.end(); ++iter)

@@ -17,10 +17,10 @@ This file is released under the MIT license. See README-MIT for more information
 #define ACHIEVEMENT_CRITERIA_GROUP_NOT_IN_GROUP 2
 
 /// Alliance-only achievement
-#define ACHIEVEMENT_FACTION_FLAG_ALLIANCE 0
+#define ACHIEVEMENT_FACTION_FLAG_ALLIANCE 1
 
 /// Horde-only achievement
-#define ACHIEVEMENT_FACTION_FLAG_HORDE 1
+#define ACHIEVEMENT_FACTION_FLAG_HORDE 0
 
 /// ms smoother server/client side moving vs less cpu/ less b/w
 // #define UNIT_MOVEMENT_INTERPOLATE_INTERVAL 400/*750*/

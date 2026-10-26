@@ -25,6 +25,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Logging/Logger.hpp"
 #include "Server/World.h"
 #include "Management/AchievementMgr.h"
+#include "Management/Achievements/AchievementTrees.hpp"
+#include "Management/Conditions/PlayerConditions.hpp"
+#include "Management/Conditions/WorldStateExpressions.hpp"
 #include "Map/Area/AreaStorage.hpp"
 
 #include <algorithm>
@@ -767,7 +770,8 @@ namespace
     {
         WDC5File chatChannels, auctionHouse, bankBagSlotPrices, mailTemplate, emotes, emotesText, questXP, questSort, bannedAddons;
         WDC5File lock, gameObjectDisplayInfo, totemCategory, gemProperties, mountCapability, mountTypeXCapability, currencyTypes;
-        WDC5File guildPerkSpells, glyphProperties, achievement, criteria, criteriaTree;
+        WDC5File guildPerkSpells, glyphProperties, achievement, criteria, criteriaTree, modifierTree;
+        WDC5File achievementCategory, friendshipRepReaction, friendshipReputation, worldStateExpression, playerCondition;
         if (!loadTables(errors, dbcPath, {
             { chatChannels, Layout::ChatChannels }, { auctionHouse, Layout::AuctionHouse }, { bankBagSlotPrices, Layout::BankBagSlotPrices },
             { mailTemplate, Layout::MailTemplate }, { emotes, Layout::Emotes }, { emotesText, Layout::EmotesText }, { questXP, Layout::QuestXP },
@@ -775,7 +779,10 @@ namespace
             { gameObjectDisplayInfo, Layout::GameObjectDisplayInfo }, { totemCategory, Layout::TotemCategory }, { gemProperties, Layout::GemProperties },
             { mountCapability, Layout::MountCapability }, { mountTypeXCapability, Layout::MountTypeXCapability }, { currencyTypes, Layout::CurrencyTypes },
             { guildPerkSpells, Layout::GuildPerkSpells }, { glyphProperties, Layout::GlyphProperties }, { achievement, Layout::Achievement },
-            { criteria, Layout::Criteria }, { criteriaTree, Layout::CriteriaTree } }))
+            { criteria, Layout::Criteria }, { criteriaTree, Layout::CriteriaTree }, { modifierTree, Layout::ModifierTree },
+            { achievementCategory, Layout::AchievementCategory }, { friendshipRepReaction, Layout::FriendshipRepReaction },
+            { friendshipReputation, Layout::FriendshipReputation }, { worldStateExpression, Layout::WorldStateExpression },
+            { playerCondition, Layout::PlayerCondition } }))
             return false;
 
         fillStore(sChatChannelsStore, chatChannels, [](WDB::Structures::ChatChannelsEntry& entry, Row const& row)
@@ -907,11 +914,11 @@ namespace
             }
         }
 
-        fillContainer(sCurrencyTypesStore, currencyTypes, [](WDB::Structures::CurrencyTypesEntry& entry, Row const& row)
+        fillStore(sCurrencyTypesStore, currencyTypes, [](WDB::Structures::CurrencyTypesEntry& entry, Row const& row)
         {
             entry.item_id = row.id();
             entry.Category = row.i32(2);
-            entry.name = row.text(0);
+            entry.name = row.str(0);
             entry.TotalCap = row.u32(6);            // MaxQty
             entry.WeekCap = row.u32(7);             // MaxEarnablePerWeek
             entry.Flags = row.i32(21, 0);
@@ -930,109 +937,197 @@ namespace
             entry.unk = row.i32(3);                 // SpellIconFileDataID
         });
 
-        // Achievements keep their rows, the criteria of the dbc are the leaves of
-        // the criteria trees: a leaf belongs to the achievement that owns the root
-        // of its tree and is keyed by the criteria id the client reports progress for.
-        std::unordered_map<uint32_t, uint32_t> achievementByRootTree;
-        fillContainer(sAchievementStore, achievement, [&achievementByRootTree](WDB::Structures::AchievementEntry& entry, Row const& row)
+        fillStore(sAchievementStore, achievement, [](WDB::Structures::AchievementEntry& entry, Row const& row)
         {
             entry.ID = row.id();
             entry.factionFlag = row.i8(5);
             entry.mapID = row.i16(4);               // InstanceID
             entry.parentAchievement = row.i32(6);   // Supercedes
-            entry.name[0] = row.text(1);
-            entry.description[0] = row.text(0);
+            entry.name = row.str(1);
+            entry.description = row.str(0);
             entry.categoryId = row.i16(7);
             entry.points = row.u8(9);
             entry.orderInCategory = row.i16(11);    // UiOrder
             entry.flags = row.i32(10);
             entry.icon = row.i32(12);               // IconFileID
-            entry.rewardName[0] = row.text(2);
+            entry.rewardName = row.str(2);
             entry.count = row.u8(8);                // MinimumCriteria
             entry.refAchievement = row.i16(15);     // SharesCriteria
             entry.criteriaTreeID = row.u32(14);
-            if (entry.criteriaTreeID != 0)
-                achievementByRootTree.try_emplace(entry.criteriaTreeID, entry.ID);
         });
 
-        struct TreeNode
+        fillStore(sAchievementCategoryStore, achievementCategory, [](WDB::Structures::AchievementCategoryEntry& entry, Row const& row)
         {
-            uint32_t parent;
-            uint32_t criteriaId;
-            uint32_t amount;
-            uint32_t flags;
-            uint32_t orderIndex;
-            std::string_view description;
-        };
-        std::unordered_map<uint32_t, TreeNode> treeNodes;
-        treeNodes.reserve(criteriaTree.getRecordCount());
-        for (Row const row : rows(criteriaTree))
-            treeNodes.emplace(row.id(), TreeNode{ row.u32(1), row.u32(4), row.u32(2), static_cast<uint32_t>(row.i32(6)), static_cast<uint32_t>(row.i32(5)), row.str(0) });
+            entry.id = row.id();
+            entry.parent = row.i16(2);
+        });
 
-        std::unordered_map<uint32_t, Row> criteriaRows;
-        criteriaRows.reserve(criteria.getRecordCount());
-        for (Row const row : rows(criteria))
-            criteriaRows.emplace(row.id(), row);
-
-        // Criteria used by several trees keep the first achievement they were seen
-        // with. Only the criteria types the core knows are kept, the modern types
-        // above the legacy range have no handling yet.
-        struct CriteriaOwner
+        fillStore(sFriendshipRepReactionStore, friendshipRepReaction, [](WDB::Structures::FriendshipRepReactionEntry& entry, Row const& row)
         {
-            uint32_t achievementId;
-            TreeNode const* node;
-        };
-        std::unordered_map<uint32_t, CriteriaOwner> ownerByCriteria;
-        for (auto const& [treeId, node] : treeNodes)
+            entry.id = row.id();
+            entry.friendshipRepId = row.parentOr(1);
+            entry.reactionThreshold = static_cast<uint32_t>(row.i32(2));
+        });
+
+        fillStore(sFriendshipReputationStore, friendshipReputation, [](WDB::Structures::FriendshipReputationEntry& entry, Row const& row)
         {
-            if (node.criteriaId == 0)
-                continue;
+            entry.id = row.id();
+            entry.factionId = static_cast<uint32_t>(row.i32(4));
+        });
 
-            auto const criteriaRow = criteriaRows.find(node.criteriaId);
-            if (criteriaRow == criteriaRows.end())
-                continue;
+        for (Row const row : rows(worldStateExpression))
+            Conditions::addWorldStateExpression(row.id(), row.str(0));
 
-            int16_t const type = criteriaRow->second.i16(1);
-            if (type < 0 || type >= ACHIEVEMENT_CRITERIA_TYPE_TOTAL)
-                continue;
-
-            uint32_t rootId = treeId;
-            for (uint32_t hop = 0; hop < 32; ++hop)
+        for (Row const row : rows(playerCondition))
+        {
+            Conditions::PlayerConditionData data;
+            data.id = row.id();
+            data.minLevel = row.u16(1);
+            data.maxLevel = row.u16(2);
+            data.classMask = static_cast<uint32_t>(row.i32(3));
+            data.skillLogic = row.u32(4);
+            data.languageId = static_cast<uint32_t>(row.i32(5));
+            data.minLanguage = row.u8(6);
+            data.maxLanguage = row.i32(7);
+            data.maxFaction = row.u16(8);
+            data.maxReputation = row.u8(9);
+            data.reputationLogic = row.u32(10);
+            data.currentPvpFaction = row.i8(11);
+            data.pvpMedal = row.u8(12);
+            data.prevQuestLogic = row.u32(13);
+            data.currQuestLogic = row.u32(14);
+            data.currCompletedQuestLogic = row.u32(15);
+            data.spellLogic = row.u32(16);
+            data.itemLogic = row.u32(17);
+            data.itemFlags = static_cast<uint32_t>(row.i32(18));
+            data.auraLogic = row.u32(19);
+            data.worldStateExpression = row.u16(20);
+            data.weather = static_cast<uint32_t>(row.i32(21));
+            data.partyStatus = row.u8(22);
+            data.lifetimeMaxPvpRank = row.i8(23);
+            data.achievementLogic = row.u32(24);
+            data.gender = row.i8(25);
+            data.nativeGender = row.i8(26);
+            data.areaLogic = row.u32(27);
+            data.lfgLogic = row.u32(28);
+            data.currencyLogic = row.u32(29);
+            data.questKill = static_cast<uint32_t>(row.i32(30));
+            data.questKillLogic = row.u32(31);
+            data.minExpansion = row.i8(32);
+            data.maxExpansion = row.i8(33);
+            data.minAvgItemLevel = row.i32(34);
+            data.maxAvgItemLevel = row.i32(35);
+            data.minAvgEquippedItemLevel = row.u16(36);
+            data.maxAvgEquippedItemLevel = row.u16(37);
+            data.phaseUseFlags = static_cast<uint32_t>(row.i32(38));
+            data.phaseId = row.u16(39);
+            data.phaseGroupId = row.u32(40);
+            data.flags = static_cast<uint32_t>(row.i32(41));
+            data.specializationIndex = row.i8(42);
+            data.specializationRole = row.i8(43);
+            data.modifierTree = row.u32(44);
+            data.powerType = row.i8(45);
+            data.powerCompare = row.u8(46);
+            data.powerValue = row.i8(47);
+            data.movementFlags = static_cast<uint32_t>(row.i32(48));
+            data.weaponSubclassMask = static_cast<uint32_t>(row.i32(49));
+            data.maxGuildLevel = row.u8(50);
+            data.minGuildLevel = row.u8(51);
+            data.maxExpansionTier = row.i8(52);
+            data.minExpansionTier = row.i8(53);
+            data.minPvpRank = row.i8(54);
+            data.maxPvpRank = row.i8(55);
+            data.contentTuning = static_cast<uint32_t>(row.i32(56));
+            data.covenant = static_cast<uint32_t>(row.i32(57));
+            for (uint32_t i = 0; i < 4; ++i)
             {
-                auto const itr = treeNodes.find(rootId);
-                if (itr == treeNodes.end() || itr->second.parent == 0)
-                    break;
-                rootId = itr->second.parent;
+                data.skill[i] = row.u16(59, i);
+                data.minSkill[i] = row.u16(60, i);
+                data.maxSkill[i] = row.u16(61, i);
+                data.prevQuest[i] = static_cast<uint32_t>(row.i32(64, i));
+                data.currQuest[i] = static_cast<uint32_t>(row.i32(65, i));
+                data.currCompletedQuest[i] = static_cast<uint32_t>(row.i32(66, i));
+                data.spell[i] = static_cast<uint32_t>(row.i32(67, i));
+                data.item[i] = static_cast<uint32_t>(row.i32(68, i));
+                data.itemCount[i] = row.u32(69, i);
+                data.aura[i] = static_cast<uint32_t>(row.i32(72, i));
+                data.auraStacks[i] = row.u8(73, i);
+                data.achievement[i] = row.u32(74, i);
+                data.area[i] = row.u16(75, i);
+                data.lfgStatus[i] = row.u8(76, i);
+                data.lfgCompare[i] = row.u8(77, i);
+                data.lfgValue[i] = row.u32(78, i);
+                data.currency[i] = row.u32(79, i);
+                data.currencyCount[i] = row.u32(80, i);
+                data.traitNode[i] = row.i32(83, i);
             }
-
-            auto const owner = achievementByRootTree.find(rootId);
-            if (owner == achievementByRootTree.end())
-                continue;
-
-            ownerByCriteria.try_emplace(node.criteriaId, CriteriaOwner{ owner->second, &node });
+            for (uint32_t i = 0; i < 3; ++i)
+            {
+                data.minFaction[i] = row.u32(62, i);
+                data.minReputation[i] = row.u8(63, i);
+            }
+            for (uint32_t i = 0; i < 6; ++i)
+                data.questKillMonster[i] = row.u32(81, i);
+            for (uint32_t i = 0; i < 2; ++i)
+            {
+                data.explored[i] = row.u16(70, i);
+                data.time[i] = row.u32(71, i);
+            }
+            data.raceMask = static_cast<uint64_t>(static_cast<uint32_t>(row.i32(82, 0))) | (static_cast<uint64_t>(static_cast<uint32_t>(row.i32(82, 1))) << 32);
+            Conditions::addPlayerCondition(std::move(data));
         }
 
-        sAchievementCriteriaStore.reserveManualEntries(maxRecordId(criteria), static_cast<uint32_t>(ownerByCriteria.size()));
-        for (auto const& [criteriaId, owner] : ownerByCriteria)
+
+        // the criteria trees are linked once every store is loaded
+        for (Row const row : rows(criteria))
         {
-            auto* entry = sAchievementCriteriaStore.addManualEntry(criteriaId);
-            if (entry == nullptr)
-                continue;
-
-            Row const& row = criteriaRows.at(criteriaId);
-            entry->ID = criteriaId;
-            entry->referredAchievement = owner.achievementId;
-            entry->requiredType = row.i16(1);
-            entry->raw.field3 = row.i32(2);                 // Asset
-            entry->raw.field4 = owner.node->amount;
-            entry->name[0] = keepString(owner.node->description);
-            entry->completionFlag = owner.node->flags;
-            entry->timeLimit = row.i32(6);                  // StartTimer
-            entry->index = owner.node->orderIndex;
+            Achievements::CriteriaRecord record;
+            record.id = row.id();
+            record.type = static_cast<uint16_t>(row.i16(1));
+            record.asset = row.i32(2);
+            record.conditionTreeId = row.u32(3);    // ModifierTreeId
+            record.startEvent = row.u8(4);
+            record.startAsset = row.i32(5);
+            record.timeLimit = row.u16(6);          // StartTimer
+            record.failEvent = row.u8(7);
+            record.failAsset = row.i32(8);
+            record.flags = row.u8(9);
+            record.worldStateId = static_cast<uint16_t>(row.i16(10));
+            record.worldStateValue = row.i8(11);
+            sAchievementTrees.addCriteria(record);
         }
 
-        sLogger.info("DB2: misc stores ready (achievements={}, criteria={}, currencies={}, locks={}, mountTypes={}).",
-            achievement.getRecordCount(), ownerByCriteria.size(), currencyTypes.getRecordCount(), lock.getRecordCount(), sMountTypeStore.getNumRows());
+        for (Row const row : rows(criteriaTree))
+        {
+            Achievements::ProgressNodeRecord record;
+            record.id = row.id();
+            record.description = std::string(row.str(0));
+            record.parentId = row.u32(1);
+            record.amount = row.u32(2);
+            record.rule = static_cast<uint8_t>(row.i8(3));     // Operator
+            record.criteriaId = row.u32(4);
+            record.order = row.i32(5);              // OrderIndex
+            record.flags = static_cast<uint32_t>(row.i32(6));
+            sAchievementTrees.addProgressNode(std::move(record));
+        }
+
+        for (Row const row : rows(modifierTree))
+        {
+            Achievements::ConditionRecord record;
+            record.id = row.id();
+            record.parentId = row.u32(0);
+            record.rule = static_cast<uint8_t>(row.i8(1));     // Operator
+            record.amount = row.i8(2);
+            record.type = static_cast<uint32_t>(row.i32(3));
+            record.asset = row.i32(4);
+            record.secondaryAsset = row.i32(5);
+            record.tertiaryAsset = row.i32(6);
+            sAchievementTrees.addCondition(record);
+        }
+
+        sLogger.info("DB2: misc stores ready (achievements={}, criteria={}, criteria trees={}, modifier trees={}, currencies={}, locks={}, mountTypes={}).",
+            achievement.getRecordCount(), criteria.getRecordCount(), criteriaTree.getRecordCount(), modifierTree.getRecordCount(),
+            currencyTypes.getRecordCount(), lock.getRecordCount(), sMountTypeStore.getNumRows());
         return true;
     }
 

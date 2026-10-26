@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 namespace AscEmu::Packets
 {
     // Pre-resolved, already-filtered achievement data. Populated by AchievementMgr, which owns
-    // the DB lookups and visibility rules (showCompletedAchievement/canSendAchievementProgress) -
+    // the DB lookups and visibility rules (showCompletedAchievement, visible criteria) -
     // this struct only carries plain values so the packet class itself stays free of those
     // dependencies.
     struct AchievementDataChunkInput

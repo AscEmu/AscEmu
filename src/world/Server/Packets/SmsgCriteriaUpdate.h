@@ -49,12 +49,8 @@ namespace AscEmu::Packets
                 packet.appendPackedTime(progressDate);
                 if (m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
                 {
-                    // 9.x: 64 bit elapsed and creation times, no recruit a friend acceptance; 10.x and 11.x: the elapsed
-                    // time in seconds as 32 bit value
-                    if (m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
-                        packet << int32_t(0);
-                    else
-                        packet << int64_t(0);
+                    // 9.x and later: 64 bit elapsed and creation times, no recruit a friend acceptance
+                    packet << int64_t(0);
                     packet << int64_t(0);
                     packet.writeBit(false);
                     packet.flushBits();
