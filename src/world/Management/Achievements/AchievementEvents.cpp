@@ -170,9 +170,19 @@ namespace Achievements
             UniquePetsOwned, BattlePetReachedLevel
         };
 
+        // an asset of 0 stands for any only where conditions or requirements narrow it, otherwise the criteria is granted by hand
         bool assetMatches(Criteria const& criteria, int64_t value)
         {
-            return criteria.record.asset == 0 || static_cast<int64_t>(criteria.record.asset) == value;
+            if (criteria.record.asset == 0)
+                return criteria.record.conditionTreeId != 0 || !criteria.requirements.empty();
+
+            return static_cast<int64_t>(criteria.record.asset) == value;
+        }
+
+        // map 0 is a map of its own
+        bool mapMatches(Criteria const& criteria, int64_t mapId)
+        {
+            return static_cast<int64_t>(criteria.record.asset) == mapId;
         }
 
         uint32_t countSpellsOfSkillLine(Player* player, uint32_t skillLine)
@@ -368,6 +378,8 @@ namespace Achievements
                 return assetMatches(criteria, miscValue1);
 
             case DieOnMap:
+                return mapMatches(criteria, miscValue1);
+
             case KillInPvpArea:
             case UseItem:
             case UseGameObject:
@@ -386,7 +398,7 @@ namespace Achievements
             case PlayBattleground:
             case WinArena:
             case PlayArena:
-                return assetMatches(criteria, miscValue1);
+                return mapMatches(criteria, miscValue1);
 
             case WinRankedArena:
             case WinDuel:

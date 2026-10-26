@@ -179,7 +179,10 @@ namespace Achievements
 
             // scripts
             CriteriaScript              = 50,   // the criteria script decides
-            InstanceScript              = 51    // the criteria script of the instance decides
+            InstanceScript              = 51,   // the criteria script of the instance decides
+
+            // the criteria never counts
+            Disabled                    = 60
         };
 
         std::unordered_set<RequirementKind> const handledRequirements =
@@ -190,7 +193,7 @@ namespace Achievements
             RequirementKind::PlayerClassRace, RequirementKind::PlayerDrunkenState, RequirementKind::PlayerKnownTitle,
             RequirementKind::MapDifficulty, RequirementKind::MapPlayersAtMost, RequirementKind::EventValue,
             RequirementKind::EventItemLevelQuality, RequirementKind::EventItemQuality, RequirementKind::RunningHoliday,
-            RequirementKind::RunningGameEvent, RequirementKind::CriteriaScript, RequirementKind::InstanceScript
+            RequirementKind::RunningGameEvent, RequirementKind::CriteriaScript, RequirementKind::InstanceScript, RequirementKind::Disabled
         };
 
         bool hasAuraEffectAt(Unit* unit, uint32_t spellId, uint32_t effectIndex)
@@ -313,6 +316,8 @@ namespace Achievements
                     ItemProperties const* item = subject.itemId != 0 ? sMySQLStore.getItemProperties(subject.itemId) : nullptr;
                     return item != nullptr && item->Quality == param1;
                 }
+                case RequirementKind::Disabled:
+                    return false;
                 default:
                     break;
             }
