@@ -335,6 +335,9 @@ void Unit::onPreDetachFromWorld()
 #ifdef FT_VEHICLES
     if (isVehicle())
         removeVehicleKit();
+
+    // a passenger leaving the world leaves its vehicle, otherwise the vehicle keeps a passenger without a map
+    exitVehicle();
 #endif
     removeAllFollowers();
 

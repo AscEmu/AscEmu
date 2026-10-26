@@ -485,8 +485,10 @@ void Creature::setDeathState(DeathState s)
         // Respawn Handling
         const auto now = Util::getTimeNow();
 
-        const bool isRaidBoss = getWorldMap()->getBaseMap()->isRaid() && creature_properties->isBoss;
-        const bool canRespawn = !isRaidBoss && !m_noRespawn && (m_respawnDelay > 0);
+        // a creature without a map has no respawn to schedule
+        WorldMap* const map = getWorldMap();
+        const bool isRaidBoss = map != nullptr && map->getBaseMap()->isRaid() && creature_properties->isBoss;
+        const bool canRespawn = map != nullptr && !isRaidBoss && !m_noRespawn && (m_respawnDelay > 0);
 
         // Calculate Respawn Times
         m_corpseRemoveTime = now + m_corpseDelay;
@@ -496,7 +498,7 @@ void Creature::setDeathState(DeathState s)
         if (canRespawn)
         {
             m_respawnTime = now + m_respawnDelay + m_corpseDelay;
-            getWorldMap()->getSpawnManager().addRespawnForCreature(this);
+            map->getSpawnManager().addRespawnForCreature(this);
         }
 
         setTargetGuid(0);
