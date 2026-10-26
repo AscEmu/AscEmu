@@ -36,6 +36,8 @@ public:
         float y = 0.0f;
         float z = 0.0f;
         bool onTransport = false;
+        uint8_t race = 0;
+        uint8_t playerClass = 0;
     };
 
 private:
@@ -44,6 +46,12 @@ private:
 
     // the level squish of 9.0: the old level becomes the new one, the experience starts over
     void squishLevels(std::vector<OldCharacter> const& characters);
+
+    // the inventory ranges of the new build: items keep their place, items without one go to free bag slots, the rest by mail
+    void moveInventory(std::vector<OldCharacter> const& characters, uint32_t serverBuild);
+
+    // spells the client data does not know leave the action bars, missing spells of the start bar join them
+    void refreshActionBars(std::vector<OldCharacter> const& characters);
 };
 
 #define sCharacterBuildUpdater CharacterBuildUpdater::getInstance()
