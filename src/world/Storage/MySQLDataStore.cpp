@@ -4822,8 +4822,8 @@ void MySQLDataStore::loadTransportEntrys()
 void MySQLDataStore::loadTransportMaps()
 {
     auto startTime = Util::TimeNow();
-    //                                                  
-    auto result = WorldDatabase.query("SELECT parameter_6 FROM gameobject_properties WHERE type = 15 AND  build <= %u ORDER BY entry ASC", getAEVersion());
+    // parameter_6 0 is a transport without passengers (Transporter::LoadStaticPassengers), map 0 stays a continent
+    auto result = WorldDatabase.query("SELECT parameter_6 FROM gameobject_properties WHERE type = 15 AND parameter_6 != 0 AND build <= %u ORDER BY entry ASC", getAEVersion());
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Loaded 0 transport maps. DB table `gameobject_properties` has no transports!");
