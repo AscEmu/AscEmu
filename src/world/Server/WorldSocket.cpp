@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Packets/SmsgAvailableHotfixes.h"
 #include "Packets/SmsgTutorialFlags.h"
 #include "Packets/SmsgBattleNetConnectionStatus.h"
+#include "Packets/SmsgMirrorVars.h"
 #include "Version/VersionRegistry.hpp"
 #include "WorldSession.h"
 #include "Management/BattlePets/BattlePetCollection.hpp"
@@ -135,6 +136,162 @@ enum OutPacketResult : uint8_t
     OUTPACKET_RESULT_NOT_CONNECTED = 3,
     OUTPACKET_RESULT_SOCKET_ERROR = 4,
 };
+
+// 11.x: values of the server switches of the client, the defaults of 12.1.5 apart from the features this server offers or lacks
+static std::vector<SmsgMirrorVars::Variable> serverSwitches()
+{
+    return {
+        // friends and the Battle.net social features, the Battle.net friend services do not exist
+        { "battleNetTitleFriendCustomNamesEnabledClient", "0" },
+        { "battleNetTitleFriendTagsEnabledClient", "0" },
+        { "battleNetTitleFriendsEnabledClient", "0" },
+        { "bnetDelegationURL", "" },
+        { "legacyFriendSystemEnabledClient", "1" },
+        { "recentAlliesEnabledClient", "0" },
+        { "recentAlliesRequestDataThrottle", "180" },
+        { "socialUIEnabledClient", "0" },
+        { "socialUIFriendsListEnabledClient", "0" },
+        { "socialUISocialQueueEnabledClient", "0" },
+
+        // shop: commented out, the client keeps its own values; in-game browser off
+        // { "bpayStoreEnable", "0" },
+        // { "bpayStorePurchaseTimeout", "180" },
+        { "browserEnabled", "0" },
+        // { "shop2AdditionalScopesStr", "" },
+        // { "shop2BlockedPlacements", "" },
+        // { "shop2ClientErrorTelemetryAllowed", "1" },
+        // { "shop2ClientIdStr", "Unset" },
+        // { "shop2ClientRetriesEnabled", "1" },
+        // { "shop2DefaultCurrencyMaxTries", "3" },
+        // { "shop2DefaultCurrencyPerMilliseconds", "1000" },
+        // { "shop2DynamicBundleMaxTries", "10" },
+        // { "shop2DynamicBundlePerMilliseconds", "1000" },
+        // { "shop2Enabled", "0" },
+        // { "shop2HostUrlAuth", "https://oauth.web.blizzard.net" },
+        // { "shop2HostUrlRequests", "https://us.apidev.blizzard.net" },
+        // { "shop2OrderStatusMaxTries", "3" },
+        // { "shop2OrderStatusPerMilliseconds", "1000" },
+        // { "shop2PMTMaxTries", "10" },
+        // { "shop2PMTPerMilliseconds", "1000" },
+        // { "shop2POPStr", "b94aa31b-f910-4ec8-a180-3fb6bdac3215" },
+        // { "shop2PendingOrderPollCheckoutEnabled", "1" },
+        // { "shop2PendingOrderPollFileEnabled", "1" },
+        // { "shop2PendingOrderPollSeconds", "5" },
+        // { "shop2SFMMaxTries", "15" },
+        // { "shop2SFMPerMilliseconds", "1000" },
+        // { "shop2SSOMaxTries", "3" },
+        // { "shop2SSOPerMilliseconds", "1000" },
+        // { "shop2TelemetryAllowed", "1" },
+        // { "shop2UseConnectedRealmGameServiceRegionId", "0" },
+        // { "shop2VCPlacementStr", "" },
+        // { "shop2VCSegmentStr", "Unset" },
+        // { "shop2VirtualCurrencyBalanceMaxTries", "3" },
+        // { "shop2VirtualCurrencyBalancePerMilliseconds", "1000" },
+
+        // housing, no housing service
+        { "housingBasicDecor_MaxPreviewLimit", "100" },
+        { "housingBlueprintExportEnabled", "0" },
+        { "housingBlueprintImportEnabled", "0" },
+        { "housingBlueprintsEnabled", "0" },
+        { "housingCatalog_CartSizeLimit", "20" },
+        { "housingDecorReportScreenshotDistanceThreshold", "150" },
+        { "housingDecorUseQuaternionInstantiation", "1" },
+        { "housingEnableBuyHouse", "0" },
+        { "housingEnableCreateCharterNeighborhood", "0" },
+        { "housingEnableCreateGuildNeighborhood", "0" },
+        { "housingEnableDeleteHouse", "0" },
+        { "housingEnableMoveHouse", "0" },
+        { "housingEntryRoomMoveEnabled", "1" },
+        { "housingExpertDecor_Scale_Indoor_Max", "2" },
+        { "housingExpertDecor_Scale_Indoor_Min", "0.2" },
+        { "housingExpertDecor_Scale_Outdoor_Max", "2" },
+        { "housingExpertDecor_Scale_Outdoor_Min", "0.2" },
+        { "housingExteriorLightsAllowed", "1" },
+        { "housingExteriorLightsRadiusMultiplier", "0.5" },
+        { "housingExteriorTypeByNeighborhoodFactionRestriction", "1" },
+        { "housingMarketAddToCartTelemThrottle", "10" },
+        { "housingMarketCartFullRemoveEnabled", "1" },
+        { "housingMarketClearCartTelemThrottle", "10" },
+        { "housingMarketEnabled", "0" },
+        { "housingMarketRemoveFromCartTelemThrottle", "10" },
+        { "housingMarketShopEnabled", "0" },
+        { "housingMarketThrottleTimePeriodMs", "10000" },
+        { "housingMarketViewBundleTelemThrottle", "10" },
+        { "housingMarketViewInStoreTelemThrottle", "10" },
+        { "housingMaxPetBedsExterior", "25" },
+        { "housingMaxPetBedsInterior", "100" },
+        { "housingRotationControlUseQuaternion", "0" },
+        { "housingServiceEnabled", "0" },
+        { "meshObjectUseQuaternionRotation", "1" },
+        { "minNeighborhoodGroupMembers", "3" },
+        { "performHousingExpansionCheckClient", "1" },
+
+        // transmog
+        { "enableAutomaticSituations", "1" },
+        { "enableManualSituations", "1" },
+        { "enableTransmogUpdateSituation", "1" },
+        { "transmogAllowArtifactOverride", "1" },
+        { "transmogAllowCanUseEverChanges", "0" },
+        { "transmogEnableOutfitPurchases", "1" },
+        { "transmogEnableOutfitSlotChanges", "1" },
+        { "transmogEnableSystem", "1" },
+        { "transmogSheatheAllowFistWeapons", "0" },
+        { "transmogSheatheAllowHiddenDefaults", "0" },
+        { "transmogSheatheEnableSystem", "1" },
+        { "transmogSheatheMonkForceBack", "0" },
+
+        // addons and Lua limits
+        { "addonChatRestrictionsEnabled", "1" },
+        { "addonChatRestrictionsEnabledForOutgoingAddonMessages", "1" },
+        { "hardcoreScriptThrottlingEnabled", "1" },
+        { "limitedLuaResourcesAddonCapacityAnim", "5000" },
+        { "limitedLuaResourcesAddonCapacityAnimGroup", "2000" },
+        { "limitedLuaResourcesAddonCapacityFont", "300" },
+        { "limitedLuaResourcesAddonCapacityFontString", "5000" },
+        { "limitedLuaResourcesAddonCapacityFrame", "10000" },
+        { "limitedLuaResourcesAddonCapacityTexture", "40000" },
+        { "limitedLuaResourcesAddonCapacityTimer", "500" },
+        { "limitedLuaResourcesEnabled", "0" },
+        { "limitedLuaResourcesGlobalCapacityAnim", "50000" },
+        { "limitedLuaResourcesGlobalCapacityAnimGroup", "20000" },
+        { "limitedLuaResourcesGlobalCapacityFont", "3000" },
+        { "limitedLuaResourcesGlobalCapacityFontString", "50000" },
+        { "limitedLuaResourcesGlobalCapacityFrame", "100000" },
+        { "limitedLuaResourcesGlobalCapacityTexture", "400000" },
+        { "limitedLuaResourcesGlobalCapacityTimer", "500" },
+        { "luaScriptBucketThrottleEnabled", "1" },
+        { "luaScriptBucketThrottleMaxMsBurstNormal", "20000" },
+        { "luaScriptBucketThrottleMaxMsBurstRestricted", "1000" },
+        { "luaScriptBucketThrottleMaxMsPerSecondNormal", "800" },
+        { "luaScriptBucketThrottleMaxMsPerSecondRestricted", "500" },
+
+        // image sharing
+        { "imageSharingApiEndpoint", "" },
+        { "imageSharingEnabled", "0" },
+        { "imageSharingOAuthUrl", "" },
+        { "imageSharingPageFieldId", "" },
+        { "imageSharingPageSuffix", "" },
+        { "imageSharingPostSuffix", "" },
+        { "imageSharingPostUrl", "" },
+        { "imageSharingScreenshotQuality", "70" },
+
+        // remaining features
+        { "assistedCombatCastFailureTelemetryFlags", "1" },
+        { "damageMeterCacheEnabled", "1" },
+        { "damageMeterProcessingEnabled", "1" },
+        { "disabledGamemodes", "" },
+        { "discordEnabled", "1" },
+        { "enableEndgameEditRestrictionsForLFGText", "1" },
+        { "externalEventURL", "" },
+        { "lorewalkingQuestMoneyMultiplier", "1" },
+        { "lorewalkingQuestRepMultiplier", "0" },
+        { "lorewalkingQuestXPMultiplier", "1" },
+        { "masterLooterEnabled", "1" },
+        { "pvpTrainingGroundsEnabledClient", "0" },
+        { "raidLockoutExtendEnabled", "1" },
+        { "sellAllJunkEnabled", "0" }
+    };
+}
 
 WorldSocket::WorldSocket(SOCKET fd)
     :
@@ -480,6 +637,13 @@ void WorldSocket::sendAuthenticated(std::unique_ptr<WorldSession> sessionHolder)
     {
         SmsgFeatureSystemStatusGlueScreen glueScreen(static_cast<uint8_t>(m_protocol.expansion));
         sendManagedPacket(glueScreen);
+    }
+
+    // 11.x: the server switches of the client
+    if (m_protocol.isTheWarWithinOrLater())
+    {
+        SmsgMirrorVars mirrorVars(serverSwitches());
+        sendManagedPacket(mirrorVars);
     }
 
     // 9.x: the global account data times before the character list
