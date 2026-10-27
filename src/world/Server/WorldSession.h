@@ -67,7 +67,7 @@ class QueryResult;
 #define PLAYER_LOGOUT_DELAY (20 * 1000) // 20 seconds should be more than enough.
 
 ///\todo refactoring these types. In use? Implement it!
-enum AccountDataType
+enum AccountDataType : uint8_t
 {
     GLOBAL_CONFIG_CACHE             = 0,                    // 0x01 g
     PER_CHARACTER_CONFIG_CACHE      = 1,                    // 0x02 p
@@ -77,11 +77,8 @@ enum AccountDataType
     PER_CHARACTER_MACROS_CACHE      = 5,                    // 0x20 p
     PER_CHARACTER_LAYOUT_CACHE      = 6,                    // 0x40 p
     PER_CHARACTER_CHAT_CACHE        = 7,                    // 0x80 p
-#if VERSION_STRING > TBC
-    NUM_ACCOUNT_DATA_TYPES          = 8
-#else
+    NUM_ACCOUNT_DATA_TYPES_WOTLK    = 8,
     NUM_ACCOUNT_DATA_TYPES          = 32
-#endif
 };
 
 const uint8_t GLOBAL_CACHE_MASK        = 0x15;
@@ -105,6 +102,14 @@ public:
     ~WorldSession();
 
     Player* m_loggingInPlayer;
+
+    [[nodiscard]] uint8_t getAccountDataCount() const noexcept
+    {
+        if (_socket && _socket->getClientProtocol().isMainlineAtLeast(WoW::Expansion::_WotLK))
+            return NUM_ACCOUNT_DATA_TYPES_WOTLK;
+
+        return NUM_ACCOUNT_DATA_TYPES;
+    }
 
     void SendPacket(WorldPacket* packet);
 
@@ -1078,10 +1083,10 @@ protected:
         uint32_t _accountId;
         uint32_t _accountFlags;
         std::string _accountName;
-#if VERSION_STRING > TBC
-        bool has_level_55_char; // death knights
-        bool has_dk;
-#endif
+
+        bool has_level_55_char{false}; // death knights
+        bool has_dk{false};
+
         // uint16_t _TEMP_ERR_CREATE_CODE; // increments
         uint8_t _side;
 

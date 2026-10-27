@@ -2237,7 +2237,7 @@ void WorldSession::sendClientCacheVersion([[maybe_unused]] uint32_t version)
 
 void WorldSession::sendAccountDataTimes(uint32_t mask)
 {
-    SmsgAccountDataTimes sendPacket(static_cast<uint32_t>(UNIXTIME), 1, mask, NUM_ACCOUNT_DATA_TYPES, _player != nullptr ? _player->getGuid() : 0);
+    SmsgAccountDataTimes sendPacket(static_cast<uint32_t>(UNIXTIME), 1, mask, getAccountDataCount(), _player != nullptr ? _player->getGuid() : 0);
     sendManagedPacket(sendPacket);
 }
 
