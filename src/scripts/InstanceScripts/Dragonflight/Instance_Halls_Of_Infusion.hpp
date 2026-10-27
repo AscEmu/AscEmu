@@ -1,0 +1,86 @@
+/*
+Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#pragma once
+
+#include <cstdint>
+
+uint32_t const HallsOfInfusionEncounterCount = 4;
+
+enum HallsOfInfusionData
+{
+    DATA_WATCHER_IRIDEUS        = 0,  // 2615
+    DATA_GULPING_GOLIATH        = 1,  // 2616
+    DATA_KHAJIN_THE_UNYIELDING  = 2,  // 2617
+    DATA_PRIMAL_TSUNAMI         = 3   // 2618
+};
+
+enum HallsOfInfusionCreatures
+{
+    BOSS_WATCHER_IRIDEUS       = 189719,
+    NPC_NULLIFICATION_DEVICE   = 196712,
+
+    BOSS_GULPING_GOLIATH       = 189722,
+    NPC_CURIOUS_SWOGLET        = 190366,
+    // second Curious Swoglet template of the same encounter
+    NPC_CURIOUS_SWOGLET_ALT    = 195399,
+
+    BOSS_KHAJIN_THE_UNYIELDING = 189727,
+    NPC_ICE_BOULDER            = 195578,
+
+    BOSS_PRIMAL_TSUNAMI        = 189729,
+    NPC_PRIMALIST_INFUSER      = 196043
+};
+
+enum HallsOfInfusionIrideusSpells
+{
+    SPELL_IRIDEUS_POWER_OVERLOAD   = 389179,
+    SPELL_IRIDEUS_SPARK_VOLLEY     = 384351,
+    SPELL_IRIDEUS_STATIC_SURGE     = 384015,
+    SPELL_IRIDEUS_TITANIC_FIST     = 384524,
+    SPELL_IRIDEUS_ABLATIVE_BARRIER = 383840,
+    SPELL_IRIDEUS_SIPHON_POWER     = 389056,
+
+    SPELL_DEVICE_PURIFYING_BLAST   = 389443,
+    SPELL_DEVICE_NULLIFYING_PULSE  = 389446
+};
+
+enum HallsOfInfusionGoliathSpells
+{
+    SPELL_GOLIATH_GULP               = 385555,
+    SPELL_GOLIATH_HANGRY             = 385743,
+    SPELL_GOLIATH_OVERPOWERING_CROAK = 385187,
+    SPELL_GOLIATH_CAVE_IN            = 375215,
+    SPELL_GOLIATH_BELLY_SLAM         = 385691,
+    SPELL_GOLIATH_TOXIC_EFFLUVIA     = 385451,
+
+    SPELL_SWOGLET_GULP_SWOG_TOXIN    = 374389,
+    SPELL_SWOGLET_FIXATE             = 374610
+};
+
+enum HallsOfInfusionKhajinSpells
+{
+    SPELL_KHAJIN_HAILSTORM     = 386757,
+    SPELL_KHAJIN_GLACIAL_SURGE = 386562,
+    SPELL_KHAJIN_POLAR_WINDS   = 386743,
+    SPELL_KHAJIN_FROST_SHOCK   = 385963,
+
+    SPELL_BOULDER_ICE_BOULDER  = 386222,
+    SPELL_BOULDER_AVALANCHE    = 386295
+};
+
+enum HallsOfInfusionTsunamiSpells
+{
+    SPELL_TSUNAMI_INFUSED_GLOBULE  = 387363,
+    SPELL_TSUNAMI_TEMPESTS_FURY    = 388424,
+    SPELL_TSUNAMI_SQUALL_BUFFET    = 387504,
+    SPELL_TSUNAMI_FOCUSED_DELUGE   = 387571,
+    SPELL_TSUNAMI_UNDERTOW         = 389872,
+    SPELL_TSUNAMI_CAST_AWAY        = 388420,
+    SPELL_TSUNAMI_CRASHING_TSUNAMI = 387357,
+
+    SPELL_INFUSER_INFUSE           = 387619,
+    SPELL_INFUSER_INUNDATE         = 388882
+};

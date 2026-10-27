@@ -1,0 +1,209 @@
+/*
+Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#pragma once
+
+#include <cstdint>
+
+uint32_t const UldirEncounterCount = 8;
+
+enum UldirData
+{
+    DATA_GHUUN              = 0,    // 2122
+    DATA_FETID_DEVOURER     = 1,    // 2128
+    DATA_VECTIS             = 2,    // 2134
+    DATA_MYTHRAX            = 3,    // 2135
+    DATA_ZEKVOZ             = 4,    // 2136
+    DATA_MOTHER             = 5,    // 2141
+    DATA_TALOC              = 6,    // 2144
+    DATA_ZUL                = 7     // 2145
+};
+
+enum UldirCreatures
+{
+    // Taloc
+    BOSS_TALOC                          = 137119,
+
+    // MOTHER
+    BOSS_MOTHER                         = 135452,
+    NPC_MOTHER_PURIFYING_FLAME          = 136325,
+
+    // Fetid Devourer
+    BOSS_FETID_DEVOURER                 = 133298,
+    NPC_DEVOURER_CORRUPTION_CORPUSCLE   = 133492,
+
+    // Zek'voz
+    BOSS_ZEKVOZ                         = 134445,
+    NPC_ZEKVOZ_SILITHID_WARRIOR         = 134503,
+    NPC_ZEKVOZ_NERUBIAN_VOIDWEAVER      = 135824,
+    NPC_ZEKVOZ_SURGING_DARKNESS         = 135183,
+    NPC_ZEKVOZ_ORB_OF_CORRUPTION        = 135310,
+
+    // Vectis
+    BOSS_VECTIS                         = 134442,
+    NPC_VECTIS_PLAGUE_AMALGAM           = 135016,
+    NPC_VECTIS_PATHOGEN_BOMB            = 135687,
+
+    // Zul, Reborn
+    BOSS_ZUL                            = 138967,
+    NPC_ZUL_NAZMANI_CRUSHER             = 139051,
+    NPC_ZUL_NAZMANI_BLOODHEXER          = 139057,
+    NPC_ZUL_BLOODTHIRSTY_CRAWG          = 139059,
+    NPC_ZUL_MINION_OF_ZUL               = 138493,
+    NPC_ZUL_ANIMATED_ICHOR              = 139195,
+    NPC_ZUL_POOL_OF_DARKNESS            = 139171,
+
+    // Mythrax the Unraveler
+    BOSS_MYTHRAX                        = 134546,
+    NPC_MYTHRAX_OBLIVION_SPHERE         = 138492,
+    NPC_MYTHRAX_VISION_OF_MADNESS       = 139487,
+    NPC_MYTHRAX_NRAQI_DESTROYER         = 139381,
+
+    // G'huun, both brood pairs are known
+    BOSS_GHUUN                          = 132998,
+    NPC_GHUUN_CYCLOPEAN_TERROR          = 138531,
+    NPC_GHUUN_CYCLOPEAN_TERROR_ALT      = 134634,
+    NPC_GHUUN_DARK_YOUNG                = 138529,
+    NPC_GHUUN_DARK_YOUNG_ALT            = 134635,
+    NPC_GHUUN_GIBBERING_HORROR          = 134010,
+    NPC_GHUUN_BLIGHTSPREADER_TENDRIL    = 134590
+};
+
+enum UldirGameObjects
+{
+    // MOTHER's Cache, out of reach until she stands down
+    GO_MOTHER_REWARD_CACHE      = 291079,
+
+    // Zul's chamber
+    GO_ZUL_CHAMBER_DOOR_1       = 299084,
+    GO_ZUL_CHAMBER_DOOR_2       = 299085,
+    GO_ZUL_CHAMBER_DOOR_3       = 299086,
+    GO_ZUL_DESCENT_HATCH        = 287416,
+
+    // Mythrax, way down to G'huun
+    GO_MYTHRAX_EXIT_DOOR        = 291104
+};
+
+enum UldirSharedSpells
+{
+    SPELL_ULDIR_BERSERK                 = 26662
+};
+
+enum UldirTalocSpells
+{
+    SPELL_TALOC_PLASMA_DISCHARGE        = 271224,
+    SPELL_TALOC_CUDGEL_OF_GORE          = 271296,
+    SPELL_TALOC_POWERED_DOWN            = 271965
+};
+
+enum UldirMotherSpells
+{
+    SPELL_MOTHER_SANITIZING_STRIKE      = 267787,
+    SPELL_MOTHER_PURIFYING_FLAME        = 267803
+};
+
+enum UldirFetidDevourerSpells
+{
+    SPELL_DEVOURER_TERRIBLE_THRASH      = 262277,
+    SPELL_DEVOURER_ROTTING_REGURGITATION = 262292,
+    SPELL_DEVOURER_SHOCKWAVE_STOMP      = 262288,
+    SPELL_DEVOURER_MALODOROUS_MIASMA    = 262313,
+    SPELL_DEVOURER_FETID_FRENZY         = 262378,
+    SPELL_DEVOURER_CONSUME_CORRUPTION   = 262370,
+
+    SPELL_CORPUSCLE_ENTICING_ESSENCE    = 262364
+};
+
+enum UldirZekvozSpells
+{
+    SPELL_ZEKVOZ_MIGHT_OF_THE_VOID      = 267312,
+    SPELL_ZEKVOZ_VOID_LASH              = 265264,
+    SPELL_ZEKVOZ_SHATTER                = 265237,
+    SPELL_ZEKVOZ_TITAN_SPARK            = 264954,
+    SPELL_ZEKVOZ_SURGING_DARKNESS       = 265530,
+    SPELL_ZEKVOZ_SURGING_DARKNESS_BLAST = 267350,
+    SPELL_ZEKVOZ_EYE_BEAM               = 264382,
+    SPELL_ZEKVOZ_ROILING_DECEIT         = 265360,
+    SPELL_ZEKVOZ_PSIONIC_BLAST          = 270620,
+    SPELL_ZEKVOZ_CORRUPTORS_PACT        = 265662,
+
+    SPELL_ORB_CORRUPTION_PULSE          = 265736,
+    SPELL_SILITHID_SKITTERING_SWARM     = 275772,
+    SPELL_SILITHID_JAGGED_MANDIBLE      = 264210,
+    SPELL_VOIDWEAVER_VOID_BOLT          = 267180,
+    SPELL_VOIDWEAVER_SHADOWBIND         = 270954
+};
+
+enum UldirVectisSpells
+{
+    SPELL_VECTIS_OMEGA_VECTOR           = 265129,
+    SPELL_VECTIS_OMEGA_VECTOR_HIT       = 265143,
+    SPELL_VECTIS_LINGERING_INFECTION    = 281080,
+    SPELL_VECTIS_EVOLVING_AFFLICTION    = 265178,
+    SPELL_VECTIS_GESTATE                = 265209,
+    SPELL_VECTIS_CONTAGION              = 267242,
+    SPELL_VECTIS_LIQUEFY                = 265217,
+    SPELL_VECTIS_LIQUEFY_CANCEL         = 265291,
+    SPELL_VECTIS_BLOOD_GEYSER           = 265281,
+    SPELL_VECTIS_BLOOD_GEYSER_HIT       = 265370,
+    SPELL_VECTIS_PLAGUE_BOMB            = 266459,
+
+    SPELL_AMALGAM_IMMUNOSUPPRESSION     = 265206
+};
+
+enum UldirZulSpells
+{
+    SPELL_ZUL_SHADOW_BARRAGE            = 273359,
+    SPELL_ZUL_DARK_REVELATION_BURST     = 273438,
+    SPELL_ZUL_CALL_OF_BLOOD             = 273889,
+    SPELL_ZUL_LOCUS_OF_CORRUPTION       = 274168,
+    SPELL_ZUL_CORRUPTED_BLOOD           = 274195,
+    SPELL_ZUL_RUPTURING_BLOOD           = 274358,
+    SPELL_ZUL_DEATHWISH                 = 274271,
+
+    SPELL_POOL_FORMING                  = 273360,
+    SPELL_POOL_ERUPTING_DARKNESS        = 273363,
+    SPELL_POOL_ABSORBED_IN_DARKNESS     = 274387,
+    SPELL_CRUSHER_BLOODY_CLEAVE         = 273316,
+    SPELL_CRUSHER_THRUMMING_PULSE       = 273288,
+    SPELL_BLOODHEXER_BLOODSHARD         = 273350,
+    SPELL_ANIMATED_ICHOR_DRIPPING_BLOOD = 274396,
+    SPELL_ANIMATED_ICHOR_TRANSFUSION    = 273556
+};
+
+enum UldirMythraxSpells
+{
+    SPELL_MYTHRAX_ESSENCE_SHEAR         = 273282,
+    SPELL_MYTHRAX_IMMINENT_RUIN         = 272536,
+    SPELL_MYTHRAX_XALZAIXS_AWAKENING    = 273810,
+    SPELL_MYTHRAX_OBLIVION_VEIL         = 274230,
+    SPELL_MYTHRAX_ESSENCE_SHATTER       = 279013,
+
+    SPELL_SPHERE_CRASHING_OBLIVION      = 276863,
+    SPELL_VISION_MIND_FLAY              = 274019,
+    SPELL_DESTROYER_VOID_VOLLEY         = 273945
+};
+
+enum UldirGhuunSpells
+{
+    SPELL_GHUUN_EXPLOSIVE_CORRUPTION    = 272505,
+    SPELL_GHUUN_THOUSAND_MAWS           = 267509,
+    SPELL_GHUUN_REORIGINATION_BLAST     = 263504,
+    SPELL_GHUUN_CORRUPTING_BITE         = 270454,
+    SPELL_GHUUN_GROWING_CORRUPTION      = 270447,
+    SPELL_GHUUN_WAVE_OF_CORRUPTION      = 273477,
+    SPELL_GHUUN_WAVE_OF_CORRUPTION_HC   = 270385,
+    SPELL_GHUUN_BLOOD_FEAST             = 263235,
+    SPELL_GHUUN_COLLAPSE                = 276839,
+    SPELL_GHUUN_CORPULENT_MASS          = 275129,
+    SPELL_GHUUN_GAZE_OF_GHUUN           = 275160,
+    SPELL_GHUUN_MALIGNANT_GROWTH        = 274576,
+
+    SPELL_TERROR_TORMENT                = 267427,
+    SPELL_YOUNG_MASSIVE_SMASH           = 267412,
+    SPELL_YOUNG_DARK_BARGAIN            = 273405,
+    SPELL_HORROR_MIND_NUMBING_CHATTER   = 263307,
+    SPELL_TENDRIL_DECAYING_ERUPTION     = 267462
+};

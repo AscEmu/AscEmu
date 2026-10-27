@@ -1519,6 +1519,21 @@ WDB::Structures::SpellPowerEntry const* getSpellPowerEntry(uint32_t spellId)
 #if VERSION_STRING >= WotLK
 WDB::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties& difficulty)
 {
+    // 5.x: difficulty ids, the fallbacks are followed until the map knows one
+    if (InstanceDifficulty::usesDifficultyIds())
+    {
+        uint8_t tryDiff = difficulty;
+        for (uint8_t step = 0; tryDiff != 0 && step < 8; ++step, tryDiff = InstanceDifficulty::fallbackDifficulty(tryDiff))
+        {
+            if (WDB::Structures::MapDifficulty const* mapDiff = getMapDifficultyData(mapId, InstanceDifficulty::Difficulties(tryDiff)))
+            {
+                difficulty = InstanceDifficulty::Difficulties(tryDiff);
+                return mapDiff;
+            }
+        }
+        return nullptr;
+    }
+
     uint32_t tmpDiff = difficulty;
     WDB::Structures::MapDifficulty const* mapDiff = getMapDifficultyData(mapId, InstanceDifficulty::Difficulties(tmpDiff));
     if (!mapDiff)

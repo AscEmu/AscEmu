@@ -672,7 +672,7 @@ namespace
             entry.id = row.id();
             entry.mapId = row.parentOr(2);
             entry.difficulty = row.i16(3);
-            entry.encounterIndex = row.i32(4);  // OrderIndex
+            entry.encounterIndex = row.u8(6);   // Bit, the journal order is OrderIndex
             entry.encounterName[0] = row.text(0);
         });
 

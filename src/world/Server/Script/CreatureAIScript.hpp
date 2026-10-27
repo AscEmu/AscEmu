@@ -192,12 +192,10 @@ public:
     void removeUnitFlags(uint32_t flags);
     bool hasUnitFlags(uint32_t flags);
 
-#if VERSION_STRING > Classic
     void setUnitFlags2(uint32_t flags);
     void addUnitFlags2(uint32_t flags);
     void removeUnitFlags2(uint32_t flags);
     bool hasUnitFlags2(uint32_t flags);
-#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // wp movement

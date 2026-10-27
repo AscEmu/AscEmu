@@ -1,0 +1,293 @@
+/*
+Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#pragma once
+
+#include <cstdint>
+
+uint32_t const BattleOfDazaralorEncounterCount = 11;
+
+enum BattleOfDazaralorData
+{
+    DATA_GRONG                      = 0,    // 2263
+    // Frida Ironbellows or Ra'wani Kanae
+    DATA_CHAMPION_OF_THE_LIGHT      = 1,    // 2265
+    // Mestrah and Manceroy Flamefist
+    DATA_JADEFIRE_MASTERS_MESTRAH   = 2,    // 2266
+    DATA_CONCLAVE_OF_THE_CHOSEN     = 3,    // 2268
+    DATA_OPULENCE                   = 4,    // 2271
+    DATA_KING_RASTAKHAN             = 5,    // 2272
+    DATA_MEKKATORQUE                = 6,    // 2276
+    DATA_STORMWALL_BLOCKADE         = 7,    // 2280
+    DATA_LADY_JAINA_PROUDMOORE      = 8,    // 2281
+    DATA_GRONG_THE_REVENANT         = 9,    // 2284
+    // Ma'ra Grimfang and Anathos Firecaller
+    DATA_JADEFIRE_MASTERS_MARA      = 10    // 2285
+};
+
+enum BattleOfDazaralorCreatures
+{
+    // Champion of the Light, first side
+    BOSS_FRIDA_IRONBELLOWS          = 144680,
+    NPC_ANOINTED_DISCIPLE           = 145898,
+    NPC_DARKFORGED_CRUSADER         = 145903,
+
+    // Champion of the Light, second side
+    BOSS_RAWANI_KANAE               = 144683,
+    NPC_REZANI_DISCIPLE             = 147895,
+    NPC_ZANDALARI_CRUSADER          = 147896,
+
+    BOSS_GRONG                      = 144637,
+    NPC_APETAGONIZER_3000           = 149611,
+
+    BOSS_GRONG_THE_REVENANT         = 144638,
+    NPC_DEATH_SPECTER               = 149617,
+
+    BOSS_MESTRAH                    = 144690,
+    BOSS_MANCEROY_FLAMEFIST         = 144693,
+    BOSS_MARA_GRIMFANG              = 148238,
+    BOSS_ANATHOS_FIRECALLER         = 146100,
+    NPC_LIVING_BOMB                 = 146107,
+    NPC_SPIRIT_OF_XUEN              = 147069,
+
+    BOSS_OPULENCE                   = 145261,
+    NPC_SPIRIT_OF_GOLD              = 147218,
+
+    BOSS_PAKUS_ASPECT               = 144747,
+    BOSS_GONKS_ASPECT               = 144767,
+    BOSS_KIMBULS_ASPECT             = 144963,
+    BOSS_AKUNDAS_ASPECT             = 144941,
+    NPC_PAKU                        = 145405,
+    NPC_GONK                        = 148849,
+    NPC_KIMBUL                      = 145835,
+    NPC_AKUNDA                      = 145397,
+    NPC_KRAGWA                      = 145075,
+    NPC_RAVENOUS_STALKER            = 148962,
+
+    BOSS_KING_RASTAKHAN             = 145616,
+    NPC_SIEGEBREAKER_ROKA           = 146322,
+    NPC_PRELATE_ZALAN               = 146320,
+    NPC_HEADHUNTER_GALWANA          = 146326,
+    NPC_BWONSAMDI                   = 145644,
+    NPC_PHANTOM_OF_RAGE             = 146492,
+    NPC_PHANTOM_OF_RETRIBUTION      = 146491,
+    NPC_ZOMBIE_DUST_TOTEM           = 146731,
+    NPC_GREATER_SERPENT_TOTEM       = 146766,
+
+    BOSS_HIGH_TINKER_MEKKATORQUE    = 144796,
+    NPC_GNOMISH_SUPPORT_CLAW        = 145924,
+    NPC_SPARK_BOT                   = 144942,
+    NPC_EXPLOSIVE_SHEEP             = 148450,
+
+    BOSS_SISTER_KATHERINE           = 146251,
+    BOSS_BROTHER_JOSEPH             = 146253,
+    BOSS_LAMINARIA                  = 146256,
+    NPC_TEMPTING_SIREN              = 146436,
+
+    BOSS_LADY_JAINA_PROUDMOORE      = 146409,
+    NPC_KUL_TIRAN_CORSAIR           = 147531
+};
+
+enum BattleOfDazaralorGameObjects
+{
+    GO_FRIDA_WALL_OF_SPEARS         = 319260,
+    GO_RAWANI_WALL_OF_SPEARS        = 317064,
+    GO_RAWANI_COLLISION_DOOR        = 321388,
+    GO_GRONG_WALL_OF_SPEARS         = 317059,
+    GO_JADEFIRE_ENTRANCE_WALL       = 316666,
+    GO_JADEFIRE_EXIT_WALL           = 319257,
+    GO_JADEFIRE_BARRIER             = 321390,
+    GO_JADEFIRE_MAIN_WALL           = 319259,
+    GO_CONCLAVE_ENTRANCE_DOOR       = 312360,
+    GO_CONCLAVE_EXIT_DOOR           = 312359,
+    GO_RASTAKHAN_HARBOR_DOOR        = 313898,
+    GO_MEKKATORQUE_ENTRANCE_WALL    = 315948,
+    GO_MEKKATORQUE_EXIT_WALL        = 316663,
+    GO_MEKKATORQUE_COLLISION_DOOR   = 321389
+};
+
+enum BattleOfDazaralorSharedSpells
+{
+    SPELL_DAZARALOR_BERSERK         = 26662
+};
+
+enum ChampionOfTheLightSpells
+{
+    SPELL_CHAMPION_WAVE_OF_LIGHT            = 283598,
+    SPELL_CHAMPION_SEAL_OF_RETRIBUTION      = 284469,
+    SPELL_CHAMPION_SEAL_OF_RECKONING        = 284436,
+    SPELL_CHAMPION_JUDGMENT_RIGHTEOUSNESS   = 283933,
+    SPELL_CHAMPION_JUDGMENT_RECKONING       = 284474,
+    SPELL_CHAMPION_ZEALOTRY                 = 284459,
+    SPELL_CHAMPION_AVENGING_WRATH           = 282113,
+    SPELL_CHAMPION_CALL_TO_ARMS             = 283662,
+    SPELL_CHAMPION_DIVINE_PROTECTION        = 288294,
+
+    SPELL_CRUSADER_STRIKE                   = 283637,
+    SPELL_CRUSADER_BLINDING_FAITH           = 283650,
+    SPELL_CRUSADER_BLINDING_FAITH_DISORIENT = 283651,
+
+    SPELL_DISCIPLE_DIVINE_BURST             = 283626,
+    SPELL_DISCIPLE_HEAL                     = 283628,
+    SPELL_DISCIPLE_PENANCE_MEND             = 284593,
+    SPELL_DISCIPLE_PENANCE_SMITE            = 284595
+};
+
+enum GrongSpells
+{
+    SPELL_GRONG_TANTRUM                     = 281936,
+    SPELL_GRONG_REVERBERATING_SLAM          = 282179,
+    SPELL_GRONG_FEROCIOUS_ROAR              = 290574,
+    SPELL_GRONG_BESTIAL_COMBO               = 282082,
+    SPELL_GRONG_BESTIAL_SMASH               = 283078,
+    SPELL_GRONG_BESTIAL_THROW               = 289292,
+    SPELL_GRONG_BESTIAL_IMPACT              = 289412,
+    SPELL_GRONG_RENDING_BITE                = 285874,
+    SPELL_GRONG_RENDING_BITE_BLEED          = 285875,
+    SPELL_GRONG_MEGATOMIC_SEEKER_MISSILE    = 282213,
+    SPELL_APETAGONIZER_APETAGONIZE          = 282243,
+    SPELL_APETAGONIZER_LIGHTNING_DETONATION = 285654,
+
+    SPELL_REVENANT_DEATH_KNELL              = 282399,
+    SPELL_REVENANT_DEATHLY_SLAM             = 282543,
+    SPELL_REVENANT_NECROTIC_COMBO           = 286450,
+    SPELL_REVENANT_NECROTIC_SMASH           = 286742,
+    SPELL_DEATH_SPECTER_DEATH_EMPOWERMENT   = 282533
+};
+
+enum JadefireMastersSpells
+{
+    SPELL_JADEFIRE_FIREBALL                 = 282036,
+    SPELL_JADEFIRE_RISING_FLAMES            = 282037,
+    SPELL_JADEFIRE_PYROBLAST                = 286379,
+    SPELL_JADEFIRE_FIRE_SHIELD              = 286425,
+    SPELL_JADEFIRE_SEARING_EMBERS           = 286988,
+    SPELL_JADEFIRE_MAGMA_TRAP               = 284373,
+    SPELL_JADEFIRE_FIRE_FROM_MIST           = 285428,
+    SPELL_JADEFIRE_BLAZING_PHOENIX          = 282040,
+
+    SPELL_JADEFIRE_WHIRLING_JADE_STORM      = 286436,
+    SPELL_JADEFIRE_SPIRITS_OF_XUEN          = 285645,
+    SPELL_JADEFIRE_DRAGONS_BREATH           = 286396,
+
+    SPELL_LIVING_BOMB_EXPLOSION             = 284399,
+    SPELL_XUEN_STALKING                     = 285632,
+    SPELL_XUEN_POUNCE                       = 286086,
+    SPELL_XUEN_TIGER_PAW                    = 285634
+};
+
+enum OpulenceSpells
+{
+    SPELL_OPULENCE_HOARD_POWER              = 287070,
+    SPELL_OPULENCE_COIN_SWEEP               = 287037,
+    SPELL_OPULENCE_LIQUID_GOLD              = 287072,
+    SPELL_OPULENCE_SPIRITS_OF_GOLD          = 285995,
+    SPELL_OPULENCE_COIN_SHOWER              = 285027,
+    SPELL_OPULENCE_WAIL_OF_GREED            = 284941,
+    SPELL_OPULENCE_GREED                    = 284943
+};
+
+enum ConclaveOfTheChosenSpells
+{
+    SPELL_CONCLAVE_LOAS_PACT                = 282079,
+    SPELL_CONCLAVE_LOAS_WRATH               = 282736,
+
+    SPELL_PAKU_HASTENING_WINDS              = 285945,
+    SPELL_PAKU_GIFT_OF_WIND                 = 282098,
+    SPELL_PAKU_PAKUS_WRATH                  = 282107,
+
+    SPELL_GONK_WILD_MAUL                    = 285893,
+    SPELL_GONK_CRAWLING_HEX                 = 282135,
+    SPELL_GONK_GONKS_WRATH                  = 282155,
+
+    SPELL_KIMBUL_LACERATING_CLAWS           = 282444,
+    SPELL_KIMBUL_KIMBULS_WRATH              = 283508,
+    SPELL_KIMBUL_BLEEDING_WOUNDS            = 282592,
+
+    SPELL_AKUNDA_THUNDERING_STORM           = 282411,
+    SPELL_AKUNDA_MIND_WIPE                  = 285879,
+    SPELL_AKUNDA_MIND_WIPE_VISUAL           = 286708,
+    SPELL_AKUNDA_AKUNDAS_WRATH              = 286811,
+
+    SPELL_KRAGWA_KRAGWAS_WRATH              = 282636
+};
+
+enum KingRastakhanSpells
+{
+    SPELL_RASTAKHAN_BIND_SOULS              = 284276,
+    SPELL_RASTAKHAN_SCORCHING_DETONATION    = 284831,
+    SPELL_RASTAKHAN_SCORCHING_BLAST         = 284846,
+    SPELL_RASTAKHAN_PLAGUE_OF_TOADS         = 284933,
+    SPELL_RASTAKHAN_PLAGUE_OF_FIRE          = 285346,
+    SPELL_RASTAKHAN_PLAGUE_OF_FIRE_MARK     = 285349,
+    SPELL_RASTAKHAN_DEATHS_DOOR             = 288449,
+    SPELL_RASTAKHAN_INEVITABLE_END          = 287333,
+    SPELL_RASTAKHAN_BWONSAMDIS_BOON         = 289169,
+    SPELL_RASTAKHAN_ALL_ENCOMPASSING_DEATH  = 289890,
+
+    SPELL_BWONSAMDI_BOON_GIFT               = 284446,
+    SPELL_BWONSAMDI_UNLIVING                = 284377,
+    SPELL_BWONSAMDI_CARESS_OF_DEATH         = 285213,
+
+    SPELL_ROKA_METEOR_LEAP                  = 284686,
+    SPELL_ROKA_CRUSHING_LEAP                = 284719,
+    SPELL_ZALAN_SEAL_OF_PURIFICATION        = 286537,
+    SPELL_GALWANA_GRIEVOUS_AXE              = 290955,
+
+    SPELL_PHANTOM_UNDYING_RELENTLESSNESS    = 289162,
+    SPELL_PHANTOM_NECROTIC_SMASH            = 286742,
+    SPELL_PHANTOM_GRAVE_BOLT                = 285572,
+
+    SPELL_TOTEM_ZOMBIE_DUST                 = 284995,
+    SPELL_TOTEM_SERPENTS_BREATH             = 285178
+};
+
+enum MekkatorqueSpells
+{
+    SPELL_MEKKATORQUE_ELECTROSHOCK_STRIKES  = 289696,
+    SPELL_MEKKATORQUE_BUSTER_CANNON         = 287851,
+    SPELL_MEKKATORQUE_BUSTER_CANNON_BLAST   = 282182,
+    SPELL_MEKKATORQUE_BLAST_OFF             = 282205,
+    SPELL_MEKKATORQUE_CRASH_DOWN            = 283394,
+    SPELL_MEKKATORQUE_GIGAVOLT_CHARGE       = 286646,
+    SPELL_MEKKATORQUE_SIGNAL_SHEEP          = 287929,
+    SPELL_MEKKATORQUE_HYPERDRIVE            = 286051,
+
+    SPELL_SPARK_BOT_FORCE_SHIELD            = 282401,
+    SPELL_SPARK_BOT_SPARK_PULSE             = 282408,
+    SPELL_SHEEP_CRITTER_EXPLOSION           = 287877
+};
+
+enum StormwallBlockadeSpells
+{
+    SPELL_KATHERINE_VOLTAIC_FLASH           = 284165,
+    SPELL_KATHERINE_CRACKLING_LIGHTNING     = 284112,
+    SPELL_KATHERINE_JOLTING_VOLLEY          = 287169,
+    SPELL_KATHERINE_ELECTRIC_SHROUD         = 287995,
+
+    SPELL_JOSEPH_SEA_SWELL                  = 285125,
+    SPELL_JOSEPH_TIDAL_VOLLEY               = 284316,
+    SPELL_JOSEPH_TEMPTING_SONG              = 284404,
+    SPELL_JOSEPH_TIDAL_SHROUD               = 286558,
+
+    SPELL_LAMINARIA_KELP_WRAPPED_FISTS      = 284997,
+    SPELL_LAMINARIA_STORMS_WAIL             = 285350
+};
+
+enum LadyJainaProudmooreSpells
+{
+    SPELL_JAINA_CHILLING_TOUCH              = 285212,
+    SPELL_JAINA_ICE_SHARD                   = 285253,
+    SPELL_JAINA_FREEZING_BLAST              = 285177,
+    SPELL_JAINA_GRASP_OF_FROST              = 287626,
+    SPELL_JAINA_RING_OF_ICE                 = 285459,
+    SPELL_JAINA_AVALANCHE                   = 285254,
+    SPELL_JAINA_AVALANCHE_IMPACT            = 287585,
+    SPELL_JAINA_HOWLING_WINDS               = 288169,
+    SPELL_JAINA_GLACIAL_RAY                 = 288345,
+    SPELL_JAINA_ARCANE_BARRAGE              = 289984,
+    SPELL_JAINA_HAND_OF_FROST               = 288412,
+    SPELL_JAINA_CRYSTALLINE_DUST            = 289940
+};

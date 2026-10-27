@@ -174,7 +174,8 @@ void InstanceScript::generateBossDataState()
     const auto* encounters = sObjectMgr.getDungeonEncounterList(getWorldMap()->getBaseMap()->getMapId(), getWorldMap()->getDifficulty());
     uint32_t i = 0;
 
-    for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr, ++i)
+    // a map may have more encounter rows than its script has boss slots
+    for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end() && i < bosses.size(); ++itr, ++i)
     {
         const auto encounter = itr->get();
 
@@ -268,7 +269,7 @@ void InstanceScript::readSaveDataBossStates(std::istringstream& data)
     const auto* encounters = sObjectMgr.getDungeonEncounterList(getWorldMap()->getBaseMap()->getMapId(), getWorldMap()->getDifficulty());
     size_t i = 0;
 
-    for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr, ++i)
+    for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end() && i < bosses.size(); ++itr, ++i)
     {
         const auto encounter = itr->get();
 
@@ -307,9 +308,9 @@ std::string InstanceScript::getSaveData()
     return saveStream.str();
 }
 
-#if VERSION_STRING >= WotLK
-void InstanceScript::updateEncounterState(EncounterCreditType type, uint32_t creditEntry)
+void InstanceScript::updateEncounterState([[maybe_unused]] EncounterCreditType type, [[maybe_unused]] uint32_t creditEntry)
 {
+#if VERSION_STRING >= WotLK
     DungeonEncounterList const* encounters = sObjectMgr.getDungeonEncounterList(mInstance->getBaseMap()->getMapId(), mInstance->getDifficulty());
     if (!encounters)
         return;
@@ -346,6 +347,7 @@ void InstanceScript::updateEncounterState(EncounterCreditType type, uint32_t cre
             }
         }
     }
+#endif
 }
 
 void InstanceScript::useDoorOrButton(GameObject* pGameObject, uint32_t withRestoreTime, bool useAlternativeState)
@@ -383,7 +385,6 @@ void InstanceScript::updateEncountersStateForSpell(uint32_t creditEntry, uint8_t
 {
     updateEncounterState(ENCOUNTER_CREDIT_CAST_SPELL, creditEntry);
 }
-#endif
 
 void InstanceScript::sendUnitEncounter(uint32_t type, Unit* unit, uint8_t value_a, uint8_t value_b)
 {

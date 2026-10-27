@@ -7554,6 +7554,16 @@ uint32_t Unit::getVehicleSeatId() const
     return 0;
 }
 
+Unit* Unit::getVehiclePassenger([[maybe_unused]] int8_t seatId) const
+{
+#ifdef FT_VEHICLES
+    if (Vehicle const* vehicle = getVehicleKit())
+        return vehicle->getPassenger(seatId);
+#endif
+
+    return nullptr;
+}
+
 SummonHandler* Unit::getSummonInterface()
 {
     return m_summonInterface.get();

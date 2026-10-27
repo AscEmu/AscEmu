@@ -595,7 +595,7 @@ void WorldSession::handleDungeonDifficultyOpcode(WorldPacket& recvPacket)
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    if (srlPacket.difficulty >= InstanceDifficulty::MAX_DUNGEON_DIFFICULTY)
+    if (!InstanceDifficulty::isSelectableDungeonDifficulty(srlPacket.difficulty))
         return;
 
     sLogger.debugOpcode("Received CMSG_SET_DUNGEON_DIFFICULTY: {} (difficulty).", srlPacket.difficulty);
@@ -630,7 +630,7 @@ void WorldSession::handleRaidDifficultyOpcode([[maybe_unused]] WorldPacket& recv
     if (!parsePacket(recvPacket, srlPacket))
         return;
 
-    if (srlPacket.difficulty >= InstanceDifficulty::MAX_RAID_DIFFICULTY)
+    if (!InstanceDifficulty::isSelectableRaidDifficulty(srlPacket.difficulty))
         return;
 
     sLogger.debugOpcode("Received CMSG_SET_RAID_DIFFICULTY: {} (difficulty).", srlPacket.difficulty);

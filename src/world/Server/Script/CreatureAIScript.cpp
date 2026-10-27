@@ -483,7 +483,6 @@ bool CreatureAIScript::hasUnitFlags(uint32_t flags)
     return _creature->hasUnitFlags(flags);
 }
 
-#if VERSION_STRING > Classic
 void CreatureAIScript::setUnitFlags2(uint32_t flags)
 {
     _creature->setUnitFlags2(flags);
@@ -503,7 +502,6 @@ bool CreatureAIScript::hasUnitFlags2(uint32_t flags)
 {
     return _creature->hasUnitFlags2(flags);;
 }
-#endif
 //////////////////////////////////////////////////////////////////////////////////////////
 // wp movement
 void CreatureAIScript::loadCustomWaypoins(uint32_t pathid)
@@ -1535,6 +1533,9 @@ InstanceScript* CreatureAIScript::getInstanceScript()
 bool CreatureAIScript::isHeroic()
 {
     WorldMap* mapMgr = _creature->getWorldMap();
+    if (mapMgr != nullptr && InstanceDifficulty::usesDifficultyIds())
+        return InstanceDifficulty::isHeroicSpawnMode(mapMgr->getSpawnMode());
+
     if (mapMgr == nullptr || mapMgr->getDifficulty() != InstanceDifficulty::DUNGEON_HEROIC)
         return false;
 
@@ -1545,7 +1546,7 @@ unsigned CreatureAIScript::getRaidModeValue(const unsigned& normal10, const unsi
 {
     if (_creature->getWorldMap()->getInstance())
     {
-        switch (_creature->getWorldMap()->getDifficulty())
+        switch (InstanceDifficulty::legacyRaidMode(_creature->getWorldMap()->getSpawnMode()))
         {
             case InstanceDifficulty::RAID_10MAN_NORMAL:
                 return normal10;

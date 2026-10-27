@@ -5,6 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "AEVersion.hpp"
+#include "Server/ClientProtocol.hpp"
+
 #include <cstdint>
 
 namespace InstanceDifficulty
@@ -28,6 +31,201 @@ namespace InstanceDifficulty
         MAX_DIFFICULTY          = 2
 #endif
     };
+
+    // 5.x: the spawn mode of a map is a Difficulty.db2 id
+    enum DifficultyIds : uint8_t
+    {
+        ID_DUNGEON_NORMAL       = 1,
+        ID_DUNGEON_HEROIC       = 2,
+        ID_RAID_10MAN_NORMAL    = 3,
+        ID_RAID_25MAN_NORMAL    = 4,
+        ID_RAID_10MAN_HEROIC    = 5,
+        ID_RAID_25MAN_HEROIC    = 6,
+        ID_RAID_LFR_25MAN       = 7,
+        ID_CHALLENGE_MODE       = 8,    // 7.x: Mythic Keystone
+        ID_RAID_40MAN           = 9,
+        ID_SCENARIO_HEROIC      = 11,
+        ID_SCENARIO_NORMAL      = 12,
+        ID_RAID_FLEX_NORMAL     = 14,   // 6.x: Normal raid
+        ID_RAID_FLEX_HEROIC     = 15,   // 6.x: Heroic raid
+        ID_RAID_MYTHIC          = 16,
+        ID_RAID_FLEX_LFR        = 17,
+        ID_DUNGEON_MYTHIC       = 23,
+        ID_DUNGEON_TIMEWALKING  = 24,
+        ID_RAID_TIMEWALKING     = 33
+    };
+
+    // spawn modes are Difficulty.db2 ids from 5.x on, the legacy values before
+    inline bool usesDifficultyIds()
+    {
+        return WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop);
+    }
+
+    // 5.x: heroic or harder difficulties of dungeons, raids and scenarios
+    inline bool isHeroicSpawnMode(uint8_t spawnMode)
+    {
+        switch (spawnMode)
+        {
+            case ID_DUNGEON_HEROIC:
+            case ID_RAID_10MAN_HEROIC:
+            case ID_RAID_25MAN_HEROIC:
+            case ID_CHALLENGE_MODE:
+            case ID_SCENARIO_HEROIC:
+            case ID_RAID_FLEX_HEROIC:
+            case ID_RAID_MYTHIC:
+            case ID_DUNGEON_MYTHIC:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    // the 10/25 player normal/heroic raid mode a spawn mode plays like
+    inline Difficulties legacyRaidMode(uint8_t spawnMode)
+    {
+        if (!usesDifficultyIds())
+            return Difficulties(spawnMode);
+
+        switch (spawnMode)
+        {
+            case ID_RAID_25MAN_NORMAL:
+            case ID_RAID_LFR_25MAN:
+            case ID_RAID_40MAN:
+            case ID_RAID_FLEX_NORMAL:
+            case ID_RAID_FLEX_LFR:
+            case ID_RAID_TIMEWALKING:
+                return RAID_25MAN_NORMAL;
+            case ID_RAID_10MAN_HEROIC:
+                return RAID_10MAN_HEROIC;
+            case ID_RAID_25MAN_HEROIC:
+            case ID_RAID_FLEX_HEROIC:
+            case ID_RAID_MYTHIC:
+                return RAID_25MAN_HEROIC;
+            default:
+                return RAID_10MAN_NORMAL;
+        }
+    }
+
+    // 5.x: the next difficulty a map is tried with when it lacks the chosen one, 0 ends the chain
+    inline uint8_t fallbackDifficulty(uint8_t difficulty)
+    {
+        // 6.x: mythic, flexible and timewalking modes fall back to the older modes
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WoD))
+        {
+            switch (difficulty)
+            {
+                case ID_CHALLENGE_MODE:
+                    return ID_DUNGEON_MYTHIC;
+                case ID_DUNGEON_MYTHIC:
+                case ID_DUNGEON_TIMEWALKING:
+                    return ID_DUNGEON_HEROIC;
+                case ID_RAID_10MAN_NORMAL:
+                case ID_RAID_FLEX_HEROIC:
+                case ID_RAID_FLEX_LFR:
+                case ID_RAID_TIMEWALKING:
+                    return ID_RAID_FLEX_NORMAL;
+                case ID_RAID_FLEX_NORMAL:
+                    return ID_RAID_25MAN_NORMAL;
+                case ID_RAID_MYTHIC:
+                    return ID_RAID_FLEX_HEROIC;
+                default:
+                    break;
+            }
+        }
+
+        switch (difficulty)
+        {
+            case ID_DUNGEON_HEROIC:
+                return ID_DUNGEON_NORMAL;
+            case ID_RAID_25MAN_NORMAL:
+            case ID_RAID_10MAN_HEROIC:
+                return ID_RAID_10MAN_NORMAL;
+            case ID_RAID_25MAN_HEROIC:
+            case ID_RAID_LFR_25MAN:
+                return ID_RAID_25MAN_NORMAL;
+            case ID_SCENARIO_HEROIC:
+                return ID_SCENARIO_NORMAL;
+            case ID_CHALLENGE_MODE:
+                return ID_DUNGEON_HEROIC;
+            default:
+                return 0;
+        }
+    }
+
+    // highest difficulty + 1 the instance binds of players and groups are kept for
+    constexpr uint8_t MAX_BIND_DIFFICULTY = ID_RAID_TIMEWALKING + 1;
+
+    // difficulties instance binds are kept for in the running expansion
+    inline bool isBindDifficulty(uint32_t difficulty)
+    {
+        if (usesDifficultyIds())
+            return difficulty < static_cast<uint32_t>(MAX_BIND_DIFFICULTY);
+
+        return difficulty < static_cast<uint32_t>(MAX_DIFFICULTY);
+    }
+
+    // heroic or harder dungeon mode, before 5.x the heroic value
+    inline bool isHeroicDungeonDifficulty(uint8_t difficulty)
+    {
+        if (usesDifficultyIds())
+            return isHeroicSpawnMode(difficulty);
+
+        return difficulty == DUNGEON_HEROIC;
+    }
+
+    // difficulties a player can choose for dungeons
+    inline bool isSelectableDungeonDifficulty(uint32_t difficulty)
+    {
+        if (!usesDifficultyIds())
+            return difficulty < static_cast<uint32_t>(MAX_DUNGEON_DIFFICULTY);
+
+        if (difficulty == ID_DUNGEON_MYTHIC)
+            return WoW::isServerExpansionAtLeast(WoW::Expansion::_WoD);
+
+        return difficulty == ID_DUNGEON_NORMAL || difficulty == ID_DUNGEON_HEROIC;
+    }
+
+    // difficulties a player can choose for raids
+    inline bool isSelectableRaidDifficulty(uint32_t difficulty)
+    {
+        if (!usesDifficultyIds())
+            return difficulty < static_cast<uint32_t>(MAX_RAID_DIFFICULTY);
+
+        switch (difficulty)
+        {
+            case ID_RAID_10MAN_NORMAL:
+            case ID_RAID_25MAN_NORMAL:
+            case ID_RAID_10MAN_HEROIC:
+            case ID_RAID_25MAN_HEROIC:
+                return true;
+            case ID_RAID_FLEX_NORMAL:
+            case ID_RAID_FLEX_HEROIC:
+            case ID_RAID_MYTHIC:
+                return WoW::isServerExpansionAtLeast(WoW::Expansion::_WoD);
+            default:
+                return false;
+        }
+    }
+
+    // difficulties of a new character or group
+    inline uint8_t defaultDungeonDifficulty()
+    {
+        if (usesDifficultyIds())
+            return ID_DUNGEON_NORMAL;
+
+        return DUNGEON_NORMAL;
+    }
+
+    inline uint8_t defaultRaidDifficulty()
+    {
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WoD))
+            return ID_RAID_FLEX_NORMAL;
+
+        if (usesDifficultyIds())
+            return ID_RAID_10MAN_NORMAL;
+
+        return RAID_10MAN_NORMAL;
+    }
 }
 
 enum InstanceType : uint8_t

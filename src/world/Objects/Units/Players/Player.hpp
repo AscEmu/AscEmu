@@ -1183,8 +1183,8 @@ public:
     uint8_t getRaidDifficulty();
 
 private:
-    uint8_t m_dungeonDifficulty = 0;
-    uint8_t m_raidDifficulty = 0;
+    uint8_t m_dungeonDifficulty = InstanceDifficulty::defaultDungeonDifficulty();
+    uint8_t m_raidDifficulty = InstanceDifficulty::defaultRaidDifficulty();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Die, Corpse & Repop
@@ -2177,7 +2177,7 @@ public:
     void loadBoundInstances();
 
     // permanent binds and solo binds by difficulty
-    BoundInstancesMap m_boundInstances[InstanceDifficulty::MAX_DIFFICULTY];
+    BoundInstancesMap m_boundInstances[InstanceDifficulty::MAX_BIND_DIFFICULTY];
     InstancePlayerBind* getBoundInstance(uint32_t mapId, InstanceDifficulty::Difficulties difficulty, bool withExpired = false);
     BoundInstancesMap& getBoundInstances(InstanceDifficulty::Difficulties difficulty) { return m_boundInstances[difficulty]; }
     InstanceSaved* getInstanceSave(uint32_t mapId, bool isRaid);

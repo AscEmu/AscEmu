@@ -1,0 +1,84 @@
+/*
+Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#pragma once
+
+#include <cstdint>
+
+uint32_t const ShadowmoonBurialGroundsEncounterCount = 4;
+
+enum ShadowmoonBurialGroundsData
+{
+    DATA_SADANA   = 0, // 1677
+    DATA_BONEMAW  = 1, // 1679
+    DATA_NERZHUL  = 2, // 1682
+    DATA_NHALLISH = 3  // 1688
+};
+
+enum ShadowmoonBurialGroundsCreatures
+{
+    BOSS_SADANA_BLOODFURY       = 75509,
+    BOSS_NHALLISH               = 75829,
+    BOSS_BONEMAW                = 75452,
+    BOSS_NERZHUL                = 76407,
+
+    NPC_SBG_DEFILED_SPIRIT      = 75966,
+    NPC_SBG_DAGGERFALL          = 75981,
+    NPC_SBG_POSSESSED_SOUL      = 75899,
+    NPC_SBG_CARRION_WORM        = 76057,
+    NPC_SBG_OMEN_OF_DEATH       = 76462,
+    NPC_SBG_RITUAL_OF_BONES     = 76518,
+    NPC_SBG_SHADOWMOON_PORTAL   = 85541
+};
+
+enum ShadowmoonBurialGroundsGameObjects
+{
+    GO_SBG_SADANA_DOOR          = 233921,
+    GO_SBG_SADANA_PROGRESS_DOOR = 233919,
+    GO_SBG_NHALLISH_DOOR        = 227851,
+    GO_SBG_BONEMAW_ENTRANCE     = 233990,
+    GO_SBG_BONEMAW_EXIT         = 233989,
+    GO_SBG_NERZHUL_DOOR         = 233920
+};
+
+enum SadanaBloodfurySpells
+{
+    SPELL_SADANA_DEATHSPIKE          = 153079,
+    SPELL_SADANA_WHISPERS_DARK_STAR  = 153094,
+    SPELL_SADANA_DARK_COMMUNION      = 153153,
+    SPELL_SADANA_COMMUNION_HEAL      = 153164,
+    SPELL_SADANA_DAGGERFALL_VISUAL   = 153216,
+    SPELL_SADANA_DAGGERFALL_IMPACT   = 153224,
+    SPELL_SADANA_DAGGERFALL_AURA     = 153236
+};
+
+enum NhallishSpells
+{
+    SPELL_NHALLISH_VOID_BLAST        = 152792,
+    SPELL_NHALLISH_PLANAR_SHIFT      = 153623,
+    SPELL_NHALLISH_VOID_VORTEX       = 152801,
+    SPELL_NHALLISH_SOUL_STEAL        = 152962,
+    SPELL_NHALLISH_VOID_DEVASTATION  = 153067,
+    SPELL_NHALLISH_SOUL_SHRED        = 152979
+};
+
+enum BonemawSpells
+{
+    SPELL_BONEMAW_CORPSE_BREATH      = 165578,
+    SPELL_BONEMAW_NECROTIC_PITCH     = 153691,
+    SPELL_BONEMAW_FETID_SPIT         = 153681,
+    SPELL_BONEMAW_BODY_SLAM          = 154175,
+    SPELL_CARRION_WORM_FETID_SPIT    = 153496,
+    SPELL_CARRION_WORM_BODY_SLAM     = 153395
+};
+
+enum NerzhulSpells
+{
+    SPELL_NERZHUL_MALEVOLENCE        = 154442,
+    SPELL_NERZHUL_OMEN_VISUAL        = 154351,
+    SPELL_NERZHUL_OMEN_LIGHTNING     = 154352,
+    SPELL_NERZHUL_RITUAL_OF_BONES    = 154559,
+    SPELL_NERZHUL_RITUAL_PERIODIC    = 156312
+};

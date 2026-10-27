@@ -1,0 +1,256 @@
+/*
+Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#pragma once
+
+#include <cstdint>
+
+uint32_t const NerubarPalaceEncounterCount = 8;
+
+enum NerubarPalaceData
+{
+    DATA_SIKRAN             = 0,    // 2898
+    DATA_ULGRAX             = 1,    // 2902
+    DATA_BLOODBOUND_HORROR  = 2,    // 2917
+    DATA_RASHANAN           = 3,    // 2918
+    DATA_OVINAX             = 4,    // 2919
+    DATA_KYVEZA             = 5,    // 2920
+    // Anub'arash and Skeinspinner Takazj
+    DATA_SILKEN_COURT       = 6,    // 2921
+    DATA_QUEEN_ANSUREK      = 7     // 2922
+};
+
+enum NerubarPalaceCreatures
+{
+    // Sikran, Captain of the Sureki
+    BOSS_SIKRAN                     = 214503,
+    // second raid template of Sikran
+    BOSS_SIKRAN_ALT                 = 219853,
+    NPC_COSMIC_SIMULACRUM           = 227617,
+
+    // Ulgrax the Devourer
+    BOSS_ULGRAX                     = 215657,
+    NPC_RAVENOUS_SPAWN              = 216205,
+
+    // The Bloodbound Horror
+    BOSS_BLOODBOUND_HORROR          = 214502,
+    NPC_LOST_WATCHER                = 221667,
+    NPC_FORGOTTEN_HARBINGER         = 221945,
+    NPC_BLOOD_HORROR                = 221986,
+
+    // Rasha'nan
+    BOSS_RASHANAN                   = 214504,
+    // second raid template of Rasha'nan
+    BOSS_RASHANAN_ALT               = 224437,
+    NPC_INFESTED_SPAWN              = 219739,
+
+    // Broodtwister Ovi'nax
+    BOSS_OVINAX                     = 214506,
+    NPC_COLOSSAL_SPIDER             = 219045,
+    NPC_VORACIOUS_WORM              = 219046,
+    NPC_BLOOD_PARASITE              = 220626,
+
+    // Nexus-Princess Ky'veza
+    BOSS_KYVEZA                     = 217748,
+    // second raid template of Ky'veza
+    BOSS_KYVEZA_ALT                 = 228470,
+    NPC_NETHER_PHANTOM              = 218265,
+
+    // The Silken Court
+    BOSS_ANUBARASH                  = 217489,
+    BOSS_TAKAZJ                     = 217491,
+    NPC_SHATTERSHELL_SCARAB         = 218884,
+
+    // Queen Ansurek
+    BOSS_QUEEN_ANSUREK              = 218370,
+    NPC_CHAMBER_GUARDIAN            = 223204,
+    NPC_CHAMBER_EXPELLER            = 224368,
+    NPC_CHAMBER_ACOLYTE             = 226200,
+    NPC_ASCENDED_VOIDSPEAKER        = 223150,
+    NPC_DEVOTED_WORSHIPPER          = 223318,
+    NPC_CAUSTIC_SKITTERER           = 223674,
+    NPC_SUMMONED_ACOLYTE            = 221863,
+    NPC_GLOOM_HATCHLING             = 221344,
+
+    // entrance hall guards
+    NPC_SCARAB_CAPTAIN_VULAKAN      = 218306,
+    NPC_KAHETI_SENTRY               = 218315,
+    NPC_WOVEN_THREADMANCER          = 218317
+};
+
+enum NerubarPalaceGameObjects
+{
+    // opens once the entrance hall guards are down
+    GO_NERUBAR_HALL_DOOR            = 444355
+};
+
+enum NerubarPalaceActions
+{
+    ACTION_NP_ULGRAX_DESCEND        = 1,
+    ACTION_NP_COURT_STAGE
+};
+
+enum NerubarPalaceSharedSpells
+{
+    SPELL_NERUBAR_BERSERK           = 26662
+};
+
+enum SikranSpells
+{
+    SPELL_SIKRAN_PHASE_BLADES       = 433475,
+    SPELL_SIKRAN_DECIMATE           = 442428,
+    SPELL_SIKRAN_SHATTERING_SWEEP   = 456420,
+    SPELL_SIKRAN_EXPOSE             = 435401,
+    SPELL_SIKRAN_PHASE_LUNGE        = 432969,
+    SPELL_SIKRAN_RAIN_OF_ARROWS     = 439559,
+    SPELL_SIKRAN_COSMIC_SHARDS      = 459273,
+
+    SPELL_SIMULACRUM_PRESENCE       = 458272
+};
+
+enum UlgraxSpells
+{
+    SPELL_ULGRAX_CARNIVOROUS_CONTEST    = 434776,
+    SPELL_ULGRAX_STALKERS_WEBBING       = 441451,
+    SPELL_ULGRAX_DIGESTIVE_ACID         = 435138,
+    SPELL_ULGRAX_VENOMOUS_LASH          = 435136,
+    SPELL_ULGRAX_BRUTAL_CRUSH           = 434697,
+    SPELL_ULGRAX_HULKING_CRASH          = 435341,
+    SPELL_ULGRAX_READY_TO_FEED          = 440177,
+    SPELL_ULGRAX_HUNGERING_BELLOWS      = 438012,
+    SPELL_ULGRAX_JUGGERNAUT_CHARGE      = 436255,
+    SPELL_ULGRAX_SWALLOWING_DARKNESS    = 443842,
+    // descent into the arena
+    SPELL_ULGRAX_DESCENT_DARKNESS       = 451409,
+
+    SPELL_RAVENOUS_SPAWN_DISEMBOWEL     = 439037
+};
+
+enum BloodboundHorrorSpells
+{
+    SPELL_BLOODBOUND_GRUESOME_DISGORGE  = 444363,
+    SPELL_BLOODBOUND_GRASP_FROM_BEYOND  = 443042,
+    SPELL_BLOODBOUND_GORESPLATTER       = 442530,
+    SPELL_BLOODBOUND_CRIMSON_RAIN       = 443305,
+    SPELL_BLOODBOUND_SPEWING_HEMORRHAGE = 445936,
+
+    SPELL_LOST_WATCHER_SPECTRAL_SLAM    = 445016,
+    SPELL_LOST_WATCHER_BLACK_BULWARK    = 451288
+};
+
+enum RashananSpells
+{
+    SPELL_RASHANAN_ROLLING_ACID         = 439789,
+    SPELL_RASHANAN_SPINNERETS_STRANDS   = 439784,
+    SPELL_RASHANAN_INFESTED_SPAWN       = 439815,
+    SPELL_RASHANAN_SAVAGE_ASSAULT       = 444687,
+    SPELL_RASHANAN_EROSIVE_SPRAY        = 439811,
+    SPELL_RASHANAN_ACIDIC_ERUPTION      = 452806,
+    SPELL_RASHANAN_CAUSTIC_HAIL         = 444094,
+
+    SPELL_INFESTED_SPAWN_INFESTED_BITE  = 455287
+};
+
+enum OvinaxSpells
+{
+    SPELL_OVINAX_EXPERIMENTAL_DOSAGE    = 442526,
+    SPELL_OVINAX_INGEST_BLACK_BLOOD     = 442430,
+    SPELL_OVINAX_SANGUINE_OVERFLOW      = 442799,
+    SPELL_OVINAX_VILE_DISCHARGE         = 441612,
+    SPELL_OVINAX_STICKY_WEB             = 446349,
+    SPELL_OVINAX_VOLATILE_CONCOCTION    = 441362,
+
+    SPELL_COLOSSAL_SPIDER_VICIOUS_BITE  = 438807,
+    SPELL_VORACIOUS_WORM_POISON_BURST   = 446700,
+    SPELL_BLOOD_PARASITE_FIXATE         = 442251,
+    SPELL_BLOOD_PARASITE_INFEST         = 442257
+};
+
+enum KyvezaSpells
+{
+    SPELL_KYVEZA_ASSASSINATION          = 436867,
+    SPELL_KYVEZA_TWILIGHT_MASSACRE      = 438245,
+    SPELL_KYVEZA_NETHER_RIFT            = 437620,
+    SPELL_KYVEZA_NEXUS_DAGGERS          = 439576,
+    SPELL_KYVEZA_REAPER                 = 436749,
+    SPELL_KYVEZA_VOID_SHREDDERS         = 440377,
+    SPELL_KYVEZA_STARLESS_NIGHT         = 435414,
+    SPELL_KYVEZA_ETERNAL_NIGHT          = 442278,
+    SPELL_KYVEZA_REGICIDE               = 435486
+};
+
+enum SilkenCourtSpells
+{
+    SPELL_COURT_QUEENS_PROCLAMATION     = 455363,
+
+    // Anub'arash
+    SPELL_ANUBARASH_RECKLESS_CHARGE     = 440158,
+    SPELL_ANUBARASH_BURROWED_ERUPTION   = 460360,
+    SPELL_ANUBARASH_CALL_OF_THE_SWARM   = 438801,
+    SPELL_ANUBARASH_IMPALING_ERUPTION   = 440504,
+    SPELL_ANUBARASH_PIERCING_STRIKE     = 438218,
+    SPELL_ANUBARASH_STINGING_SWARM      = 438677,
+    SPELL_ANUBARASH_SPIKE_STORM         = 451277,
+    SPELL_ANUBARASH_SEISMIC_UPHEAVAL    = 460364,
+    SPELL_ANUBARASH_RAGING_CHARGE       = 440246,
+    SPELL_ANUBARASH_SPIKE_ERUPTION      = 443092,
+    SPELL_ANUBARASH_UNLEASHED_SWARM     = 443063,
+
+    // Skeinspinner Takazj
+    SPELL_TAKAZJ_WEB_BOMB               = 439992,
+    SPELL_TAKAZJ_VENOMOUS_RAIN          = 438656,
+    SPELL_TAKAZJ_SKITTERING_LEAP        = 450045,
+    SPELL_TAKAZJ_POISON_BOLT            = 438200,
+    SPELL_TAKAZJ_SHATTER_EXISTENCE      = 450980,
+    SPELL_TAKAZJ_ENTROPIC_BARRAGE       = 460600,
+    SPELL_TAKAZJ_CATACLYSMIC_ENTROPY    = 438355,
+    SPELL_TAKAZJ_WEB_VORTEX             = 441634,
+    SPELL_TAKAZJ_ENTROPIC_DESOLATION    = 450129,
+    SPELL_TAKAZJ_STRANDS_OF_REALITY     = 441782,
+    SPELL_TAKAZJ_VOID_STEP              = 450483,
+    SPELL_TAKAZJ_VOID_BOLT              = 441772
+};
+
+enum QueenAnsurekSpells
+{
+    // Stage One: A Queen's Venom
+    SPELL_ANSUREK_REACTIVE_TOXIN        = 437592,
+    SPELL_ANSUREK_VENOM_NOVA            = 437417,
+    SPELL_ANSUREK_SILKEN_TOMB           = 439814,
+    SPELL_ANSUREK_LIQUEFY               = 440899,
+    SPELL_ANSUREK_FEAST                 = 437093,
+    SPELL_ANSUREK_WEB_BLADES            = 439299,
+    SPELL_ANSUREK_ACRID_PRESENCE        = 440607,
+
+    // Intermission: The Spider's Web
+    SPELL_ANSUREK_PREDATION             = 447076,
+    SPELL_ANSUREK_PARALYZING_VENOM      = 447456,
+    SPELL_ANSUREK_WREST                 = 447411,
+
+    // Stage Two: Royal Ascension
+    SPELL_ANSUREK_ACID_BOLT             = 448660,
+    SPELL_ANSUREK_ASCENDED_WREST        = 450191,
+
+    // Stage Three: Paranoia's Feast
+    SPELL_ANSUREK_ABYSSAL_INFUSION      = 443888,
+    SPELL_ANSUREK_FROTHING_GLUTTONY     = 445422,
+    SPELL_ANSUREK_ROYAL_CONDEMNATION    = 438976,
+    SPELL_ANSUREK_INFEST                = 443325,
+    SPELL_ANSUREK_GORGE                 = 443336,
+    SPELL_ANSUREK_DREADFUL_PRESENCE     = 445268,
+
+    // her court
+    SPELL_CHAMBER_GUARDIAN_OUST             = 448147,
+    SPELL_CHAMBER_EXPELLER_EXPULSION_BEAM   = 451600,
+    SPELL_CHAMBER_ACOLYTE_DARK_DETONATION   = 455374,
+    SPELL_VOIDSPEAKER_SHADOWBLAST           = 447950,
+    SPELL_VOIDSPEAKER_RADIATING_GLOOM       = 447999,
+    SPELL_WORSHIPPER_GLOOM_TOUCH            = 447965,
+    SPELL_WORSHIPPER_PROTECTION             = 448488,
+    SPELL_WORSHIPPER_COSMIC_APOCALYPSE      = 448458,
+    SPELL_SKITTERER_CAUSTIC_FANGS           = 449235,
+    SPELL_SUMMONED_ACOLYTE_DARK_BARRIER     = 445013,
+    SPELL_SUMMONED_ACOLYTE_NULL_DETONATION  = 445021
+};

@@ -1,0 +1,107 @@
+/*
+Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#pragma once
+
+#include <cstdint>
+
+uint32_t const UpperBlackrockSpireEncounterCount = 5;
+
+enum UpperBlackrockSpireData
+{
+    DATA_KYRAK    = 0, // 1758
+    DATA_THARBEK  = 1, // 1759
+    DATA_RAGEWING = 2, // 1760
+    DATA_GORASHAN = 3, // 1761
+    DATA_ZAELA    = 4  // 1762
+};
+
+// local data set by the rune glows of the entrance hall
+uint32_t const DATA_UBRS_RUNE_DISABLED = 100;
+
+enum UpperBlackrockSpireCreatures
+{
+    BOSS_OREBENDER_GORASHAN         = 76413,
+    BOSS_KYRAK                      = 76021,
+    BOSS_COMMANDER_THARBEK          = 79912,
+    BOSS_RAGEWING_THE_UNTAMED       = 76585,
+    BOSS_WARLORD_ZAELA              = 77120,
+
+    NPC_UBRS_RUNE_GLOW              = 76396,
+    NPC_UBRS_BLACK_IRON_BERSERKER   = 76176,
+    NPC_UBRS_BLACK_IRON_LEADBELCHER = 76157,
+    NPC_UBRS_BLACK_IRON_WARCASTER   = 76151,
+    NPC_UBRS_BLACK_IRON_GRUNT       = 76179,
+    NPC_UBRS_RAGEMAW_WORG           = 76181,
+    NPC_UBRS_LIGHTNING_FIELD        = 76464,
+    NPC_UBRS_DRAKONID_MONSTROSITY   = 82556,
+    NPC_UBRS_BLACK_IRON_DREADWEAVER = 77035,
+    NPC_UBRS_IRONBARB_SKYREAVER     = 80098,
+    NPC_UBRS_RAGEWING_WHELP         = 76801,
+    NPC_UBRS_BLACK_IRON_WYRM_RIDER  = 82429
+};
+
+enum UpperBlackrockSpireGameObjects
+{
+    GO_UBRS_ENTRANCE_AREA_EXIT      = 175244,
+    GO_UBRS_GORASHAN_DOOR_IN        = 175705,
+    GO_UBRS_GORASHAN_DOOR_OUT       = 175153,
+    GO_UBRS_KYRAK_EXIT_1            = 225945,
+    GO_UBRS_KYRAK_EXIT_2            = 225944,
+    GO_UBRS_THARBEK_SPAWN_GATE      = 175185,
+    GO_UBRS_THARBEK_ROOM_GATE       = 164726,
+    GO_UBRS_THARBEK_EXIT_GATE       = 175186,
+    GO_UBRS_RAGEWING_ENTRANCE       = 232998,
+    GO_UBRS_RAGEWING_EXIT           = 232999
+};
+
+enum OrebenderGorashanSpells
+{
+    SPELL_GORASHAN_BLADES_OF_STEEL       = 154417,
+    SPELL_GORASHAN_SHRAPNEL_NOVA         = 154448,
+    SPELL_GORASHAN_LODESTONE_SPIKE       = 154428,
+    SPELL_GORASHAN_SEAL_CONDUIT          = 154302,
+    SPELL_GORASHAN_THUNDERING_CACOPHONY  = 154899,
+    SPELL_LIGHTNING_FIELD_ELECTRIC_PULSE = 154335
+};
+
+enum KyrakSpells
+{
+    SPELL_KYRAK_DEBILITATING_FIXATION    = 161199,
+    SPELL_KYRAK_REJUVENATING_SERUM       = 161203,
+    SPELL_KYRAK_VILEBLOOD_SERUM          = 161209,
+    SPELL_KYRAK_SALVE_OF_TOXIC_FUMES     = 162589,
+    SPELL_DRAKONID_MONSTROUS_CLAWS       = 155032,
+    SPELL_DRAKONID_ERUPTION              = 155037
+};
+
+enum CommanderTharbekSpells
+{
+    SPELL_THARBEK_IRON_AXE               = 161765,
+    SPELL_THARBEK_IRON_REAVER            = 161989,
+    SPELL_THARBEK_IMBUED_IRON_AXE        = 162085,
+    SPELL_THARBEK_IRON_RAGE              = 161985,
+    SPELL_SKYREAVER_NOXIOUS_SPIT         = 161811,
+    SPELL_SKYREAVER_INCINERATING_BREATH  = 161883
+};
+
+enum RagewingSpells
+{
+    SPELL_RAGEWING_MAGMA_SPIT            = 155050,
+    SPELL_RAGEWING_RIPPING_CLAW          = 155065,
+    SPELL_RAGEWING_ENGULFING_FIRE        = 154996,
+    SPELL_RAGEWING_FIRE_STORM            = 155070,
+    SPELL_RAGEWING_BURNING_RAGE          = 155620
+};
+
+enum WarlordZaelaSpells
+{
+    SPELL_ZAELA_DESTRUCTIVE_SMITE        = 155673,
+    SPELL_ZAELA_DESTRUCTIVE_SMITE_HEROIC = 169158,
+    SPELL_ZAELA_REBOUNDING_BLADE         = 155705,
+    SPELL_ZAELA_BLACK_IRON_CYCLONE       = 155720,
+    SPELL_WYRM_RIDER_CHAIN_PULL          = 167241,
+    SPELL_WYRM_RIDER_DRAGON_ROAR         = 167242
+};

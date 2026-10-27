@@ -1158,6 +1158,9 @@ public:
     // VehicleSeat.dbc id of the seat this unit occupies in its own vehicle kit, 0 without vehicle support
     uint32_t getVehicleSeatId() const;
 
+    // passenger on a seat of this unit's own vehicle kit, nullptr without vehicle support
+    Unit* getVehiclePassenger(int8_t seatId) const;
+
 private:
     std::unique_ptr<SummonHandler> m_summonInterface;
 
@@ -1189,6 +1192,13 @@ public:
 #else
 public:
     void handleSpellClick(Unit* clicker);
+
+    // without vehicle support the vehicle calls of scripts do nothing
+    bool createVehicleKit(uint32_t /*id*/, uint32_t /*creatureEntry*/) { return false; }
+    Vehicle* getVehicleKit() const { return nullptr; }
+    Unit* getVehicleBase() const { return nullptr; }
+    void callEnterVehicle(Unit* /*base*/, int8_t /*seatId*/ = -1) { }
+    void exitVehicle(LocationVector const* /*exitPosition*/ = nullptr) { }
 #endif
 
     bool isMounted() const;

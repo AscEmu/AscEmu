@@ -1,0 +1,82 @@
+/*
+Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#pragma once
+
+#include <cstdint>
+
+uint32_t const CourtOfStarsEncounterCount = 3;
+
+enum CourtOfStarsData
+{
+    DATA_PATROL_CAPTAIN_GERDO   = 0,  // 1868
+    DATA_TALIXAE_FLAMEWREATH    = 1,  // 1869
+    DATA_ADVISOR_MELANDRUS      = 2   // 1870
+};
+
+enum CourtOfStarsCreatures
+{
+    BOSS_PATROL_CAPTAIN_GERDO       = 104215,
+    NPC_ARCANE_BEACON               = 104245,
+    NPC_VIGILANT_DUSKWATCH          = 104918,
+    NPC_FLASK_OF_THE_SOLEMN_NIGHT   = 105117,
+
+    BOSS_TALIXAE_FLAMEWREATH        = 104217,
+    // Fel Covenant guards, each one feeds a bond to Talixae
+    NPC_JAZSHARIU                   = 104273,
+    NPC_BAALGAR_THE_WATCHFUL        = 104274,
+    NPC_IMACUTYA                    = 104275,
+
+    BOSS_ADVISOR_MELANDRUS          = 104218,
+    NPC_IMAGE_OF_ADVISOR_MELANDRUS  = 105754
+};
+
+enum CourtOfStarsGameObjects
+{
+    GO_COS_WAYPOINT_DOOR    = 251849,
+    GO_COS_MANOR_DOOR       = 251847,
+    GO_COS_SKYWARD_TERRACE  = 251848
+};
+
+enum CourtOfStarsActions
+{
+    ACTION_COS_BONDS_BROKEN     = 1,
+    ACTION_COS_IMAGE_GALE,
+    ACTION_COS_IMAGE_MAELSTROM
+};
+
+enum GerdoSpells
+{
+    SPELL_GERDO_RESONANT_SLASH          = 207261,
+    SPELL_GERDO_ARCANE_LOCKDOWN         = 207278,
+    SPELL_GERDO_SIGNAL_BEACON           = 207806,
+    SPELL_GERDO_FLASK_OF_SOLEMN_NIGHT   = 207815,
+    SPELL_ARCANE_BEACON_DISABLED        = 210257,
+    SPELL_VIGILANT_DUSKWATCH_HINDER     = 215204
+};
+
+enum TalixaeSpells
+{
+    SPELL_TALIXAE_BURNING_INTENSITY     = 207906,
+    SPELL_TALIXAE_WITHERING_SOUL        = 208165,
+    SPELL_TALIXAE_INFERNAL_ERUPTION     = 207881,
+    SPELL_TALIXAE_BOND_OF_FLAME         = 209723,
+
+    SPELL_JAZSHARIU_BOND_OF_STRENGTH    = 207819,
+    SPELL_JAZSHARIU_SHOCKWAVE           = 207979,
+    SPELL_BAALGAR_BOND_OF_CRUELTY       = 209717,
+    SPELL_BAALGAR_DISINTEGRATION_BEAM   = 207980,
+    SPELL_IMACUTYA_BOND_OF_CUNNING      = 209712,
+    SPELL_IMACUTYA_WHIRLING_BLADES      = 209378
+};
+
+enum MelandrusSpells
+{
+    SPELL_MELANDRUS_PIERCING_GALE       = 209628,
+    SPELL_MELANDRUS_SLICING_MAELSTROM   = 209676,
+    SPELL_MELANDRUS_BLADE_SURGE         = 209602,
+    SPELL_MELANDRUS_IMAGE_WIND_IMAGE    = 209614,
+    SPELL_MELANDRUS_IMAGE_MAELSTROM     = 209741
+};

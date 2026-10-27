@@ -95,7 +95,7 @@ time_t InstanceSaved::getResetTimeForDB()
 {
     // only save the reset time for normal instances
     WDB::Structures::MapEntry const* entry = sMapStore.lookupEntry(getMapId());
-    if (!entry || entry->mapType == WDB::Structures::MAP_RAID || getDifficulty() == InstanceDifficulty::Difficulties::DUNGEON_HEROIC)
+    if (!entry || entry->mapType == WDB::Structures::MAP_RAID || InstanceDifficulty::isHeroicDungeonDifficulty(getDifficulty()))
         return 0;
     else
         return getResetTime();
@@ -487,7 +487,11 @@ InstanceSaved* InstanceMgr::addInstanceSave(uint32_t mapId, uint32_t instanceId,
         return nullptr;
     }
 
-    if (difficulty >= (entry->isRaid() ? InstanceDifficulty::Difficulties::MAX_RAID_DIFFICULTY : InstanceDifficulty::Difficulties::MAX_DUNGEON_DIFFICULTY))
+    bool knownDifficulty = difficulty < (entry->isRaid() ? InstanceDifficulty::Difficulties::MAX_RAID_DIFFICULTY : InstanceDifficulty::Difficulties::MAX_DUNGEON_DIFFICULTY);
+    // 5.x: the map has to know the difficulty id
+    if (InstanceDifficulty::usesDifficultyIds())
+        knownDifficulty = getMapDifficultyData(mapId, difficulty) != nullptr;
+    if (!knownDifficulty)
     {
         sLogger.failure("InstanceMgr::addInstanceSave: mapid = {}, instanceid = {}, wrong dificalty {}!", mapId, instanceId, difficulty);
         return nullptr;
@@ -497,7 +501,7 @@ InstanceSaved* InstanceMgr::addInstanceSave(uint32_t mapId, uint32_t instanceId,
     {
         // initialize reset time
         // for normal instances if no creatures are killed the instance will reset in two hours
-        if (entry->mapType == WDB::Structures::MAP_RAID || difficulty > InstanceDifficulty::Difficulties::DUNGEON_NORMAL)
+        if (entry->mapType == WDB::Structures::MAP_RAID || InstanceDifficulty::isHeroicDungeonDifficulty(difficulty))
         {
             resetTime = getResetTimeFor(static_cast<uint16_t>(mapId), difficulty);
         }

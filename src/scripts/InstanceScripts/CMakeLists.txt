@@ -35,7 +35,7 @@ file(GLOB SRC_CLASSIC_WAILING_SCRIPTS_FILES Classic/WailingCaverns/*.cpp Classic
 file(GLOB SRC_CLASSIC_ZUL_FARAK_SCRIPTS_FILES Classic/ZulFarak/*.cpp Classic/ZulFarak/*.h)
 file(GLOB SRC_CLASSIC_ZUL_GURUB_SCRIPTS_FILES Classic/ZulGurub/*.cpp Classic/ZulGurub/*.h)
 
-if ("${ASCEMU_NUMBER}" GREATER_EQUAL 1) # Tbc
+# Tbc
 file(GLOB SRC_TBC_SCRIPTS_FILES Tbc/*.cpp Tbc/*.h)
 file(GLOB SRC_TBC_AUCHENAICRYPTS_SCRIPTS_FILES Tbc/Auchindoun/AuchenauCrypts/*.cpp Tbc/Auchindoun/AuchenauCrypts/*.h)
 file(GLOB SRC_TBC_MANATOMBS_SCRIPTS_FILES Tbc/Auchindoun/ManaTombs/*.cpp Tbc/Auchindoun/ManaTombs/*.h)
@@ -62,9 +62,8 @@ file(GLOB SRC_TBC_BOTANICA_SCRIPTS_FILES Tbc/TempestKeep/Botanica/*.cpp Tbc/Temp
 file(GLOB SRC_TBC_MECHANAR_SCRIPTS_FILES Tbc/TempestKeep/Mechanar/*.cpp Tbc/TempestKeep/Mechanar/*.h)
 file(GLOB SRC_TBC_THEEYE_SCRIPTS_FILES Tbc/TempestKeep/TheEye/*.cpp Tbc/TempestKeep/TheEye/*.h)
 file(GLOB SRC_TBC_ZULAMAN_SCRIPTS_FILES Tbc/ZulAman/*.cpp Tbc/ZulAman/*.h)
-endif ()
 
-if ("${ASCEMU_NUMBER}" GREATER_EQUAL 2) # Wotlk
+# Wotlk
 file(GLOB SRC_WOTLK_SCRIPTS_FILES Wotlk/*.cpp Wotlk/*.h Wotlk/*.hpp)
 file(GLOB SRC_WOTLK_AHNKAHETOLDK_SCRIPTS_FILES Wotlk/AzjolNerub/Ahnkahet/*.cpp Wotlk/AzjolNerub/Ahnkahet/*.h)
 file(GLOB SRC_WOTLK_AZJOLNERUB_SCRIPTS_FILES Wotlk/AzjolNerub/AzjolNerub/*.cpp Wotlk/AzjolNerub/AzjolNerub/*.h)
@@ -90,15 +89,33 @@ file(GLOB SRC_WOTLK_UTGARDEKEEP_SCRIPTS_FILES Wotlk/UtgardeKeep/UtgardeKeep/*.cp
 file(GLOB SRC_WOTLK_UTGARDEPINACLE_SCRIPTS_FILES Wotlk/UtgardeKeep/UtgradePinnacle/*.cpp Wotlk/UtgardeKeep/UtgradePinnacle/*.h)
 file(GLOB SRC_WOTLK_VAULTOFARCHAVON_SCRIPTS_FILES Wotlk/VaultOfArchavon/*.cpp Wotlk/VaultOfArchavon/*.h)
 file(GLOB SRC_WOTLK_VIOLETHOLD_SCRIPTS_FILES Wotlk/VioletHold/*.cpp Wotlk/VioletHold/*.h Wotlk/VioletHold/*.hpp)
-endif ()
 
-if ("${ASCEMU_NUMBER}" GREATER_EQUAL 3) # Cata
+# Cata
 file(GLOB SRC_CATA_SCRIPTS_FILES Cata/*.cpp Cata/*.hpp)
-endif ()
 
-if ("${ASCEMU_NUMBER}" GREATER_EQUAL 4) # Mop
+# Mop
 file(GLOB SRC_MOP_SCRIPTS_FILES Mop/*.cpp Mop/*.hpp)
-endif ()
+
+# WoD
+file(GLOB SRC_WOD_SCRIPTS_FILES WoD/*.cpp WoD/*.hpp)
+
+# Legion
+file(GLOB SRC_LEGION_SCRIPTS_FILES Legion/*.cpp Legion/*.hpp)
+
+# BfA
+file(GLOB SRC_BFA_SCRIPTS_FILES BfA/*.cpp BfA/*.hpp)
+
+# Shadowlands
+file(GLOB SRC_SHADOWLANDS_SCRIPTS_FILES Shadowlands/*.cpp Shadowlands/*.hpp)
+
+# Dragonflight
+file(GLOB SRC_DRAGONFLIGHT_SCRIPTS_FILES Dragonflight/*.cpp Dragonflight/*.hpp)
+
+# TheWarWithin
+file(GLOB SRC_THEWARWITHIN_SCRIPTS_FILES TheWarWithin/*.cpp TheWarWithin/*.hpp)
+
+# Midnight
+file(GLOB SRC_MIDNIGHT_SCRIPTS_FILES Midnight/*.cpp Midnight/*.hpp)
 
 # required for linker.
 set(SRC_INSTANCESCRIPTS
@@ -190,6 +207,20 @@ set(INSTANCESCRIPTS_SRCS
     ${SRC_CATA_SCRIPTS_FILES}
 
     ${SRC_MOP_SCRIPTS_FILES}
+
+    ${SRC_WOD_SCRIPTS_FILES}
+
+    ${SRC_LEGION_SCRIPTS_FILES}
+
+    ${SRC_BFA_SCRIPTS_FILES}
+
+    ${SRC_SHADOWLANDS_SCRIPTS_FILES}
+
+    ${SRC_DRAGONFLIGHT_SCRIPTS_FILES}
+
+    ${SRC_THEWARWITHIN_SCRIPTS_FILES}
+
+    ${SRC_MIDNIGHT_SCRIPTS_FILES}
 )
 
 # source group.

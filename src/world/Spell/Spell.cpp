@@ -2222,7 +2222,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         // Check if spell can be casted in heroic dungeons or in raids
         if (getSpellInfo()->getAttributesExF() & ATTRIBUTESEXF_NOT_IN_RAIDS_OR_HEROIC_DUNGEONS)
         {
-            if (p_caster->IsInWorld() && (p_caster->getWorldMap()->getBaseMap()->isRaid() || p_caster->getWorldMap()->getDifficulty() == InstanceDifficulty::DUNGEON_HEROIC))
+            if (p_caster->IsInWorld() && (p_caster->getWorldMap()->getBaseMap()->isRaid() || InstanceDifficulty::isHeroicDungeonDifficulty(p_caster->getWorldMap()->getSpawnMode())))
             {
 #if VERSION_STRING < WotLK
                 return SPELL_FAILED_NOT_HERE;
@@ -2804,7 +2804,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                         return SPELL_FAILED_TARGET_NOT_IN_INSTANCE;
 
                     const auto mapInfo = p_caster->getWorldMap()->getBaseMap()->getMapInfo();
-                    if (p_caster->getWorldMap()->getDifficulty() == InstanceDifficulty::DUNGEON_HEROIC)
+                    if (InstanceDifficulty::isHeroicDungeonDifficulty(p_caster->getWorldMap()->getSpawnMode()))
                     {
                         if (mapInfo->minlevel_heroic > targetPlayer->getLevel())
                             return SPELL_FAILED_LOWLEVEL;

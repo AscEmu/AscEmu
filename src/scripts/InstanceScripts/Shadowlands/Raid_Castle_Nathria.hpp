@@ -1,0 +1,356 @@
+/*
+Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#pragma once
+
+#include <cstdint>
+
+uint32_t const CastleNathriaEncounterCount = 10;
+
+enum CastleNathriaData
+{
+    DATA_HUNGERING_DESTROYER    = 0,    // 2383
+    DATA_SHRIEKWING             = 1,    // 2398
+    DATA_SLUDGEFIST             = 2,    // 2399
+    DATA_SUN_KINGS_SALVATION    = 3,    // 2402
+    DATA_ARTIFICER_XYMOX        = 4,    // 2405
+    DATA_LADY_INERVA_DARKVEIN   = 5,    // 2406
+    DATA_SIRE_DENATHRIUS        = 6,    // 2407
+    // Castellan Niklaus, Baroness Frieda and Lord Stavros
+    DATA_COUNCIL_OF_BLOOD       = 7,    // 2412
+    // General Kaal and General Grashaal
+    DATA_STONE_LEGION_GENERALS  = 8,    // 2417
+    // Huntsman Altimor with Margore, Bargast and Hecutis
+    DATA_HUNTSMAN_ALTIMOR       = 9     // 2418
+};
+
+enum CastleNathriaCreatures
+{
+    // Hungering Destroyer
+    BOSS_HUNGERING_DESTROYER            = 164261,
+
+    // Shriekwing
+    BOSS_SHRIEKWING                     = 164406,
+    BOSS_SHRIEKWING_ALT                 = 172145,
+
+    // Sludgefist
+    BOSS_SLUDGEFIST                     = 164407,
+    BOSS_SLUDGEFIST_ALT                 = 174733,
+
+    // Sun King's Salvation
+    NPC_KAELTHAS_SUNSTRIDER             = 165759,
+    NPC_SHADE_OF_KAELTHAS               = 165805,
+    NPC_REBORN_PHOENIX                  = 168962,
+    NPC_SOUL_INFUSER                    = 165762,
+    NPC_VILE_OCCULTIST                  = 165763,
+    NPC_ROCKBOUND_VANQUISHER            = 165764,
+    NPC_BLEAKWING_ASSASSIN              = 167566,
+    NPC_PESTERING_FIEND                 = 168700,
+    NPC_HIGH_TORTURER_DARITHOS          = 168973,
+    NPC_ESSENCE_FONT                    = 165778,
+
+    // Artificer Xy'mox
+    BOSS_ARTIFICER_XYMOX                = 166644,
+    NPC_FLEETING_SPIRIT                 = 168317,
+    NPC_SEED_OF_EXTINCTION              = 169219,
+
+    // Lady Inerva Darkvein
+    BOSS_LADY_INERVA_DARKVEIN           = 165521,
+    BOSS_LADY_INERVA_DARKVEIN_ALT       = 167517,
+    NPC_SINS_OF_THE_PAST                = 166766,
+    NPC_CONJURED_MANIFESTATION          = 170197,
+    NPC_CONJURED_MANIFESTATION_ALT      = 173484,
+    NPC_HARNESSED_SPECTER               = 170199,
+
+    // Sire Denathrius
+    BOSS_SIRE_DENATHRIUS                = 167406,
+    NPC_REMORNIA                        = 168156,
+    NPC_ECHO_OF_SIN                     = 167999,
+    NPC_CRIMSON_CABALIST                = 169196,
+    NPC_CRIMSON_CABALIST_ALT            = 169470,
+
+    // The Council of Blood
+    BOSS_CASTELLAN_NIKLAUS              = 166971,
+    BOSS_BARONESS_FRIEDA                = 166969,
+    BOSS_LORD_STAVROS                   = 166970,
+    NPC_DUTIFUL_ATTENDANT               = 175992,
+    NPC_DUTIFUL_ATTENDANT_ALT           = 167153,
+    NPC_BEGRUDGING_WAITER               = 169925,
+    NPC_VETERAN_STONEGUARD              = 169924,
+    NPC_WALTZING_VENTHYR                = 168406,
+
+    // Stone Legion Generals
+    BOSS_GENERAL_KAAL                   = 168112,
+    BOSS_GENERAL_GRASHAAL               = 168113,
+    NPC_STONE_LEGION_GOLIATH            = 172858,
+    NPC_STONE_LEGION_GOLIATH_ALT        = 173178,
+    NPC_STONE_LEGION_COMMANDO           = 169601,
+    NPC_STONE_LEGION_COMMANDO_ALT       = 173276,
+    NPC_STONE_LEGION_SKIRMISHER         = 174335,
+    NPC_STONE_LEGION_SKIRMISHER_ALT     = 173280,
+
+    // Huntsman Altimor
+    BOSS_HUNTSMAN_ALTIMOR               = 165066,
+    BOSS_MARGORE                        = 165067,
+    BOSS_BARGAST                        = 169457,
+    BOSS_HECUTIS                        = 169458,
+    NPC_SHADE_OF_BARGAST                = 171557
+};
+
+enum CastleNathriaActions
+{
+    ACTION_COUNCIL_ALLY_FELL = 1,
+    ACTION_COUNCIL_DANSE_BEGIN,
+    ACTION_GENERALS_TURN_TO_STONE,
+    ACTION_GENERALS_CALL_REINFORCEMENTS,
+    ACTION_GENERALS_NEXT_STAGE,
+    ACTION_GENERALS_LAST_STANDING,
+    ACTION_ALTIMOR_BIND_GARGON,
+    ACTION_ALTIMOR_GARGON_FELL
+};
+
+enum CastleNathriaSharedSpells
+{
+    SPELL_CASTLE_NATHRIA_BERSERK            = 26662
+};
+
+enum HungeringDestroyerSpells
+{
+    SPELL_DESTROYER_GLUTTONOUS_MIASMA       = 329298,
+    SPELL_DESTROYER_CONSUME                 = 334522,
+    SPELL_DESTROYER_EXPUNGE                 = 329742,
+    SPELL_DESTROYER_VOLATILE_EJECTION       = 334266,
+    SPELL_DESTROYER_DESOLATE                = 329455,
+    SPELL_DESTROYER_OVERWHELM               = 329774,
+    SPELL_DESTROYER_HUNGERING_STRIKES       = 332294
+};
+
+enum ShriekwingSpells
+{
+    // Stage One: Thirst for Blood
+    SPELL_SHRIEKWING_EARSPLITTING_SHRIEK    = 330711,
+    SPELL_SHRIEKWING_ECHOLOCATION           = 342074,
+    SPELL_SHRIEKWING_ECHOING_SCREECH        = 342863,
+    SPELL_SHRIEKWING_WAVE_OF_BLOOD          = 345397,
+    SPELL_SHRIEKWING_BLIND_SWIPE            = 343005,
+    SPELL_SHRIEKWING_EXSANGUINATING_BITE    = 328857,
+
+    // Stage Two: Terror of Castle Nathria
+    SPELL_SHRIEKWING_SHROUDED_SHRIEK        = 345936,
+    SPELL_SHRIEKWING_BLOOD_SHROUD           = 328921,
+    SPELL_SHRIEKWING_MURDER_PREY            = 345425,
+    SPELL_SHRIEKWING_ECHOING_SONAR          = 329362
+};
+
+enum SludgefistSpells
+{
+    SPELL_SLUDGEFIST_HATEFUL_GAZE           = 331209,
+    SPELL_SLUDGEFIST_HEEDLESS_CHARGE        = 331212,
+    SPELL_SLUDGEFIST_DESTRUCTIVE_IMPACT     = 332969,
+    SPELL_SLUDGEFIST_COLLAPSING_FOUNDATION  = 332197,
+    SPELL_SLUDGEFIST_CHAIN_LINK             = 335300,
+    SPELL_SLUDGEFIST_DESTRUCTIVE_STOMP      = 332318,
+    SPELL_SLUDGEFIST_FALLING_RUBBLE         = 332572,
+    SPELL_SLUDGEFIST_COLOSSAL_ROAR          = 332687,
+    SPELL_SLUDGEFIST_CHAIN_SLAM             = 335354,
+    SPELL_SLUDGEFIST_GIANT_FISTS            = 335297,
+    SPELL_SLUDGEFIST_GRUESOME_RAGE          = 341250
+};
+
+enum SunKingsSalvationSpells
+{
+    SPELL_KAELTHAS_CLOAK_OF_FLAMES          = 338600,
+
+    // Shade of Kael'thas
+    SPELL_KAEL_SHADE_REFLECTION_OF_GUILT    = 323402,
+    SPELL_KAEL_SHADE_CLOAK_OF_FLAMES        = 343026,
+    SPELL_KAEL_SHADE_FIERY_STRIKE           = 326455,
+    SPELL_KAEL_SHADE_EMBER_BLAST            = 325877,
+    SPELL_KAEL_SHADE_BLAZING_SURGE          = 329509,
+    SPELL_KAEL_SHADE_BLAZING_SURGE_SPREAD   = 329518,
+    SPELL_PHOENIX_SMOLDERING_PLUMAGE        = 329470,
+    SPELL_PHOENIX_EMBERS                    = 328731,
+
+    // Ministers of Vice
+    SPELL_VANQUISHER_VANQUISHING_STRIKE     = 325440,
+    SPELL_VANQUISHER_CONCUSSIVE_SMASH       = 325506,
+    SPELL_ASSASSIN_CRIMSON_FLURRY           = 341473,
+    SPELL_OCCULTIST_VULGAR_BRAND            = 333002,
+    SPELL_OCCULTIST_SCORNFUL_BLAST          = 325590,
+    SPELL_OCCULTIST_DOOR_OF_SHADOWS         = 328248,
+    SPELL_INFUSER_SOUL_INFUSION             = 325665,
+    SPELL_FIEND_SHATTERING_RUBY             = 328254,
+    SPELL_DARITHOS_GREATER_CASTIGATION      = 328885,
+    SPELL_FONT_ESSENCE_OVERFLOW             = 329561
+};
+
+enum ArtificerXymoxSpells
+{
+    SPELL_XYMOX_DIMENSIONAL_TEAR            = 328437,
+    SPELL_XYMOX_GLYPH_OF_DESTRUCTION        = 325361,
+    SPELL_XYMOX_STASIS_TRAP                 = 326271,
+    SPELL_XYMOX_RIFT_BLAST                  = 329458,
+    SPELL_XYMOX_HYPERLIGHT_SPARK            = 325399,
+
+    // relics of the private collection
+    SPELL_XYMOX_CRYSTAL_OF_PHANTASMS        = 327887,
+    SPELL_XYMOX_SOUL_SINGE                  = 340842,
+    SPELL_XYMOX_ROOT_OF_EXTINCTION          = 329770,
+    SPELL_XYMOX_EDGE_OF_ANNIHILATION        = 328880,
+    SPELL_XYMOX_AURA_OF_DREAD               = 340870,
+
+    SPELL_SPIRIT_POSSESSION                 = 327414,
+    SPELL_SEED_WITHERING_TOUCH              = 340860
+};
+
+enum LadyInervaDarkveinSpells
+{
+    SPELL_INERVA_FOCUS_ANIMA                = 331844,
+    SPELL_INERVA_CONTAINER_BREACH           = 325225,
+
+    // Container of Desire
+    SPELL_INERVA_EXPOSE_DESIRES             = 341621,
+    SPELL_INERVA_EXPOSE_COGNITION           = 341623,
+    SPELL_INERVA_EXPOSE_HEART               = 341625,
+
+    // Container of Bottled Anima
+    SPELL_INERVA_BOTTLED_ANIMA              = 342280,
+    SPELL_INERVA_LINGERING_ANIMA            = 342281,
+    SPELL_INERVA_REPLICATING_ANIMA          = 342282,
+
+    // Container of Sin
+    SPELL_INERVA_LESSER_SINS_AND_SUFFERING  = 342287,
+    SPELL_INERVA_SINS_AND_SUFFERING         = 342288,
+    SPELL_INERVA_GREATER_SINS_AND_SUFFERING = 342290,
+
+    // Container of Concentrated Anima
+    SPELL_INERVA_LIGHTLY_CONCENTRATED_ANIMA = 342320,
+    SPELL_INERVA_CONCENTRATED_ANIMA         = 342321,
+    SPELL_INERVA_HIGHLY_CONCENTRATED_ANIMA  = 342322,
+
+    SPELL_SINS_SHARED_SUFFERING             = 324983,
+    SPELL_MANIFESTATION_CONDEMN             = 331550,
+    SPELL_SPECTER_CONDEMN                   = 334017,
+    SPELL_SPECTER_UNCONSCIONABLE_GUILT      = 331573
+};
+
+enum SireDenathriusSpells
+{
+    // Stage One: Sinners Be Cleansed
+    SPELL_DENATHRIUS_BURDEN_OF_SIN          = 326699,
+    SPELL_DENATHRIUS_CLEANSING_PAIN         = 326707,
+    SPELL_DENATHRIUS_BLOOD_PRICE            = 326851,
+    SPELL_DENATHRIUS_FEEDING_TIME           = 327089,
+    SPELL_DENATHRIUS_NIGHT_HUNTER           = 327796,
+    SPELL_DENATHRIUS_COMMAND_RAVAGE         = 327227,
+    SPELL_DENATHRIUS_RAVAGE                 = 327123,
+    SPELL_DENATHRIUS_COMMANDING_PRESENCE    = 328839,
+
+    // Intermission: March of the Penitent
+    SPELL_DENATHRIUS_MARCH_OF_THE_PENITENT  = 328276,
+
+    // Stage Two: The Crimson Chorus
+    SPELL_DENATHRIUS_WRACKING_PAIN          = 329181,
+    SPELL_DENATHRIUS_HAND_OF_DESTRUCTION    = 330627,
+    SPELL_DENATHRIUS_COMMAND_MASSACRE       = 330042,
+
+    // Stage Three: Indignation
+    SPELL_DENATHRIUS_INDIGNATION            = 332734,
+    SPELL_DENATHRIUS_WIELD_REMORNIA         = 330871,
+    SPELL_DENATHRIUS_SHATTERING_PAIN        = 332619,
+    SPELL_DENATHRIUS_FATAL_FINESSE          = 332797,
+    SPELL_DENATHRIUS_BLOOD_PRICE_FINAL      = 339196,
+    SPELL_DENATHRIUS_SINISTER_REFLECTION    = 333979,
+    SPELL_REFLECTION_RAVAGE                 = 332937,
+    SPELL_REFLECTION_MASSACRE               = 333111,
+
+    SPELL_ECHO_PAINFUL_MEMORIES             = 326824,
+    SPELL_ECHO_EPHEMERAL                    = 326823,
+    SPELL_REMORNIA_BLOODBOUND               = 330580,
+    SPELL_REMORNIA_CARNAGE                  = 329906,
+    SPELL_REMORNIA_IMPALE                   = 329974,
+    SPELL_CABALIST_CRIMSON_CHORUS           = 329785,
+    SPELL_CABALIST_DUSK_ELEGY               = 335875
+};
+
+enum CouncilOfBloodSpells
+{
+    SPELL_COUNCIL_OPPRESSIVE_ATMOSPHERE     = 334909,
+    SPELL_COUNCIL_DANSE_MACABRE             = 328497,
+
+    // Castellan Niklaus
+    SPELL_NIKLAUS_DUELISTS_RIPOSTE          = 346690,
+    SPELL_NIKLAUS_SUMMON_DUTIFUL_ATTENDANT  = 346692,
+    SPELL_NIKLAUS_DREDGER_SERVANTS          = 330978,
+    SPELL_NIKLAUS_CASTELLANS_FURY           = 346934,
+    SPELL_NIKLAUS_CASTELLANS_CADRE          = 330965,
+    SPELL_ATTENDANT_UNYIELDING_SHIELD       = 346694,
+
+    // Baroness Frieda
+    SPELL_FRIEDA_DRAIN_ESSENCE              = 346651,
+    SPELL_FRIEDA_DREADBOLT_VOLLEY           = 337110,
+    SPELL_FRIEDA_PRIDEFUL_ERUPTION          = 346660,
+    SPELL_FRIEDA_TWISTED_PAIN               = 346939,
+    SPELL_FRIEDA_SOUL_SPIKES                = 346681,
+
+    // Lord Stavros
+    SPELL_STAVROS_EVASIVE_LUNGE             = 327503,
+    SPELL_STAVROS_DARK_RECITAL              = 331634,
+    SPELL_STAVROS_WALTZ_OF_BLOOD            = 327619,
+    SPELL_STAVROS_TWO_LEFT_FEET             = 346891,
+    SPELL_STAVROS_DANCING_FOOLS             = 330964
+};
+
+enum StoneLegionGeneralsSpells
+{
+    // General Kaal
+    SPELL_KAAL_HARDENED_STONE_FORM          = 329636,
+    SPELL_KAAL_WICKED_BLADE                 = 333387,
+    SPELL_KAAL_HEART_REND                   = 334765,
+    SPELL_KAAL_SERRATED_SWIPE               = 334929,
+    SPELL_KAAL_CALL_SHADOW_FORCES           = 342256,
+    SPELL_KAAL_RICOCHETING_SHURIKEN         = 343086,
+
+    // General Grashaal
+    SPELL_GRASHAAL_HARDENED_STONE_FORM      = 329808,
+    SPELL_GRASHAAL_STONE_BREAKERS_COMBO     = 339645,
+    SPELL_GRASHAAL_CRYSTALIZE               = 339690,
+    SPELL_GRASHAAL_STONE_SPIKE              = 343063,
+    SPELL_GRASHAAL_STONE_FIST               = 342425,
+    SPELL_GRASHAAL_REVERBERATING_LEAP       = 334094,
+    SPELL_GRASHAAL_SEISMIC_UPHEAVAL         = 334500,
+
+    SPELL_GENERALS_SOLDIERS_OATH            = 336212,
+
+    // Stone Legion forces
+    SPELL_SKIRMISHER_WICKED_SLAUGHTER       = 342253,
+    SPELL_GOLIATH_ANIMA_ENGORGED            = 342694,
+    SPELL_GOLIATH_RAVENOUS_FEAST            = 342733,
+    SPELL_COMMANDO_ANIMA_LADEN              = 342647,
+    SPELL_COMMANDO_CLUSTER_BOMBARDMENT      = 336231
+};
+
+enum HuntsmanAltimorSpells
+{
+    SPELL_ALTIMOR_SINSEEKER                 = 335114,
+    SPELL_ALTIMOR_SPREADSHOT                = 334404,
+    SPELL_ALTIMOR_HUNTSMANS_BOND            = 334504,
+    SPELL_ALTIMOR_BROKEN_BOND               = 345902,
+
+    // Margore
+    SPELL_MARGORE_VICIOUS_LUNGE             = 334939,
+    SPELL_MARGORE_JAGGED_CLAWS              = 334971,
+
+    // Bargast
+    SPELL_BARGAST_SHADES_OF_BARGAST         = 334757,
+    SPELL_BARGAST_RIP_SOUL                  = 334797,
+    SPELL_BARGAST_SHADE_UNYIELDING          = 335303,
+    SPELL_BARGAST_SHADE_DEATHLY_ROAR        = 334708,
+
+    // Hecutis
+    SPELL_HECUTIS_CRUSHING_STONE            = 334860,
+    SPELL_HECUTIS_PETRIFYING_HOWL           = 334852,
+    SPELL_HECUTIS_CHARGE                    = 343259
+};

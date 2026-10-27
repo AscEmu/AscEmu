@@ -38,6 +38,9 @@ InstanceScript* GameObjectAIScript::getInstanceScript() const
 bool GameObjectAIScript::isHeroic() const
 {
     WorldMap* mapMgr = _gameobject->getWorldMap();
+    if (mapMgr != nullptr && InstanceDifficulty::usesDifficultyIds())
+        return InstanceDifficulty::isHeroicSpawnMode(mapMgr->getSpawnMode());
+
     if (mapMgr == nullptr || mapMgr->getDifficulty() != InstanceDifficulty::DUNGEON_HEROIC)
         return false;
 
@@ -48,7 +51,7 @@ unsigned GameObjectAIScript::getRaidModeValue(const unsigned& normal10, const un
 {
     if (_gameobject->getWorldMap()->getInstance())
     {
-        switch (_gameobject->getWorldMap()->getDifficulty())
+        switch (InstanceDifficulty::legacyRaidMode(_gameobject->getWorldMap()->getSpawnMode()))
         {
             case InstanceDifficulty::RAID_10MAN_NORMAL:
                 return normal10;

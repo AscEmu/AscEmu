@@ -11759,7 +11759,7 @@ void Player::modFactionStanding(uint32_t faction, int32_t value)
         return;
 
     if ((getWorldMap()->getBaseMap()->getMapInfo()->minlevel == 80 ||
-        (getWorldMap()->getDifficulty() == InstanceDifficulty::DUNGEON_HEROIC && getWorldMap()->getBaseMap()->getMapInfo()->minlevel_heroic == 80)) &&
+        (InstanceDifficulty::isHeroicDungeonDifficulty(getWorldMap()->getSpawnMode()) && getWorldMap()->getBaseMap()->getMapInfo()->minlevel_heroic == 80)) &&
         m_championingFactionId != 0)
         faction = m_championingFactionId;
 
@@ -11949,7 +11949,7 @@ void Player::onKillUnitReputation(Unit* unit, bool innerLoop)
             if (!mod->faction[team])
                 continue;
 
-            if (!IS_INSTANCE(GetMapId()) || (IS_INSTANCE(GetMapId()) && this->m_dungeonDifficulty != InstanceDifficulty::DUNGEON_HEROIC))
+            if (!IS_INSTANCE(GetMapId()) || (IS_INSTANCE(GetMapId()) && !InstanceDifficulty::isHeroicDungeonDifficulty(m_dungeonDifficulty)))
                 if (mod->replimit)
                     if (getFactionStanding(mod->faction[team]) >= static_cast<int32_t>(mod->replimit))
                         continue;
@@ -13013,7 +13013,7 @@ void Player::_spawnPet(PetCache const* petCache)
 // Misc
 void Player::loadBoundInstances()
 {
-    for (uint8_t i = 0; i < InstanceDifficulty::MAX_DIFFICULTY; ++i)
+    for (uint8_t i = 0; i < InstanceDifficulty::MAX_BIND_DIFFICULTY; ++i)
         m_boundInstances[i].clear();
 
     auto group = getGroup();
@@ -13044,7 +13044,7 @@ void Player::loadBoundInstances()
                     getName(), getGuid(), mapId, mapname);
                 deleteInstance = true;
             }
-            else if (difficulty >= InstanceDifficulty::MAX_DIFFICULTY)
+            else if (!InstanceDifficulty::isBindDifficulty(difficulty))
             {
                 sLogger.failure("entities.player", "Player::loadBoundInstances: player '{}' ({}) has bind to not existed difficulty {} instance for map {} ({})",
                     getName(), getGuid(), difficulty, mapId, mapname);
@@ -13207,7 +13207,7 @@ void Player::sendRaidInfo()
 {
     std::vector<SmsgRaidInstanceInfo::PermanentBind> permanentBinds;
 
-    for (uint8_t i = 0; i < InstanceDifficulty::MAX_DIFFICULTY; ++i)
+    for (uint8_t i = 0; i < InstanceDifficulty::MAX_BIND_DIFFICULTY; ++i)
     {
         for (BoundInstancesMap::iterator itr = m_boundInstances[i].begin(); itr != m_boundInstances[i].end(); ++itr)
         {
@@ -13225,7 +13225,7 @@ void Player::sendSavedInstances()
 {
     bool hasBeenSaved = false;
 
-    for (uint8_t i = 0; i < InstanceDifficulty::MAX_DIFFICULTY; ++i)
+    for (uint8_t i = 0; i < InstanceDifficulty::MAX_BIND_DIFFICULTY; ++i)
     {
         for (BoundInstancesMap::iterator itr = m_boundInstances[i].begin(); itr != m_boundInstances[i].end(); ++itr)
         {
@@ -13244,7 +13244,7 @@ void Player::sendSavedInstances()
     if (!hasBeenSaved)
         return;
 
-    for (uint8_t i = 0; i < InstanceDifficulty::MAX_DIFFICULTY; ++i)
+    for (uint8_t i = 0; i < InstanceDifficulty::MAX_BIND_DIFFICULTY; ++i)
     {
         for (BoundInstancesMap::iterator itr = m_boundInstances[i].begin(); itr != m_boundInstances[i].end(); ++itr)
         {
@@ -13296,7 +13296,7 @@ void Player::resetInstances(uint8_t method, bool isRaid)
         if (method == INSTANCE_RESET_ALL)
         {
             // the "reset all instances" method can only reset normal maps
-            if (entry->mapType == WDB::Structures::MAP_RAID || diff == InstanceDifficulty::Difficulties::DUNGEON_HEROIC)
+            if (entry->mapType == WDB::Structures::MAP_RAID || InstanceDifficulty::isHeroicDungeonDifficulty(diff))
             {
                 ++itr;
                 continue;
@@ -15650,6 +15650,11 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
     m_dungeonDifficulty = field[93].asUint8();
     m_raidDifficulty = field[94].asUint8();
+    // a save of another expansion can carry values this one does not know
+    if (!InstanceDifficulty::isSelectableDungeonDifficulty(m_dungeonDifficulty))
+        m_dungeonDifficulty = InstanceDifficulty::defaultDungeonDifficulty();
+    if (!InstanceDifficulty::isSelectableRaidDifficulty(m_raidDifficulty))
+        m_raidDifficulty = InstanceDifficulty::defaultRaidDifficulty();
 
     if (auto talentSpecialization = field[95].asCString())
     {

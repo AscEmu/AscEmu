@@ -92,8 +92,8 @@ Group::Group(bool Assign)
     m_disbandOnNoMembers = true;
     memset(m_targetIcons, 0, sizeof(uint64_t) * 8);
     m_isqueued = false;
-    m_difficulty = 0;
-    m_raiddifficulty = 0;
+    m_difficulty = InstanceDifficulty::defaultDungeonDifficulty();
+    m_raiddifficulty = InstanceDifficulty::defaultRaidDifficulty();
     m_assistantLeader = m_mainAssist = m_mainTank = NULL;
     updatecounter = 0;
 }
@@ -769,6 +769,11 @@ void Group::LoadFromDB(Field* fields)
     m_LootThreshold = fields[4].asUint8();
     m_difficulty = fields[5].asUint8();
     m_raiddifficulty = fields[6].asUint8();
+    // a save of another expansion can carry values this one does not know
+    if (!InstanceDifficulty::isSelectableDungeonDifficulty(m_difficulty))
+        m_difficulty = InstanceDifficulty::defaultDungeonDifficulty();
+    if (!InstanceDifficulty::isSelectableRaidDifficulty(m_raiddifficulty))
+        m_raiddifficulty = InstanceDifficulty::defaultRaidDifficulty();
 
     LOAD_ASSISTANT(7, m_assistantLeader);
     LOAD_ASSISTANT(8, m_mainTank);
@@ -1128,7 +1133,7 @@ void Group::resetInstances(uint8_t method, bool isRaid, Player* SendMsgTo)
         if (method == INSTANCE_RESET_ALL)
         {
             // the "reset all instances" method can only reset normal maps
-            if (entry->mapType == WDB::Structures::MAP_RAID || diff == InstanceDifficulty::Difficulties::DUNGEON_HEROIC)
+            if (entry->mapType == WDB::Structures::MAP_RAID || InstanceDifficulty::isHeroicDungeonDifficulty(diff))
             {
                 ++itr;
                 continue;

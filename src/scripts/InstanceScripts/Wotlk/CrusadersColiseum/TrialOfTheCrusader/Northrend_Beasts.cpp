@@ -284,7 +284,7 @@ void GormokAI::Throw(CreatureAIFunc pThis)
     {
         for (uint8_t i = 0; i < Beasts::MAX_SNOBOLDS; ++i)
         {
-            Unit* snobold = getCreature()->getVehicleKit()->getPassenger(i);
+            Unit* snobold = getCreature()->getVehiclePassenger(i);
             if (snobold && snobold->ToCreature())
             {
                 snobold->exitVehicle();
@@ -384,7 +384,7 @@ void SnoboldAI::mountOnBoss()
 
         for (uint8_t i = 0; i < Beasts::MAX_SNOBOLDS; i++)
         {
-            if (!gormok->getVehicleKit()->getPassenger(i))
+            if (!gormok->getVehiclePassenger(i))
             {
                 getCreature()->callEnterVehicle(gormok, i);
                 DoAction(Beasts::ACTION_ENABLE_FIRE_BOMB);
@@ -1085,11 +1085,8 @@ SpellScriptExecuteState Snobolled::onAuraPeriodicTick(Aura* aur, AuraEffectModif
     if (!aur->getOwner()->hasAurasWithId(Beasts::Gormok::SPELL_RIDE_PLAYER))
         aur->removeAura();
 
-    if (Vehicle* vehicle = aur->getOwner()->getVehicleKit())
-    {
-        if (!vehicle->getPassenger(0))
-            aur->removeAura();
-    }
+    if (aur->getOwner()->getVehicleKit() && !aur->getOwner()->getVehiclePassenger(0))
+        aur->removeAura();
 
     return SpellScriptExecuteState::EXECUTE_PREVENT;
 }

@@ -1,0 +1,215 @@
+/*
+Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#pragma once
+
+#include <cstdint>
+
+uint32_t const HighmaulEncounterCount = 7;
+
+enum HighmaulData
+{
+    DATA_IMPERATOR_MARGOK  = 0,  // 1705
+    DATA_THE_BUTCHER       = 1,  // 1706
+    DATA_TWIN_OGRON        = 2,  // 1719, Phemos and Pol
+    DATA_BRACKENSPORE      = 3,  // 1720
+    DATA_KARGATH_BLADEFIST = 4,  // 1721
+    DATA_TECTUS            = 5,  // 1722
+    DATA_KORAGH            = 6   // 1723
+};
+
+enum HighmaulCreatures
+{
+    BOSS_KARGATH_BLADEFIST            = 78714,
+    BOSS_THE_BUTCHER                  = 77404,
+    BOSS_TECTUS                       = 78948,
+    BOSS_BRACKENSPORE                 = 78491,
+    BOSS_PHEMOS                       = 78237,
+    BOSS_POL                          = 78238,
+    BOSS_KORAGH                       = 79015,
+    BOSS_IMPERATOR_MARGOK             = 77428,
+
+    // Kargath Bladefist
+    NPC_IRON_BOMBER                   = 78926,
+    NPC_DRUNKEN_BILESLINGER           = 78954,
+
+    // Tectus
+    NPC_SHARD_OF_TECTUS               = 80551,
+    NPC_MOTE_OF_TECTUS                = 80557,
+    NPC_EARTHEN_PILLAR_STALKER        = 80476,
+    NPC_NIGHT_TWISTED_BERSERKER       = 80822,
+    NPC_NIGHT_TWISTED_EARTHWARPER     = 80599,
+
+    // Brackenspore
+    NPC_MIND_FUNGUS                   = 79082,
+    NPC_SPORE_SHOOTER                 = 79183,
+    NPC_FUNGAL_FLESH_EATER            = 79092,
+    NPC_LIVING_MUSHROOM               = 78884,
+    NPC_REJUVENATING_MUSHROOM         = 78868,
+
+    // Imperator Mar'gok
+    NPC_ARCANE_ABERRATION             = 77809,
+    NPC_DISPLACING_ARCANE_ABERRATION  = 77879,
+    NPC_FORTIFIED_ARCANE_ABERRATION   = 77878,
+    NPC_REPLICATING_ARCANE_ABERRATION = 77877,
+    NPC_GORIAN_WARMAGE                = 78121,
+    NPC_VOLATILE_ANOMALY              = 78077,
+    NPC_GORIAN_REAVER                 = 78549
+};
+
+enum HighmaulGameObjects
+{
+    GO_ARENA_EXIT_GATE         = 231781,  // open after Kargath
+    GO_FUNGAL_GIANT_DOOR       = 239124,  // open after Kargath
+    GO_WIND_DOOR               = 236703,  // open after Kargath, closed while Brackenspore is fought
+    GO_EARTHEN_PILLAR_DOOR     = 239110,  // closed while The Butcher is fought
+    GO_EARTHWALL_1             = 237777,  // earthwalls close while Tectus is fought
+    GO_EARTHWALL_2             = 237778,
+    GO_EARTHWALL_3             = 237779,
+    GO_EARTHWALL_4             = 237780,
+    GO_PORTAL_SIDE_DOOR        = 239126,  // open after Tectus
+    GO_TWIN_OGRON_ENTRANCE     = 236211,
+    GO_TWIN_OGRON_EXIT         = 236212,
+    GO_FEL_BREAKER_ENTRANCE    = 236213,
+    GO_FEL_BREAKER_EXIT        = 236214,
+    GO_THRONE_ROOM_DOOR        = 231938
+};
+
+enum HighmaulSharedSpells
+{
+    SPELL_HIGHMAUL_BERSERK = 26662
+};
+
+enum KargathBladefistSpells
+{
+    SPELL_KARGATH_IMPALE         = 159113,
+    SPELL_KARGATH_BLADE_DANCE    = 159250,
+    SPELL_KARGATH_BERSERKER_RUSH = 158986,
+    SPELL_KARGATH_CHAIN_HURL     = 160061
+};
+
+enum KargathArenaAddSpells
+{
+    SPELL_IRON_BOMBER_IRON_BOMB     = 159386,
+    SPELL_BILESLINGER_MAULING_BREW  = 159414,
+    SPELL_BILESLINGER_VILE_BREATH   = 160521
+};
+
+enum TheButcherSpells
+{
+    SPELL_BUTCHER_MEAT_HOOK            = 156125,
+    SPELL_BUTCHER_THE_CLEAVER          = 156143,
+    SPELL_BUTCHER_TENDERIZER           = 156151,
+    SPELL_BUTCHER_CLEAVE               = 156157,
+    SPELL_BUTCHER_BOUNDING_CLEAVE      = 156160,
+    SPELL_BUTCHER_BOUNDING_CLEAVE_WIND = 156197,
+    SPELL_BUTCHER_FRENZY               = 156598
+};
+
+enum TectusSpells
+{
+    SPELL_TECTUS_LIVING_MOUNTAIN       = 162287,
+    SPELL_TECTUS_SHARD_OF_THE_MOUNTAIN = 162658,
+    SPELL_TECTUS_MOTE_OF_THE_MOUNTAIN  = 162674,
+    SPELL_TECTUS_ACCRETION             = 162288,
+    SPELL_TECTUS_CRYSTALLINE_BARRAGE   = 162346,
+    SPELL_TECTUS_TECTONIC_UPHEAVAL     = 162475,
+    SPELL_TECTUS_FRACTURE              = 163208,
+    SPELL_TECTUS_EARTHEN_PILLAR        = 162522,
+    SPELL_TECTUS_EARTHEN_PILLAR_TIMER  = 166024,
+    SPELL_TECTUS_SHARD_DAMAGE_DOWN     = 178193,
+    SPELL_TECTUS_MOTE_DAMAGE_DOWN      = 178194
+};
+
+enum TectusAddSpells
+{
+    SPELL_BERSERKER_RAVING_ASSAULT       = 163312,
+    SPELL_EARTHWARPER_GIFT_OF_EARTH      = 162894,
+    SPELL_EARTHWARPER_EARTHEN_FLECHETTES = 162968
+};
+
+enum BrackensporeSpells
+{
+    SPELL_BRACKENSPORE_NECROTIC_BREATH  = 159219,
+    SPELL_BRACKENSPORE_INFESTING_SPORES = 159996,
+    SPELL_BRACKENSPORE_ROT              = 163241
+};
+
+enum BrackensporeAddSpells
+{
+    SPELL_FLESH_EATER_FLESH_EATER  = 159972,
+    SPELL_FLESH_EATER_DECAY        = 160013,
+    SPELL_SPORE_SHOOTER_SPORE_SHOT = 173241
+};
+
+enum PhemosSpells
+{
+    SPELL_PHEMOS_WHIRLWIND             = 157943,
+    SPELL_PHEMOS_ENFEEBLING_ROAR       = 158057,
+    SPELL_PHEMOS_QUAKE                 = 158200,
+    SPELL_PHEMOS_DOUBLE_SLASH          = 158521,
+    SPELL_PHEMOS_DOUBLE_SLASH_OFF_HAND = 167198
+};
+
+enum PolSpells
+{
+    SPELL_POL_SHIELD_BASH          = 143834,
+    SPELL_POL_INTERRUPTING_SHOUT   = 158093,
+    SPELL_POL_SHIELD_CHARGE        = 158134,
+    SPELL_POL_PULVERIZE            = 158385,
+    SPELL_POL_PULVERIZE_FIRST      = 157952,
+    SPELL_POL_PULVERIZE_SECOND     = 158415,
+    SPELL_POL_PULVERIZE_THIRD      = 158419
+};
+
+enum KoraghSpells
+{
+    SPELL_KORAGH_NULLIFICATION_BARRIER = 156803,
+    SPELL_KORAGH_VULNERABILITY         = 160734,
+    SPELL_KORAGH_SUPPRESSION_FIELD     = 161331,
+    SPELL_KORAGH_VOLATILE_ANOMALIES    = 161378,
+    SPELL_KORAGH_OVERFLOWING_ENERGY    = 161574,
+    SPELL_KORAGH_BREAKERS_STRENGTH     = 162569,
+    SPELL_KORAGH_EXPEL_MAGIC_SHADOW    = 162184,
+    SPELL_KORAGH_EXPEL_MAGIC_FIRE      = 162185,
+    SPELL_KORAGH_EXPEL_MAGIC_ARCANE    = 162186,
+    SPELL_KORAGH_EXPEL_MAGIC_FROST     = 172747,
+    SPELL_KORAGH_RECHARGE_KNOCKBACK    = 174856
+};
+
+enum ImperatorMargokSpells
+{
+    SPELL_MARGOK_POWER_OF_REPLICATION     = 157964,
+    SPELL_MARGOK_POWER_OF_FORTIFICATION   = 158012,
+    SPELL_MARGOK_POWER_OF_DISPLACEMENT    = 158013,
+    SPELL_MARGOK_ARCANE_PROTECTION        = 174057,
+    SPELL_MARGOK_DESTRUCTIVE_RESONANCE    = 156734,
+
+    // one variant per rune: crown, displacement, fortification, replication
+    SPELL_MARGOK_MARK_OF_CHAOS            = 158605,
+    SPELL_MARGOK_MARK_OF_CHAOS_DISPLACE   = 164176,
+    SPELL_MARGOK_MARK_OF_CHAOS_FORTIFY    = 164178,
+    SPELL_MARGOK_MARK_OF_CHAOS_REPLICATE  = 164191,
+
+    SPELL_MARGOK_FORCE_NOVA               = 157349,
+    SPELL_MARGOK_FORCE_NOVA_DISPLACE      = 164232,
+    SPELL_MARGOK_FORCE_NOVA_FORTIFY       = 164235,
+    SPELL_MARGOK_FORCE_NOVA_REPLICATE     = 164240,
+
+    SPELL_MARGOK_ARCANE_WRATH             = 156225,
+    SPELL_MARGOK_ARCANE_WRATH_DISPLACE    = 164004,
+    SPELL_MARGOK_ARCANE_WRATH_FORTIFY     = 164005,
+    SPELL_MARGOK_ARCANE_WRATH_REPLICATE   = 164006
+};
+
+enum MargokAddSpells
+{
+    SPELL_WARMAGE_FIXATE                = 157763,
+    SPELL_WARMAGE_NETHER_BLAST          = 157769,
+    SPELL_WARMAGE_SLOW                  = 157801,
+    SPELL_REAVER_DEVASTATING_SHOCKWAVE  = 158547,
+    SPELL_REAVER_CRUSH_ARMOR            = 158553,
+    SPELL_REAVER_KICK_TO_THE_FACE       = 158563
+};

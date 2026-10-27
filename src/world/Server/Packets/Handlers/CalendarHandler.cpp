@@ -455,7 +455,7 @@ void WorldSession::handleCalendarGetCalendar(WorldPacket& /*recvPacket*/)
     // the permanent raid saves of the player
     std::vector<CalendarLockoutData> lockouts;
     const time_t now = Util::getTimeNow();
-    for (uint8_t difficulty = 0; difficulty < InstanceDifficulty::MAX_DIFFICULTY; ++difficulty)
+    for (uint8_t difficulty = 0; difficulty < InstanceDifficulty::MAX_BIND_DIFFICULTY; ++difficulty)
     {
         for (const auto& [mapId, bind] : _player->getBoundInstances(static_cast<InstanceDifficulty::Difficulties>(difficulty)))
         {
@@ -1104,7 +1104,7 @@ void WorldSession::handleSetSavedInstanceExtend(WorldPacket& recvPacket)
     sLogger.debugOpcode("Received CMSG_SET_SAVED_INSTANCE_EXTEND: map {}, difficulty {}, extend {}.", srlPacket.mapId, srlPacket.difficulty, srlPacket.extend);
 
     // a save in use stays as it is
-    if (_player->GetMapId() == srlPacket.mapId || srlPacket.difficulty >= InstanceDifficulty::MAX_DIFFICULTY)
+    if (_player->GetMapId() == srlPacket.mapId || !InstanceDifficulty::isBindDifficulty(srlPacket.difficulty))
         return;
 
     const auto difficulty = static_cast<InstanceDifficulty::Difficulties>(srlPacket.difficulty);

@@ -1,0 +1,170 @@
+/*
+Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#pragma once
+
+#include <cstdint>
+
+uint32_t const DawnOfTheInfiniteEncounterCount = 8;
+
+enum DawnOfTheInfiniteData
+{
+    DATA_CHRONIKAR             = 0,  // 2666
+    DATA_MANIFESTED_TIMEWAYS   = 1,  // 2667
+    DATA_BLIGHT_OF_GALAKROND   = 2,  // 2668
+    DATA_IRIDIKRON             = 3,  // 2669
+    DATA_TYR_INFINITE_KEEPER   = 4,  // 2670
+    DATA_MORCHIE               = 5,  // 2671
+    // Grommash Hellscream or Anduin Lothar, by faction
+    DATA_TIME_LOST_BATTLEFIELD = 6,  // 2672
+    DATA_CHRONO_LORD_DEIOS     = 7   // 2673
+};
+
+enum DawnOfTheInfiniteCreatures
+{
+    BOSS_CHRONIKAR                 = 198995,
+
+    BOSS_MANIFESTED_TIMEWAYS       = 198996,
+    // second Manifested Timeways template of the same encounter
+    BOSS_MANIFESTED_TIMEWAYS_ALT   = 206238,
+
+    BOSS_BLIGHT_OF_GALAKROND       = 198997,
+    // further Blight templates of the same encounter
+    BOSS_BLIGHT_OF_GALAKROND_ALT   = 207638,
+    BOSS_BLIGHT_OF_GALAKROND_ALT2  = 207639,
+    NPC_LOSZKELETH                 = 201790,
+    NPC_DAZHAK                     = 201788,
+
+    BOSS_IRIDIKRON                 = 204459,
+
+    BOSS_TYR_INFINITE_KEEPER       = 198998,
+
+    BOSS_MORCHIE                   = 198999,
+    // second Morchie template of the same encounter
+    BOSS_MORCHIE_ALT               = 202789,
+    // copies from other timelines
+    NPC_MORCHIE_ALTERNATE          = 205708,
+    NPC_FAMILIAR_FACE              = 201756,
+    NPC_TIME_TRAP                  = 205719,
+
+    BOSS_GROMMASH_HELLSCREAM       = 203678,
+    BOSS_GROMMASH_HELLSCREAM_ALT   = 209207,
+    BOSS_ANDUIN_LOTHAR             = 203679,
+    BOSS_ANDUIN_LOTHAR_ALT         = 209208,
+    NPC_HORDE_GRUNT                = 203688,
+    NPC_HORDE_AXE_THROWER          = 203799,
+    NPC_HORDE_WARLOCK              = 203857,
+    NPC_ALLIANCE_FOOTMAN           = 203763,
+    NPC_ALLIANCE_ARCHER            = 206352,
+    NPC_ALLIANCE_CONJUROR          = 206351,
+
+    BOSS_CHRONO_LORD_DEIOS         = 199000,
+    // second Deios template of the same encounter
+    BOSS_CHRONO_LORD_DEIOS_ALT     = 209892,
+    NPC_INFINITE_KEEPER            = 205212,
+    NPC_TIME_DISPLACED_TROOPER     = 205265
+};
+
+enum DawnOfTheInfiniteChronikarSpells
+{
+    SPELL_CHRONIKAR_EON_SHATTER   = 413105,
+    SPELL_CHRONIKAR_EON_FRAGMENTS = 405970,
+    SPELL_CHRONIKAR_CHRONOSHEAR   = 413013,
+    SPELL_CHRONIKAR_SAND_STOMP    = 401421
+};
+
+enum DawnOfTheInfiniteTimewaysSpells
+{
+    SPELL_TIMEWAYS_DECAYING_TIME     = 403910,
+    SPELL_TIMEWAYS_ACCELERATING_TIME = 403912,
+    SPELL_TIMEWAYS_CHRONO_FADED      = 404141,
+    SPELL_TIMEWAYS_FRAGMENTS_OF_TIME = 405431,
+    SPELL_TIMEWAYS_RADIANT           = 414307
+};
+
+enum DawnOfTheInfiniteBlightSpells
+{
+    SPELL_BLIGHT_CORROSIVE_INFUSION       = 406886,
+    SPELL_BLIGHT_BLIGHT_RECLAMATION       = 407159,
+    SPELL_BLIGHT_BLIGHT_SEEP              = 407057,
+    SPELL_BLIGHT_NECROTIC_WINDS           = 407978,
+    SPELL_BLIGHT_ESSENCE_CONNECTION       = 413608,
+
+    SPELL_LOSZKELETH_NECROFROST           = 408029,
+    SPELL_DAZHAK_INCINERATING_BLIGHTBREATH = 408141,
+    SPELL_DAZHAK_NOXIOUS_EJECTION         = 413590
+};
+
+enum DawnOfTheInfiniteIridikronSpells
+{
+    SPELL_IRIDIKRON_EARTHSURGE               = 409456,
+    SPELL_IRIDIKRON_PULVERIZING_EXHALATION   = 409635,
+    SPELL_IRIDIKRON_PATIENT_TACTICIAN        = 409692,
+    SPELL_IRIDIKRON_CATACLYSMIC_OBLITERATION = 414184,
+    SPELL_IRIDIKRON_CRUSHING_ONSLAUGHT       = 414075
+};
+
+enum DawnOfTheInfiniteTyrSpells
+{
+    SPELL_TYR_TITANIC_BLOW            = 410240,
+    SPELL_TYR_INFINITE_ANNIHILATION   = 401463,
+    SPELL_TYR_DIVIDING_STRIKE         = 400641,
+    SPELL_TYR_SPARK_OF_TYR            = 400649,
+    SPELL_TYR_SIPHON_OATHSTONE        = 408768,
+    SPELL_TYR_RADIANT_BARRIER         = 410249,
+    SPELL_TYR_TEMPORAL_ESSENCE        = 404315
+};
+
+enum DawnOfTheInfiniteMorchieSpells
+{
+    SPELL_MORCHIE_SAND_BLAST          = 404916,
+    SPELL_MORCHIE_MORE_PROBLEMS       = 403891,
+    SPELL_MORCHIE_DRAGONS_BREATH      = 404365,
+    SPELL_MORCHIE_FAMILIAR_FACES      = 405279,
+    SPELL_MORCHIE_TIME_TRAPS          = 406481,
+
+    SPELL_FACE_FIXATE                 = 401197,
+    SPELL_FACE_ANACHRONISTIC_DECAY    = 412768,
+    SPELL_TRAP_TIME_STASIS            = 401667,
+    SPELL_TRAP_TEMPORAL_BACKLASH      = 429363
+};
+
+enum DawnOfTheInfiniteBattlefieldSpells
+{
+    SPELL_COMMANDER_BLADESTORM        = 410234,
+
+    SPELL_GROMMASH_DECAPITATE         = 410254,
+    SPELL_GROMMASH_SHOCKWAVE          = 408227,
+    SPELL_GROMMASH_FOR_THE_HORDE      = 418046,
+    SPELL_GROMMASH_THIRST_FOR_BATTLE  = 419602,
+    SPELL_GROMMASH_WAR_CRY            = 410496,
+
+    SPELL_LOTHAR_MORTAL_STRIKES       = 418059,
+    SPELL_LOTHAR_SHOCKWAVE            = 418056,
+    SPELL_LOTHAR_FOR_THE_ALLIANCE     = 418047,
+    SPELL_LOTHAR_BATTLE_SENSES        = 419609,
+    SPELL_LOTHAR_BATTLE_CRY           = 418062,
+
+    SPELL_AXE_THROWER_AXE_THROW       = 406962,
+    SPELL_AXE_THROWER_SERRATED_AXE    = 407120,
+    SPELL_WARLOCK_IMMOLATE            = 407121,
+    SPELL_WARLOCK_RAIN_OF_FIRE        = 407122,
+    SPELL_ARCHER_SHOOT                = 415215,
+    SPELL_ARCHER_SERRATED_ARROWS      = 418009,
+    SPELL_CONJUROR_FIREBALL           = 417030,
+    SPELL_CONJUROR_BLIZZARD           = 417018
+};
+
+enum DawnOfTheInfiniteDeiosSpells
+{
+    SPELL_DEIOS_SUMMON_INFINITE_KEEPER = 416152,
+    SPELL_DEIOS_COLLAPSING_TIME_RIFT   = 416261,
+    SPELL_DEIOS_INFINITY_ORB           = 410904,
+    SPELL_DEIOS_TEMPORAL_BREATH        = 416139,
+
+    SPELL_KEEPER_CHRONAL_BURN          = 412027,
+    SPELL_KEEPER_INFINITE_BLAST        = 411763,
+    SPELL_TROOPER_TIME_DISPLACEMENT    = 411023
+};

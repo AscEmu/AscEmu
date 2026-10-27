@@ -1,0 +1,158 @@
+/*
+Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#pragma once
+
+#include <cstdint>
+
+uint32_t const TazaveshEncounterCount = 8;
+
+enum TazaveshData
+{
+    DATA_TIMECAPN_HOOKTAIL  = 0,  // 2419
+    // ended by the P.O.S.T. Master
+    DATA_MAILROOM_MAYHEM    = 1,  // 2424
+    DATA_ZOPHEX             = 2,  // 2425
+    DATA_HYLBRANDE          = 3,  // 2426
+    DATA_SOAZMI             = 4,  // 2437
+    // ended by Zo'gron
+    DATA_MYZAS_OASIS        = 5,  // 2440
+    // Alcruux, Achillite and Venza Goldfuse
+    DATA_GRAND_MENAGERIE    = 6,  // 2441
+    DATA_SOLEAH             = 7   // 2442
+};
+
+enum TazaveshCreatures
+{
+    BOSS_TIMECAPN_HOOKTAIL  = 175546,
+    NPC_CORSAIR_BRUTE       = 177500,
+
+    BOSS_POST_MASTER        = 175646,
+
+    BOSS_ZOPHEX             = 175616,
+    NPC_ARMED_SECURITY      = 175656,
+    NPC_CONTAINMENT_CELL    = 175576,
+
+    BOSS_HYLBRANDE          = 175663,
+    NPC_VAULT_PURIFIER      = 176551,
+
+    BOSS_SOAZMI             = 175806,
+
+    BOSS_ZOGRON             = 176564,
+    // second Zo'gron template of the oasis
+    BOSS_ZOGRON_ALT         = 176563,
+
+    BOSS_ALCRUUX            = 176556,
+    BOSS_ACHILLITE          = 176555,
+    BOSS_VENZA_GOLDFUSE     = 176705,
+
+    BOSS_SOLEAH             = 177269,
+    NPC_SO_CARTEL_ASSASSIN  = 177716
+};
+
+enum TazaveshGameObjects
+{
+    // both ends of the customs hall
+    GO_CUSTOMS_ENFORCEMENT_DOOR = 365352,
+    GO_CUSTOMS_MARKET_DOOR      = 365351,
+    GO_MAILROOM_ENTRANCE        = 365353,
+    GO_MENAGERIE_DOOR           = 368248
+};
+
+enum TazaveshActions
+{
+    ACTION_TAZAVESH_CELL_BROKEN = 1,
+    ACTION_TAZAVESH_MENAGERIE_ENTER
+};
+
+enum TazaveshCreatureData
+{
+    TAZAVESH_CELL_PRISONER = 1
+};
+
+enum TazaveshHooktailSpells
+{
+    SPELL_HOOKTAIL_INFINITE_BREATH      = 347149,
+    SPELL_HOOKTAIL_TIME_BOMB            = 1240097,
+    SPELL_HOOKTAIL_TEMPORAL_DETONATION  = 1240105,
+    SPELL_HOOKTAIL_CANNON_BARRAGE       = 347370,
+    SPELL_HOOKTAIL_ANCHOR_SHOT          = 352345,
+
+    SPELL_CORSAIR_BRUTE_DOUBLE_TIME     = 1240214
+};
+
+enum TazaveshPostMasterSpells
+{
+    SPELL_POST_MASTER_HAZARDOUS_LIQUIDS     = 346286,
+    SPELL_POST_MASTER_ALCHEMICAL_RESIDUE    = 346844,
+    SPELL_POST_MASTER_SPILLED_LIQUIDS       = 346329,
+    SPELL_POST_MASTER_FAN_MAIL              = 346742,
+    SPELL_POST_MASTER_MONEY_ORDER           = 346962
+};
+
+enum TazaveshZophexSpells
+{
+    SPELL_ZOPHEX_INTERROGATION          = 345598,
+    SPELL_ZOPHEX_CONTAINMENT_CELL       = 345990,
+    SPELL_ZOPHEX_SECURITY_MEASURE       = 353424,
+    SPELL_ZOPHEX_ARMED_SECURITY         = 346204,
+    SPELL_ZOPHEX_FULLY_ARMED            = 348128,
+    SPELL_ZOPHEX_IMPOUND_CONTRABAND     = 345770,
+    SPELL_ZOPHEX_CHARGED_SLASH          = 1236348
+};
+
+enum TazaveshHylbrandeSpells
+{
+    SPELL_HYLBRANDE_PURIFYING_BURST     = 353312,
+    SPELL_HYLBRANDE_SHEARING_SWINGS     = 346116,
+    SPELL_HYLBRANDE_TITANIC_CRASH       = 347094,
+    SPELL_HYLBRANDE_PURGED_BY_FIRE      = 346959,
+
+    SPELL_PURIFIER_EMPOWERED_DEFENSE    = 347015,
+    SPELL_PURIFIER_VALOROUS_BOLT        = 352347
+};
+
+enum TazaveshSoazmiSpells
+{
+    SPELL_SOAZMI_SHURI                  = 347481,
+    SPELL_SOAZMI_DIVIDE                 = 1245634,
+    SPELL_SOAZMI_DOUBLE_TECHNIQUE       = 357188,
+    SPELL_SOAZMI_PHASE_SLASH            = 1248209
+};
+
+enum TazaveshZogronSpells
+{
+    SPELL_ZOGRON_FINAL_WARNING          = 1241023,
+    SPELL_ZOGRON_SUPPRESSION_SPARK      = 355438,
+    SPELL_ZOGRON_CROWD_CONTROL          = 350919,
+    SPELL_ZOGRON_SECURITY_SLAM          = 359028,
+    SPELL_ZOGRON_MENACING_SHOUT         = 350922
+};
+
+enum TazaveshMenagerieSpells
+{
+    SPELL_ALCRUUX_GLUTTONY                  = 349627,
+    SPELL_ALCRUUX_GRIP_OF_HUNGER            = 349663,
+    SPELL_ALCRUUX_GRAND_CONSUMPTION         = 349797,
+
+    SPELL_ACHILLITE_VENTING_PROTOCOL        = 349987,
+    SPELL_ACHILLITE_FLAGELLATION_PROTOCOL   = 349934,
+    SPELL_ACHILLITE_PURIFICATION_PROTOCOL   = 349954,
+
+    SPELL_VENZA_WHIRLING_ANNIHILATION       = 350090,
+    SPELL_VENZA_CHAINS_OF_DAMNATION         = 350101
+};
+
+enum TazaveshSoleahSpells
+{
+    SPELL_SOLEAH_HYPERLIGHT_SPARK       = 350796,
+    SPELL_SOLEAH_COLLAPSING_STAR        = 350799,
+    SPELL_SOLEAH_POWER_OVERWHELMING     = 351086,
+    SPELL_SOLEAH_HYPERLIGHT_JOLT        = 350885,
+    SPELL_SOLEAH_ENERGY_FRAGMENTATION   = 351096,
+    SPELL_SOLEAH_HYPERLIGHT_NOVA        = 351646,
+
+    SPELL_ASSASSIN_SHURIKEN_BLITZ       = 351119
+};

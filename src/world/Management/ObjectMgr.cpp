@@ -998,10 +998,14 @@ void ObjectMgr::loadGroupInstances()
         }
 
         uint32_t diff = fields[4].asUint8();
-        if (diff >= static_cast<uint32_t>(mapEntry->isRaid() ? InstanceDifficulty::Difficulties::MAX_RAID_DIFFICULTY : InstanceDifficulty::Difficulties::MAX_DUNGEON_DIFFICULTY))
+        bool knownDifficulty = diff < static_cast<uint32_t>(mapEntry->isRaid() ? InstanceDifficulty::Difficulties::MAX_RAID_DIFFICULTY : InstanceDifficulty::Difficulties::MAX_DUNGEON_DIFFICULTY);
+        // 5.x: the map has to know the difficulty id
+        if (InstanceDifficulty::usesDifficultyIds())
+            knownDifficulty = getMapDifficultyData(mapEntry->id, InstanceDifficulty::Difficulties(diff)) != nullptr;
+        if (!knownDifficulty)
         {
             sLogger.failure("Wrong dungeon difficulty use in group_instance table: {}", diff + 1);
-            diff = 0;                                   // default for both difficaly types
+            diff = mapEntry->isRaid() ? InstanceDifficulty::defaultRaidDifficulty() : InstanceDifficulty::defaultDungeonDifficulty();
         }
 
         InstanceSaved* save = sInstanceMgr.addInstanceSave(mapEntry->id, fields[2].asUint32(), InstanceDifficulty::Difficulties(diff), time_t(fields[5].asUint64()), fields[6].asUint64() == 0, true);
@@ -2131,6 +2135,9 @@ DungeonEncounterList const* ObjectMgr::getDungeonEncounterList(uint32_t _mapId, 
 #else
     std::unordered_map<uint32_t, DungeonEncounterList>::const_iterator itr = m_dungeonEncounterStore.find(_mapId);
 #endif
+    // 6.x: an encounter without difficulty counts for every difficulty of its map
+    if (itr == m_dungeonEncounterStore.end() && WoW::isServerExpansionAtLeast(WoW::Expansion::_WoD))
+        itr = m_dungeonEncounterStore.find(uint32_t(uint16_t(_mapId)));
     if (itr != m_dungeonEncounterStore.end())
         return &itr->second;
     return nullptr;

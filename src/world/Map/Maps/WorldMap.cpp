@@ -2693,6 +2693,9 @@ void WorldMap::objectUpdated(Object* obj)
 
 bool WorldMap::isRegularDifficulty()
 {
+    if (InstanceDifficulty::usesDifficultyIds())
+        return !InstanceDifficulty::isHeroicSpawnMode(getSpawnMode());
+
     return getDifficulty() == InstanceDifficulty::Difficulties::DUNGEON_NORMAL;
 }
 
@@ -2703,17 +2706,24 @@ WDB::Structures::MapDifficulty const* WorldMap::getMapDifficulty()
 
 bool WorldMap::isRaidOrHeroicDungeon()
 {
+    if (InstanceDifficulty::usesDifficultyIds())
+        return getBaseMap()->isRaid() || InstanceDifficulty::isHeroicSpawnMode(getSpawnMode());
+
     return getBaseMap()->isRaid() || getSpawnMode() > InstanceDifficulty::Difficulties::DUNGEON_NORMAL;
 }
 
 bool WorldMap::isHeroic()
 {
+    if (InstanceDifficulty::usesDifficultyIds())
+        return InstanceDifficulty::isHeroicSpawnMode(getSpawnMode());
+
     return getBaseMap()->isRaid() ? getSpawnMode() >= InstanceDifficulty::Difficulties::RAID_10MAN_HEROIC : getSpawnMode() >= InstanceDifficulty::Difficulties::DUNGEON_HEROIC;
 }
 
 bool WorldMap::is25ManRaid()
 {
-    return getBaseMap()->isRaid() && getSpawnMode() & 1;
+    const auto mode = InstanceDifficulty::legacyRaidMode(getSpawnMode());
+    return getBaseMap()->isRaid() && (mode == InstanceDifficulty::RAID_25MAN_NORMAL || mode == InstanceDifficulty::RAID_25MAN_HEROIC);
 }
 
 bool WorldMap::getAreaInfo(uint32_t /*phaseMask*/, LocationVector pos, uint32_t& flags, int32_t& adtId, int32_t& rootId, int32_t& groupId)

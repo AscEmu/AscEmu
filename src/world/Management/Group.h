@@ -319,7 +319,7 @@ protected:
     bool m_readyCheckInProgress = false;
     std::set<uint32_t> m_readyCheckResponded;
 
-    BoundInstancesMap   m_boundInstances[InstanceDifficulty::MAX_DIFFICULTY];
+    BoundInstancesMap   m_boundInstances[InstanceDifficulty::MAX_BIND_DIFFICULTY];
 
     uint8_t m_LootMethod;
     uint16_t m_LootThreshold;

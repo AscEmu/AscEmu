@@ -607,6 +607,25 @@ const char* ChatCommandHandler::GetMapTypeString(uint8_t type)
 
 const char* ChatCommandHandler::GetDifficultyString(uint8_t difficulty)
 {
+    if (InstanceDifficulty::usesDifficultyIds())
+    {
+        switch (difficulty)
+        {
+            case InstanceDifficulty::ID_DUNGEON_NORMAL:
+                return "normal";
+            case InstanceDifficulty::ID_DUNGEON_HEROIC:
+                return "heroic";
+            case InstanceDifficulty::ID_CHALLENGE_MODE:
+                return "challenge";
+            case InstanceDifficulty::ID_DUNGEON_MYTHIC:
+                return "mythic";
+            case InstanceDifficulty::ID_DUNGEON_TIMEWALKING:
+                return "timewalking";
+            default:
+                return "unknown";
+        }
+    }
+
     switch (difficulty)
     {
         case InstanceDifficulty::DUNGEON_NORMAL:
@@ -620,6 +639,36 @@ const char* ChatCommandHandler::GetDifficultyString(uint8_t difficulty)
 
 const char* ChatCommandHandler::GetRaidDifficultyString(uint8_t diff)
 {
+    if (InstanceDifficulty::usesDifficultyIds())
+    {
+        switch (diff)
+        {
+            case InstanceDifficulty::ID_RAID_10MAN_NORMAL:
+                return "normal 10man";
+            case InstanceDifficulty::ID_RAID_25MAN_NORMAL:
+                return "normal 25man";
+            case InstanceDifficulty::ID_RAID_10MAN_HEROIC:
+                return "heroic 10man";
+            case InstanceDifficulty::ID_RAID_25MAN_HEROIC:
+                return "heroic 25man";
+            case InstanceDifficulty::ID_RAID_LFR_25MAN:
+            case InstanceDifficulty::ID_RAID_FLEX_LFR:
+                return "looking for raid";
+            case InstanceDifficulty::ID_RAID_40MAN:
+                return "40man";
+            case InstanceDifficulty::ID_RAID_FLEX_NORMAL:
+                return "normal";
+            case InstanceDifficulty::ID_RAID_FLEX_HEROIC:
+                return "heroic";
+            case InstanceDifficulty::ID_RAID_MYTHIC:
+                return "mythic";
+            case InstanceDifficulty::ID_RAID_TIMEWALKING:
+                return "timewalking";
+            default:
+                return "unknown";
+        }
+    }
+
     switch (diff)
     {
         case InstanceDifficulty::RAID_10MAN_NORMAL:

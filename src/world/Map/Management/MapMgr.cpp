@@ -600,7 +600,7 @@ EnterState MapMgr::canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* pla
         return CANNOT_ENTER_ATTUNE_ITEM;
     }
 
-    if (player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC &&
+    if (InstanceDifficulty::isHeroicDungeonDifficulty(player->getDungeonDifficulty()) &&
         mapInfo->isMultimodeDungeon() &&
         ((mapInfo->heroic_key_1 > 0 && !player->getItemInterface()->GetItemCount(mapInfo->heroic_key_1, false)) &&
          (mapInfo->heroic_key_2 > 0 && !player->getItemInterface()->GetItemCount(mapInfo->heroic_key_2, false))))
@@ -609,7 +609,7 @@ EnterState MapMgr::canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* pla
     }
 
     if (!entry->isWorldMap() &&
-        player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC &&
+        InstanceDifficulty::isHeroicDungeonDifficulty(player->getDungeonDifficulty()) &&
         player->getLevel() < mapInfo->minlevel_heroic)
     {
         return CANNOT_ENTER_MIN_LEVEL_HC;

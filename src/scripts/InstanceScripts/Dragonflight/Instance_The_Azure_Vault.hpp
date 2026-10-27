@@ -1,0 +1,100 @@
+/*
+Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#pragma once
+
+#include <cstdint>
+
+uint32_t const TheAzureVaultEncounterCount = 4;
+
+enum TheAzureVaultData
+{
+    DATA_LEYMOR          = 0,  // 2582
+    DATA_TELASH_GREYWING = 1,  // 2583
+    DATA_UMBRELSKUL      = 2,  // 2584
+    DATA_AZUREBLADE      = 3   // 2585
+};
+
+enum TheAzureVaultCreatures
+{
+    BOSS_LEYMOR            = 186644,
+    // channel the stasis that holds Leymor
+    NPC_ARCANE_TENDER      = 191164,
+    NPC_LEY_LINE_SPROUT    = 190509,
+
+    BOSS_TELASH_GREYWING   = 186737,
+    NPC_VAULT_RUNE         = 197204,
+
+    BOSS_UMBRELSKUL        = 186738,
+    NPC_DETONATING_CRYSTAL = 195138,
+    NPC_CRACKLING_VORTEX   = 194806,
+
+    BOSS_AZUREBLADE        = 186739,
+    NPC_DRACONIC_IMAGE     = 190187,
+    NPC_DRACONIC_ILLUSION  = 192955
+};
+
+enum TheAzureVaultGameObjects
+{
+    // behind the players in Leymor's grove
+    GO_LEYMOR_ENTRANCE_DOOR = 380536,
+    // way on after Leymor
+    GO_LEYMOR_EXIT_DOOR     = 377951
+};
+
+enum TheAzureVaultActions
+{
+    ACTION_LEYMOR_STASIS = 1,
+    ACTION_LEYMOR_AWAKEN
+};
+
+enum TheAzureVaultLeymorSpells
+{
+    SPELL_LEYMOR_STASIS                = 375729,
+    SPELL_LEYMOR_LEY_LINE_SPROUTS      = 374364,
+    SPELL_LEYMOR_CONSUMING_STOMP       = 374720,
+    SPELL_LEYMOR_CONSUMING_STOMP_BURST = 374731,
+    SPELL_LEYMOR_ARCANE_POWER          = 374736,
+    SPELL_LEYMOR_ERUPTING_FISSURE      = 386660,
+    SPELL_LEYMOR_EXPLOSIVE_BRAND       = 374567,
+    SPELL_LEYMOR_EXPLOSIVE_BRAND_BURST = 374570,
+    SPELL_LEYMOR_INFUSED_STRIKE        = 374789,
+
+    SPELL_SPROUT_STINGING_SAP          = 374523
+};
+
+enum TheAzureVaultTelashSpells
+{
+    SPELL_TELASH_FROST_BOMB         = 386781,
+    SPELL_TELASH_FROST_BOMB_MARK    = 386881,
+    SPELL_TELASH_FROST_BOMB_BURST   = 386910,
+    SPELL_TELASH_ICY_DEVASTATOR     = 387151,
+    SPELL_TELASH_ABSOLUTE_ZERO_CAST = 387928,
+    SPELL_TELASH_ABSOLUTE_ZERO      = 388008,
+    SPELL_TELASH_GLACIAL_SHIELD     = 388084,
+    SPELL_TELASH_VAULT_RUNE         = 388072
+};
+
+enum TheAzureVaultUmbrelskulSpells
+{
+    SPELL_UMBRELSKUL_DRAGON_STRIKE         = 384978,
+    SPELL_UMBRELSKUL_ARCANE_ERUPTION       = 385078,
+    SPELL_UMBRELSKUL_CRYSTALLINE_ROAR      = 384699,
+    SPELL_UMBRELSKUL_BRITTLE               = 386746,
+    SPELL_UMBRELSKUL_UNLEASHED_DESTRUCTION = 385399,
+
+    SPELL_CRYSTAL_FRACTURE                 = 385331,
+    SPELL_VORTEX_CRACKLING_VORTEX          = 385267
+};
+
+enum TheAzureVaultAzurebladeSpells
+{
+    SPELL_AZUREBLADE_ARCANE_CLEAVE       = 372222,
+    SPELL_AZUREBLADE_ANCIENT_ORB         = 385578,
+    SPELL_AZUREBLADE_OVERWHELMING_ENERGY = 384132,
+
+    SPELL_IMAGE_ILLUSIONARY_BOLT         = 373932,
+    SPELL_ILLUSION_SEAL_EMPOWERMENT      = 379256
+};
