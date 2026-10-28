@@ -202,7 +202,6 @@ enum AuraEffect : uint32_t
     SPELL_AURA_INCREASE_REPUTATION = 190,                               // Increases reputation from killed creatures
     SPELL_AURA_SPEED_LIMIT = 191,                                       // speed limit
     // TBC begins
-#if VERSION_STRING >= TBC
     SPELL_AURA_MELEE_SLOW_PCT = 192,
     SPELL_AURA_INCREASE_TIME_BETWEEN_ATTACKS = 193,
     SPELL_AURA_INREASE_SPELL_DAMAGE_PCT_OF_INTELLECT = 194,             // NOT USED ANYMORE - 174 used instead
@@ -256,7 +255,6 @@ enum AuraEffect : uint32_t
     SPELL_AURA_259 = 259,
     SPELL_AURA_260 = 260,
     SPELL_AURA_PHASE = 261,
-#endif
     // Wotlk begins
 #if VERSION_STRING >= WotLK
     SPELL_AURA_IGNORE_TARGET_AURA_STATE = 262,

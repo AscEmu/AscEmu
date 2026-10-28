@@ -799,7 +799,7 @@ namespace WDB::Structures
     };
 #endif
 
-#if VERSION_STRING >= WotLK
+// VERSION_STRING >= WotLK
     struct GlyphPropertiesEntry
     {
         uint32_t Entry;                                             // 0
@@ -819,7 +819,8 @@ namespace WDB::Structures
     {
         float cost;                                                 // 0 cost base
     };
-#endif
+
+// endif
 
     struct GtChanceToMeleeCritEntry
     {

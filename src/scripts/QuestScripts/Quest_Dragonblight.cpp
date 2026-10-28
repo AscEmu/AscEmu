@@ -61,13 +61,20 @@ public:
 class WrathGateQuestCinema : public QuestScript
 {
 public:
-    void OnQuestComplete([[maybe_unused]] Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
-#if VERSION_STRING > TBC
-        // send packet for movie
-        uint32_t id = 14;
-        mTarget->sendMovie(id);
-#endif
+        if (mTarget == nullptr)
+        {
+            return;
+        }
+
+        // Wrath Gate cinematic since Wrath of the Lich King expansion
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        {
+            // send packet for movie
+            uint32_t id = 14;
+            mTarget->sendMovie(id);
+        }
     }
 };
 

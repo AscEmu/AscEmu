@@ -132,13 +132,9 @@ enum PowerFieldIndexes : uint8_t
     POWER_FIELD_INDEX_2 = 2,
     POWER_FIELD_INDEX_3 = 3,
     POWER_FIELD_INDEX_4 = 4,
-#if VERSION_STRING != WotLK
-    POWER_FIELD_INDEX_5 = 5
-#else
     POWER_FIELD_INDEX_5 = 5,
     POWER_FIELD_INDEX_6 = 6,
     POWER_FIELD_INDEX_7 = 7
-#endif
 };
 
 enum class VisualState : uint8_t
@@ -880,7 +876,6 @@ enum UnitBytes1_UnitStandFlags : uint8_t
     UNIT_STAND_FLAGS_ALL          = 0xFF
 };
 
-#if VERSION_STRING >= TBC
 // byte flags value (UNIT_FIELD_BYTES_1, 3)
 enum UnitBytes1_AnimationFlag : uint8_t
 {
@@ -890,7 +885,6 @@ enum UnitBytes1_AnimationFlag : uint8_t
     ANIMATION_FLAG_FLY            = 0x03,
     ANIMATION_FLAG_SUBMERGED      = 0x04
 };
-#endif
 
 // byte value (UNIT_FIELD_BYTES_2, 0)
 enum UnitBytes2_SheathState : uint8_t

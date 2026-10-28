@@ -44,38 +44,34 @@ public:
         if (itr != m_teleStorage.end())
         {
             GameobjectTeleport* gt = itr->second;
-            uint32_t required_level = gt->req_level;
-            uint8_t req_class = gt->req_class;
-            [[maybe_unused]] uint32_t req_achievement = gt->req_achievement;
+            uint32_t requiredLevel = gt->req_level;
+            uint8_t requiredClass = gt->req_class;
+            uint32_t requiredAchievement = gt->req_achievement;
 
-            if (required_level > pPlayer->getLevel())
+            if (requiredLevel > pPlayer->getLevel())
             {
-                pPlayer->broadcastMessage("You must be at least level {} to use this portal", required_level);
+                pPlayer->broadcastMessage("You must be at least level {} to use this portal", requiredLevel);
                 return;
             }
-            else if (req_class != 0 && req_class != pPlayer->getClass())
+
+            if (requiredClass != 0 && requiredClass != pPlayer->getClass())
             {
                 pPlayer->broadcastMessage("You do not have the required class to use this Portal");
                 return;
             }
-#if VERSION_STRING > TBC
-            else if (req_achievement != 0 && pPlayer->getAchievementMgr()->hasCompleted(req_achievement))
-            {
-                pPlayer->broadcastMessage("You do not have the required achievement to use this Portal");
-                return;
-            }
-#endif
-            else
-            {
-                uint32_t mapid = gt->mapid;
-                LocationVector location;
-                location.x = gt->x;
-                location.y = gt->y;
-                location.z = gt->z;
-                location.o = gt->o;
 
-                pPlayer->safeTeleport(mapid, 0, location);
+            // Achievements since WotLK
+            if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK) && requiredAchievement != 0)
+            {
+                auto* achiMgr = pPlayer->getAchievementMgr();
+                if (achiMgr == nullptr || !achiMgr->hasCompleted(requiredAchievement))
+                {
+                    pPlayer->broadcastMessage("You do not have the required achievement to use this Portal");
+                    return;
+                }
             }
+
+            pPlayer->safeTeleport(gt->mapid, 0, LocationVector(gt->x, gt->y, gt->z, gt->o));
         }
     }
 
@@ -85,9 +81,9 @@ public:
 void InitializeGameObjectTeleportTable(ScriptMgr* mgr)
 {
     auto result = WorldDatabase.query("SELECT entry, mapid, x_pos, y_pos, z_pos, orientation, required_level, required_class, required_achievement FROM gameobject_teleports");
-    if (result != NULL)
+    if (result != nullptr)
     {
-        // Check if the SQL table is setup correctly
+        // Check if the SQL table is set up correctly
         if (result->getFieldCount() < 9)
         {
             DLLLogDetail("Error: Custom portals disabled, invalid 'gameobject_teleports' table.");

@@ -5,8 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 
-#if VERSION_STRING >= Mop
-
 #include "WanderingIsle.hpp"
 
 #include "Chat/ChatDefines.hpp"
@@ -493,5 +491,3 @@ void SetupWanderingIsleCaveOfMeditation(ScriptMgr* mgr)
     mgr->register_creature_script(NPC_LI_FEI_FIGHT, &LiFeiFightAI::Create);
     mgr->register_creature_script(NPC_HUO, &HuoAI::Create);
 }
-
-#endif

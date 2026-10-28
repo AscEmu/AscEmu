@@ -5,10 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "AEVersion.hpp"
-
-#if VERSION_STRING >= Mop
-
 #include "Management/QuestLogEntry.hpp"
 #include "Management/QuestProperties.hpp"
 #include "Objects/Units/Creatures/Creature.h"
@@ -211,5 +207,3 @@ void SetupWanderingIsleTempleOfFiveDawns(ScriptMgr* mgr);
 void SetupWanderingIsleSingingPools(ScriptMgr* mgr);
 void SetupWanderingIsleChamberOfWhispers(ScriptMgr* mgr);
 void SetupWanderingIsleWoodOfStaves(ScriptMgr* mgr);
-
-#endif

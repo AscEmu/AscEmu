@@ -5,8 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 
-#if VERSION_STRING >= Mop
-
 #include "WanderingIsle.hpp"
 
 #include "Chat/ChatDefines.hpp"
@@ -574,5 +572,3 @@ void SetupWanderingIsleWoodOfStaves(ScriptMgr* mgr)
     mgr->register_creature_script(NPC_HOT_AIR_BALLOON, &HotAirBalloonAI::Create);
     mgr->register_creature_script(NPC_HOT_AIR_BALLOON_VEHICLE, &HotAirBalloonVehicleAI::Create);
 }
-
-#endif

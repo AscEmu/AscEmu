@@ -5,8 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 
-#if VERSION_STRING >= Mop
-
 #include "WanderingIsle.hpp"
 
 #include "Logging/Logger.hpp"
@@ -308,5 +306,3 @@ void SetupWanderingIsle(ScriptMgr* mgr)
     SetupWanderingIsleChamberOfWhispers(mgr);
     SetupWanderingIsleWoodOfStaves(mgr);
 }
-
-#endif

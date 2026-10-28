@@ -44,85 +44,92 @@
 
 static float EOTSBuffCoordinates[4][4] =
 {
-    { 2050.54f, 1372.66f, 1194.56f, 1.67f },  // BE Tower
-    { 2047.72f, 1749.73f, 1190.19f, 4.76f },  // Fel Reaver Ruins
-    { 2283.39f, 1748.89f, 1189.77f, 4.88f },  // Mage Tower
-    { 2302.68f, 1391.27f, 1197.79f, 2.05f },  // Draenei Ruins
+    {2050.54f, 1372.66f, 1194.56f, 1.67f}, // BE Tower
+    {2047.72f, 1749.73f, 1190.19f, 4.76f}, // Fel Reaver Ruins
+    {2283.39f, 1748.89f, 1189.77f, 4.88f}, // Mage Tower
+    {2302.68f, 1391.27f, 1197.79f, 2.05f}, // Draenei Ruins
 };
 
 static float EOTSBuffRotations[4][2] =
 {
-    { 0.681998f, -0.731354f },
-    { 0.771625f, 0.636078f },
-    { 0.422618f, -0.906308f },
-    { 0.743145f, 0.669131f },
+    {0.681998f, -0.731354f},
+    {0.771625f, 0.636078f},
+    {0.422618f, -0.906308f},
+    {0.743145f, 0.669131f},
 };
 
-uint32_t EOTSbuffentrys[3] = { 184971, 184978, 184973 };
+uint32_t EOTSbuffentrys[3] = {184971, 184978, 184973};
 
 const float EOTSGraveyardLocations[EOTS_TOWER_COUNT][3] =
 {
-    { 2012.403442f, 1455.412354f, 1172.201782f },      // BE Tower
-    { 2013.061890f, 1677.238037f, 1182.125732f },      // Fel Reaver Ruins
-    { 2355.297852f, 1683.713989f, 1173.153687f },      // Mage Tower
-    { 2351.785400f, 1455.399048f, 1185.333374f },      // Draenei Ruins
+    {2012.403442f, 1455.412354f, 1172.201782f}, // BE Tower
+    {2013.061890f, 1677.238037f, 1182.125732f}, // Fel Reaver Ruins
+    {2355.297852f, 1683.713989f, 1173.153687f}, // Mage Tower
+    {2351.785400f, 1455.399048f, 1185.333374f}, // Draenei Ruins
 };
 
 const float EOTSCPLocations[EOTS_TOWER_COUNT][4] =
 {
-    { 2047.19f, 1349.19f, 1189.11f, 1.5f },            // BE Tower 1
-    { 2057.46f, 1735.07f, 1188.51f, 1.5f },            // Fel Reaver Ruins 1
-    { 2270.84f, 1784.08f, 1186.76f, 1.5f },            // Mage Tower 1
-    { 2276.81f, 1400.41f, 1196.74f, 2.8f },            // Draenei Ruins 1
+    {2047.19f, 1349.19f, 1189.11f, 1.5f}, // BE Tower 1
+    {2057.46f, 1735.07f, 1188.51f, 1.5f}, // Fel Reaver Ruins 1
+    {2270.84f, 1784.08f, 1186.76f, 1.5f}, // Mage Tower 1
+    {2276.81f, 1400.41f, 1196.74f, 2.8f}, // Draenei Ruins 1
 };
 
 const float EOTSCPLocations2[EOTS_TOWER_COUNT][4] =
 {
-    { 2074.07f, 1383.77f, 1195.16f, 0.4f },            // BE Tower 2
-    { 2032.25f, 1729.53f, 1191.48f, 1.5f },            // Fel Reaver Ruins 2
-    { 2269.13f, 1737.71f, 1186.66f, 4.2f },            // Mage Tower 2
-    { 2305.78f, 1404.56f, 1199.73f, 1.5f },            // Draenei Ruins 2
+    {2074.07f, 1383.77f, 1195.16f, 0.4f}, // BE Tower 2
+    {2032.25f, 1729.53f, 1191.48f, 1.5f}, // Fel Reaver Ruins 2
+    {2269.13f, 1737.71f, 1186.66f, 4.2f}, // Mage Tower 2
+    {2305.78f, 1404.56f, 1199.73f, 1.5f}, // Draenei Ruins 2
 };
 
 const float EOTSCPLocations3[EOTS_TOWER_COUNT][4] =
 {
-    { 2025.13f, 1386.12f, 1192.81f, 2.2f },            // BE Tower 3
-    { 2092.35f, 1775.46f, 1187.71f, 5.8f },            // Fel Reaver Ruins 3
-    { 2300.86f, 1741.25f, 1187.96f, 5.3f },            // Mage Tower 3
-    { 2245.42f, 1366.41f, 1195.49f, 2.8f },            // Draenei Ruins 3
+    {2025.13f, 1386.12f, 1192.81f, 2.2f}, // BE Tower 3
+    {2092.35f, 1775.46f, 1187.71f, 5.8f}, // Fel Reaver Ruins 3
+    {2300.86f, 1741.25f, 1187.96f, 5.3f}, // Mage Tower 3
+    {2245.42f, 1366.41f, 1195.49f, 2.8f}, // Draenei Ruins 3
 };
 
 const float EOTSTCLocations[EOTS_TOWER_COUNT][3] =
 {
-    { 2050.49f, 1372.23f, 1194.56f },                  // BE Tower
-    { 2024.24f, 1742.48f, 1195.15f },                  // Fel Reaver Ruins
-    { 2282.12f, 1755.00f, 1189.70f },                  // Mage Tower
-    { 2301.01f, 1386.93f, 1197.18f },                  // Draenei Ruins
+    {2050.49f, 1372.23f, 1194.56f}, // BE Tower
+    {2024.24f, 1742.48f, 1195.15f}, // Fel Reaver Ruins
+    {2282.12f, 1755.00f, 1189.70f}, // Mage Tower
+    {2301.01f, 1386.93f, 1197.18f}, // Draenei Ruins
 };
 
-const float EOTSFlagLocation[3] = { 2174.718750f, 1568.766113f, 1159.958740f };
+const float EOTSFlagLocation[3] = {2174.718750f, 1568.766113f, 1159.958740f};
 const float EOTSStartLocations[2][4] =
 {
-    { 2523.686035f, 1596.597290f, 1269.347656f, 3.191859f },
-    { 1807.735962f, 1539.415649f, 1267.627319f, 0.0f },
+    {2523.686035f, 1596.597290f, 1269.347656f, 3.191859f},
+    {1807.735962f, 1539.415649f, 1267.627319f, 0.0f},
 };
 
-// the force fields sit lower on the 5.x terrain
-const float EOTSBubbleLocations[2][5] =
-{
-#if VERSION_STRING >= Mop
-    { 184719, 1803.21f, 1539.49f, 1242.19f, AscEmu::Math::PiF },
-    { 184720, 2527.6f, 1596.91f, 1240.7f, -3.12414f },
-#else
-    { 184719, 1803.21f, 1539.49f, 1261.09f, AscEmu::Math::PiF },
-    { 184720, 2527.6f, 1596.91f, 1262.13f, -3.12414f },
-#endif
+constexpr float EOTSBubbleLocationsLegacy[2][5] = {
+    {184719, 1803.21f, 1539.49f, 1261.09f, AscEmu::Math::PiF},
+    {184720, 2527.6f, 1596.91f, 1262.13f, -3.12414f}
 };
+
+// The force fields sit lower on the 5.x terrain
+constexpr float EOTSBubbleLocationsMoP[2][5] = {
+    {184719, 1803.21f, 1539.49f, 1242.19f, AscEmu::Math::PiF},
+    {184720, 2527.6f, 1596.91f, 1240.7f, -3.12414f}
+};
+
+inline const auto& getEOTSBubbleLocations()
+{
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+        return EOTSBubbleLocationsMoP;
+
+    return EOTSBubbleLocationsLegacy;
+}
 
 const float EOTSBubbleRotations[2][4] =
 {
-    { 0.173648f, 0.0f, 0.984808f, 0.0f },
-    { -0.173642f, -0.001515f, 0.984770f, -0.008594f },
+    {0.173648f, 0.0f, 0.984808f, 0.0f},
+    {-0.173642f, -0.001515f, 0.984770f, -0.008594f},
 };
 
 static const char* EOTSControlPointNames[EOTS_TOWER_COUNT] =
@@ -135,7 +142,7 @@ static const char* EOTSControlPointNames[EOTS_TOWER_COUNT] =
 
 static uint32_t resourcesToGainBH = 330;
 
-const uint32_t EOTSTowerIds[EOTS_TOWER_COUNT] = { EOTS_GO_BE_TOWER, EOTS_GO_FELREAVER, EOTS_GO_MAGE_TOWER, EOTS_GO_DRAENEI_TOWER };
+const uint32_t EOTSTowerIds[EOTS_TOWER_COUNT] = {EOTS_GO_BE_TOWER, EOTS_GO_FELREAVER, EOTS_GO_MAGE_TOWER, EOTS_GO_DRAENEI_TOWER};
 
 const uint32_t m_iconsStates[EOTS_TOWER_COUNT][3] =
 {
@@ -609,13 +616,15 @@ void EyeOfTheStorm::OnCreate()
         m_CPBanner3[i]->PushToWorld(m_mapMgr);
     }
 
+    const auto& bubbleLocations = getEOTSBubbleLocations();
+
     // BUBBLES
     for (uint8_t i = 0; i < 2; ++i)
     {
         m_bubbles[i] = m_mapMgr->getSpawnManager().createGameObject(
-            static_cast<uint32_t>(EOTSBubbleLocations[i][0]),
-            LocationVector(EOTSBubbleLocations[i][1], EOTSBubbleLocations[i][2], EOTSBubbleLocations[i][3], EOTSBubbleLocations[i][4]),
-            QuaternionData(EOTSBubbleRotations[i][0], EOTSBubbleRotations[i][1], EOTSBubbleRotations[i][2], EOTSBubbleRotations[i][3]));
+            static_cast<uint32_t>(bubbleLocations[i][0]),
+            LocationVector(bubbleLocations[i][1], bubbleLocations[i][2], bubbleLocations[i][3], bubbleLocations[i][4]),
+            QuaternionData(bubbleLocations[i][0], bubbleLocations[i][1], bubbleLocations[i][2], bubbleLocations[i][3]));
         if (m_bubbles[i] == nullptr)
         {
             DLLLogDetail("EOTS is being created and you are missing gameobjects. Terminating.");

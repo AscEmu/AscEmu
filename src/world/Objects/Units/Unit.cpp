@@ -749,22 +749,23 @@ void Unit::setMaxPower(PowerType type, uint32_t value)
         case POWER_FIELD_INDEX_5:
             setField<uint32_t>(UnitField::MaxPower5, value);
             break;
-#if VERSION_STRING == WotLK
         case POWER_FIELD_INDEX_6:
-            setField<uint32_t>(UnitField::MaxPower6, value);
+            if (WoW::getServerExpansion() == WoW::Expansion::_WotLK)
+                setField<uint32_t>(UnitField::MaxPower6, value);
             break;
         case POWER_FIELD_INDEX_7:
-            setField<uint32_t>(UnitField::MaxPower7, value);
+            if (WoW::getServerExpansion() == WoW::Expansion::_WotLK)
+                setField<uint32_t>(UnitField::MaxPower7, value);
             break;
-#endif
         default:
             return;
     }
 
-#if VERSION_STRING == TBC
-    // TODO Fix this later
-    return;
-#else
+    if (WoW::getServerExpansion() == WoW::Expansion::_TBC)
+    {
+        // TODO Fix this later
+        return;
+    }
 
     // Update power also to group
     const auto plr = getPlayerOwnerOrSelf();
@@ -773,7 +774,6 @@ void Unit::setMaxPower(PowerType type, uint32_t value)
 
     if (value < getPower(type))
         setPower(type, value);
-#endif
 }
 
 void Unit::modMaxPower(PowerType type, int32_t value)

@@ -8,13 +8,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/UnitDefines.hpp"
 #include "Objects/Units/Players/Player.hpp"
 
-enum
-{
-    // Catrina
-    SPELL_HONOR_THE_DEAD = 65386,
-    //NPC_CATRINA = 34383,
-    ACHIEVEMRNT_DEAD_MANS_PARTY = 3456,
-};
+// Catrina
+inline constexpr uint32_t SPELL_HONOR_THE_DEAD = 65386;
+// inline constexpr uint32_t NPC_CATRINA = 34383;
+inline constexpr uint32_t ACHIEVEMENT_DEAD_MANS_PARTY = 3456;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //\details <b>Day of the Dead</b>\n
@@ -36,12 +33,15 @@ void Catrina(Player* pPlayer, Unit* pUnit)
         }
     }
 
-#if VERSION_STRING > TBC
-    if (pPlayer->getAchievementMgr()->hasCompleted(ACHIEVEMRNT_DEAD_MANS_PARTY) == false)
+    // Achievements since WotLK
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
     {
-        pPlayer->getAchievementMgr()->gmCompleteAchievement(NULL, ACHIEVEMRNT_DEAD_MANS_PARTY);
+        auto* achiMgr = pPlayer->getAchievementMgr();
+        if (achiMgr != nullptr && !achiMgr->hasCompleted(ACHIEVEMENT_DEAD_MANS_PARTY))
+        {
+            achiMgr->gmCompleteAchievement(nullptr, ACHIEVEMENT_DEAD_MANS_PARTY);
+        }
     }
-#endif
 }
 
 void OnEmote(Player* pPlayer, uint32_t Emote, Unit* pUnit)

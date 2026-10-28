@@ -5,8 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 
-#if VERSION_STRING >= Mop
-
 #include "WanderingIsle.hpp"
 
 #include "Chat/ChatDefines.hpp"
@@ -330,5 +328,3 @@ void SetupWanderingIsleSingingPools(ScriptMgr* mgr)
     mgr->register_creature_script(NPC_SHU_DAI_LO, &ShuDaiLoAI::Create);
     mgr->register_creature_gossip(NPC_SHU_DAI_LO, new ShuDaiLoGossip);
 }
-
-#endif

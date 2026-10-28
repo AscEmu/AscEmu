@@ -181,7 +181,6 @@ bool Give5kGold(uint8_t /*effectIndex*/, Spell* s)
     return true;
 }
 
-#if VERSION_STRING >= WotLK
 bool NorthRendInscriptionResearch(uint8_t /*effectIndex*/, Spell* s)
 {
     // http://www.wowwiki.com/Minor_Inscription_Research :
@@ -214,19 +213,21 @@ bool NorthRendInscriptionResearch(uint8_t /*effectIndex*/, Spell* s)
                         SpellInfo const* se2 = sSpellMgr.getSpellInfo(itm->Spells[0].Id);
                         if (se2 && se2->getEffect(0) == SPELL_EFFECT_USE_GLYPH)
                         {
-#if VERSION_STRING > TBC
-                            auto glyph_properties = sGlyphPropertiesStore.lookupEntry(se2->getEffectMiscValue(0));
-                            if (glyph_properties)
+                            // Glyphs existed since WotLK
+                            if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
                             {
-                                if (glyph_properties->Type == glyphType)
+                                auto glyph_properties = sGlyphPropertiesStore.lookupEntry(se2->getEffectMiscValue(0));
+                                if (glyph_properties)
                                 {
-                                    if (!s->getPlayerCaster()->hasSpell(skill_line_ability->spell))
+                                    if (glyph_properties->Type == glyphType)
                                     {
-                                        discoverableGlyphs.push_back(skill_line_ability->spell);
+                                        if (!s->getPlayerCaster()->hasSpell(skill_line_ability->spell))
+                                        {
+                                            discoverableGlyphs.push_back(skill_line_ability->spell);
+                                        }
                                     }
                                 }
                             }
-#endif
                         }
                     }
                 }
@@ -242,11 +243,9 @@ bool NorthRendInscriptionResearch(uint8_t /*effectIndex*/, Spell* s)
 
     return true;
 }
-#endif
 
 bool DeadlyThrowInterrupt(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
-
     if (!apply)
         return true;
 
@@ -284,7 +283,7 @@ bool WaitingToResurrect(uint8_t /*effectIndex*/, Aura* a, bool apply)
 
     Player* p_target = static_cast<Player*>(u_target);
 
-    if (apply)        // already applied in opcode handler
+    if (apply) // already applied in opcode handler
         return true;
 
     uint64_t crtguid = p_target->getAreaSpiritHealerGuid();
@@ -705,11 +704,11 @@ void SetupLegacyMiscSpellhandlers(ScriptMgr* mgr)
 
     mgr->register_script_effect(46642, &Give5kGold);
 
-#if VERSION_STRING >= WotLK
-    mgr->register_script_effect(61288, &NorthRendInscriptionResearch);
-
-    mgr->register_script_effect(61177, &NorthRendInscriptionResearch);
-#endif
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
+        mgr->register_script_effect(61288, &NorthRendInscriptionResearch);
+        mgr->register_script_effect(61177, &NorthRendInscriptionResearch);
+    }
 
     mgr->register_dummy_aura(32748, &DeadlyThrowInterrupt);
 

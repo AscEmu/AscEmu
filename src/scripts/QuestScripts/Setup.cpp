@@ -80,10 +80,11 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
     SetupBarrens(mgr);
     SetupBoreanTundra(mgr);
     SetupSholazarBasin(mgr);
-#if VERSION_STRING >= Mop
-    SetupWanderingIsle(mgr);
-#endif
 
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+    {
+        SetupWanderingIsle(mgr);
+    }
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
     SetupQuestGossip(mgr);
@@ -93,7 +94,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 
 #ifdef _WIN32
 #include <Windows.h>
-BOOL APIENTRY DllMain(HANDLE /*hModule*/, DWORD  /*ul_reason_for_call*/, LPVOID /*lpReserved*/)
+BOOL APIENTRY DllMain(HANDLE /*hModule*/, DWORD /*ul_reason_for_call*/, LPVOID /*lpReserved*/)
 {
     return TRUE;
 }

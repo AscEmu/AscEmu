@@ -9,10 +9,7 @@ endif ()
 set(LIBRARY_NAME QuestScripts)
 
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
-
-if ("${ASCEMU_NUMBER}" GREATER_EQUAL 4) # Mop
 file(GLOB SRC_MOP_DIR Mop/*.cpp Mop/*.hpp)
-endif ()
 
 # required for linker.
 set(SRC_QUESTSCRIPTS

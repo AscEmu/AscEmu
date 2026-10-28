@@ -168,6 +168,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
 {
 public:
     static CreatureAIScript* Create(Creature* c) { return new DancingRuneWeaponAI(c); }
+
     explicit DancingRuneWeaponAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         dpsCycle = 0;
@@ -205,9 +206,11 @@ public:
                             summon->setBaseAttackTime(MELEE, item->getItemProperties()->Delay);
                         }
 
-#if VERSION_STRING == WotLK
-                        playerOwner->setPower(POWER_TYPE_RUNIC_POWER, 0);
-#endif
+                        // In WotLK DRW consumes all runic power on summon, so we need to set it to 0 here
+                        if (WoW::getServerExpansion() == WoW::Expansion::_WotLK)
+                        {
+                            playerOwner->setPower(POWER_TYPE_RUNIC_POWER, 0);
+                        }
                     }
                 }
 
@@ -312,12 +315,14 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new FrostBroodVanquisherAI(c); }
     explicit FrostBroodVanquisherAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-#if VERSION_STRING >= TBC
     void OnLoad() override
     {
-        getCreature()->setAnimationFlags(ANIMATION_FLAG_HOVER);
+        // Hover animation exist since TBC (flying mounts was introduced)
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+        {
+            getCreature()->setAnimationFlags(ANIMATION_FLAG_HOVER);
+        }
     }
-#endif
 
     void OnRemovePassenger(Unit* _passenger) override
     {

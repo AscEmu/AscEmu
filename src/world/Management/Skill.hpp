@@ -11,30 +11,22 @@ This file is released under the MIT license. See README-MIT for more information
 
 enum PlayerSkills : uint16_t
 {
-#if VERSION_STRING <= Cata
     SKILL_FROST                         = 6,
     SKILL_FIRE                          = 8,
     SKILL_ARMS                          = 26,
     SKILL_COMBAT                        = 38,
     SKILL_SUBTLETY                      = 39,
-#endif
-#if VERSION_STRING <= TBC
     SKILL_POISONS                       = 40,
-#endif
     SKILL_SWORDS                        = 43,
     SKILL_AXES                          = 44,
     SKILL_BOWS                          = 45,
     SKILL_GUNS                          = 46,
-#if VERSION_STRING <= Cata
     SKILL_BEAST_MASTERY                 = 50,
     SKILL_SURVIVAL                      = 51,
-#endif
     SKILL_MACES                         = 54,
     SKILL_2H_SWORDS                     = 55,
-#if VERSION_STRING <= Cata
     SKILL_HOLY                          = 56,
     SKILL_SHADOW_MAGIC                  = 78,
-#endif
     SKILL_DEFENSE                       = 95,
     SKILL_LANG_COMMON                   = 98,
     SKILL_RACIAL_DWARVEN                = 101,
@@ -47,9 +39,7 @@ enum PlayerSkills : uint16_t
     SKILL_RACIAL_ORC                    = 125,
     SKILL_RACIAL_NIGHT_ELF              = 126,
     SKILL_FIRST_AID                     = 129,
-#if VERSION_STRING <= Cata
     SKILL_FERAL_COMBAT                  = 134,
-#endif
     SKILL_STAVES                        = 136,
     SKILL_LANG_THALASSIAN               = 137,
     SKILL_LANG_DRACONIC                 = 138,
@@ -64,22 +54,16 @@ enum PlayerSkills : uint16_t
     SKILL_SWIMMING                      = 155,
     SKILL_2H_MACES                      = 160,
     SKILL_UNARMED                       = 162,
-#if VERSION_STRING <= Cata
     SKILL_MARKSMANSHIP                  = 163,
-#endif
     SKILL_BLACKSMITHING                 = 164,
     SKILL_LEATHERWORKING                = 165,
     SKILL_ALCHEMY                       = 171,
     SKILL_2H_AXES                       = 172,
     SKILL_DAGGERS                       = 173,
-#if VERSION_STRING <= Cata
     SKILL_THROWN                        = 176,
-#endif
     SKILL_HERBALISM                     = 182,
     SKILL_GENERIC_DND                   = 183,
-#if VERSION_STRING <= Cata
     SKILL_RETRIBUTION                   = 184,
-#endif
     SKILL_COOKING                       = 185,
     SKILL_MINING                        = 186,
     SKILL_PET_IMP                       = 188,
@@ -106,31 +90,23 @@ enum PlayerSkills : uint16_t
     SKILL_WANDS                         = 228,
     SKILL_POLEARMS                      = 229,
     SKILL_PET_SCORPID                   = 236,
-#if VERSION_STRING <= Cata
     SKILL_ARCANE                        = 237,
-#endif
     SKILL_PET_TURTLE                    = 251,
-#if VERSION_STRING <= Cata
     SKILL_ASSASSINATION                 = 253,
     SKILL_FURY                          = 256,
     SKILL_PROTECTION                    = 257,
     SKILL_PROTECTION2                   = 267,
-#endif
     SKILL_PET_GENERIC_HUNTER            = 270,
     SKILL_PLATE_MAIL                    = 293,
     SKILL_LANG_GNOMISH                  = 313,
     SKILL_LANG_TROLL                    = 315,
     SKILL_ENCHANTING                    = 333,
-#if VERSION_STRING <= Cata
     SKILL_DEMONOLOGY                    = 354,
     SKILL_AFFLICTION                    = 355,
-#endif
     SKILL_FISHING                       = 356,
-#if VERSION_STRING <= Cata
     SKILL_ENHANCEMENT                   = 373,
     SKILL_RESTORATION                   = 374,
     SKILL_ELEMENTAL_COMBAT              = 375,
-#endif
     SKILL_SKINNING                      = 393,
     SKILL_MAIL                          = 413,
     SKILL_LEATHER                       = 414,
@@ -140,16 +116,12 @@ enum PlayerSkills : uint16_t
     SKILL_RAPTOR_RIDING                 = 533,
     SKILL_MECHANOSTRIDER_PILOTING       = 553,
     SKILL_UNDEAD_HORSEMANSHIP           = 554,
-#if VERSION_STRING <= Cata
     SKILL_RESTORATION2                  = 573,
     SKILL_BALANCE                       = 574,
     SKILL_DESTRUCTION                   = 593,
     SKILL_HOLY2                         = 594,
     SKILL_DISCIPLINE                    = 613,
-#endif
-#if VERSION_STRING <= WotLK
     SKILL_LOCKPICKING                   = 633,
-#endif
     SKILL_PET_BAT                       = 653,
     SKILL_PET_HYENA                     = 654,
     SKILL_PET_BIRD_OF_PREY              = 655,
@@ -162,7 +134,6 @@ enum PlayerSkills : uint16_t
     SKILL_PET_EVENT_REMOTECONTROL       = 758,
     SKILL_RIDING                        = 762,
 // TBC
-#if VERSION_STRING >= TBC
     SKILL_JEWELCRAFTING                 = 755,
     SKILL_RACIAL_BLOOD_ELF              = 756,
     SKILL_LANG_DRAENEI                  = 759,
@@ -175,17 +146,13 @@ enum PlayerSkills : uint16_t
     SKILL_PET_RAVAGER                   = 767,
     SKILL_PET_SERPENT                   = 768,
     SKILL_INTERNAL                      = 769,
-#endif
 // WotLK
-#if VERSION_STRING >= WotLK
-#if VERSION_STRING <= Cata
     SKILL_BLOOD                         = 770,
     SKILL_FROST2                        = 771,
     SKILL_UNHOLY                        = 772,
-#endif
     SKILL_INSCRIPTION                   = 773,
     SKILL_PET_MOTH                      = 775,
-#if VERSION_STRING <= Cata
+#if VERSION_STRING < Mop
     SKILL_RUNEFORGING                   = 776,
 #endif
     SKILL_MOUNTS                        = 777,
@@ -199,9 +166,8 @@ enum PlayerSkills : uint16_t
     SKILL_PET_EXOTIC_RHINO              = 786,
     SKILL_PET_EXOTIC_CORE_HOUND         = 787,
     SKILL_PET_EXOTIC_SPIRIT_BEAST       = 788,
-#endif
+
 // Cata
-#if VERSION_STRING >= Cata
     SKILL_RACIAL_WORGEN                 = 789,
     SKILL_RACIAL_GOLBLIN                = 790,
     SKILL_LANG_GILNEAN                  = 791,
@@ -232,7 +198,6 @@ enum PlayerSkills : uint16_t
     SKILL_PET_BEETLE                    = 818,
     SKILL_ALL_GUILD_PERKS               = 821,
     SKILL_PET_HYDRA                     = 824,
-#endif
 // Mop
 #if VERSION_STRING >= Mop
     SKILL_GENERAL_MONK                  = 829,
@@ -245,13 +210,16 @@ enum PlayerSkills : uint16_t
     SKILL_LANG_PANDAREN_HORDE           = 907,
     SKILL_GENERAL_ROGUE                 = 921,
     SKILL_GENERAL_SHAMAN                = 924,
+#endif
     SKILL_FEL_IMP                       = 927,
     SKILL_VOIDLORD                      = 928,
     SKILL_SHIVARRA                      = 929,
     SKILL_OBSERVER                      = 930,
     SKILL_WRATHGUARD                    = 931,
     SKILL_ALL_SPECIALIZATIONS           = 934,
+#if VERSION_STRING >= Mop
     SKILL_RUNEFORGING                   = 960,
+#endif
     SKILL_PET_PRIMALFIRE_ELEMENTAL      = 962,
     SKILL_PET_PRIMALEARTH_ELEMENTAL     = 963,
     SKILL_WAYOFTHE_GRILL                = 975,
@@ -270,7 +238,6 @@ enum PlayerSkills : uint16_t
     SKILL_BASILISK                      = 988,
     SKILL_NO_PLAYERS                    = 999,
     SKILL_DIREHORN                      = 1305,
-#endif
 };
 
 enum SkillTypes : uint8_t

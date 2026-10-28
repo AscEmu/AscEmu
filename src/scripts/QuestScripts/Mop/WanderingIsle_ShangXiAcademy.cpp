@@ -5,8 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 
-#if VERSION_STRING >= Mop
-
 #include "WanderingIsle.hpp"
 
 #include "Management/ItemInterface.h"
@@ -828,5 +826,3 @@ void SetupWanderingIsleAcademy(ScriptMgr* mgr)
     mgr->register_creature_script(NPC_THE_MASTERS_FLAME, &MastersFlameAI::Create);
     mgr->register_creature_script(NPC_JAOMIN_RO, &JaominRoAI::Create);
 }
-
-#endif
