@@ -856,9 +856,11 @@ public:
     void removeShapeShiftSpell(uint32_t spellId);
     SpellSet const& getShapeshiftSpells() const;
 
-    void addPetAuraSpell(uint32_t spellId, bool castedByPet = false);
+    void addPetAuraSpell(uint32_t spellId, bool castedByPet = false, bool isTemporary = false);
     void removePetAuraSpell(uint32_t spellId);
     void castPetAuraSpells();
+    // Removes auras but does not remove from pet spell map
+    void removePetAuraSpells();
 
     void sendAvailSpells(WDB::Structures::SpellShapeshiftFormEntry const* shapeshiftFormEntry, bool active);
 
@@ -972,7 +974,13 @@ private:
     SpellSet m_spellSet;
     SpellSet m_deletedSpellSet;
     SpellSet m_shapeshiftSpells;
-    std::unordered_map<uint32_t, bool> m_petAuraSpells;
+
+    struct PetAuraSpellData
+    {
+        bool castedByPet = false;
+        bool temporary = false; // Temporary aura spells are removed from map when pet is unsummoned
+    };
+    std::unordered_map<uint32_t, PetAuraSpellData> m_petAuraSpells;
 
     bool m_canDualWield2H = false;
 

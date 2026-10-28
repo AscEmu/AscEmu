@@ -39,7 +39,7 @@ struct DamageSplitTarget
     void* creator;
 };
 
-// If true, skips validation of this target for next update
+// If true, target was just added to map
 using AreaAuraList = std::unordered_map<uint64_t, bool>;
 constexpr uint16_t AREA_AURA_UPDATE_INTERVAL = 500; // in ms
 

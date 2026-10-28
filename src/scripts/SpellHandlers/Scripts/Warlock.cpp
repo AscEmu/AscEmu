@@ -264,7 +264,7 @@ class MasterDemonologist : public SpellScript
         if (minion == nullptr)
             return SpellScriptCheckDummy::DUMMY_OK;
 
-        auto* const warlock = spell->getUnitTarget();
+        auto* const warlock = spell->getPlayerTarget();
         if (warlock == nullptr)
             return SpellScriptCheckDummy::DUMMY_OK;
 
@@ -316,6 +316,8 @@ class MasterDemonologist : public SpellScript
                 effectInfo = rankInfo->getSpellWithRank(spellRank);
 
             warlock->castSpell(warlock, effectInfo, true);
+            // Add as temporary pet aura spell to remove correctly on unsummon
+            warlock->addPetAuraSpell(effectInfo->getId(), false, true);
         }
 
         return SpellScriptCheckDummy::DUMMY_OK;

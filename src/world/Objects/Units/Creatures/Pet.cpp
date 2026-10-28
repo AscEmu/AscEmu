@@ -437,6 +437,10 @@ void Pet::unSummon()
     {
         plrOwner->addGroupUpdateFlag(GROUP_UPDATE_PET);
 
+        // Avoid double aura remove if unsummoned on death
+        if (isAlive())
+            plrOwner->removePetAuraSpells();
+
         if (plrOwner->getBattleground() != nullptr)
         {
             // If owner is in battleground, save pet id or spell so it will be spawned on resurrect
@@ -1883,10 +1887,13 @@ void Pet::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32_t sp
 
     getCombatHandler().clearCombat();
 
-    if (m_unitOwner->isPlayer())
+    if (auto* const plrOwner = m_unitOwner->ToPlayer())
     {
         //////////////////////////////////////////////////////////////////////////////////////////
         // Pet death handling
+
+        // Remove pet aura spells instantly on death
+        plrOwner->removePetAuraSpells();
 
 #if VERSION_STRING < Cata
         Pet* pPet = this;

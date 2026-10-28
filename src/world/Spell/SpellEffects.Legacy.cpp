@@ -534,7 +534,7 @@ void Spell::spellEffectHealthLeech(uint8_t effIndex)
     auto* const affectingCaster = m_originalCaster != nullptr ? m_originalCaster : m_caster;
 #endif
 
-    m_targetDamageInfo = affectingCaster->doSpellDamage(m_unitTarget, getSpellInfo()->getId(), static_cast<float_t>(damage), effIndex, m_triggeredSpell, false, true, isForcedCrit, this);
+    m_targetDamageInfo = affectingCaster->doSpellDamage(m_unitTarget, getSpellInfo()->getId(), static_cast<float_t>(damage), effIndex, m_triggeredSpell, false, true, m_isForcedCrit, this);
     isTargetDamageInfoSet = true;
 }
 
@@ -608,19 +608,16 @@ void Spell::spellEffectApplyAreaAura(uint8_t effectIndex)
         return;
 
     const auto [itr, createdNew] = m_pendingAuras.try_emplace(m_unitTarget->getGuid(), Util::LazyInstanceCreator([this] {
-        return HitAuraEffect{ 0, sSpellMgr.newAura(m_spellInfo, getDuration(), m_caster, m_unitTarget) };
+        return HitAuraEffect{ 0, sSpellMgr.newAura(m_spellInfo, getDuration(), m_caster, m_unitTarget, false, i_caster) };
     }));
 
     auto* const aur = itr->second.aur.get();
     if (createdNew)
-    {
         aur->setIsAreaAura(true);
-        aur->setCastedItemId(castedItemId);
-    }
 
     aur->addAuraEffect(static_cast<AuraEffect>(m_spellInfo->getEffectApplyAuraName(effectIndex)), damage,
-        m_spellInfo->getEffectMiscValue(effectIndex), effectPctModifier[effectIndex],
-        isEffectDamageStatic[effectIndex], effectIndex);
+        m_spellInfo->getEffectMiscValue(effectIndex), m_effectPctModifier[effectIndex],
+        m_isEffectDamageStatic[effectIndex], effectIndex);
 }
 
 void Spell::spellEffectDualWield(uint8_t /*effectIndex*/)
@@ -1636,14 +1633,14 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
 
     if (getSpellInfo()->getSpeed() > 0 && m_triggeredSpell == false)
     {
-        m_targetDamageInfo = affectingCaster->doSpellDamage(m_unitTarget, getSpellInfo()->getId(), static_cast<float_t>(dmg), effectIndex, pSpellId != 0, false, false, isForcedCrit, this);
+        m_targetDamageInfo = affectingCaster->doSpellDamage(m_unitTarget, getSpellInfo()->getId(), static_cast<float_t>(dmg), effectIndex, pSpellId != 0, false, false, m_isForcedCrit, this);
         isTargetDamageInfoSet = true;
     }
     else
     {
         if (GetType() == SPELL_DMG_TYPE_MAGIC)
         {
-            m_targetDamageInfo = affectingCaster->doSpellDamage(m_unitTarget, getSpellInfo()->getId(), static_cast<float_t>(dmg), effectIndex, m_triggeredSpell, false, false, isForcedCrit, this);
+            m_targetDamageInfo = affectingCaster->doSpellDamage(m_unitTarget, getSpellInfo()->getId(), static_cast<float_t>(dmg), effectIndex, m_triggeredSpell, false, false, m_isForcedCrit, this);
             isTargetDamageInfoSet = true;
         }
         else
@@ -1661,7 +1658,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                         _type = MELEE;
                 }
 
-                m_targetDamageInfo = u_caster->strike(m_unitTarget, _type, getSpellInfo(), 0, 0, dmg, m_triggeredSpell, true, (force_crit || isForcedCrit), this);
+                m_targetDamageInfo = u_caster->strike(m_unitTarget, _type, getSpellInfo(), 0, 0, dmg, m_triggeredSpell, true, (force_crit || m_isForcedCrit), this);
                 isTargetDamageInfoSet = true;
             }
         }
@@ -1915,7 +1912,7 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
         return;
     }
 
-    pAura->addAuraEffect(static_cast<AuraEffect>(getSpellInfo()->getEffectApplyAuraName(effectIndex)), damage, getSpellInfo()->getEffectMiscValue(effectIndex), effectPctModifier[effectIndex], isEffectDamageStatic[effectIndex], effectIndex);
+    pAura->addAuraEffect(static_cast<AuraEffect>(getSpellInfo()->getEffectApplyAuraName(effectIndex)), damage, getSpellInfo()->getEffectMiscValue(effectIndex), m_effectPctModifier[effectIndex], m_isEffectDamageStatic[effectIndex], effectIndex);
 }
 
 void Spell::SpellEffectEnvironmentalDamage(uint8_t effectIndex)
@@ -1928,7 +1925,7 @@ void Spell::SpellEffectEnvironmentalDamage(uint8_t effectIndex)
         return;
     }
     //this is GO, not unit
-    m_targetDamageInfo = m_caster->doSpellDamage(m_playerTarget, getSpellInfo()->getId(), static_cast<float_t>(damage), effectIndex, m_triggeredSpell, false, false, isForcedCrit, this);
+    m_targetDamageInfo = m_caster->doSpellDamage(m_playerTarget, getSpellInfo()->getId(), static_cast<float_t>(damage), effectIndex, m_triggeredSpell, false, false, m_isForcedCrit, this);
     isTargetDamageInfoSet = true;
 
     m_playerTarget->sendEnvironmentalDamageLogPacket(m_playerTarget->getGuid(), DAMAGE_FIRE, damage);
@@ -2062,7 +2059,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
         if (!chaindamage)
         {
             chaindamage = heal;
-            m_targetDamageInfo = affectingCaster->doSpellHealing(m_unitTarget, getSpellInfo()->getId(), static_cast<float_t>(chaindamage), m_triggeredSpell, false, false, isForcedCrit, this);
+            m_targetDamageInfo = affectingCaster->doSpellHealing(m_unitTarget, getSpellInfo()->getId(), static_cast<float_t>(chaindamage), m_triggeredSpell, false, false, m_isForcedCrit, this);
             isTargetDamageInfoSet = true;
         }
         else
@@ -2073,7 +2070,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                 affectingUnitCaster->applySpellModifiers(SPELLMOD_JUMP_REDUCE, &reduce, getSpellInfo(), this);
             }
             chaindamage -= (reduce * chaindamage) / 100;
-            m_targetDamageInfo = affectingCaster->doSpellHealing(m_unitTarget, getSpellInfo()->getId(), static_cast<float_t>(chaindamage), m_triggeredSpell, false, false, isForcedCrit, this);
+            m_targetDamageInfo = affectingCaster->doSpellHealing(m_unitTarget, getSpellInfo()->getId(), static_cast<float_t>(chaindamage), m_triggeredSpell, false, false, m_isForcedCrit, this);
             isTargetDamageInfoSet = true;
         }
     }
@@ -2102,7 +2099,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                             value = basePoints + Util::getRandomUInt(randomPoints);
                         //the value is in percent. Until now it's a fixed 10%
                         const auto amt = m_unitTarget->getMaxHealth()*value / 100.0f;
-                        m_targetDamageInfo = affectingCaster->doSpellHealing(m_unitTarget, getSpellInfo()->getId(), amt, m_triggeredSpell, false, false, isForcedCrit, this);
+                        m_targetDamageInfo = affectingCaster->doSpellHealing(m_unitTarget, getSpellInfo()->getId(), amt, m_triggeredSpell, false, false, m_isForcedCrit, this);
                         isTargetDamageInfoSet = true;
                     }
                 }
@@ -2113,7 +2110,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
             {
                 if (m_unitTarget)
                 {
-                    m_targetDamageInfo = affectingCaster->doSpellHealing(m_unitTarget, getSpellInfo()->getId(), m_unitTarget->getMaxHealth() / 100.0f, m_triggeredSpell, false, false, isForcedCrit, this);
+                    m_targetDamageInfo = affectingCaster->doSpellHealing(m_unitTarget, getSpellInfo()->getId(), m_unitTarget->getMaxHealth() / 100.0f, m_triggeredSpell, false, false, m_isForcedCrit, this);
                     isTargetDamageInfoSet = true;
                 }
             }
@@ -2316,7 +2313,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                         const auto spellInfo = sSpellMgr.getSpellInfo(18562);
                         Spell* spell = sSpellMgr.newSpell(m_unitTarget, spellInfo, true, nullptr);
                         spell->setUnitTarget(m_unitTarget);
-                        m_targetDamageInfo = affectingCaster->doSpellHealing(m_unitTarget, spellInfo->getId(), new_dmg, m_triggeredSpell, false, false, isForcedCrit, this);
+                        m_targetDamageInfo = affectingCaster->doSpellHealing(m_unitTarget, spellInfo->getId(), new_dmg, m_triggeredSpell, false, false, m_isForcedCrit, this);
                         isTargetDamageInfoSet = true;
                         delete spell;
                     }
@@ -2324,7 +2321,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
             }
             break;
             default:
-                m_targetDamageInfo = affectingCaster->doSpellHealing(m_unitTarget, getSpellInfo()->getId(), static_cast<float_t>(heal), m_triggeredSpell, false, false, isForcedCrit, this);
+                m_targetDamageInfo = affectingCaster->doSpellHealing(m_unitTarget, getSpellInfo()->getId(), static_cast<float_t>(heal), m_triggeredSpell, false, false, m_isForcedCrit, this);
                 isTargetDamageInfoSet = true;
                 break;
         }
@@ -2378,7 +2375,7 @@ void Spell::SpellEffectWeapondamageNoschool(uint8_t /*effectIndex*/) // Weapon d
     if (!m_unitTarget || !u_caster)
         return;
 
-    m_targetDamageInfo = u_caster->strike(m_unitTarget, (GetType() == SPELL_DMG_TYPE_RANGED ? RANGED : MELEE), getSpellInfo(), damage, 0, 0, m_triggeredSpell, true, isForcedCrit, this);
+    m_targetDamageInfo = u_caster->strike(m_unitTarget, (GetType() == SPELL_DMG_TYPE_RANGED ? RANGED : MELEE), getSpellInfo(), damage, 0, 0, m_triggeredSpell, true, m_isForcedCrit, this);
     isTargetDamageInfoSet = true;
 }
 
@@ -3240,7 +3237,7 @@ void Spell::SpellEffectWeaponDmgPerc(uint8_t effectIndex) // Weapon Percent dama
         auto dmg = CalculateDamage(u_caster, m_unitTarget, MELEE, getSpellInfo()) * damage / 100.0f;
 
         // Get bonus damage from spell power and attack power
-        if (!isEffectDamageStatic[effectIndex])
+        if (!m_isEffectDamageStatic[effectIndex])
             dmg = getUnitCaster()->applySpellDamageBonus(m_originalCaster, getSpellInfo(), effectIndex, static_cast<int32_t>(dmg), false, this);
 
 #if VERSION_STRING < WotLK
@@ -3248,7 +3245,7 @@ void Spell::SpellEffectWeaponDmgPerc(uint8_t effectIndex) // Weapon Percent dama
 #else
         auto* const affectingCaster = m_originalCaster != nullptr ? m_originalCaster : m_caster;
 #endif
-        m_targetDamageInfo = affectingCaster->doSpellDamage(m_unitTarget, getSpellInfo()->getId(), dmg, effectIndex, m_triggeredSpell, false, false, isForcedCrit, this);
+        m_targetDamageInfo = affectingCaster->doSpellDamage(m_unitTarget, getSpellInfo()->getId(), dmg, effectIndex, m_triggeredSpell, false, false, m_isForcedCrit, this);
         isTargetDamageInfoSet = true;
     }
     else
@@ -3264,7 +3261,7 @@ void Spell::SpellEffectWeaponDmgPerc(uint8_t effectIndex) // Weapon Percent dama
                 _type = MELEE;
         }
 
-        m_targetDamageInfo = u_caster->strike(m_unitTarget, _type, getSpellInfo(), add_damage, damage, 0, m_triggeredSpell, true, isForcedCrit, this);
+        m_targetDamageInfo = u_caster->strike(m_unitTarget, _type, getSpellInfo(), add_damage, damage, 0, m_triggeredSpell, true, m_isForcedCrit, this);
         isTargetDamageInfoSet = true;
 
         if (p_caster != nullptr)   // rogue - fan of knives
@@ -3301,7 +3298,7 @@ void Spell::SpellEffectWeaponDmgPerc(uint8_t effectIndex) // Weapon Percent dama
                             else
                                 damage = getSpellInfo()->getEffectBasePoints(effectIndex) + 1;// and 70% weapon damage with all other weapons.
 
-                            u_caster->strike(m_unitTarget, OFFHAND, getSpellInfo(), add_damage, damage, 0, m_triggeredSpell, true, isForcedCrit, this);
+                            u_caster->strike(m_unitTarget, OFFHAND, getSpellInfo(), add_damage, damage, 0, m_triggeredSpell, true, m_isForcedCrit, this);
                         }
                     }
                 } break;
@@ -4300,7 +4297,7 @@ void Spell::SpellEffectWeapondamage(uint8_t /*effectIndex*/)   // Weapon damage 
         else
             _type = MELEE;
     }
-    m_targetDamageInfo = u_caster->strike(m_unitTarget, _type, getSpellInfo(), damage, 0, 0, m_triggeredSpell, true, isForcedCrit, this);
+    m_targetDamageInfo = u_caster->strike(m_unitTarget, _type, getSpellInfo(), damage, 0, 0, m_triggeredSpell, true, m_isForcedCrit, this);
     isTargetDamageInfoSet = true;
 }
 
@@ -4366,7 +4363,7 @@ void Spell::SpellEffectPowerBurn(uint8_t effectIndex) // power burn
 
     m_unitTarget->modPower(POWER_TYPE_MANA, -mana);
 
-    m_targetDamageInfo = affectingCaster->doSpellDamage(m_unitTarget, getSpellInfo()->getId(), mana * getSpellInfo()->getEffectMultipleValue(effectIndex), effectIndex, m_triggeredSpell, false, false, isForcedCrit, this);
+    m_targetDamageInfo = affectingCaster->doSpellDamage(m_unitTarget, getSpellInfo()->getId(), mana * getSpellInfo()->getEffectMultipleValue(effectIndex), effectIndex, m_triggeredSpell, false, false, m_isForcedCrit, this);
     isTargetDamageInfoSet = true;
 }
 
@@ -4636,7 +4633,7 @@ void Spell::SpellEffectHealMechanical(uint8_t /*effectIndex*/)
 #else
     auto* const affectingCaster = m_originalCaster != nullptr ? m_originalCaster : m_caster;
 #endif
-    m_targetDamageInfo = affectingCaster->doSpellHealing(m_unitTarget, getSpellInfo()->getId(), static_cast<float_t>(damage), m_triggeredSpell, false, false, isForcedCrit, this);
+    m_targetDamageInfo = affectingCaster->doSpellHealing(m_unitTarget, getSpellInfo()->getId(), static_cast<float_t>(damage), m_triggeredSpell, false, false, m_isForcedCrit, this);
     isTargetDamageInfoSet = true;
 }
 
@@ -5785,7 +5782,7 @@ void Spell::SpellEffectDummyMelee(uint8_t /*effectIndex*/)   // Normalized Weapo
         else
             _type = MELEE;
     }
-    m_targetDamageInfo = u_caster->strike(m_unitTarget, _type, getSpellInfo(), damage, pct_dmg_mod, 0, m_triggeredSpell, true, isForcedCrit, this);
+    m_targetDamageInfo = u_caster->strike(m_unitTarget, _type, getSpellInfo(), damage, pct_dmg_mod, 0, m_triggeredSpell, true, m_isForcedCrit, this);
     isTargetDamageInfoSet = true;
 }
 

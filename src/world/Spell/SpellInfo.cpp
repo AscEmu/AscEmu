@@ -347,11 +347,11 @@ bool SpellInfo::isEffectIndexAffectingSpell(uint8_t effIndex, SpellInfo const* s
     for (uint8_t i = 0; i < 3; ++i)
     {
         // If any of the indexes contain same mask, the spells affect each other
-        if (spellInfo->getSpellFamilyFlags(i) > 0 && !(EffectSpellClassMask[effIndex][i] & spellInfo->getSpellFamilyFlags(i)))
-            return false;
+        if (EffectSpellClassMask[effIndex][i] & spellInfo->getSpellFamilyFlags(i))
+            return true;
     }
 
-    return true;
+    return false;
 }
 
 bool SpellInfo::isAuraEffectAffectingSpell(AuraEffect auraEffect, SpellInfo const* spellInfo) const

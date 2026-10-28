@@ -183,8 +183,8 @@ Spell::Spell(Object* _caster, SpellInfo const* _spellInfo, bool _triggered, Aura
 
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        isEffectDamageStatic[i] = false;
-        effectPctModifier[i] = 1.0f;
+        m_isEffectDamageStatic[i] = false;
+        m_effectPctModifier[i] = 1.0f;
 
         m_effectTargets[i].clear();
     }
@@ -913,7 +913,7 @@ void Spell::handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, int3
     m_targetDamageInfo = DamageInfo();
     m_targetDamageInfo.schoolMask = SchoolMask(getSpellInfo()->getSchoolMask());
     isTargetDamageInfoSet = false;
-    isForcedCrit = false;
+    m_isForcedCrit = false;
 
     const auto effectId = getSpellInfo()->getEffect(effIndex);
     if (effectId >= TOTAL_SPELL_EFFECTS)
@@ -931,7 +931,7 @@ void Spell::handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, int3
     {
         if (critGuid == targetGuid)
         {
-            isForcedCrit = true;
+            m_isForcedCrit = true;
             break;
         }
     }
@@ -1504,7 +1504,7 @@ int32_t Spell::calculateEffect(uint8_t effIndex)
 
     // If effect damage was recalculated in script, send static damage in effect handlers
     // so for example spell power bonus won't get calculated twice
-    isEffectDamageStatic[effIndex] = scriptResult != SpellScriptEffectDamage::DAMAGE_DEFAULT;
+    m_isEffectDamageStatic[effIndex] = scriptResult != SpellScriptEffectDamage::DAMAGE_DEFAULT;
     if (scriptResult == SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION)
         return value;
 
@@ -1523,7 +1523,7 @@ int32_t Spell::calculateEffect(uint8_t effIndex)
     if (getUnitCaster() != nullptr)
     {
         // Calculate spell and attack power bonus (must be calculated on launch, not on spell hit!)
-        if (!isEffectDamageStatic[effIndex])
+        if (!m_isEffectDamageStatic[effIndex])
         {
             switch (getSpellInfo()->getEffect(effIndex))
             {
@@ -1566,7 +1566,7 @@ int32_t Spell::calculateEffect(uint8_t effIndex)
                 break;
         }
 
-        effectPctModifier[effIndex] = spellPctMods / 100.0f;
+        m_effectPctModifier[effIndex] = spellPctMods / 100.0f;
     }
     else if (getItemCaster() != nullptr && getUnitTarget() != nullptr)
     {
@@ -5524,6 +5524,16 @@ float_t Spell::getEffectRadius(uint8_t effectIndex)
     m_effectRadius[effectIndex] = m_spellInfo->calculateEffectRadius(effectIndex, u_caster, this);
 
     return m_effectRadius[effectIndex];
+}
+
+bool Spell::isEffectDamageStatic(uint8_t effIndex) const
+{
+    return m_isEffectDamageStatic[effIndex];
+}
+
+float_t Spell::getEffectPctModifier(uint8_t effIndex) const
+{
+    return m_effectPctModifier[effIndex];
 }
 
 bool Spell::canAttackCreatureType(Creature* target) const

@@ -1045,40 +1045,6 @@ void Aura::SpellAuraModResistance(AuraEffectModifier* aurEff, bool apply)
     if (isNegative() && caster != nullptr && m_target->isCreature())
         m_target->getAIInterface()->onHostileAction(caster);
 
-    Player* plr = getPlayerCaster();
-    if (plr != nullptr)
-    {
-        switch (getSpellInfo()->getId())
-        {
-            //SPELL_HASH_DEVOTION_AURA
-            case 465:
-            case 643:
-            case 1032:
-            case 8258:
-            case 10290:
-            case 10291:
-            case 10292:
-            case 10293:
-            case 17232:
-            case 27149:
-            case 41452:
-            case 48941:
-            case 48942:
-            case 52442:
-            case 57740:
-            case 58944:
-            {
-                // Increases the armor bonus of your Devotion Aura by %u - HACKY
-                if (plr->hasSpell(20140))     // Improved Devotion Aura Rank 3
-                    amt = (int32_t)(amt * 1.5);
-                else if (plr->hasSpell(20139))     // Improved Devotion Aura Rank 2
-                    amt = (int32_t)(amt * 1.34);
-                else if (plr->hasSpell(20138))     // Improved Devotion Aura Rank 1
-                    amt = (int32_t)(amt * 1.17);
-            } break;
-        }
-    }
-
     if (m_target->isPlayer())
     {
         for (uint8_t x = 0; x < TOTAL_SPELL_SCHOOLS; x++)

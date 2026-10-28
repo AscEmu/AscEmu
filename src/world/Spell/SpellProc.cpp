@@ -78,11 +78,11 @@ bool SpellProc::checkClassMask(SpellInfo const* castingSpell) const
     // Not spell effect count, it's spell mask field count
     for (uint8_t i = 0; i < 3; ++i)
     {
-        if (castingSpell->getSpellFamilyFlags(i) > 0 && !(mProcClassMask[i] & castingSpell->getSpellFamilyFlags(i)))
-            return false;
+        if (mProcClassMask[i] & castingSpell->getSpellFamilyFlags(i))
+            return true;
     }
 
-    return true;
+    return false;
 }
 
 bool SpellProc::doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32_t /*flag*/, uint32_t /*dmg*/, uint32_t /*abs*/, uint32_t /*weaponDamageType*/)
