@@ -4984,10 +4984,10 @@ void Spell::addProjectileDataToPacket(ProjectileData& data)
 #if VERSION_STRING > TBC
             // Get the item data from DBC files
             const auto itemDBC = sItemStore.lookupEntry(entryId);
-            if (itemDBC == nullptr || itemDBC->Class != ITEM_CLASS_WEAPON)
+            if (itemDBC == nullptr || itemDBC->itemClass != ITEM_CLASS_WEAPON)
                 continue;
 
-            switch (itemDBC->SubClass)
+            switch (itemDBC->itemSubClass)
             {
                 case ITEM_SUBCLASS_WEAPON_BOW:
                 case ITEM_SUBCLASS_WEAPON_CROSSBOW:

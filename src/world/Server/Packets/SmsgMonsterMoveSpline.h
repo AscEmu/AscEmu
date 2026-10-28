@@ -76,8 +76,7 @@ namespace AscEmu::Packets
                 }
             }
 
-#if VERSION_STRING >= WoD
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            if (m_protocol.isMainlineAtLeast(WoW::Expansion::_WoD))
             {
                 if (mode == Mode::Launch)
                 {
@@ -93,7 +92,6 @@ namespace AscEmu::Packets
 
                 return true;
             }
-#endif
 
             if (mode == Mode::Launch)
             {

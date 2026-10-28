@@ -408,7 +408,7 @@ public:
 
         // Guid always comes first
 
-        const WoWGuid & GetNewGUID() const { return m_wowGuid; }
+        const WoWGuid& GetNewGUID() const { return m_wowGuid; }
 
     uint32_t GetTypeFromGUID() const { return (getGuidHigh() & HIGHGUID_TYPE_MASK); }
     uint32_t GetUIdFromGUID() const { return (getGuidLow() & LOWGUID_ENTRY_MASK); }
@@ -459,10 +459,9 @@ public:
         float GetTransOffsetZ() const { return obj_movement_info.transport_position.z; }
         float GetTransOffsetO() const { return obj_movement_info.transport_position.o; }
         uint32_t GetTransTime() const { return obj_movement_info.transport_time; }
-#ifdef FT_VEHICLES
+
         // TODO check if this is in BC
         uint8_t GetTransSeat() const { return obj_movement_info.transport_seat; }
-#endif
 
         Player* ToPlayer() { if (isPlayer()) return reinterpret_cast<Player*>(this); else return nullptr; }
         Player const* ToPlayer() const { if (isPlayer()) return (Player*)this; else return nullptr; }

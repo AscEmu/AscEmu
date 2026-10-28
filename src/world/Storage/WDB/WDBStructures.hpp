@@ -577,6 +577,18 @@ namespace WDB::Structures
     inline constexpr std::size_t MAX_ITEM_SET_ITEMS = 10;
     inline constexpr std::size_t MAX_ITEM_SET_SPELLS = 8;
 
+    struct ItemEntry
+    {
+        uint32_t id{0};
+        uint32_t itemClass{0};
+        uint32_t itemSubClass{0};
+        int32_t soundOverrideSubclass{0};
+        int32_t material{0};
+        uint32_t displayId{0};
+        uint32_t inventoryType{0};
+        uint32_t sheath{0};
+    };
+
     struct ItemSetEntry
     {
         uint32_t id = 0;
@@ -905,20 +917,6 @@ namespace WDB::Structures
 #endif
     };
 #endif
-
-    struct ItemEntry
-    {
-        uint32_t ID;                                                // 0
-#if VERSION_STRING > TBC
-        uint32_t Class;                                             // 1
-        uint32_t SubClass;                                          // 2 some items have strange subclasses
-        int32_t SoundOverrideSubclass;                              // 3
-        int32_t Material;                                           // 4
-#endif
-        uint32_t DisplayId;                                         // 1
-        uint32_t InventoryType;                                     // 2
-        uint32_t Sheath;                                            // 3
-    };
 
 #if VERSION_STRING >= Cata
     struct ItemCurrencyCostEntry

@@ -793,6 +793,58 @@ namespace WDB::Structures::Raw
         uint32_t socketMask;
     };
 
+    struct ItemEntryClassic
+    {
+        uint32_t id;
+        uint32_t displayId;
+        uint32_t inventoryType;
+        uint32_t sheath;
+    };
+
+    struct ItemEntryTbc
+    {
+        uint32_t id;
+        uint32_t displayId;
+        uint32_t inventoryType;
+        uint32_t sheath;
+    };
+
+    struct ItemEntryWotlk
+    {
+        uint32_t id;
+        uint32_t itemClass;
+        uint32_t itemSubClass;
+        int32_t soundOverrideSubclass;
+        int32_t material;
+        uint32_t displayId;
+        uint32_t inventoryType;
+        uint32_t sheath;
+    };
+
+    struct ItemEntryCata
+    {
+        uint32_t id;
+        uint32_t itemClass;
+        uint32_t itemSubClass;
+        int32_t soundOverrideSubclass;
+        int32_t material;
+        uint32_t displayId;
+        uint32_t inventoryType;
+        uint32_t sheath;
+    };
+
+    struct ItemEntryMop
+    {
+        uint32_t id;
+        uint32_t itemClass;
+        uint32_t itemSubClass;
+        int32_t soundOverrideSubclass;
+        int32_t material;
+        uint32_t displayId;
+        uint32_t inventoryType;
+        uint32_t sheath;
+    };
+
     struct ItemSetEntryClassic
     {
         uint32_t id;

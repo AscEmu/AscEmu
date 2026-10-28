@@ -237,7 +237,7 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SummonPropertiesEntry> sSu
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::VehicleEntry> sVehicleStore; // todo: available for versions > WotLK
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::VehicleSeatEntry> sVehicleSeatStore; // todo: available for versions > WotLK
 
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemEntry> sItemStore; // todo: available for versions > Classic
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemEntry> sItemStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemExtendedCostEntry> sItemExtendedCostStore; // todo: available for versions > Classic
 
 #if VERSION_STRING < Cata

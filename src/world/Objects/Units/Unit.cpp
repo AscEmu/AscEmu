@@ -1078,13 +1078,13 @@ void Unit::setVirtualItemSlotId(uint8_t slot, uint32_t item_id)
 #if VERSION_STRING >= WotLK
     const auto itemDbc = sItemStore.lookupEntry(item_id);
     if (itemDbc == nullptr
-        || !(itemDbc->Class == ITEM_CLASS_WEAPON
-        || (itemDbc->Class == ITEM_CLASS_ARMOR && itemDbc->SubClass == ITEM_SUBCLASS_ARMOR_SHIELD)
-        || itemDbc->InventoryType == INVTYPE_HOLDABLE))
+        || !(itemDbc->itemClass == ITEM_CLASS_WEAPON
+        || (itemDbc->itemClass == ITEM_CLASS_ARMOR && itemDbc->itemSubClass == ITEM_SUBCLASS_ARMOR_SHIELD)
+        || itemDbc->inventoryType == INVTYPE_HOLDABLE))
         return;
 
     if (isCreature() && slot == OFFHAND)
-        dynamic_cast<Creature*>(this)->toggleDualwield(isProperOffhandWeapon(itemDbc->Class, itemDbc->SubClass));
+        dynamic_cast<Creature*>(this)->toggleDualwield(isProperOffhandWeapon(itemDbc->itemClass, itemDbc->itemSubClass));
 
     setField<uint32_t>(UnitField::VirtualItemSlotDisplay, item_id, virtualItemFieldIndex(slot));
 #else
@@ -1109,9 +1109,9 @@ void Unit::setVirtualItemSlotId(uint8_t slot, uint32_t item_id)
     }
     else if (const auto itemDbc = sItemStore.lookupEntry(item_id))
     {
-        displayId = itemDbc->DisplayId;
-        virtualItemInfo.fields.inventory_type = static_cast<uint8_t>(itemDbc->InventoryType);
-        virtualItemInfo.fields.sheath = static_cast<uint8_t>(itemDbc->Sheath);
+        displayId = itemDbc->displayId;
+        virtualItemInfo.fields.inventory_type = static_cast<uint8_t>(itemDbc->inventoryType);
+        virtualItemInfo.fields.sheath = static_cast<uint8_t>(itemDbc->sheath);
 
         // Following values do not exist in dbcs and must be "hackfixed"
         virtualItemInfo.fields.material = ITEM_MATERIAL_METAL;

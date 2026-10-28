@@ -85,7 +85,7 @@ bool ChatCommandHandler::HandleMoveDB2ItemsToDB(const char* /*args*/, WorldSessi
         {
             if (sMySQLStore.getItemProperties(i) == nullptr)
             {
-                std::string insertQuery = std::format("INSERT INTO `item_dump` (`entry`, `class`, `subclass`, `material`, `displayId`, `inventoryType`, `sheath`) VALUES ({}, {}, {}, {}, {}, {}, {});", item->ID, item->Class, item->SubClass, item->Material, item->DisplayId, item->InventoryType, item->Sheath);
+                std::string insertQuery = std::format("INSERT INTO `item_dump` (`entry`, `class`, `subclass`, `material`, `displayId`, `inventoryType`, `sheath`) VALUES ({}, {}, {}, {}, {}, {}, {});", item->id, item->itemClass, item->itemSubClass, item->material, item->displayId, item->inventoryType, item->sheath);
                 WorldDatabase.query(insertQuery.c_str());
             }
         }

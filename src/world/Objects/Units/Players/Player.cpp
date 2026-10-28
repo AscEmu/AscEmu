@@ -2661,7 +2661,7 @@ bool Player::create(CharCreate& charCreateContent)
                 if (itemProperties->InventoryType == 0)
                 {
                     if (const auto itemDB2Properties = sItemStore.lookupEntry(itemId))
-                        itemSlot = getItemInterface()->GetItemSlotByType(itemDB2Properties->InventoryType);
+                        itemSlot = getItemInterface()->GetItemSlotByType(itemDB2Properties->inventoryType);
                 }
                 else
                 {

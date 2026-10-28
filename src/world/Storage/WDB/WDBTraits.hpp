@@ -429,6 +429,23 @@ namespace WDB
     {};
 
     template <>
+    struct DbcTraits<Structures::ItemEntry> :
+        DbcVersionLayouts<
+            Structures::Raw::ItemEntryClassic,
+            Structures::Raw::ItemEntryTbc,
+            Structures::Raw::ItemEntryWotlk,
+            Structures::Raw::ItemEntryCata,
+            Structures::Raw::ItemEntryMop>
+    {
+        [[nodiscard]] static constexpr std::string_view getFilename(WoW::Expansion expansion) noexcept
+        {
+            if (expansion >= WoW::Expansion::_Cata)
+                return "Item.db2";
+            return "Item.dbc";
+        }
+    };
+
+    template <>
     struct DbcTraits<Structures::ItemSetEntry> :
         DbcVersionLayouts<
             Structures::Raw::ItemSetEntryClassic,

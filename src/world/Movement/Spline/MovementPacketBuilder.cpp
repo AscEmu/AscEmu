@@ -667,7 +667,6 @@ void PacketBuilder::WriteMonsterMove([[maybe_unused]] MoveSpline const& moveSpli
 #endif
 }
 
-#if VERSION_STRING >= WoD
 namespace
 {
     // the spline flags of 6.2.4 and 7.3.5: the path flags are shared, animation and parabolic moved up, the
@@ -1196,7 +1195,6 @@ void PacketBuilder::WriteStopMovementLegion(G3D::Vector3 const& pos, uint32_t sp
     data.flushBits();
 #endif
 }
-#endif
 
 void PacketBuilder::WriteSplineSync(MoveSpline const& move_spline, ByteBuffer& data)
 {

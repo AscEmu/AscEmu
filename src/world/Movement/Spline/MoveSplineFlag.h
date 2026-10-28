@@ -12,9 +12,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace MovementMgr {
 #pragma pack(push, 1)
-class MoveSplineFlag
-{
-public:
+    class MoveSplineFlag
+    {
+    public:
 #if VERSION_STRING <= TBC
     enum eFlags
     {
@@ -57,7 +57,8 @@ public:
         // flags that shouldn't be appended into SMSG_MONSTER_MOVE\SMSG_MONSTER_MOVE_TRANSPORT packet, should be more probably
         Mask_No_Monster_Move = Mask_Final_Facing | Done,
         // CatmullRom interpolation mode used
-        Mask_CatmullRom = Flying
+        Mask_CatmullRom = Flying,
+        UncompressedPath = 0x00000000 // Dummy for later versions, not used in Classic / TBC
     };
 
     inline uint32_t& raw() { return (uint32_t&)*this; }
@@ -73,13 +74,13 @@ public:
 
     bool hasAllFlags(uint32_t f) const { return (raw() & f) == f; }
     bool hasFlag(uint32_t f) const { return (raw() & f) != 0; }
-    uint32_t operator & (uint32_t f) const { return (raw() & f); }
-    uint32_t operator | (uint32_t f) const { return (raw() | f); }
+    uint32_t operator &(uint32_t f) const { return (raw() & f); }
+    uint32_t operator |(uint32_t f) const { return (raw() | f); }
     std::string ToString() const;
 
     // Not constant interface
-    void operator &= (uint32_t f) { raw() &= f; }
-    void operator |= (uint32_t f) { raw() |= f; }
+    void operator &=(uint32_t f) { raw() &= f; }
+    void operator |=(uint32_t f) { raw() |= f; }
 
     void EnableFalling() { raw() = (raw() & ~(Flying)) | Falling; }
     void EnableFlying() { raw() = (raw() & ~(Falling)) | Flying; }
@@ -119,6 +120,13 @@ public:
     bool unknown30              : 1;
     bool unknown31              : 1;
     bool unknown32              : 1;
+
+    // Dummy values for compatibility with later versions
+    static constexpr bool animation = false;
+    static constexpr bool parabolic = false;
+    static constexpr uint8_t animTier = 0;
+    uint8_t getAnimationId() const { return 0; }
+
 #elif VERSION_STRING == WotLK
     enum eFlags
     {
@@ -158,7 +166,8 @@ public:
         // CatmullRom interpolation mode used
         Mask_CatmullRom = Flying | Catmullrom,
         // Unused, not suported flags
-        Mask_Unused = No_Spline | Enter_Cycle | Frozen | Unknown7 | Unknown8 | Unknown10 | Unknown11 | Unknown12 | Unknown13
+        Mask_Unused = No_Spline | Enter_Cycle | Frozen | Unknown7 | Unknown8 | Unknown10 | Unknown11 | Unknown12 | Unknown13,
+        UncompressedPath = 0x00000000 // Dummy for later versions, not used in WotLK
     };
 
     inline uint32_t& raw() { return (uint32_t&)*this; }
@@ -175,13 +184,13 @@ public:
     uint8_t getAnimationId() const { return animTier; }
     bool hasAllFlags(uint32_t f) const { return (raw() & f) == f; }
     bool hasFlag(uint32_t f) const { return (raw() & f) != 0; }
-    uint32_t operator & (uint32_t f) const { return (raw() & f); }
-    uint32_t operator | (uint32_t f) const { return (raw() | f); }
+    uint32_t operator &(uint32_t f) const { return (raw() & f); }
+    uint32_t operator |(uint32_t f) const { return (raw() | f); }
     std::string ToString() const;
 
     // Not constant interface
-    void operator &= (uint32_t f) { raw() &= f; }
-    void operator |= (uint32_t f) { raw() |= f; }
+    void operator &=(uint32_t f) { raw() &= f; }
+    void operator |=(uint32_t f) { raw() |= f; }
 
     void EnableAnimation(uint8_t anim) { raw() = (raw() & ~(Mask_Animations | Falling | Parabolic)) | Animation | anim; }
     void EnableParabolic() { raw() = (raw() & ~(Mask_Animations | Falling | Animation)) | Parabolic; }
@@ -282,14 +291,14 @@ public:
     uint8_t getAnimationId() const { return animTier; }
     bool hasAllFlags(uint32_t f) const { return (raw() & f) == f; }
     bool hasFlag(uint32_t f) const { return (raw() & f) != 0; }
-    uint32_t operator & (uint32_t f) const { return (raw() & f); }
-    uint32_t operator | (uint32_t f) const { return (raw() | f); }
+    uint32_t operator &(uint32_t f) const { return (raw() & f); }
+    uint32_t operator |(uint32_t f) const { return (raw() | f); }
     std::string ToString() const;
 
     // Not constant interface
 
-    void operator &= (uint32_t f) { raw() &= f; }
-    void operator |= (uint32_t f) { raw() |= f; }
+    void operator &=(uint32_t f) { raw() &= f; }
+    void operator |=(uint32_t f) { raw() |= f; }
 
     void EnableAnimation(uint8_t anim) { raw() = (raw() & ~(Mask_Animations | Falling | Parabolic | FallingSlow)) | Animation | (anim & Mask_Animations); }
     void EnableParabolic() { raw() = (raw() & ~(Mask_Animations | Falling | Animation | FallingSlow)) | Parabolic; }
@@ -335,5 +344,4 @@ public:
 #endif
 };
 #pragma pack(pop)
-
 } // namespace MovementMgr

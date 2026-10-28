@@ -98,7 +98,6 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::SummonPropertiesEntry> sSummonPro
 SERVER_DECL WDB::WDBContainer<WDB::Structures::VehicleEntry> sVehicleStore; // todo: available for versions > WotLK
 SERVER_DECL WDB::WDBContainer<WDB::Structures::VehicleSeatEntry> sVehicleSeatStore; // todo: available for versions > WotLK
 
-SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemEntry> sItemStore; // todo: available for versions > Classic
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemExtendedCostEntry> sItemExtendedCostStore; // todo: available for versions > Classic
 #if VERSION_STRING < Cata
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTRegenHPEntry> sGtOCTRegenHPStore; // todo: available for versions > Classic
@@ -1339,6 +1338,23 @@ bool loadDBCs()
         }
     );
 
+    WDB::loadUnifiedWDBStore<WDB::Structures::ItemEntry>(
+        bad_dbc_files, sItemStore, dbc_path,
+        []<typename RawType>(const RawType& raw, WDB::Structures::ItemEntry& entry) {
+            entry.id = raw.id;
+            entry.displayId = raw.displayId;
+            entry.inventoryType = raw.inventoryType;
+            entry.sheath = raw.sheath;
+
+            if constexpr (requires { raw.itemClass; }) {
+                entry.itemClass = raw.itemClass;
+                entry.itemSubClass = raw.itemSubClass;
+                entry.soundOverrideSubclass = raw.soundOverrideSubclass;
+                entry.material = raw.material;
+            }
+        }
+    );
+
     /////////////////////////////////////////////////////////////////////////////////////////
     // Load multi version specific dbcs available since TBC
 #if VERSION_STRING >= TBC
@@ -1355,10 +1371,8 @@ bool loadDBCs()
     #if VERSION_STRING < Cata
         WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtOCTRegenHPStore, dbc_path, "gtOCTRegenHP.dbc");
         WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtRegenHPPerSptStore, dbc_path, "gtRegenHPPerSpt.dbc");
-        WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemStore, dbc_path, "Item.dbc");
         WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemExtendedCostStore, dbc_path, "ItemExtendedCost.dbc");
     #else
-        WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemStore, dbc_path, "Item.db2");
         WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemExtendedCostStore, dbc_path, "ItemExtendedCost.db2");
     #endif
 
