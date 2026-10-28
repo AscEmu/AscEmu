@@ -17,34 +17,34 @@ This file is released under the MIT license. See README-MIT for more information
 bool ChatCommandHandler::HandleGMActiveCommand(const char* args, WorldSession* m_session)
 {
     auto player = m_session->GetPlayer();
-    bool toggle_no_notice = std::string(args) == "no_notice" ? true : false;
+    bool toggleNoNotice = std::string(args) == "no_notice" ? true : false;
+
     if (player->isGMFlagSet())
     {
-        if (!toggle_no_notice)
+        if (!toggleNoNotice)
         {
             systemMessage(m_session, "GM Flag removed.");
             blueSystemMessage(m_session, "<GM> Will no longer show in chat messages or above your name until you use this command again.");
         }
+
         player->removePlayerFlags(PLAYER_FLAG_GM);
         player->setFaction(player->getInitialFactionId());
         player->updatePvPArea();
-        
+
         if (player->IsInWorld())
             player->getWorldMap()->refreshVisibilityForObject(player);
     }
     else
     {
-#if VERSION_STRING >= WotLK
-        if (player->hasPlayerFlags(PLAYER_FLAG_DEVELOPER))
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK) && player->hasPlayerFlags(PLAYER_FLAG_DEVELOPER))
             HandleGMDevTagCommand("no_notice", m_session);
-#endif
 
         systemMessage(m_session, "GM Flag set.");
         blueSystemMessage(m_session, "<GM> will now appear above your name and in chat messages until you use this command again.");
         player->addPlayerFlags(PLAYER_FLAG_GM);
         player->setFaction(35);
         player->removePvpFlag();
-        
+
         if (player->IsInWorld())
             player->getWorldMap()->refreshVisibilityForObject(player);
     }

@@ -12,6 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <sstream>
 #include <iterator>
 
+#include "Server/ClientProtocol.hpp"
+
 class ChatCommandHandler;
 class WorldSession;
 
@@ -24,25 +26,30 @@ struct ChatCommand
     size_t minArgCount;
     HandlerFn handler;
     std::string help;
+    WoW::Expansion minExpansion = WoW::Expansion::_Classic;
 
     // Legacy executable with function linker and help (args as const char*)
-    ChatCommand(const char* cmd, std::string perm, size_t args, HandlerFn fn, std::string helpText)
+    ChatCommand(const char* cmd, std::string perm, size_t args, HandlerFn fn, std::string helpText,
+                WoW::Expansion minExp = WoW::Expansion::_Classic)
         : command(cmd ? cmd : ""), commandPermission(std::move(perm)), minArgCount(args),
-          handler(std::move(fn)), help(std::move(helpText)) {}
+          handler(std::move(fn)), help(std::move(helpText)), minExpansion(minExp) {}
 
     // Modern executable with function linker and help (args as std::string_view)
-    ChatCommand(std::string cmd, std::string perm, size_t args, HandlerFn fn, std::string helpText)
+    ChatCommand(std::string cmd, std::string perm, size_t args, HandlerFn fn, std::string helpText,
+                WoW::Expansion minExp = WoW::Expansion::_Classic)
         : command(std::move(cmd)), commandPermission(std::move(perm)), minArgCount(args),
-          handler(std::move(fn)), help(std::move(helpText)) {}
+          handler(std::move(fn)), help(std::move(helpText)), minExpansion(minExp) {}
 
     // Helper functions for first level commands without handler and help
-    ChatCommand(const char* cmd, std::string perm, size_t args = 0)
+    ChatCommand(const char* cmd, std::string perm, size_t args = 0,
+                WoW::Expansion minExp = WoW::Expansion::_Classic)
         : command(cmd ? cmd : ""), commandPermission(std::move(perm)), minArgCount(args),
-          handler(nullptr), help() {}
+          handler(nullptr), help(), minExpansion(minExp) {}
 
-    ChatCommand(std::string cmd, std::string perm, size_t args = 0)
+    ChatCommand(std::string cmd, std::string perm, size_t args = 0,
+                WoW::Expansion minExp = WoW::Expansion::_Classic)
         : command(std::move(cmd)), commandPermission(std::move(perm)), minArgCount(args),
-          handler(nullptr), help() {}
+          handler(nullptr), help(), minExpansion(minExp) {}
 };
 
 inline size_t countWords(const char* argz)
@@ -68,7 +75,7 @@ inline size_t countWords(const char* argz)
     return count;
 }
 
-// Legacy wrapper 
+// Legacy wrapper
 inline ChatCommand::HandlerFn
 wrap(bool (ChatCommandHandler::*pm)(const char*, WorldSession*))
 {

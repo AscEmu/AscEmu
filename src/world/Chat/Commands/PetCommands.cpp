@@ -27,7 +27,7 @@ bool ChatCommandHandler::HandlePetCreateCommand(const char* args, WorldSession* 
     CreatureProperties const* creature_proto = sMySQLStore.getCreatureProperties(entry);
     if (creature_proto == nullptr)
     {
-        redSystemMessage(m_session, "Creature Entry: {} is not a valid endtry!", entry);
+        redSystemMessage(m_session, "Creature Entry: {} is not a valid entry!", entry);
         return true;
     }
 
@@ -39,21 +39,29 @@ bool ChatCommandHandler::HandlePetCreateCommand(const char* args, WorldSession* 
 
     if (!selected_player->findFreeActivePetSlot().has_value())
     {
-#if VERSION_STRING < Cata
-        if (selected_player->isClassHunter())
-            redSystemMessage(m_session, "You must put your current pet to stables.");
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+        {
+            redSystemMessage(m_session, "You must have one free active pet slot.");
+        }
         else
-            redSystemMessage(m_session, "You must dismiss your inactive pet.");
-#else
-        redSystemMessage(m_session, "You must have one free active pet slot.");
-#endif
+        {
+            if (selected_player->isClassHunter())
+            {
+                redSystemMessage(m_session, "You must put your current pet to stables.");
+            }
+            else
+            {
+                redSystemMessage(m_session, "You must dismiss your inactive pet.");
+            }
+        }
+
         return true;
     }
 
-    float followangle = -AscEmu::Math::PiF * 2;
+    float followAngle = -AscEmu::Math::PiF * 2;
     LocationVector vector(selected_player->GetPosition());
-    vector.x += (3 * (cosf(followangle + selected_player->GetOrientation())));
-    vector.y += (3 * (sinf(followangle + selected_player->GetOrientation())));
+    vector.x += (3 * (cosf(followAngle + selected_player->GetOrientation())));
+    vector.y += (3 * (sinf(followAngle + selected_player->GetOrientation())));
 
     const auto pet = sObjectMgr.createPet(entry, nullptr);
     if (!pet->createAsSummon(creature_proto, nullptr, selected_player, vector, 0, nullptr, 0, PET_TYPE_HUNTER))

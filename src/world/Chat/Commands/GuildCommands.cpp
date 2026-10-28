@@ -78,9 +78,15 @@ bool ChatCommandHandler::HandleGuildDisbandCommand(const char* /*args*/, WorldSe
     return true;
 }
 
-#if VERSION_STRING >= Cata
 bool ChatCommandHandler::HandleGuildInfoCommand(const char* /*args*/, WorldSession* session)
 {
+    // TODO: Check why this command is not available in WotLK and TBC, but is available in Cata and later
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+    {
+        redSystemMessage(session, "This command is only available in Cataclysm and later.");
+        return true;
+    }
+
     Player* selected_player = GetSelectedPlayer(session, true, true);
     if (selected_player == nullptr)
         return true;
@@ -98,7 +104,6 @@ bool ChatCommandHandler::HandleGuildInfoCommand(const char* /*args*/, WorldSessi
 
     return true;
 }
-#endif
 
 //.guild join
 bool ChatCommandHandler::HandleGuildJoinCommand(const char* args, WorldSession* m_session)

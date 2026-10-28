@@ -9,10 +9,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSessionLog.hpp"
 #include "Utilities/Strings.hpp"
 
-#if VERSION_STRING > TBC
 //.achieve complete
 bool ChatCommandHandler::handleAchievementCompleteCommand(const char* args, WorldSession* m_session)
 {
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
+        redSystemMessage(m_session, "Achievements are not available in this expansion.");
+        return true;
+    }
+
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
         return true;
@@ -44,6 +49,12 @@ bool ChatCommandHandler::handleAchievementCompleteCommand(const char* args, Worl
 //.achieve criteria
 bool ChatCommandHandler::handleAchievementCriteriaCommand(const char* args, WorldSession* m_session)
 {
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
+        redSystemMessage(m_session, "Achievements are not available in this expansion.");
+        return true;
+    }
+
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
         return true;
@@ -63,7 +74,7 @@ bool ChatCommandHandler::handleAchievementCriteriaCommand(const char* args, Worl
         }
         return false;
     }
-    
+
     if (selected_player->getAchievementMgr()->gmCompleteCriteria(m_session, criteria_id))
     {
         systemMessage(m_session, "Completed achievement criterion {} for player {}.", criteria_id, selected_player->getName());
@@ -76,6 +87,12 @@ bool ChatCommandHandler::handleAchievementCriteriaCommand(const char* args, Worl
 //.achieve reset
 bool ChatCommandHandler::handleAchievementResetCommand(const char* args, WorldSession* m_session)
 {
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
+        redSystemMessage(m_session, "Achievements are not available in this expansion.");
+        return true;
+    }
+
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
         return true;
@@ -150,4 +167,3 @@ bool ChatCommandHandler::handleAchievementResetCommand(const char* args, WorldSe
     sGMLog.writefromsession(m_session, "Reset achievement data ({}) for player {}.", args, selected_player->getName());
     return true;
 }
-#endif

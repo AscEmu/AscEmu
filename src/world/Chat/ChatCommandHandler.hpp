@@ -387,9 +387,7 @@ public:
     //Guild Command
     bool HandleGuildCreateCommand(const char* args, WorldSession* m_session);
     bool HandleGuildDisbandCommand(const char* /*args*/, WorldSession* m_session);
-#if VERSION_STRING >= Cata
     bool HandleGuildInfoCommand(const char* /*args*/, WorldSession* m_session);
-#endif
     bool HandleGuildJoinCommand(const char* /*args*/, WorldSession* m_session);
     bool HandleGuildListMembersCommand(const char* /*args*/, WorldSession* m_session);
     bool HandleRenameGuildCommand(const char* args, WorldSession* m_session);

@@ -28,7 +28,6 @@ enum ObjectUpdateFlags : uint16_t
     UPDATEFLAG_ALL                      = 0x0010,
     UPDATEFLAG_LIVING                   = 0x0020,
     UPDATEFLAG_HAS_POSITION             = 0x0040,
-
 };
 #endif
 
@@ -51,7 +50,6 @@ enum ObjectUpdateFlags : uint16_t
     UPDATEFLAG_HIGHGUID                 = 0x0010,
     UPDATEFLAG_LIVING                   = 0x0020,
     UPDATEFLAG_HAS_POSITION             = 0x0040,
-
 };
 #endif
 

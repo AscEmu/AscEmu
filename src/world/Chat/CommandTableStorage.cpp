@@ -17,7 +17,7 @@ CommandTableStorage::CommandTableStorage()
 {
     m_commandRegistry = {
 
-        {"account",                       "0", 0 },
+        {"account",                       "0", 0},
         {"account create",                "a", 2, wrap(&ChatCommandHandler::handleAccountCreate),               "Creates an account with name and password" },
         {"account setgm",                 "z", 2, wrap(&ChatCommandHandler::handleAccountSetGMCommand),         "Sets gm level on account. Pass it username and 0,1,2,3,az, etc." },
         {"account mute",                  "a", 2, wrap(&ChatCommandHandler::handleAccountMuteCommand),          "Mutes account for <timeperiod>." },
@@ -27,14 +27,12 @@ CommandTableStorage::CommandTableStorage()
         {"account changepw",              "0", 1, wrap(&ChatCommandHandler::handleAccountChangePassword),       "Change the password of your account." },
         {"account getid",                 "1", 1, wrap(&ChatCommandHandler::handleAccountGetAccountID),         "Get Account ID for account name X" },
 
-        {"achieve",                       "0", 0 },
-#if VERSION_STRING > TBC
-        {"achieve complete",              "m", 1, wrap(&ChatCommandHandler::handleAchievementCompleteCommand),  "Completes the specified achievement." },
-        {"achieve criteria",              "m", 1, wrap(&ChatCommandHandler::handleAchievementCriteriaCommand),  "Completes the specified achievement criteria." },
-        {"achieve reset",                 "m", 1, wrap(&ChatCommandHandler::handleAchievementResetCommand),     "Resets achievement data from the target." },
-#endif
+        {"achieve",                       "0", 0, WoW::Expansion::_WotLK },
+        {"achieve complete",              "m", 1, wrap(&ChatCommandHandler::handleAchievementCompleteCommand),  "Completes the specified achievement.", WoW::Expansion::_WotLK},
+        {"achieve criteria",              "m", 1, wrap(&ChatCommandHandler::handleAchievementCriteriaCommand),  "Completes the specified achievement criteria.", WoW::Expansion::_WotLK},
+        {"achieve reset",                 "m", 1, wrap(&ChatCommandHandler::handleAchievementResetCommand),     "Resets achievement data from the target.", WoW::Expansion::_WotLK},
 
-        {"admin",                         "0", 0 },
+        {"admin",                         "0", 0},
         {"admin castall",                 "z", 1, wrap(&ChatCommandHandler::HandleAdminCastAllCommand),         "Makes all players online cast spell <x>." },
         {"admin dispelall",               "z", 1, wrap(&ChatCommandHandler::HandleAdminDispelAllCommand),       "Dispels all negative (or positive w/ 1) auras on all players." },
         {"admin masssummon",              "z", 0, wrap(&ChatCommandHandler::HandleAdminMassSummonCommand),      "Summons all online players to you, use a/h for alliance/horde." },
@@ -71,7 +69,7 @@ CommandTableStorage::CommandTableStorage()
         {"blocksummon",                   "v", 0, wrap(&ChatCommandHandler::HandleBlockSummonCommand),          "Blocks summons to others position." },
 
         {"character",                     "0", 0 },
-        
+
         {"character add",                 "m", 0 },
         {"character add copper",          "m", 1, wrap(&ChatCommandHandler::HandleCharAddCopperCommand),        "Adds x copper to character." },
         {"character add silver",          "m", 1, wrap(&ChatCommandHandler::HandleCharAddSilverCommand),        "Adds x silver to character." },
@@ -80,7 +78,7 @@ CommandTableStorage::CommandTableStorage()
         {"character add honorkills",      "m", 1, wrap(&ChatCommandHandler::HandleCharAddHonorKillCommand),     "Adds x amount of honor kills" },
         {"character add item",            "m", 1, wrap(&ChatCommandHandler::HandleCharAddItemCommand),          "Adds item x count y" },
         {"character add itemset",         "m", 1, wrap(&ChatCommandHandler::HandleCharAddItemSetCommand),       "Adds item set to inv." },
-        #if VERSION_STRING >= Cata
+#if VERSION_STRING >= Cata
         {"character add currency",        "m", 2, wrap(&ChatCommandHandler::HandleCharAddCurrencyCommand),      "Adds x amount of currency (by CurrencyTypes.dbc id) to character." },
 #endif
 
@@ -99,7 +97,7 @@ CommandTableStorage::CommandTableStorage()
         {"character set customize",       "m", 1, wrap(&ChatCommandHandler::HandleCharSetCustomizeCommand),     "Allows char x to customize on next login" },
         {"character set factionchange",   "m", 1, wrap(&ChatCommandHandler::HandleCharSetFactionChangeCommand), "Allows char x to change the faction on next login" },
         {"character set racechange",      "m", 1, wrap(&ChatCommandHandler::HandleCharSetCustomizeCommand),     "Allows char x to change the race on next login" },
-        
+
         {"character list",                "m", 0 },
         {"character list skills",         "m", 0, wrap(&ChatCommandHandler::HandleCharListSkillsCommand),       "Lists all the skills from a player" },
         {"character list spells",         "m", 0, wrap(&ChatCommandHandler::handleCharListSpellsCommand),       "Lists all the spells from a player" },
@@ -107,7 +105,7 @@ CommandTableStorage::CommandTableStorage()
         {"character list items",          "m", 0, wrap(&ChatCommandHandler::HandleCharListItemsCommand),        "Lists items of selected Player" },
         {"character list kills",          "m", 0, wrap(&ChatCommandHandler::HandleCharListKillsCommand),        "Lists all kills of selected Player" },
         {"character list instances",      "z", 0, wrap(&ChatCommandHandler::HandleCharListInstanceCommand),     "Lists persistent instances of selected Player" },
-        
+
         {"character clearcooldowns",      "m", 0, wrap(&ChatCommandHandler::HandleCharClearCooldownsCommand),   "Clears all cooldowns for your class." },
         {"character demorph",             "m", 0, wrap(&ChatCommandHandler::HandleCharDeMorphCommand),          "Demorphs from morphed model." },
         {"character levelup",             "m", 1, wrap(&ChatCommandHandler::HandleCharLevelUpCommand),          "Player target will be levelup x levels" },
@@ -280,9 +278,7 @@ CommandTableStorage::CommandTableStorage()
         {"guild",                         "0", 0 },
         {"guild create",                  "m", 1, wrap(&ChatCommandHandler::HandleGuildCreateCommand),            "Creates a guild." },
         {"guild disband",                 "m", 0, wrap(&ChatCommandHandler::HandleGuildDisbandCommand),           "Disbands the guild of your target." },
-#if VERSION_STRING >= Cata
         {"guild info",                    "m", 0, wrap(&ChatCommandHandler::HandleGuildInfoCommand),              "Shows guild info of your target." },
-#endif
         {"guild join",                    "m", 1, wrap(&ChatCommandHandler::HandleGuildJoinCommand),              "Force selected player to join a guild by name" },
         {"guild listmembers",             "m", 1, wrap(&ChatCommandHandler::HandleGuildListMembersCommand),       "Lists guildmembers with ranks by guild name." },
         {"guild rename",                  "m", 1, wrap(&ChatCommandHandler::HandleRenameGuildCommand),            "Renames a guild." },

@@ -320,7 +320,7 @@ static inline constexpr Standing getReputationRankFromStanding(int32_t value)
 // 9.x and later: flags only the own client receives
 enum PlayerLocalFlags : uint32_t
 {
-    PLAYER_LOCAL_FLAG_ACCOUNT_SECURED   = 0x00001000  // the account counts as secured, unlocks four backpack slots
+    PLAYER_LOCAL_FLAG_ACCOUNT_SECURED = 0x00001000 // the account counts as secured, unlocks four backpack slots
 };
 
 enum PlayerFlags : uint32_t
@@ -333,65 +333,49 @@ enum PlayerFlags : uint32_t
     PLAYER_FLAG_DEATH_WORLD_ENABLE      = 0x00000010, // Adds death glow to the world
     PLAYER_FLAG_RESTING                 = 0x00000020, // Applies rested state on your character portrait
     PLAYER_FLAG_ADMIN                   = 0x00000040, // Unknown effect in 3.3.5a
-#if VERSION_STRING < WotLK
+
     PLAYER_FLAG_FREE_FOR_ALL_PVP        = 0x00000080, // Applies FFA-pvp tag
-#else
     PLAYER_FLAG_UNK8                    = 0x00000080,
-#endif
+
     PLAYER_FLAG_PVP_GUARD_ATTACKABLE    = 0x00000100, // Player will be attacked by neutral guards
     PLAYER_FLAG_PVP_TOGGLE              = 0x00000200, // Toggles PvP combat on/off
     PLAYER_FLAG_NOHELM                  = 0x00000400, // Hides helm
     PLAYER_FLAG_NOCLOAK                 = 0x00000800, // Hides cloak
     PLAYER_FLAG_PLAYED_3_HOURS          = 0x00001000, // Obsolete: "You have more than 3 hours of online time. You will receive 1/2 money and XP during this period."
     PLAYER_FLAG_PLAYED_5_HOURS          = 0x00002000, // Obsolete: "You have more than 5 hours of online time. You will not be able to gain loot, XP, or complete quests."
-#if VERSION_STRING > Classic
+
     PLAYER_FLAG_UNK15                   = 0x00004000,
-#if VERSION_STRING == TBC
-    PLAYER_FLAG_UNK16                   = 0x00008000,
-#else
     PLAYER_FLAG_DEVELOPER               = 0x00008000, // <Dev> tag ingame
-#endif
-#if VERSION_STRING == TBC
     PLAYER_FLAG_SANCTUARY               = 0x00010000, // Makes player unattackable, added in sanctuary areas
-#else
-    PLAYER_FLAG_UNK17                   = 0x00010000,
-#endif
     PLAYER_FLAG_TAXI_TIME_TEST          = 0x00020000, // Toggles 'Taxi Time Test' and FPS counter, unused
-#if VERSION_STRING == TBC
-    PLAYER_FLAG_UNK19                   = 0x00040000,
-#else
     PLAYER_FLAG_PVP_TIMER               = 0x00040000, // PvP timer after toggling manually PvP combat state off
-#endif
+
     PLAYER_FLAG_UNK20                   = 0x00080000,
     PLAYER_FLAG_UNK21                   = 0x00100000,
     PLAYER_FLAG_UNK22                   = 0x00200000,
     PLAYER_FLAG_UNK23                   = 0x00400000,
-#if VERSION_STRING > TBC
+
     PLAYER_FLAG_PREVENT_SPELL_CAST      = 0x00800000, // Prevents spell casting but excludes auto attack, used by Bladestorm for example
-#if VERSION_STRING < Mop
+
     PLAYER_FLAG_PREVENT_MELEE_SPELLS    = 0x01000000, // Prevents melee spell casting and includes auto attack, unused?
-#else
-    PLAYER_FLAG_BATTLE_PET              = 0x01000000, // Related to Battle Pets
-#endif
+    PLAYER_FLAG_BATTLE_PET              = 0x01000000, // Related to Battle Pets (MoP+)
+
     PLAYER_FLAG_NO_XP                   = 0x02000000, // (TODO: implement this and remove variable from player class) Disables XP gain and hides XP bar
     PLAYER_FLAG_UNK27                   = 0x04000000,
-#if VERSION_STRING > WotLK
+
     PLAYER_FLAG_DECLINE_GUILD_INVITES   = 0x08000000, // Automatically declines guild invites
     PLAYER_FLAG_GUILD_LVL_ENABLED       = 0x10000000, // ??
     PLAYER_FLAG_VOID_STORAGE_UNLOCKED   = 0x20000000, // Player has bought Void Storage
     PLAYER_FLAG_UNK31                   = 0x40000000,
     PLAYER_FLAG_UNK32                   = 0x80000000
-#endif
-#endif
-#endif
 };
 
 enum CustomizeFlags
 {
-    CHAR_CUSTOMIZE_FLAG_NONE        = 0x00000000,   // Implemented          * Allows normal login no customization needed
-    CHAR_CUSTOMIZE_FLAG_CUSTOMIZE   = 0x00000001,   // Implemented          * Allows name, gender, and looks to be customized
-    CHAR_CUSTOMIZE_FLAG_FACTION     = 0x00010000,   //\todo Implement       * Allows name, gender, race, faction, and looks to be customized
-    CHAR_CUSTOMIZE_FLAG_RACE        = 0x00100000    //\todo Implement       * Allows name, gender, race, and looks to be customized
+    CHAR_CUSTOMIZE_FLAG_NONE        = 0x00000000, // Implemented          * Allows normal login no customization needed
+    CHAR_CUSTOMIZE_FLAG_CUSTOMIZE   = 0x00000001, // Implemented          * Allows name, gender, and looks to be customized
+    CHAR_CUSTOMIZE_FLAG_FACTION     = 0x00010000, //\todo Implement       * Allows name, gender, race, faction, and looks to be customized
+    CHAR_CUSTOMIZE_FLAG_RACE        = 0x00100000 //\todo Implement       * Allows name, gender, race, and looks to be customized
 };
 
 enum LoginFlags
@@ -704,7 +688,6 @@ enum TradeStatus
     // just for multi version compatibility
     TRADE_STATUS_CURRENCY_NOT_TRADEABLE,
     TRADE_STATUS_CURRENCY,
-
 };
 #endif
 
@@ -1216,7 +1199,7 @@ public:
         if (itr != mTalents.cend())
             itr->second = rankId;
         else
-            mTalents.insert({ talentId, rankId });
+            mTalents.insert({talentId, rankId});
     }
 
     bool hasTalent(uint32_t talentid, uint8_t rankid) const
@@ -1258,9 +1241,9 @@ private:
     uint32_t mTalentPoints = 0;
     std::map<uint32_t, uint8_t> mTalents;
 
-    std::array<uint16_t, GLYPHS_COUNT> mGlyphs = { 0 };
+    std::array<uint16_t, GLYPHS_COUNT> mGlyphs = {0};
 
-    std::array<ActionButton, PLAYER_ACTION_BUTTON_COUNT> mActions = { ActionButton() };
+    std::array<ActionButton, PLAYER_ACTION_BUTTON_COUNT> mActions = {ActionButton()};
 
     uint32_t mSpecializationId = 0;
 };
@@ -1333,5 +1316,5 @@ struct BGScore
     uint32_t BonusHonor = 0;
     uint32_t DamageDone = 0;
     uint32_t HealingDone = 0;
-    uint32_t MiscData[5] = { 0 };
+    uint32_t MiscData[5] = {0};
 };
