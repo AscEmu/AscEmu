@@ -124,8 +124,7 @@ enum InventoryLayout : uint8_t
 #endif
 };
 
-#if VERSION_STRING >= Dragonflight
-enum ProfessionSlots : uint8_t                                     // 11 slots, the tool and gear slots of the professions
+enum ProfessionSlots : uint8_t // 11 slots, the tool and gear slots of the professions
 {
     PROFESSION_SLOT_START             = 19,
     PROFESSION_SLOT_PROFESSION1_TOOL  = 19,
@@ -143,6 +142,7 @@ enum ProfessionSlots : uint8_t                                     // 11 slots, 
     PROFESSION_SLOT_MAX_COUNT         = 3
 };
 
+#if VERSION_STRING >= Dragonflight
 enum ReagentBagSlots : uint8_t                                     // 1 slot
 {
     REAGENT_BAG_SLOT_START      = 34,

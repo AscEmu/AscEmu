@@ -743,9 +743,9 @@ void MySQLDataStore::loadItemPropertiesTable()
         {
             if (const auto clientItem = sItemStore.lookupEntry(entry))
             {
-                itemProperties.Class = static_cast<uint32_t>(clientItem->Class);
-                itemProperties.SubClass = static_cast<uint16_t>(clientItem->SubClass);
-                itemProperties.InventoryType = static_cast<uint32_t>(clientItem->InventoryType);
+                itemProperties.Class = static_cast<uint32_t>(clientItem->itemClass);
+                itemProperties.SubClass = static_cast<uint16_t>(clientItem->itemSubClass);
+                itemProperties.InventoryType = static_cast<uint32_t>(clientItem->inventoryType);
             }
 
             if (const auto effects = sItemEffects.find(entry); effects != sItemEffects.end())

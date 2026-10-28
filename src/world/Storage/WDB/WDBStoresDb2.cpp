@@ -1150,30 +1150,30 @@ namespace
         std::unordered_map<uint32_t, uint32_t> displayInfoByAppearance;
         displayInfoByAppearance.reserve(itemAppearance.getRecordCount());
         for (Row const row : rows(itemAppearance))
-            displayInfoByAppearance.emplace(row.id(), row.i32(1));       // ItemDisplayInfoID
+            displayInfoByAppearance.emplace(row.id(), row.i32(1)); // ItemDisplayInfoID
 
         std::unordered_map<uint32_t, uint32_t> displayInfoByItem;
         displayInfoByItem.reserve(itemModifiedAppearance.getRecordCount());
         for (Row const row : rows(itemModifiedAppearance))
         {
-            if (row.i32(2) != 0)        // ItemAppearanceModifierID
+            if (row.i32(2) != 0) // ItemAppearanceModifierID
                 continue;
 
             if (auto const display = displayInfoByAppearance.find(row.i32(3)); display != displayInfoByAppearance.end())
                 displayInfoByItem.try_emplace(row.parentOr(1), display->second);
         }
 
-        fillContainer(sItemStore, item, [&displayInfoByItem](WDB::Structures::ItemEntry& entry, Row const& row)
+        fillStore(sItemStore, item, [&displayInfoByItem](WDB::Structures::ItemEntry& entry, Row const& row)
         {
-            entry.ID = row.id();
-            entry.Class = row.i32(0);
-            entry.SubClass = row.u8(1);
-            entry.SoundOverrideSubclass = row.i8(5);
-            entry.Material = row.u8(2);
-            if (auto const display = displayInfoByItem.find(entry.ID); display != displayInfoByItem.end())
-                entry.DisplayId = display->second;
-            entry.InventoryType = row.i8(3);
-            entry.Sheath = row.u8(4);
+            entry.id = row.id();
+            entry.itemClass = row.i32(0);
+            entry.itemSubClass = row.u8(1);
+            entry.soundOverrideSubclass = row.i8(5);
+            entry.material = row.u8(2);
+            if (auto const display = displayInfoByItem.find(entry.id); display != displayInfoByItem.end())
+                entry.displayId = display->second;
+            entry.inventoryType = row.i8(3);
+            entry.sheath = row.u8(4);
         });
 
         // the effects of an item, linked by ItemXItemEffect

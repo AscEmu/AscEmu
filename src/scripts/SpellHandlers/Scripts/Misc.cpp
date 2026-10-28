@@ -148,10 +148,9 @@ private:
     bool _health = false;
 };
 
-#if VERSION_STRING >= Mop
 enum ModernFishingSpells
 {
-    SPELL_FISHING_DUMMY = 131474,       // the fishing button of the professions window
+    SPELL_FISHING_DUMMY = 131474, // the fishing button of the professions window
     SPELL_FISHING_NO_POLE = 131476,
     SPELL_FISHING_WITH_POLE = 131490
 };
@@ -178,7 +177,6 @@ public:
     }
 };
 
-#if VERSION_STRING >= Dragonflight
 // the channel with a pole shows the pole of the tool slot as the visible main hand
 class ModernFishingPole : public SpellScript
 {
@@ -199,43 +197,45 @@ public:
             player->setVisibleItemFields(EQUIPMENT_SLOT_MAINHAND, player->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND));
     }
 };
-#endif
-#endif
 
 void setupMiscSpells(ScriptMgr* mgr)
 {
     // Call legacy script setup
     SetupLegacyMiscSpellhandlers(mgr);
 
-#if VERSION_STRING >= WotLK
-    mgr->register_spell_script(SPELL_FEIGN_DEATH, new GenericFeignDeath(true, false));
-#endif
-
+    // All expansions (Classic and later)
     mgr->register_spell_script(SPELL_GREATER_POLYMORPH, new Polymorph(false, true));
-
     mgr->register_spell_script(SPELL_PERMANENT_FEIGN_DEATH_1, new GenericFeignDeath);
-#if VERSION_STRING >= WotLK
-    mgr->register_spell_script(SPELL_PERMANENT_FEIGN_DEATH_2, new GenericFeignDeath);
-    mgr->register_spell_script(SPELL_PERMANENT_FEIGN_DEATH_3, new GenericFeignDeath(false));
-    mgr->register_spell_script(SPELL_PERMANENT_FEIGN_DEATH_4, new GenericFeignDeath);
-    mgr->register_spell_script(SPELL_PERMANENT_FEIGN_DEATH_5, new GenericFeignDeath);
-    mgr->register_spell_script(SPELL_PERMANENT_FEIGN_DEATH_6, new GenericFeignDeath);
-#endif
-
     mgr->register_spell_script(SPELL_POLYMORPH, new Polymorph(true, false));
 
-#if VERSION_STRING >= TBC
-    mgr->register_spell_script(SPELL_CORRUPTING_PLAGUE_AURA, new CorruptingPlagueAura);
-    mgr->register_spell_script(SPELL_CORRUPTING_PLAGUE, new ScriptedEffectWithoutLogic);
-#endif
-#if VERSION_STRING >= WotLK
-    mgr->register_spell_script(SPELL_VENGEFUL_STORMHAMMER, new ScriptedEffectWithoutLogic);
-#endif
+    // The Burning Crusade and later
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+    {
+        mgr->register_spell_script(SPELL_CORRUPTING_PLAGUE_AURA, new CorruptingPlagueAura);
+        mgr->register_spell_script(SPELL_CORRUPTING_PLAGUE, new ScriptedEffectWithoutLogic);
+    }
 
-#if VERSION_STRING >= Mop
-    mgr->register_spell_script(SPELL_FISHING_DUMMY, new ModernFishing);
-#if VERSION_STRING >= Dragonflight
-    mgr->register_spell_script(SPELL_FISHING_WITH_POLE, new ModernFishingPole);
-#endif
-#endif
+    // Wrath of the Lich King and later
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
+        mgr->register_spell_script(SPELL_FEIGN_DEATH, new GenericFeignDeath(true, false));
+        mgr->register_spell_script(SPELL_PERMANENT_FEIGN_DEATH_2, new GenericFeignDeath);
+        mgr->register_spell_script(SPELL_PERMANENT_FEIGN_DEATH_3, new GenericFeignDeath(false));
+        mgr->register_spell_script(SPELL_PERMANENT_FEIGN_DEATH_4, new GenericFeignDeath);
+        mgr->register_spell_script(SPELL_PERMANENT_FEIGN_DEATH_5, new GenericFeignDeath);
+        mgr->register_spell_script(SPELL_PERMANENT_FEIGN_DEATH_6, new GenericFeignDeath);
+        mgr->register_spell_script(SPELL_VENGEFUL_STORMHAMMER, new ScriptedEffectWithoutLogic);
+    }
+
+    // Mists of Pandaria and later
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+    {
+        mgr->register_spell_script(SPELL_FISHING_DUMMY, new ModernFishing);
+    }
+
+    // Dragonflight and later
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Dragonflight))
+    {
+        mgr->register_spell_script(SPELL_FISHING_WITH_POLE, new ModernFishingPole);
+    }
 }

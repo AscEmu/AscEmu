@@ -1087,20 +1087,18 @@ void WorldSession::characterEnumProc(QueryResult* result)
                         charEnum.player_items[item_slot].inventoryType = static_cast<uint8_t>(itemProperties->InventoryType);
                         charEnum.player_items[item_slot].subclass = static_cast<uint8_t>(itemProperties->SubClass);
 
-#if VERSION_STRING >= WoD
                         // a client with its own item data numbers the display ids differently than the item table
                         // (the appearance tables since 7.x), its store carries the ids the client expects
                         if (WoW::hasOwnClientData(WoW::getServerExpansion()))
                         {
-                            if (const auto itemEntry = sItemStore.lookupEntry(itemId); itemEntry != nullptr && itemEntry->DisplayId != 0)
+                            if (const auto itemEntry = sItemStore.lookupEntry(itemId); itemEntry != nullptr && itemEntry->displayId != 0)
                             {
-                                charEnum.player_items[item_slot].displayId = itemEntry->DisplayId;
-                                charEnum.player_items[item_slot].inventoryType = static_cast<uint8_t>(itemEntry->InventoryType);
-                                charEnum.player_items[item_slot].subclass = static_cast<uint8_t>(itemEntry->SubClass);
-                                charEnum.player_items[item_slot].sheatheCategory = static_cast<uint8_t>(itemEntry->Sheath);
+                                charEnum.player_items[item_slot].displayId = itemEntry->displayId;
+                                charEnum.player_items[item_slot].inventoryType = static_cast<uint8_t>(itemEntry->inventoryType);
+                                charEnum.player_items[item_slot].subclass = static_cast<uint8_t>(itemEntry->itemSubClass);
+                                charEnum.player_items[item_slot].sheatheCategory = static_cast<uint8_t>(itemEntry->sheath);
                             }
                         }
-#endif
 
                         std::string enchant_field = item_db_result->fetch()[2].asCString();
                         if (!enchant_field.empty())
