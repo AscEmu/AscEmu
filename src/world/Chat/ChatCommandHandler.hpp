@@ -142,12 +142,10 @@ public:
     bool handleAccountUnmuteCommand(const char* args, WorldSession* m_session);
     bool handleAccountGetAccountID(const char* args, WorldSession* m_session);
 
-#if VERSION_STRING > TBC
     // Achievement
     bool handleAchievementCompleteCommand(const char* args, WorldSession* m_session);
     bool handleAchievementCriteriaCommand(const char* args, WorldSession* m_session);
     bool handleAchievementResetCommand(const char* args, WorldSession* m_session);
-#endif
 
     // Admin commands
     bool HandleAdminCastAllCommand(const char* args, WorldSession* m_session);

@@ -27,7 +27,7 @@ CommandTableStorage::CommandTableStorage()
         {"account changepw",              "0", 1, wrap(&ChatCommandHandler::handleAccountChangePassword),       "Change the password of your account." },
         {"account getid",                 "1", 1, wrap(&ChatCommandHandler::handleAccountGetAccountID),         "Get Account ID for account name X" },
 
-        {"achieve",                       "0", 0, WoW::Expansion::_WotLK },
+        {"achieve",                       "0", 0, WoW::Expansion::_WotLK},
         {"achieve complete",              "m", 1, wrap(&ChatCommandHandler::handleAchievementCompleteCommand),  "Completes the specified achievement.", WoW::Expansion::_WotLK},
         {"achieve criteria",              "m", 1, wrap(&ChatCommandHandler::handleAchievementCriteriaCommand),  "Completes the specified achievement criteria.", WoW::Expansion::_WotLK},
         {"achieve reset",                 "m", 1, wrap(&ChatCommandHandler::handleAchievementResetCommand),     "Resets achievement data from the target.", WoW::Expansion::_WotLK},
