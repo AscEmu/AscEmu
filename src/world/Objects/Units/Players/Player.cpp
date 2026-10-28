@@ -4200,12 +4200,12 @@ SpellSet const& Player::getShapeshiftSpells() const
     return m_shapeshiftSpells;
 }
 
-void Player::addPetAuraSpell(uint32_t spellId, bool castedByPet/* = false*/)
+void Player::addPetAuraSpell(uint32_t spellId, bool castedByPet/* = false*/, bool isTemporary/* = false*/)
 {
     if (spellId == 0)
         return;
 
-    m_petAuraSpells.try_emplace(spellId, castedByPet);
+    m_petAuraSpells.try_emplace(spellId, castedByPet, isTemporary);
 
     // If pet is already active and alive, cast it right away
     if (auto* const pet = getPet(); pet != nullptr && pet->isAlive() && pet->isPermanentSummon())
@@ -4223,7 +4223,7 @@ void Player::removePetAuraSpell(uint32_t spellId)
     if (itr == m_petAuraSpells.cend())
         return;
 
-    const auto wasCastedByPet = itr->second;
+    const auto wasCastedByPet = itr->second.castedByPet;
     m_petAuraSpells.erase(itr);
 
     if (wasCastedByPet)
@@ -4243,12 +4243,34 @@ void Player::castPetAuraSpells()
     if (pet == nullptr || !pet->isAlive() || !pet->isPermanentSummon())
         return;
 
-    for (const auto& [spellId, isCastedByPet] : m_petAuraSpells)
+    for (const auto& [spellId, data] : m_petAuraSpells)
     {
-        if (isCastedByPet)
+        if (data.castedByPet)
             pet->castSpell(pet->getGuid(), spellId, true);
         else
             castSpell(pet->getGuid(), spellId, true);
+    }
+}
+
+void Player::removePetAuraSpells()
+{
+    for (auto itr = m_petAuraSpells.cbegin(); itr != m_petAuraSpells.cend();)
+    {
+        const auto& [spellId, data] = (*itr);
+        if (data.castedByPet)
+        {
+            if (const auto* pet = getPet())
+                pet->removeAllAurasById(spellId, pet->getGuid());
+        }
+        else
+        {
+            removeAllAurasById(spellId, getGuid());
+        }
+
+        if (data.temporary)
+            itr = m_petAuraSpells.erase(itr);
+        else
+            ++itr;
     }
 }
 

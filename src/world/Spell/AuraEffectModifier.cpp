@@ -49,6 +49,9 @@ int32_t AuraEffectModifier::getEffectMiscValue() const { return miscValue; }
 void AuraEffectModifier::setEffectAmplitude(int32_t amplitude) { mAmplitude = amplitude; }
 int32_t AuraEffectModifier::getEffectAmplitude() const { return mAmplitude; }
 
+void AuraEffectModifier::setEffectPeriodicTimer(int32_t timer) { mPeriodicTimer = timer; }
+int32_t AuraEffectModifier::getEffectPeriodicTimer() const { return mPeriodicTimer; }
+
 void AuraEffectModifier::setEffectDamageFraction(float_t fraction) { mDamageFraction = fraction; }
 float_t AuraEffectModifier::getEffectDamageFraction() const { return mDamageFraction; }
 
@@ -120,6 +123,7 @@ void AuraEffectModifier::resetEffect()
     mExtraField2 = 0;
     miscValue = 0;
     mAmplitude = 0;
+    mPeriodicTimer = 0;
     mDamageFraction = 0.0f;
     mEffectPctModifier = 1.0f;
     mEffectDamageStatic = false;
@@ -129,12 +133,23 @@ void AuraEffectModifier::resetEffect()
     clearAreaAuraEffectTargets();
 }
 
-void AuraEffectModifier::updateAreaAuraEffectTargets()
+void AuraEffectModifier::calculateEffectAmplitude()
+{
+    auto amplitude = static_cast<int32_t>(mAura.getSpellInfo()->getEffectAmplitude(effIndex));
+    if (auto* const caster = mAura.getUnitCaster())
+    {
+        // Apply modifiers
+        caster->applySpellModifiers(SPELLMOD_AMPTITUDE, &amplitude, mAura.getSpellInfo(), nullptr, &mAura);
+    }
+
+    mAmplitude = static_cast<int32_t>(amplitude * mAura.getHaste());
+}
+
+void AuraEffectModifier::updateAreaAuraEffectTargets(bool periodicTickForAreaAuraTargets)
 {
     const auto* const aurSpellInfo = mAura.getSpellInfo();
     auto* const unitCaster = mAura.getUnitCaster();
-    // Update only caster's area aura target map
-    if (unitCaster == nullptr || unitCaster->getGuid() != mAura.getOwner()->getGuid())
+    if (unitCaster == nullptr)
         return;
 
     for (const auto& aurEff : unitCaster->getAuraEffectList(SPELL_AURA_SCHOOL_IMMUNITY))
@@ -189,8 +204,7 @@ void AuraEffectModifier::updateAreaAuraEffectTargets()
     auto* const aurOwner = mAura.getOwner();
     for (auto itr = m_areaAuraTargets.begin(); itr != m_areaAuraTargets.cend();)
     {
-        auto& [targetGuid, skipValidation] = (*itr);
-
+        auto& [targetGuid, targetFoundThisUpdate] = (*itr);
         auto* const targetUnit = aurOwner->getWorldMapUnit(targetGuid);
         if (targetUnit == nullptr)
         {
@@ -199,91 +213,51 @@ void AuraEffectModifier::updateAreaAuraEffectTargets()
         }
 
         auto* const existingAura = targetUnit->getAuraWithId(aurSpellInfo->getId(), aurOwner->getGuid());
-        if (skipValidation)
+
+        if (!targetFoundThisUpdate)
         {
-            // Do not check freshly added targets again, check on next update
-            skipValidation = false;
-        }
-        else
-        {
-            // Check if target in aura map is still valid
-            auto removeAura = false;
-            switch (effectId)
-            {
-                case SPELL_EFFECT_APPLY_GROUP_AREA_AURA:
-                case SPELL_EFFECT_APPLY_RAID_AREA_AURA:
-                {
-                    const auto* plrOwner = mAura.getOwner()->getPlayerOwnerOrSelf();
-                    if (plrOwner == nullptr)
-                    {
-                        // Try by unit owner
-                        if (const auto* const unitOwner = mAura.getOwner()->getUnitOwner())
-                            plrOwner = unitOwner->getPlayerOwnerOrSelf();
-                    }
+            // If target was valid it would have been found when filling target map
+            // Remove only this effect
+            if (existingAura != nullptr)
+                existingAura->removeAuraEffect(effIndex);
 
-                    const auto checkRaid = effectId == SPELL_EFFECT_APPLY_RAID_AREA_AURA;
-                    removeAura = !_canAddTargetToGroupOrRaidAreaAura(plrOwner, targetUnit, auraRadius, checkRaid);
-                } break;
-                case SPELL_EFFECT_APPLY_PET_AREA_AURA:
-                {
-                    const auto* const pet = targetUnit->isPet() ?
-                        dynamic_cast<Pet const*>(targetUnit) :
-                        nullptr;
-                    removeAura = !_canAddPetToPetAreaAura(pet, auraRadius);
-                } break;
-                case SPELL_EFFECT_APPLY_FRIEND_AREA_AURA:
-                {
-                    removeAura = !_canAddTargetToFriendAreaAura(targetUnit, auraRadius);
-                } break;
-                case SPELL_EFFECT_APPLY_ENEMY_AREA_AURA:
-                {
-                    removeAura = !_canAddTargetToEnemyAreaAura(targetUnit, auraRadius);
-                } break;
-#if VERSION_STRING >= TBC
-                case SPELL_EFFECT_APPLY_OWNER_AREA_AURA:
-                {
-                    removeAura = !_canAddOwnerToOwnerAreaAura(targetUnit, auraRadius);
-                } break;
-#endif
-                default: break;
-            }
-
-            if (removeAura)
-            {
-                // Remove only this effect
-                if (existingAura != nullptr)
-                    existingAura->removeAuraEffect(effIndex);
-
-                itr = m_areaAuraTargets.erase(itr);
-                continue;
-            }
+            itr = m_areaAuraTargets.erase(itr);
+            continue;
         }
 
+        targetFoundThisUpdate = false;
+
+        // If target already has this aura, update only periodic tick for this effect
         if (existingAura != nullptr)
         {
-            // Target has already this aura, replace duration and effect from aura
-            existingAura->removeAuraEffect(effIndex);
-            existingAura->setOriginalDuration(mAura.getOriginalDuration());
-            existingAura->setMaxDuration(mAura.getMaxDuration());
-            existingAura->setTimeLeft(mAura.getTimeLeft());
-            // Periodic timer is same as casters timer
-            existingAura->setPeriodicTimerFor(effIndex, mAura.getPeriodicTimerFor(effIndex));
-            // Send calculated damage as base damage and set it static damage
-            if (auto* const addedEffect = existingAura->addAuraEffect(mAuraEffect, mDamage, miscValue, mEffectPctModifier, true, effIndex))
-                addedEffect->applyEffect(true);
+            auto* const existingAuraEffect = existingAura->getModifiableAuraEffect(effIndex);
+            if (existingAuraEffect != nullptr && existingAuraEffect->getAuraEffectType() != SPELL_AURA_NONE)
+            {
+                // Handle periodic tick for aura target
+                if (periodicTickForAreaAuraTargets)
+                    existingAuraEffect->_periodicTick();
+            }
+            else
+            {
+                // Target did not have this effect, add it to existing aura
+                // TODO: this adds effect regardless if target can actually have it
+                existingAura->removeAuraEffect(effIndex);
+                if (auto* const addedEffect = existingAura->addAuraEffect(mAuraEffect, mDamage, miscValue, mEffectPctModifier, true, effIndex))
+                    addedEffect->applyEffect(true);
+            }
+
+            ++itr;
+            continue;
         }
-        else
-        {
-            // Create new aura for target
-            auto tmpAura = sSpellMgr.newAura(aurSpellInfo, mAura.getOriginalDuration(), aurOwner, targetUnit, true);
-            tmpAura->setIsAreaAura(true);
-            tmpAura->setTimeLeft(mAura.getTimeLeft());
-            // Periodic timer is same as casters timer
-            tmpAura->setPeriodicTimerFor(effIndex, mAura.getPeriodicTimerFor(effIndex));
-            // Send calculated damage as base damage and set it static damage
-            tmpAura->addAuraEffect(mAuraEffect, mDamage, miscValue, mEffectPctModifier, true, effIndex);
-            targetUnit->addAura(std::move(tmpAura));
-        }
+
+        // Create new aura for target
+        auto tmpAura = sSpellMgr.newAura(aurSpellInfo, mAura.getOriginalDuration(), aurOwner, targetUnit, true);
+        tmpAura->setIsAreaAura(true);
+        tmpAura->setTimeLeft(mAura.getTimeLeft());
+        // Send calculated damage as base damage and set it static damage
+        tmpAura->addAuraEffect(mAuraEffect, mDamage, miscValue, mEffectPctModifier, true, effIndex);
+        targetUnit->addAura(std::move(tmpAura));
+
         ++itr;
     }
 
@@ -315,7 +289,387 @@ void AuraEffectModifier::clearAreaAuraEffectTargets()
     }
 }
 
+void AuraEffectModifier::update(unsigned long diff, bool updateAreaAuraTargets)
+{
+    // Periodic auras
+    auto periodicTickForAreaAuraTargets = false;
+    if (mPeriodicTimer != 0)
+    {
+        // Effects with 0 amplitude are not periodic
+        if (mAmplitude <= 0)
+        {
+            mPeriodicTimer = 0;
+            return;
+        }
+
+        mPeriodicTimer -= diff;
+        if (mPeriodicTimer <= 0)
+        {
+            _periodicTick();
+            // Periodic tick may modify amplitude
+            if (mAmplitude == 0)
+            {
+                mPeriodicTimer = 0;
+            }
+            else
+            {
+                mPeriodicTimer += mAmplitude;
+                if (mPeriodicTimer <= 0)
+                    mPeriodicTimer = mAmplitude;
+            }
+            periodicTickForAreaAuraTargets = true;
+        }
+    }
+
+    // Area aura effect
+    if (updateAreaAuraTargets || periodicTickForAreaAuraTargets)
+    {
+        // Targets are updated on periodic tick as well so reset timer from aura
+        mAura.resetAreaAuraTargetTimer();
+        updateAreaAuraEffectTargets(periodicTickForAreaAuraTargets);
+    }
+}
+
 Aura* AuraEffectModifier::getAura() const { return &mAura; }
+
+void AuraEffectModifier::_periodicTick()
+{
+    auto effectFloatValue = mRealDamage;
+
+    auto* const aurOwner = mAura.getOwner();
+    const auto aurSpellId = mAura.getSpellId();
+    switch (mAuraEffect)
+    {
+        case SPELL_AURA_PERIODIC_DAMAGE:
+        {
+            const auto scriptResult = sScriptMgr.callScriptedAuraOnPeriodicTick(&mAura, this, &effectFloatValue);
+            // If script prevents default action, do not continue
+            if (scriptResult == SpellScriptExecuteState::EXECUTE_PREVENT)
+                return;
+
+            auto* const casterUnit = mAura.getUnitCaster();
+            if (casterUnit != nullptr)
+                casterUnit->doSpellDamage(aurOwner, aurSpellId, effectFloatValue, effIndex, mAura.isTriggeredBySpellId(), true, false, false, nullptr, &mAura, this);
+            else
+                aurOwner->doSpellDamage(aurOwner, aurSpellId, effectFloatValue, effIndex, mAura.isTriggeredBySpellId(), true, false, false, nullptr, &mAura, this);
+        } break;
+        case SPELL_AURA_PERIODIC_HEAL:
+        {
+            const auto scriptResult = sScriptMgr.callScriptedAuraOnPeriodicTick(&mAura, this, &effectFloatValue);
+            // If script prevents default action, do not continue
+            if (scriptResult == SpellScriptExecuteState::EXECUTE_PREVENT)
+                return;
+
+            auto* const casterUnit = mAura.getUnitCaster();
+            if (casterUnit != nullptr)
+                casterUnit->doSpellHealing(aurOwner, aurSpellId, effectFloatValue, mAura.isTriggeredBySpellId(), true, false, false, nullptr, &mAura, this);
+            else
+                aurOwner->doSpellHealing(aurOwner, aurSpellId, effectFloatValue, mAura.isTriggeredBySpellId(), true, false, false, nullptr, &mAura, this);
+
+            // Hackfixes from legacy method
+            if (casterUnit != nullptr)
+            {
+                if (mDamage > 0)
+                {
+                    //SPELL_HASH_HEALTH_FUNNEL
+                    if (mAura.getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_FUNNEL)
+                    {
+                        DamageInfo sdmg;
+
+                        sdmg.fullDamage = mDamage;
+                        sdmg.resistedDamage = 0;
+                        sdmg.schoolMask = SchoolMask(mAura.getSpellInfo()->getSchoolMask());
+                        casterUnit->dealDamage(casterUnit, static_cast<uint32_t>(mDamage), 0);
+                        casterUnit->sendAttackerStateUpdate(casterUnit->GetNewGUID(), casterUnit->GetNewGUID(), HITSTATUS_NORMALSWING, static_cast<uint32_t>(mDamage), 0, sdmg, 0, VisualState::ATTACK, 0, 0);
+                    }
+                }
+            }
+        } break;
+        case SPELL_AURA_PERIODIC_HEAL_PCT:
+        {
+            effectFloatValue = aurOwner->getMaxHealth() * mDamage / 100.0f;
+
+            const auto scriptResult = sScriptMgr.callScriptedAuraOnPeriodicTick(&mAura, this, &effectFloatValue);
+            // If script prevents default action, do not continue
+            if (scriptResult == SpellScriptExecuteState::EXECUTE_PREVENT)
+                return;
+
+            auto* const casterUnit = mAura.getUnitCaster();
+            if (casterUnit != nullptr)
+                casterUnit->doSpellHealing(aurOwner, aurSpellId, effectFloatValue, mAura.isTriggeredBySpellId(), true, false, false, nullptr, &mAura, this);
+            else
+                aurOwner->doSpellHealing(aurOwner, aurSpellId, effectFloatValue, mAura.isTriggeredBySpellId(), true, false, false, nullptr, &mAura, this);
+        } break;
+        case SPELL_AURA_PERIODIC_POWER_PCT:
+        {
+            if (!aurOwner->isAlive())
+                return;
+
+            const auto powerType = static_cast<PowerType>(miscValue);
+            if (aurOwner->getMaxPower(powerType) == 0)
+                return;
+
+            effectFloatValue = aurOwner->getMaxPower(powerType) * mDamage / 100.0f;
+
+            const auto scriptResult = sScriptMgr.callScriptedAuraOnPeriodicTick(&mAura, this, &effectFloatValue);
+            // If script prevents default action, do not continue
+            if (scriptResult == SpellScriptExecuteState::EXECUTE_PREVENT)
+                return;
+
+            // Hackfix from legacy method
+            const auto spellId = aurSpellId == 60069 ? 49766 : aurSpellId;
+            auto* const casterUnit = mAura.getUnitCaster();
+
+            // Send packet first
+            const auto unsignedValue = static_cast<uint32_t>(std::ceil(effectFloatValue));
+            aurOwner->sendPeriodicAuraLog(mAura.getCasterGuid(), aurOwner->GetNewGUID(), mAura.getSpellInfo(), unsignedValue, 0, 0, 0, mAuraEffect, false, powerType);
+
+            if (casterUnit != nullptr)
+                casterUnit->energize(aurOwner, spellId, unsignedValue, powerType, false);
+            else
+                aurOwner->energize(aurOwner, spellId, unsignedValue, powerType, false);
+        } break;
+        case SPELL_AURA_PERIODIC_TRIGGER_SPELL:
+#if VERSION_STRING >= TBC
+        case SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE:
+#endif
+        {
+            const auto scriptResult = sScriptMgr.callScriptedAuraOnPeriodicTick(&mAura, this, &effectFloatValue);
+            // If script prevents default action, do not continue
+            if (scriptResult == SpellScriptExecuteState::EXECUTE_PREVENT)
+                return;
+
+            const auto triggerId = mAura.getSpellInfo()->getEffectTriggerSpell(effIndex);
+            const auto triggerInfo = sSpellMgr.getSpellInfo(triggerId);
+            if (triggerInfo == nullptr)
+            {
+                sLogger.failure("Aura::periodicTick : Periodic trigger aura effect has invalid spell id ({}) in aura id {}", triggerId, aurSpellId);
+                return;
+            }
+
+            auto* const originalCaster = mAura.getUnitCaster();
+            Unit* casterUnit = nullptr;
+
+            if (originalCaster == nullptr)
+            {
+                sLogger.failure("Aura::periodicTick : Unit caster not existing for periodic effect in aura id {}", aurSpellId);
+                return;
+            }
+
+            // Note; some spells might need a spell script here to set correct caster and target
+
+            if (triggerInfo->isTriggerSpellCastedByCaster(mAura.getSpellInfo()))
+                casterUnit = originalCaster;
+            else
+                casterUnit = aurOwner;
+
+            SpellCastTargets spellTargets(0);
+
+            // If spell is channeled, periodic target should be the channel object
+            if (mAura.getSpellInfo()->isChanneled())
+            {
+                const auto* const channelTarget = originalCaster->getWorldMapObject(originalCaster->getChannelObjectGuid());
+                const auto targetMask = triggerInfo->getRequiredTargetMask(true);
+                if (targetMask & SPELL_TARGET_AREA_MASK && !(targetMask & SPELL_TARGET_AREA_SELF))
+                    spellTargets.setDestination(channelTarget != nullptr ? channelTarget->GetPosition() : aurOwner->GetPosition());
+
+                if (targetMask & SPELL_TARGET_AREA_SELF)
+                    spellTargets.setSource(originalCaster->GetPosition());
+
+                if (channelTarget != nullptr && channelTarget->isCreatureOrPlayer())
+                    spellTargets.setUnitTarget(channelTarget->getGuid());
+
+                if (spellTargets.isEmpty())
+                {
+                    sLogger.failure("SpellAura::periodicTick : Periodic effect has no channel target or not handled in aura id {}", aurSpellId);
+                    return;
+                }
+            }
+            else
+            {
+                spellTargets.setUnitTarget(aurOwner->getGuid());
+            }
+
+            Spell* triggerSpell = sSpellMgr.newSpell(casterUnit, triggerInfo, true, &mAura);
+#if VERSION_STRING >= TBC
+            if (mAuraEffect == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE)
+            {
+                for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                    triggerSpell->forced_basepoints->set(i, static_cast<int32_t>(std::ceil(effectFloatValue)));
+            }
+#endif
+            triggerSpell->prepare(&spellTargets);
+        } break;
+        case SPELL_AURA_PERIODIC_ENERGIZE:
+        {
+            if (!aurOwner->isAlive())
+                return;
+
+            const auto powerType = static_cast<PowerType>(miscValue);
+            if (aurOwner->getMaxPower(powerType) == 0)
+                return;
+
+            const auto scriptResult = sScriptMgr.callScriptedAuraOnPeriodicTick(&mAura, this, &effectFloatValue);
+            // If script prevents default action, do not continue
+            if (scriptResult == SpellScriptExecuteState::EXECUTE_PREVENT)
+                return;
+
+            auto* const casterUnit = mAura.getUnitCaster();
+
+            // Send packet first
+            const auto unsignedValue = static_cast<uint32_t>(std::ceil(effectFloatValue));
+            aurOwner->sendPeriodicAuraLog(mAura.getCasterGuid(), aurOwner->GetNewGUID(), mAura.getSpellInfo(), unsignedValue, 0, 0, 0, mAuraEffect, false, powerType);
+
+            if (casterUnit != nullptr)
+                casterUnit->energize(aurOwner, aurSpellId, unsignedValue, powerType, false);
+            else
+                aurOwner->energize(aurOwner, aurSpellId, unsignedValue, powerType, false);
+        } break;
+        case SPELL_AURA_PERIODIC_LEECH:
+        case SPELL_AURA_PERIODIC_HEALTH_FUNNEL:
+        {
+            const auto scriptResult = sScriptMgr.callScriptedAuraOnPeriodicTick(&mAura, this, &effectFloatValue);
+            // If script prevents default action, do not continue
+            if (scriptResult == SpellScriptExecuteState::EXECUTE_PREVENT)
+                return;
+
+            // Deal damage (heal part is called in doSpellDamage)
+            auto* const casterUnit = mAura.getUnitCaster();
+            if (casterUnit != nullptr)
+                casterUnit->doSpellDamage(aurOwner, aurSpellId, effectFloatValue, effIndex, mAura.isTriggeredBySpellId(), true, true, false, nullptr, &mAura, this);
+            else
+                aurOwner->doSpellDamage(aurOwner, aurSpellId, effectFloatValue, effIndex, mAura.isTriggeredBySpellId(), true, true, false, nullptr, &mAura, this);
+        } break;
+        case SPELL_AURA_PERIODIC_MANA_LEECH:
+        {
+            if (!aurOwner->isAlive())
+                return;
+
+            if (aurOwner->getMaxPower(POWER_TYPE_MANA) == 0)
+                return;
+
+            const auto scriptResult = sScriptMgr.callScriptedAuraOnPeriodicTick(&mAura, this, &effectFloatValue);
+            // If script prevents default action, do not continue
+            if (scriptResult == SpellScriptExecuteState::EXECUTE_PREVENT)
+                return;
+
+            auto* const casterUnit = mAura.getUnitCaster();
+            if (aurOwner->m_schoolImmunityList[mAura.getSpellInfo()->getFirstSchoolFromSchoolMask()] != 0)
+            {
+                if (casterUnit != nullptr)
+                    casterUnit->sendSpellOrDamageImmune(mAura.getCasterGuid(), aurOwner, aurSpellId);
+
+                return;
+            }
+
+            const auto manaLeech = std::min(static_cast<int32_t>(std::ceil(effectFloatValue)), static_cast<int32_t>(aurOwner->getPower(POWER_TYPE_MANA)));
+            aurOwner->modPower(POWER_TYPE_MANA, -manaLeech);
+
+            // If caster does not exist or is not alive, mana cannot be leeched
+            if (casterUnit == nullptr || !casterUnit->isAlive())
+                return;
+
+            const auto manaMultiplier = mAura.getSpellInfo()->getEffectMultipleValue(effIndex);
+            const auto manaReturn = static_cast<int32_t>(manaLeech * manaMultiplier);
+
+            // Add leeched mana to caster
+            const auto curPower = casterUnit->getPower(POWER_TYPE_MANA);
+            const auto maxPower = casterUnit->getMaxPower(POWER_TYPE_MANA);
+            if (curPower + manaReturn >= maxPower)
+                casterUnit->setPower(POWER_TYPE_MANA, maxPower);
+            else
+                casterUnit->modPower(POWER_TYPE_MANA, manaReturn);
+
+            aurOwner->sendPeriodicAuraLog(mAura.getCasterGuid(), aurOwner->GetNewGUID(), mAura.getSpellInfo(), static_cast<uint32_t>(manaReturn), 0, 0, 0, mAuraEffect, false, POWER_TYPE_MANA, manaMultiplier);
+        } break;
+        case SPELL_AURA_PERIODIC_DAMAGE_PERCENT:
+        {
+            effectFloatValue = aurOwner->getMaxHealth() * mDamage / 100.0f;
+
+            const auto scriptResult = sScriptMgr.callScriptedAuraOnPeriodicTick(&mAura, this, &effectFloatValue);
+            // If script prevents default action, do not continue
+            if (scriptResult == SpellScriptExecuteState::EXECUTE_PREVENT)
+                return;
+
+            auto* const casterUnit = mAura.getUnitCaster();
+            if (casterUnit != nullptr)
+                casterUnit->doSpellDamage(aurOwner, aurSpellId, effectFloatValue, effIndex, mAura.isTriggeredBySpellId(), true, false, false, nullptr, &mAura, this);
+            else
+                aurOwner->doSpellDamage(aurOwner, aurSpellId, effectFloatValue, effIndex, mAura.isTriggeredBySpellId(), true, false, false, nullptr, &mAura, this);
+        } break;
+        case SPELL_AURA_PERIODIC_POWER_BURN:
+        {
+            if (!aurOwner->isAlive())
+                return;
+
+            const auto scriptResult = sScriptMgr.callScriptedAuraOnPeriodicTick(&mAura, this, &effectFloatValue);
+            // If script prevents default action, do not continue
+            if (scriptResult == SpellScriptExecuteState::EXECUTE_PREVENT)
+                return;
+
+            auto* const casterUnit = mAura.getUnitCaster();
+            if (aurOwner->m_schoolImmunityList[mAura.getSpellInfo()->getFirstSchoolFromSchoolMask()] != 0)
+            {
+                if (casterUnit != nullptr)
+                    casterUnit->sendSpellOrDamageImmune(mAura.getCasterGuid(), aurOwner, aurSpellId);
+
+                return;
+            }
+
+            const auto powerType = static_cast<PowerType>(miscValue);
+
+            // Calculate power amount
+            const auto powerAmount = std::min(static_cast<int32_t>(std::ceil(effectFloatValue)), static_cast<int32_t>(aurOwner->getPower(powerType)));
+            aurOwner->modPower(powerType, -powerAmount);
+
+            auto damage = powerAmount * mAura.getSpellInfo()->getEffectMultipleValue(effIndex);
+            // Should do at least 1 damage (see Chromaggus and Brood Affliction: Blue)
+            ///\ todo: verify this
+            damage = std::max(1.0f, damage);
+
+            if (casterUnit != nullptr)
+                casterUnit->doSpellDamage(aurOwner, aurSpellId, damage, effIndex, mAura.isTriggeredBySpellId(), true, false, false, nullptr, &mAura, this);
+            else
+                aurOwner->doSpellDamage(aurOwner, aurSpellId, damage, effIndex, mAura.isTriggeredBySpellId(), true, false, false, nullptr, &mAura, this);
+        } break;
+#if VERSION_STRING >= TBC
+        case SPELL_AURA_PERIODIC_TRIGGER_DUMMY:
+        {
+            // Drink spells use periodic dummy trigger since TBC
+            auto* const previousEff = effIndex > 0 ?
+                mAura.getModifiableAuraEffect(effIndex - 1U) :
+                nullptr;
+            if (previousEff != nullptr && previousEff->getAuraEffectType() == SPELL_AURA_MOD_POWER_REGEN)
+            {
+                auto* const plrAurOwner = mAura.getPlayerOwner();
+                if (plrAurOwner == nullptr)
+                    return;
+
+                // Set this effect's value to the mana regen effect, so it will be removed when aura is removed
+                previousEff->setEffectDamage(mDamage);
+                plrAurOwner->updateManaRegeneration();
+
+                // Disable this periodic effect
+                mAmplitude = 0;
+                return;
+            }
+
+            // Check that the dummy effect is handled properly in spell script
+            // In case it's not, generate warning to debug log
+            const auto dummyResult = sScriptMgr.callScriptedAuraOnDummyEffect(&mAura, this, true);
+            if (dummyResult == SpellScriptCheckDummy::DUMMY_OK)
+                break;
+
+            if (sScriptMgr.CallScriptedDummyAura(aurSpellId, effIndex, &mAura, true))
+                break;
+
+            sLogger.debugAuraEffect("Spell aura {} has a periodic trigger dummy effect but no handler for it.", aurSpellId);
+        } break;
+#endif
+        default:
+            break;
+    }
+}
 
 bool AuraEffectModifier::_canAddTargetToGroupOrRaidAreaAura(Player const* initiatorPlayer, Unit const* target, float radius, bool checkRaid) const
 {

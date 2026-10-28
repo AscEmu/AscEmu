@@ -84,9 +84,11 @@ public:
 
     // Set on aura apply
     float_t getCritChance() const;
+    void calculateCritChance();
     int32_t getSpellPowerBonus() const;
     int32_t getHealPowerBonus() const;
     uint32_t getAttackPowerBonus() const;
+    float_t getHaste() const;
 
     // Called only for SPELL_AURA_SCHOOL_ABSORB and SPELL_AURA_MANA_SHIELD effects
     // Modifies dmg done and returns absorbed amount
@@ -96,12 +98,10 @@ public:
     void removeUsedSpellModifier(AuraEffectModifier const* aurEff);
     void takeUsedSpellModifiers();
 
-    int32_t getPeriodicTimerFor(uint8_t effIndex) const;
-    void setPeriodicTimerFor(uint8_t effIndex, int32_t timer);
-
     bool isAreaAura() const;
     void setIsAreaAura(bool set);
     void clearAreaAuraTargets();
+    void resetAreaAuraTargetTimer();
 
     bool isDeleted() const;
     bool isTemporaryAura() const;
@@ -119,6 +119,7 @@ public:
 
     void update(unsigned long diff, bool skipDurationCheck = false);
 
+    bool isTriggeredBySpellId() const;
     uint32_t getTriggeredBySpellId() const;
     void setTriggeredBySpellId(uint32_t spellId);
 
@@ -366,11 +367,9 @@ private:
     uint16_t m_originalCharges = 0;
 
     // Following values are calculated only on aura apply, not on every tick
-    void _calculateCritChance();
     void _calculateSpellPowerBonus();
     void _calculateAttackPowerBonus();
     void _calculateSpellHaste();
-    void _calculateEffectAmplitude(uint8_t effIndex);
     bool _canHasteAffectDuration() const;
     float_t m_critChance = 0.0f;
     int32_t m_spellPowerBonus = 0;
@@ -381,12 +380,6 @@ private:
     std::map<AuraEffectModifier const*, bool> m_usedModifiers;
 
     bool mPositive = true;
-
-    // Aura could have effects with different amplitude
-    // TODO: move this under AuraEffectModifier
-    std::array<int32_t, MAX_SPELL_EFFECTS> m_periodicTimer = { 0 };
-    void periodicTick(AuraEffectModifier* aurEff);
-
     bool m_areaAura = false;
     int32_t m_areaAuraTargetUpdateTimer = AREA_AURA_UPDATE_INTERVAL;
 

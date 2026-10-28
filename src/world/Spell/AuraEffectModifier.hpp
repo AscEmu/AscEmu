@@ -45,6 +45,9 @@ public:
     void setEffectAmplitude(int32_t amplitude);
     int32_t getEffectAmplitude() const;
 
+    void setEffectPeriodicTimer(int32_t timer);
+    int32_t getEffectPeriodicTimer() const;
+
     void setEffectDamageFraction(float_t fraction);
     float_t getEffectDamageFraction() const;
 
@@ -65,8 +68,12 @@ public:
     void applyEffect(bool apply, bool skipScriptCheck = false);
     void resetEffect();
 
-    void updateAreaAuraEffectTargets();
+    void calculateEffectAmplitude();
+
+    void updateAreaAuraEffectTargets(bool periodicTickForAreaAuraTargets);
     void clearAreaAuraEffectTargets();
+
+    void update(unsigned long diff, bool updateAreaAuraTargets);
 
     // Never nullptr
     Aura* getAura() const;
@@ -80,11 +87,14 @@ private:
     int32_t mExtraField2 = 0;                   // Second extra field
     int32_t miscValue = 0;                      // Misc Value
     int32_t mAmplitude = 0;                     // Effect amplitude
+    int32_t mPeriodicTimer = 0;                 // Effect periodic timer
     float_t mDamageFraction = 0.0f;             // Leftover damage from previous tick which will be added to next tick
     float_t mEffectPctModifier = 1.0f;          // Effect percent modifier
     bool mEffectDamageStatic = false;           // If effect damage is set to static, effect will not gain spell power bonuses
     bool mActive = false;                       // Is effect active
     uint8_t effIndex = 0;
+
+    void _periodicTick();
 
     AreaAuraList m_areaAuraTargets;
 

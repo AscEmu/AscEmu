@@ -272,6 +272,9 @@ public:
     int32_t getDuration();
     float_t getEffectRadius(uint8_t effectIndex);
 
+    bool isEffectDamageStatic(uint8_t effectIndex) const;
+    float_t getEffectPctModifier(uint8_t effectIndex) const;
+
 private:
     struct HitSpellEffect
     {
@@ -339,9 +342,9 @@ private:
     std::map<uint64_t, MissSpellEffect> m_missEffects;
     std::vector<uint64_t> m_critTargets;
 
-    bool isForcedCrit = false;
-    bool isEffectDamageStatic[MAX_SPELL_EFFECTS];
-    float_t effectPctModifier[MAX_SPELL_EFFECTS];
+    bool m_isForcedCrit = false;
+    bool m_isEffectDamageStatic[MAX_SPELL_EFFECTS];
+    float_t m_effectPctModifier[MAX_SPELL_EFFECTS];
 
     std::map<AuraEffectModifier const*, bool> m_usedModifiers;
 

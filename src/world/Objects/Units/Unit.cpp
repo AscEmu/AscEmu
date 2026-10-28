@@ -7376,10 +7376,6 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
     const auto attacker = batch->caster;
     if (attacker != nullptr && attacker != this)
     {
-        // a level range creature takes the damage against the health of the attacker's level
-        if (auto const* scalingVictim = ToCreature(); CreatureLevelTuning::isScaling(scalingVictim))
-            damage = static_cast<uint32_t>(damage / CreatureLevelTuning::healthMultiplierForTarget(scalingVictim, attacker));
-
         if (attacker->isPlayer())
         {
             const auto plr = dynamic_cast<Player*>(attacker);
