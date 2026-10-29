@@ -3213,7 +3213,6 @@ void MySQLDataStore::loadPlayerCreateInfoSpellLearn()
                 }
             }
         }
-
     } while (player_create_info_spells_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `playercreateinfo_spell_learn` table in {} ms!", player_create_info_spells_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
@@ -3268,7 +3267,6 @@ void MySQLDataStore::loadPlayerCreateInfoSpellCast()
                 }
             }
         }
-
     } while (player_create_info_spells_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `playercreateinfo_spell_cast` table in {} ms!", player_create_info_spells_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
@@ -3316,7 +3314,6 @@ void MySQLDataStore::loadPlayerCreateInfoLevelstats()
 
             ++player_levelstats_count;
         }
-
     } while (player_levelstats_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `player_levelstats` table in {} ms!", player_levelstats_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
@@ -3395,7 +3392,7 @@ void MySQLDataStore::loadPlayerCreateInfoClassLevelstats()
         //Zyres: load missing and required data from dbc!
         int32_t player_classlevelstats_count = 0;
 
-        for (uint8_t player_class = 1; player_class < MAX_PLAYER_CLASSES - 1; ++player_class)
+        for (uint8_t player_class = 1; player_class < MAX_PLAYER_CLASSES; ++player_class)
         {
             for (uint8_t level = 1; level < DBC_STAT_LEVEL_CAP; ++level)
             {
@@ -3406,7 +3403,7 @@ void MySQLDataStore::loadPlayerCreateInfoClassLevelstats()
                 WDB::Structures::GtOCTBaseHPByClassEntry const* hp = sGtOCTBaseHPByClassStore.lookupEntry((player_class - 1) * DBC_STAT_LEVEL_CAP + level - 1);
                 WDB::Structures::GtOCTBaseMPByClassEntry const* mp = sGtOCTBaseMPByClassStore.lookupEntry((player_class - 1) * DBC_STAT_LEVEL_CAP + level - 1);
 
-                if (hp && mp)
+                if (hp != nullptr && mp != nullptr)
                 {
                     CreateInfo_ClassLevelStats lvl;
                     lvl.health = static_cast<uint32_t>(hp->ratio);

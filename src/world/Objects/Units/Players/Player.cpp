@@ -1528,7 +1528,15 @@ void Player::addAuraVision(uint8_t auraVision) { setAuraVision(getAuraVision() |
 void Player::removeAuraVision(uint8_t auraVision) { setAuraVision(getAuraVision() & ~auraVision); }
 
 uint32_t Player::getCombatRating(uint8_t combatRating) const { return getField<uint32_t>(PlayerField::FieldCombatRating, combatRating); }
-void Player::setCombatRating(uint8_t combatRating, uint32_t value) { setField<uint32_t>(PlayerField::FieldCombatRating, value, combatRating); }
+
+void Player::setCombatRating(uint8_t combatRating, uint32_t value)
+{
+    if (combatRating >= getMaxPlayerCombatRatings())
+        return;
+
+    setField<uint32_t>(PlayerField::FieldCombatRating, value, combatRating);
+}
+
 void Player::modCombatRating(uint8_t combatRating, int32_t value) { setCombatRating(combatRating, getCombatRating(combatRating) + value); }
 
     // field_arena_team_info start
@@ -3807,7 +3815,7 @@ void Player::setInitialPlayerData()
     }
 #endif
 
-    for (uint8_t i = 0; i < MAX_PCR; ++i)
+    for (uint8_t i = 0; i < getMaxPlayerCombatRatings(); ++i)
         setCombatRating(i, 0);
 
     for (uint8_t i = 0; i < STAT_COUNT; ++i)
@@ -6683,15 +6691,13 @@ void Player::saveTutorials()
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Actionbar
-void Player::setActionButton(uint8_t button, uint32_t action, uint8_t type, [[maybe_unused]]uint8_t misc)
+void Player::setActionButton(uint8_t button, uint32_t action, uint32_t type, uint8_t misc)
 {
     if (button >= PLAYER_ACTION_BUTTON_COUNT)
         return;
 
     getActiveSpec().getActionButton(button).Action = action;
-#if VERSION_STRING < Mop
     getActiveSpec().getActionButton(button).Misc = misc;
-#endif
     getActiveSpec().getActionButton(button).Type = type;
 }
 
@@ -6703,9 +6709,7 @@ void Player::sendActionBars([[maybe_unused]] uint8_t action)
         const ActionButton& button = getActiveSpec().getActionButton(i);
         buttons[i].action = button.Action;
         buttons[i].type = button.Type;
-#if VERSION_STRING < Mop
         buttons[i].misc = button.Misc;
-#endif
     }
 
     SmsgUpdateActionButtons managedPacket(buttons, action);
@@ -15999,18 +16003,20 @@ float Player::getDodgeChance()
 {
     const float crit_to_dodge[MAX_PLAYER_CLASSES] =
     {
-        0.0f,      // empty
-        1.1f,      // Warrior
-        1.0f,      // Paladin
-        1.6f,      // Hunter
-        2.0f,      // Rogue
-        1.0f,      // Priest
-        1.0f,      // DK?
-        1.0f,      // Shaman
-        1.0f,      // Mage
-        1.0f,      // Warlock
-        1.0f,      // Monk
-        1.7f       // Druid
+        0.0f, // empty
+        1.1f, // Warrior
+        1.0f, // Paladin
+        1.6f, // Hunter
+        2.0f, // Rogue
+        1.0f, // Priest
+        1.0f, // Death Knight ?
+        1.0f, // Shaman
+        1.0f, // Mage
+        1.0f, // Warlock
+        1.0f, // Monk
+        1.7f, // Druid
+        1.5f, // Demon Hunter
+        1.0f  // Evoker
     };
 
     uint32_t playerClass = getClass();

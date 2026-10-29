@@ -5,8 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "AEVersion.hpp"
-
 #include <cstdint>
 
 enum AuraEffect : uint32_t
@@ -157,11 +155,8 @@ enum AuraEffect : uint32_t
     SPELL_AURA_MOD_RESISTANCE_EXCLUSIVE = 143,                          // Mod Resistance Exclusive
     SPELL_AURA_SAFE_FALL = 144,                                         // Safe Fall
     SPELL_AURA_CHARISMA = 145,                                          // Charisma
-#if VERSION_STRING < WotLK
     SPELL_AURA_PERSUADED = 146,                                         // Persuaded
-#else
     SPELL_AURA_ALLOW_TAME_PET_TYPE = 146,                               // Allow tame pet type
-#endif
     SPELL_AURA_MECHANIC_IMMUNITY_MASK = 147,                            // Mechanic Immunity Mask
     SPELL_AURA_RETAIN_COMBO_POINTS = 148,                               // Retain Combo Points
     SPELL_AURA_RESIST_PUSHBACK = 149,                                   // Resist Pushback
@@ -256,7 +251,6 @@ enum AuraEffect : uint32_t
     SPELL_AURA_260 = 260,
     SPELL_AURA_PHASE = 261,
     // Wotlk begins
-#if VERSION_STRING >= WotLK
     SPELL_AURA_IGNORE_TARGET_AURA_STATE = 262,
     SPELL_AURA_ALLOW_ONLY_ABILITY = 263,
     SPELL_AURA_264 = 264,
@@ -312,9 +306,7 @@ enum AuraEffect : uint32_t
     SPELL_AURA_PREVENT_RESURRECTION = 314,
     SPELL_AURA_315 = 315,
     SPELL_AURA_ALLOW_HASTE_AFFECT_DURATION = 316,
-#endif
     // Cata begins
-#if VERSION_STRING >= Cata
     SPELL_AURA_317 = 317,
     SPELL_AURA_318 = 318,
     SPELL_AURA_319 = 319,
@@ -369,9 +361,7 @@ enum AuraEffect : uint32_t
     SPELL_AURA_368 = 368,
     SPELL_AURA_369 = 369,
     SPELL_AURA_370 = 370,
-#endif
     // Mop begins
-#if VERSION_STRING >= Mop
     SPELL_AURA_371 = 371,
     SPELL_AURA_372 = 372,
     SPELL_AURA_373 = 373,
@@ -439,6 +429,5 @@ enum AuraEffect : uint32_t
     SPELL_AURA_435 = 435,
     SPELL_AURA_436 = 436,
     SPELL_AURA_437 = 437,
-#endif
     TOTAL_SPELL_AURAS
 };

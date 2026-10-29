@@ -176,42 +176,9 @@ This file is released under the MIT license. See README-MIT for more information
     #define DBC_PLAYER_SKILL_MAX 600
 #endif
 
-//////////////////////////////////////////////////////////////////////////////////////////
-// PLAYER_ACTION_BUTTON_COUNT
-// 
-// \param Action bar / button defines 
-// 
-// Vanilla = 
-// The Burning Crusade = 
-// Wrath of the Lich King = 
-// Cataclysm = 
-// Mists of Pandaria = 
-// Warlords of Draenor = 
-// Legion = 
-//
-//////////////////////////////////////////////////////////////////////////////////////////
-
-#if VERSION_STRING == Classic
-    #define PLAYER_ACTION_BUTTON_COUNT 120
-#elif VERSION_STRING == TBC
-    #define PLAYER_ACTION_BUTTON_COUNT 132
-#elif VERSION_STRING == WotLK
-    #define PLAYER_ACTION_BUTTON_COUNT 136
-#elif VERSION_STRING == Cata
-    #define PLAYER_ACTION_BUTTON_COUNT 144
-#elif VERSION_STRING == Mop
-    #define PLAYER_ACTION_BUTTON_COUNT 132
-#elif VERSION_STRING == WoD
-    #define PLAYER_ACTION_BUTTON_COUNT 132
-#elif VERSION_STRING == Legion || VERSION_STRING == BfA || VERSION_STRING == Shadowlands
-    #define PLAYER_ACTION_BUTTON_COUNT 132
-#elif VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
-    // 10.x, 11.x and 12.x have 180 action buttons
-    #define PLAYER_ACTION_BUTTON_COUNT 180
-#endif
-
-// \param -
-#define PLAYER_ACTION_BUTTON_SIZE PLAYER_ACTION_BUTTON_COUNT * sizeof(ActionButton)
+// Max-Capacity for internal structures (Dragonflight to Midnight need 180)
+inline constexpr uint8_t PLAYER_ACTION_BUTTON_COUNT = 180;
+inline constexpr size_t MIN_PLAYER_ACTION_BUTTON_PACKET_SIZE = 120 * 4;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // GLYPHS_COUNT

@@ -18,7 +18,7 @@ namespace AscEmu::Packets
     {
         uint32_t action = 0;
         uint32_t type = 0;
-        uint8_t misc = 0;                                       // not sent to Mop clients
+        uint8_t misc = 0; // not sent to Mop clients
     };
 
     class SmsgUpdateActionButtons : public ManagedPacket
@@ -32,121 +32,92 @@ namespace AscEmu::Packets
         }
 
         SmsgUpdateActionButtons(std::array<ActionButtonEntry, PLAYER_ACTION_BUTTON_COUNT> buttons, uint8_t action) :
-            ManagedPacket(SMSG_UPDATE_ACTION_BUTTONS, PLAYER_ACTION_BUTTON_SIZE + 1),
+            ManagedPacket(SMSG_UPDATE_ACTION_BUTTONS, MIN_PLAYER_ACTION_BUTTON_PACKET_SIZE),
             buttons(std::move(buttons)),
             action(action)
         {
         }
 
     protected:
-        size_t expectedSize() const override { return buttons.size() * 8 + 1; }
+        size_t expectedSize() const override { return getPacketSize(); }
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            const uint8_t wireCount = getWireCount();
+
+            if (m_protocol.isMainlineAtLeast(WoW::Expansion::_WoD))
             {
                 // every button packed: action in the low 56 bits, type in the high byte
-                for (const auto& button : buttons)
-                    packet << uint64_t((uint64_t(button.action) & 0x00FFFFFFFFFFFFFFULL) | (uint64_t(button.type & 0xFF) << 56));
+                for (uint8_t i = 0; i < wireCount; ++i)
+                {
+                    packet << uint64_t((uint64_t(buttons[i].action) & 0x00FFFFFFFFFFFFFFULL) |
+                        (uint64_t(buttons[i].type & 0xFF) << 56));
+                }
                 packet << action;
                 return true;
             }
 
-            if (m_protocol.isMop())
+            if (m_protocol.expansion == WoW::Expansion::_Mop)
             {
                 // every button is sent as 8 bytes (action, type), split into bit and byte streams
                 uint8_t rawButtons[PLAYER_ACTION_BUTTON_COUNT][8] = {};
 
-                for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+                for (uint8_t i = 0; i < wireCount; ++i)
                 {
                     std::memcpy(&rawButtons[i][0], &buttons[i].action, sizeof(uint32_t));
                     std::memcpy(&rawButtons[i][4], &buttons[i].type, sizeof(uint32_t));
                 }
 
                 // Bits
-                for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-                    packet.writeBit(rawButtons[i][4]);
-
-                for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-                    packet.writeBit(rawButtons[i][5]);
-
-                for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-                    packet.writeBit(rawButtons[i][3]);
-
-                for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-                    packet.writeBit(rawButtons[i][1]);
-
-                for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-                    packet.writeBit(rawButtons[i][6]);
-
-                for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-                    packet.writeBit(rawButtons[i][7]);
-
-                for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-                    packet.writeBit(rawButtons[i][0]);
-
-                for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-                    packet.writeBit(rawButtons[i][2]);
+                for (uint8_t i = 0; i < wireCount; ++i) packet.writeBit(rawButtons[i][4]);
+                for (uint8_t i = 0; i < wireCount; ++i) packet.writeBit(rawButtons[i][5]);
+                for (uint8_t i = 0; i < wireCount; ++i) packet.writeBit(rawButtons[i][3]);
+                for (uint8_t i = 0; i < wireCount; ++i) packet.writeBit(rawButtons[i][1]);
+                for (uint8_t i = 0; i < wireCount; ++i) packet.writeBit(rawButtons[i][6]);
+                for (uint8_t i = 0; i < wireCount; ++i) packet.writeBit(rawButtons[i][7]);
+                for (uint8_t i = 0; i < wireCount; ++i) packet.writeBit(rawButtons[i][0]);
+                for (uint8_t i = 0; i < wireCount; ++i) packet.writeBit(rawButtons[i][2]);
 
                 // Data
-                for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-                    packet.writeByteSeq(rawButtons[i][0]);
-
-                for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-                    packet.writeByteSeq(rawButtons[i][1]);
-
-                for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-                    packet.writeByteSeq(rawButtons[i][4]);
-
-                for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-                    packet.writeByteSeq(rawButtons[i][6]);
-
-                for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-                    packet.writeByteSeq(rawButtons[i][7]);
-
-                for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-                    packet.writeByteSeq(rawButtons[i][2]);
-
-                for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-                    packet.writeByteSeq(rawButtons[i][5]);
-
-                for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
-                    packet.writeByteSeq(rawButtons[i][3]);
+                for (uint8_t i = 0; i < wireCount; ++i) packet.writeByteSeq(rawButtons[i][0]);
+                for (uint8_t i = 0; i < wireCount; ++i) packet.writeByteSeq(rawButtons[i][1]);
+                for (uint8_t i = 0; i < wireCount; ++i) packet.writeByteSeq(rawButtons[i][4]);
+                for (uint8_t i = 0; i < wireCount; ++i) packet.writeByteSeq(rawButtons[i][6]);
+                for (uint8_t i = 0; i < wireCount; ++i) packet.writeByteSeq(rawButtons[i][7]);
+                for (uint8_t i = 0; i < wireCount; ++i) packet.writeByteSeq(rawButtons[i][2]);
+                for (uint8_t i = 0; i < wireCount; ++i) packet.writeByteSeq(rawButtons[i][5]);
+                for (uint8_t i = 0; i < wireCount; ++i) packet.writeByteSeq(rawButtons[i][3]);
 
                 packet << action;
 
                 return true;
             }
 
+            // WotLK: Action header before buttons
             if (m_protocol.expansion == WoW::Expansion::_WotLK)
                 packet << action;
 
-            // Misc/Type order flips starting Wotlk; Classic/TBC send Type then Misc.
-            const bool miscBeforeType = m_protocol.expansion >= WoW::Expansion::_WotLK;
-
-            for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+            // WotLK & Cata: 32-bit packed (24 bits action, 8 bits type) per button
+            if (m_protocol.isMainlineAtLeast(WoW::Expansion::_WotLK))
             {
-                // TODO: this needs investigation
-                // action, as in spell id, can be and will be over uint16_t max (65535) on wotlk and cata
-                // but if I send action in uint32_t, client ignores the button completely and leaves an empty button slot, or corrupts other slots as well
-                // however casting the action to uint16_t seems to somehow work. I tested it with a spell id over 65535.
-                // but this is not a solution and can cause undefined behaviour... (previously ActionButton::Action was stored in uint16_t)
-                // I believe client accepts at most 4 bytes per button -Appled
-                packet << uint16_t(buttons[i].action);
-
-                if (miscBeforeType)
+                for (uint8_t i = 0; i < wireCount; ++i)
                 {
-                    // Since Wotlk misc needs to be sent before type
-                    packet << uint8_t(buttons[i].misc);
-                    packet << uint8_t(buttons[i].type);
+                    uint32_t packed = (buttons[i].action & 0x00FFFFFF) | ((uint32_t(buttons[i].type) & 0xFF) << 24);
+                    packet << packed;
                 }
-                else
+            }
+            else
+            {
+                // Classic & TBC: 16-Bit action + 8-Bit type + 8-Bit misc
+                for (uint8_t i = 0; i < wireCount; ++i)
                 {
+                    packet << uint16_t(buttons[i].action);
                     packet << uint8_t(buttons[i].type);
                     packet << uint8_t(buttons[i].misc);
                 }
             }
 
+            // Cata: Action footer after all buttons, not before them like in Wotlk and Mop
             if (m_protocol.expansion == WoW::Expansion::_Cata)
                 packet << action;
 
@@ -154,5 +125,42 @@ namespace AscEmu::Packets
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override { return false; }
+
+    private:
+        [[nodiscard]] uint8_t getWireCount() const noexcept
+        {
+            if (m_protocol.isMainlineAtLeast(WoW::Expansion::_Dragonflight))
+                return 180;
+
+            if (m_protocol.isMainlineAtLeast(WoW::Expansion::_Mop))
+                return 132;
+
+            if (m_protocol.expansion == WoW::Expansion::_Cata)
+                return 144;
+
+            if (m_protocol.expansion == WoW::Expansion::_WotLK)
+                return 136;
+
+            if (m_protocol.expansion == WoW::Expansion::_TBC)
+                return 132;
+
+            return 120; // Classic
+        }
+
+        [[nodiscard]] size_t getPacketSize() const noexcept
+        {
+            const uint8_t count = getWireCount();
+
+            if (m_protocol.isMainlineAtLeast(WoW::Expansion::_WoD))
+                return (count * 8) + 1;
+
+            if (m_protocol.expansion == WoW::Expansion::_Mop)
+                return (count * 9) + 1;
+
+            if (m_protocol.isMainlineAtLeast(WoW::Expansion::_WotLK))
+                return (count * 4) + 1;
+
+            return count * 4; // Classic & TBC
+        }
     };
 }

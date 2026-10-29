@@ -14,16 +14,16 @@ namespace AscEmu::Packets
     class SmsgTradeStatus : public ManagedPacket
     {
     public:
-        uint32_t staus;
+        uint32_t status;
         uint64_t guid;
 
         SmsgTradeStatus() : SmsgTradeStatus(0, 0)
         {
         }
 
-        SmsgTradeStatus(uint32_t staus, uint64_t guid) :
+        SmsgTradeStatus(uint32_t status, uint64_t guid) :
             ManagedPacket(SMSG_TRADE_STATUS, 12),
-            staus(staus),
+            status(status),
             guid(guid)
         {
         }
@@ -33,18 +33,18 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion < WoW::Expansion::_Cata)
+            if (!m_protocol.isMainlineAtLeast(WoW::Expansion::_Cata))
             {
-                packet << staus;
+                packet << status;
                 if (guid != 0)
                     packet << guid;
             }
             else // > Cata
             {
                 packet.writeBit(false);
-                packet.writeBits(staus, 5);
+                packet.writeBits(getCataTradeStatusWireValue(status), 5);
 
-                switch (staus)
+                switch (status)
                 {
                     case TRADE_STATUS_PROPOSED:
                     {
@@ -70,7 +70,7 @@ namespace AscEmu::Packets
                         packet.writeByteSeq(wGuid[6]);
                         packet.writeByteSeq(wGuid[5]);
 
-                        packet << uint32_t(0);              // unk
+                        packet << uint32_t(0); // unk
 
                         break;
                     }

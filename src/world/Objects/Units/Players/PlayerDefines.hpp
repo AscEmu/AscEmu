@@ -85,12 +85,8 @@ enum Classes
     WARLOCK = 9,
     MONK = 10,
     DRUID = 11,
-#if VERSION_STRING >= Legion
     DEMONHUNTER = 12,
-#endif
-#if VERSION_STRING >= Dragonflight
     EVOKER = 13,
-#endif
     MAX_PLAYER_CLASSES
 };
 
@@ -506,7 +502,6 @@ enum PlayerFieldBytes_MiscFlags : uint8_t
     PLAYER_MISC_FLAG_ALL               = 0xFF
 };
 
-#if VERSION_STRING < Mop
 // byte value
 // classic - tbc (PLAYER_FIELD_BYTES2, 1)
 // wotlk - cata (PLAYER_FIELD_BYTES2, 3)
@@ -522,82 +517,6 @@ enum PlayerFieldBytes2_AuraVision : uint8_t
     AURA_VISION_INVISIBILITY           = 0x40,
     AURA_VISION_UNK8                   = 0x80,
     AURA_VISION_ALL                    = 0xFF
-};
-#endif
-
-/**
-    TalentTree table
-
-    mage - arcane - 81
-    mage - fire - 41
-    mage - frost - 61
-
-    rogue - assassination - 182
-    rogue - combat - 181
-    rogue - subelty - 183
-
-    warlock - affliction - 302
-    warlock - demonology - 303
-    warlock - destruction - 301
-
-    warrior - arms - 161
-    warrior - fury - 163
-    warrior - protection - 164
-
-    shaman - elemental - 261
-    shaman - enchantment - 263
-    shaman - restoration - 262
-
-    paladin - holy - 382
-    paladin - protection - 383
-    paladin - retribution - 381
-
-    death knight - blood - 398
-    death knight - frost - 399
-    death knight - unholy - 400
-
-    priest - discipline - 201
-    priest - holy - 202
-    priest - shadow - 203
-
-    hunter - beast - 361
-    hunter - marksmanship - 363
-    hunter - survival - 362
-
-    druid - balance - 283
-    druid - feral combat - 281
-    druid - restoration - 282
-*/
-
-static const uint32_t TalentTreesPerClass[MAX_PLAYER_CLASSES][3] =
-{
-#if VERSION_STRING < Cata
-    { 0, 0, 0 },        // NONE
-    { 161, 163, 164 },  // WARRIOR
-    { 382, 383, 381 },  // PALADIN
-    { 361, 363, 362 },  // HUNTER
-    { 182, 181, 183 },  // ROGUE
-    { 201, 202, 203 },  // PRIEST
-    { 398, 399, 400 },  // DEATH KNIGHT
-    { 261, 263, 262 },  // SHAMAN
-    { 81, 41, 61 },     // MAGE
-    { 302, 303, 301 },  // WARLOCK
-    { 0, 0, 0 },        // NONE
-    { 283, 281, 282 },  // DRUID
-#else
-    { 0, 0, 0 },        // NONE
-    { 746, 815, 845 },  // WARRIOR      - arms - fury - protection -
-    { 831, 839, 855 },  // PALADIN      - holy - protection - retribution -
-    { 811, 807, 809 },  // HUNTER       - beast - marksmanship - survival -
-    { 182, 181, 183 },  // ROGUE        - assassination - combat - subelty -
-    { 760, 813, 795 },  // PRIEST       - discipline - holy - shadow -
-    { 398, 399, 400 },  // DEATH KNIGHT - blood - frost - unholy -
-    { 261, 263, 262 },  // SHAMAN       - elemental - enchantment - restoration -
-    { 799, 851, 823 },  // MAGE         - arcane - fire - frost -
-    { 871, 867, 865 },  // WARLOCK      - affliction - demonology - destruction -
-    { 0, 0, 0 },        // NONE
-    { 752, 750, 748 },  // DRUID        - balance - feral/combat - restoration -
-#endif
 };
 
 enum RestState
@@ -621,75 +540,68 @@ enum UnderwaterState
     UNDERWATERSTATE_SLIME           = 64
 };
 
-#if VERSION_STRING >= Cata
-enum TradeStatus
+enum TradeStatus : uint32_t
 {
-    TRADE_STATUS_INITIATED              = 0,
-    TRADE_STATUS_UNK1                   = 1,
-    TRADE_STATUS_LOOT_ITEM              = 2,
-    TRADE_STATUS_YOU_LOGOUT             = 3,
-    TRADE_STATUS_IGNORES_YOU            = 4,
-    TRADE_STATUS_TARGET_DEAD            = 5,
-    TRADE_STATUS_ACCEPTED               = 6,
-    TRADE_STATUS_TARGET_LOGOUT          = 7,
-    TRADE_STATUS_UNK8                   = 8,
-    TRADE_STATUS_COMPLETE               = 9,
-    TRADE_STATUS_TRIAL_ACCOUNT          = 10,
-    TRADE_STATUS_UNK11                  = 11,
-    TRADE_STATUS_PROPOSED               = 12,
-    TRADE_STATUS_YOU_DEAD               = 13,
-    TRADE_STATUS_UNK14                  = 14,
-    TRADE_STATUS_UNK15                  = 15,
-    TRADE_STATUS_TOO_FAR_AWAY           = 16,
-    TRADE_STATUS_PLAYER_NOT_FOUND       = 17,
-    TRADE_STATUS_ALREADY_TRADING        = 18,
-    TRADE_STATUS_CURRENCY_NOT_TRADEABLE = 19,
-    TRADE_STATUS_WRONG_FACTION          = 20,
-    TRADE_STATUS_PLAYER_BUSY            = 21,
-    TRADE_STATUS_UNACCEPTED             = 22,
-    TRADE_STATUS_CANCELLED              = 23,
-    TRADE_STATUS_CURRENCY               = 24,
-    TRADE_STATUS_STATE_CHANGED          = 25,
-    TRADE_STATUS_ONLY_CONJURED          = 26,
-    TRADE_STATUS_YOU_STUNNED            = 27,
-    TRADE_STATUS_UNK28                  = 28,
-    TRADE_STATUS_TARGET_STUNNED         = 29,
-    TRADE_STATUS_UNK30                  = 30,
-    TRADE_STATUS_FAILED                 = 31
+    TRADE_STATUS_PLAYER_BUSY = 0x00,
+    TRADE_STATUS_PROPOSED = 0x01,
+    TRADE_STATUS_INITIATED = 0x02,
+    TRADE_STATUS_CANCELLED = 0x03,
+    TRADE_STATUS_ACCEPTED = 0x04,
+    TRADE_STATUS_ALREADY_TRADING = 0x05,
+    TRADE_STATUS_PLAYER_NOT_FOUND = 0x06,
+    TRADE_STATUS_STATE_CHANGED = 0x07,
+    TRADE_STATUS_COMPLETE = 0x08,
+    TRADE_STATUS_UNACCEPTED = 0x09,
+    TRADE_STATUS_TOO_FAR_AWAY = 0x0A,
+    TRADE_STATUS_WRONG_FACTION = 0x0B,
+    TRADE_STATUS_FAILED = 0x0C,
+    TRADE_STATUS_UNK13 = 0x0D,
+    TRADE_STATUS_IGNORES_YOU = 0x0E,
+    TRADE_STATUS_YOU_STUNNED = 0x0F,
+    TRADE_STATUS_TARGET_STUNNED = 0x10,
+    TRADE_STATUS_YOU_DEAD = 0x11,
+    TRADE_STATUS_TARGET_DEAD = 0x12,
+    TRADE_STATUS_YOU_LOGOUT = 0x13,
+    TRADE_STATUS_TARGET_LOGOUT = 0x14,
+    TRADE_STATUS_TRIAL_ACCOUNT = 0x15,
+    TRADE_STATUS_ONLY_CONJURED = 0x16,
+    TRADE_STATUS_LOOT_ITEM = 0x17,
+    TRADE_STATUS_CURRENCY_NOT_TRADEABLE = 0x18,
+    TRADE_STATUS_CURRENCY = 0x19
 };
-#else
-enum TradeStatus
-{
-    TRADE_STATUS_PLAYER_BUSY        = 0x00,
-    TRADE_STATUS_PROPOSED           = 0x01,
-    TRADE_STATUS_INITIATED          = 0x02,
-    TRADE_STATUS_CANCELLED          = 0x03, // Trade cancelled
-    TRADE_STATUS_ACCEPTED           = 0x04,
-    TRADE_STATUS_ALREADY_TRADING    = 0x05,
-    TRADE_STATUS_PLAYER_NOT_FOUND   = 0x06, // You have no target
-    TRADE_STATUS_STATE_CHANGED      = 0x07,
-    TRADE_STATUS_COMPLETE           = 0x08, // Trade complete
-    TRADE_STATUS_UNACCEPTED         = 0x09,
-    TRADE_STATUS_TOO_FAR_AWAY       = 0x0A, // Trade target is too far away
-    TRADE_STATUS_WRONG_FACTION      = 0x0B, // Target is unfriendly
-    TRADE_STATUS_FAILED             = 0x0C,
-    TRADE_STATUS_UNK13              = 0x0D,
-    TRADE_STATUS_IGNORES_YOU        = 0x0E,
-    TRADE_STATUS_YOU_STUNNED        = 0x0F, // You are stunned
-    TRADE_STATUS_TARGET_STUNNED     = 0x10, // Target is stunned
-    TRADE_STATUS_YOU_DEAD           = 0x11, // You can't do that when you're dead
-    TRADE_STATUS_TARGET_DEAD        = 0x12, // You can't trade with dead players
-    TRADE_STATUS_YOU_LOGOUT         = 0x13, // You are logging out
-    TRADE_STATUS_TARGET_LOGOUT      = 0x14, // That player is logging out
-    TRADE_STATUS_TRIAL_ACCOUNT      = 0x15, // Trial accounts cannot perform that action
-    TRADE_STATUS_ONLY_CONJURED      = 0x16, // You may only trade conjured items to players from other realms
-    TRADE_STATUS_LOOT_ITEM          = 0x17, // You may only trade bound items to players that were originally eligible to loot the item
 
-    // just for multi version compatibility
-    TRADE_STATUS_CURRENCY_NOT_TRADEABLE,
-    TRADE_STATUS_CURRENCY,
-};
-#endif
+inline uint8_t getCataTradeStatusWireValue(uint32_t status)
+{
+    switch (status)
+    {
+        case TRADE_STATUS_INITIATED:              return 0;
+        case TRADE_STATUS_LOOT_ITEM:              return 2;
+        case TRADE_STATUS_YOU_LOGOUT:             return 3;
+        case TRADE_STATUS_IGNORES_YOU:            return 4;
+        case TRADE_STATUS_TARGET_DEAD:            return 5;
+        case TRADE_STATUS_ACCEPTED:               return 6;
+        case TRADE_STATUS_TARGET_LOGOUT:          return 7;
+        case TRADE_STATUS_COMPLETE:               return 9;
+        case TRADE_STATUS_TRIAL_ACCOUNT:          return 10;
+        case TRADE_STATUS_PROPOSED:               return 12;
+        case TRADE_STATUS_YOU_DEAD:               return 13;
+        case TRADE_STATUS_TOO_FAR_AWAY:           return 16;
+        case TRADE_STATUS_PLAYER_NOT_FOUND:       return 17;
+        case TRADE_STATUS_ALREADY_TRADING:        return 18;
+        case TRADE_STATUS_CURRENCY_NOT_TRADEABLE: return 19;
+        case TRADE_STATUS_WRONG_FACTION:          return 20;
+        case TRADE_STATUS_PLAYER_BUSY:            return 21;
+        case TRADE_STATUS_UNACCEPTED:             return 22;
+        case TRADE_STATUS_CANCELLED:              return 23;
+        case TRADE_STATUS_CURRENCY:               return 24;
+        case TRADE_STATUS_STATE_CHANGED:          return 25;
+        case TRADE_STATUS_ONLY_CONJURED:          return 26;
+        case TRADE_STATUS_YOU_STUNNED:            return 27;
+        case TRADE_STATUS_TARGET_STUNNED:         return 29;
+        case TRADE_STATUS_FAILED:                 return 31;
+        default:                                  return 31;
+    }
+}
 
 enum TradeSlots
 {
@@ -723,7 +635,7 @@ const time_t forcedResurrectInterval = 360000;  // 1000*60*6=6 minutes
 enum PlayerCombatRating : uint8_t
 {
     CR_WEAPON_SKILL                     = 0,
-    CR_DEFENSE_SKILL                    = 1,    // Removed in 4.0.1
+    CR_DEFENSE_SKILL                    = 1, // Removed in 4.0.1
     CR_DODGE                            = 2,
     CR_PARRY                            = 3,
     CR_BLOCK                            = 4,
@@ -733,41 +645,40 @@ enum PlayerCombatRating : uint8_t
     CR_CRIT_MELEE                       = 8,
     CR_CRIT_RANGED                      = 9,
     CR_CRIT_SPELL                       = 10,
-    CR_HIT_TAKEN_MELEE                  = 11,   // Deprecated since Cataclysm
-    CR_HIT_TAKEN_RANGED                 = 12,   // Deprecated since Cataclysm
-    CR_HIT_TAKEN_SPELL                  = 13,   // Deprecated since Cataclysm
-#if VERSION_STRING < Cata
-    CR_CRIT_TAKEN_MELEE                 = 14,
-    CR_CRIT_TAKEN_RANGED                = 15,
-#else
-    CR_RESILIENCE_CRIT_TAKEN            = 14,
-    CR_RESILIENCE_PLAYER_DAMAGE_TAKEN   = 15,
-#endif
-    CR_CRIT_TAKEN_SPELL                 = 16,   // Deprecated since Cataclysm
+    CR_HIT_TAKEN_MELEE                  = 11, // Deprecated since Cataclysm
+    CR_HIT_TAKEN_RANGED                 = 12, // Deprecated since Cataclysm
+    CR_HIT_TAKEN_SPELL                  = 13, // Deprecated since Cataclysm
+    CR_CRIT_TAKEN_MELEE                 = 14, // Pre-Cata
+    CR_RESILIENCE_CRIT_TAKEN            = 14, // Cata+
+    CR_CRIT_TAKEN_RANGED                = 15, // Pre-Cata
+    CR_RESILIENCE_PLAYER_DAMAGE_TAKEN   = 15, // Cata+
+    CR_CRIT_TAKEN_SPELL                 = 16, // Deprecated since Cataclysm
     CR_HASTE_MELEE                      = 17,
     CR_HASTE_RANGED                     = 18,
     CR_HASTE_SPELL                      = 19,
     CR_WEAPON_SKILL_MAINHAND            = 20,
     CR_WEAPON_SKILL_OFFHAND             = 21,
-    CR_WEAPON_SKILL_RANGED              = 22,   // Not used
+    CR_WEAPON_SKILL_RANGED              = 22, // Not used
     CR_EXPERTISE                        = 23,
-#if VERSION_STRING >= WotLK
-    CR_ARMOR_PENETRATION                = 24,
-#endif
-#if VERSION_STRING >= Cata
-    CR_MASTERY                          = 25,
-#endif
-#if VERSION_STRING >= Mop
-    CR_PVP_POWER                        = 26,
-#endif
-
-#if VERSION_STRING == Classic
-    // TODO: sort out fields properly for classic
-    MAX_PCR                             = 20
-#else
+    CR_ARMOR_PENETRATION                = 24, // WotLK+
+    CR_MASTERY                          = 25, // Cata+
+    CR_PVP_POWER                        = 26, // MoP+
     MAX_PCR
-#endif
 };
+
+inline uint8_t getMaxPlayerCombatRatings()
+{
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+        return 27;
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+        return 26;
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        return 25;
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+        return 24;
+
+    return 20; // Classic: dummy value
+}
 
 enum MirrorTimerTypes
 {
@@ -877,20 +788,12 @@ enum FactionFlags
 };
 
 #pragma pack(push,1)
-#if VERSION_STRING >= Mop
 struct ActionButton
 {
     uint32_t Action = 0;
     uint32_t Type = 0;
-};
-#else
-struct ActionButton
-{
-    uint32_t Action = 0;
-    uint8_t Type = 0;
     uint8_t Misc = 0;
 };
-#endif
 #pragma pack(pop)
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -924,6 +827,7 @@ struct CreateInfo_Levelstats
     uint32_t intellect;
     uint32_t spirit;
 };
+
 typedef std::unordered_map<uint32_t, CreateInfo_Levelstats> CreateInfo_LevelstatsVector;
 
 struct CreateInfo_ClassLevelStats
@@ -931,6 +835,7 @@ struct CreateInfo_ClassLevelStats
     uint32_t health;
     uint32_t mana;
 };
+
 typedef std::unordered_map<uint32_t, CreateInfo_ClassLevelStats> CreateInfo_ClassLevelStatsVector;
 
 struct PlayerCreateInfo
@@ -1009,16 +914,16 @@ struct FactionReputation
     uint8_t flag;
     int32_t baseStanding;
 
-    inline constexpr int32_t calcStanding() const { return standing - baseStanding; }
-    inline constexpr bool isPositive() const { return standing >= 0; }
-    inline constexpr bool canToggleAtWar() const { return !(flag & FACTION_FLAG_DISABLE_ATWAR); }
-    inline constexpr bool isAtWar() const { return flag & FACTION_FLAG_AT_WAR; }
-    inline constexpr bool isForcedInvisible() const { return flag & FACTION_FLAG_FORCED_INVISIBLE; }
-    inline constexpr bool isVisible() const { return flag & FACTION_FLAG_VISIBLE; }
-    inline constexpr bool isHidden() const { return flag & FACTION_FLAG_HIDDEN; }
-    inline constexpr bool isInactive() const { return flag & FACTION_FLAG_INACTIVE; }
+    constexpr int32_t calcStanding() const { return standing - baseStanding; }
+    constexpr bool isPositive() const { return standing >= 0; }
+    constexpr bool canToggleAtWar() const { return !(flag & FACTION_FLAG_DISABLE_ATWAR); }
+    constexpr bool isAtWar() const { return flag & FACTION_FLAG_AT_WAR; }
+    constexpr bool isForcedInvisible() const { return flag & FACTION_FLAG_FORCED_INVISIBLE; }
+    constexpr bool isVisible() const { return flag & FACTION_FLAG_VISIBLE; }
+    constexpr bool isHidden() const { return flag & FACTION_FLAG_HIDDEN; }
+    constexpr bool isInactive() const { return flag & FACTION_FLAG_INACTIVE; }
 
-    inline constexpr bool setAtWar(bool set)
+    constexpr bool setAtWar(bool set)
     {
         if (set && !isAtWar())
             flag |= FACTION_FLAG_AT_WAR;
@@ -1029,7 +934,7 @@ struct FactionReputation
         return true;
     }
 
-    inline constexpr bool setVisible(bool set)
+    constexpr bool setVisible(bool set)
     {
         if (isForcedInvisible() || isHidden())
             return false;
@@ -1042,7 +947,7 @@ struct FactionReputation
         return true;
     }
 
-    inline constexpr bool setInactive(bool set)
+    constexpr bool setInactive(bool set)
     {
         if (set && !isInactive())
             flag |= FACTION_FLAG_INACTIVE;
@@ -1122,6 +1027,7 @@ struct PetCache
     uint32_t current_happiness = 0;
     bool renamable = false;
 };
+
 typedef std::map<uint8_t, std::unique_ptr<PetCache>> PetCacheMap;
 
 struct WeaponModifier

@@ -434,34 +434,37 @@ void WorldSession::handleSetActionButtonOpcode(WorldPacket& recvPacket)
     {
         sLogger.debug("MISC: Remove action from button {}", srlPacket.button);
         _player->setActionButton(srlPacket.button, 0, 0, 0);
+        return;
     }
-    else
-    {
-        if (srlPacket.button >= PLAYER_ACTION_BUTTON_COUNT)
-            return;
 
-        if (srlPacket.type == 64 || srlPacket.type == 65)
-        {
-            sLogger.debug("MISC: Added Macro {} into button {}", srlPacket.action, srlPacket.button);
-            _player->setActionButton(srlPacket.button, srlPacket.action, static_cast<uint8_t>(srlPacket.type), static_cast<uint8_t>(srlPacket.misc));
-        }
-        else if (srlPacket.type == 128)
-        {
-            sLogger.debug("MISC: Added Item {} into button {}", srlPacket.action, srlPacket.button);
-            _player->setActionButton(srlPacket.button, srlPacket.action, static_cast<uint8_t>(srlPacket.type), static_cast<uint8_t>(srlPacket.misc));
-        }
-        else if (srlPacket.type == 0)
-        {
+    if (srlPacket.button >= PLAYER_ACTION_BUTTON_COUNT)
+        return;
+
+    switch (srlPacket.type)
+    {
+        case 0:
             sLogger.debug("MISC: Added Spell {} into button {}", srlPacket.action, srlPacket.button);
-            _player->setActionButton(srlPacket.button, srlPacket.action, static_cast<uint8_t>(srlPacket.type), static_cast<uint8_t>(srlPacket.misc));
-        }
-        else if (srlPacket.type == 0x20 || srlPacket.type == 0x30 || srlPacket.type == 0x50 || srlPacket.type == 0x60 || srlPacket.type == 0x90)
-        {
-            // equipment set, dropdown, companion, mount, outfit
+            break;
+        case 64:
+        case 65:
+            sLogger.debug("MISC: Added Macro {} into button {}", srlPacket.action, srlPacket.button);
+            break;
+        case 128:
+            sLogger.debug("MISC: Added Item {} into button {}", srlPacket.action, srlPacket.button);
+            break;
+        case 0x20: // Equipment set
+        case 0x30: // Dropdown
+        case 0x50: // Companion
+        case 0x60: // Mount
+        case 0x90: // Outfit
             sLogger.debug("MISC: Added type {} action {} into button {}", srlPacket.type, srlPacket.action, srlPacket.button);
-            _player->setActionButton(srlPacket.button, srlPacket.action, static_cast<uint8_t>(srlPacket.type), static_cast<uint8_t>(srlPacket.misc));
-        }
+            break;
+        default:
+            sLogger.debug("MISC: Added unknown type {} action {} into button {}", srlPacket.type, srlPacket.action, srlPacket.button);
+            break;
     }
+
+    _player->setActionButton(srlPacket.button, srlPacket.action, srlPacket.type, static_cast<uint8_t>(srlPacket.misc));
 }
 
 void WorldSession::handleRequestForcedReactions(WorldPacket& /*recvPacket*/)

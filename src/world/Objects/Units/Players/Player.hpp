@@ -1041,7 +1041,7 @@ protected:
     /////////////////////////////////////////////////////////////////////////////////////////
     // Actionbar
 public:
-    void setActionButton(uint8_t button, uint32_t action, uint8_t type, uint8_t misc);
+    void setActionButton(uint8_t button, uint32_t action, uint32_t type, uint8_t misc);
     // Action param
     // 0: Normal action, sends bars
     // 1: Sent after changing talent spec, sends bars and client will check if spell is known
