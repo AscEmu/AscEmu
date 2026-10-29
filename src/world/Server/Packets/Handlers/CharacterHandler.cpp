@@ -892,7 +892,10 @@ void WorldSession::fullLogin(Player* player)
     {
         const auto mapInfo = sMySQLStore.getWorldMapInfo(player->GetMapId());
         if (mapInfo == nullptr || player->GetMapId() >= MAX_NUM_MAPS)
+        {
+            sLogger.failure("Player {} can not enter world: map {} has no worldmap_info row or exceeds MAX_NUM_MAPS.", player->getName(), player->GetMapId());
             return;
+        }
 
         WorldMap* map = sMapMgr.findWorldMap(player->GetMapId(), player->GetInstanceID());
 

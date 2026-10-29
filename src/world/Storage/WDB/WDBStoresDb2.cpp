@@ -228,9 +228,13 @@ namespace
             }
         }
 
-        fillStore(sChrRacesStore, chrRaces, [&modelsByRace](WDB::Structures::ChrRacesEntry& entry, Row const& row)
+        // the race masks of the client data use the playable race bit of a race, not its id
+        std::unordered_map<uint32_t, uint8_t> raceByPlayableBit;
+        fillStore(sChrRacesStore, chrRaces, [&modelsByRace, &raceByPlayableBit](WDB::Structures::ChrRacesEntry& entry, Row const& row)
         {
             entry.raceId = row.id();
+            if (auto const playableBit = row.i32(28); playableBit >= 0)
+                raceByPlayableBit.try_emplace(static_cast<uint32_t>(playableBit), static_cast<uint8_t>(entry.raceId));
             entry.flags = row.i32(15);
             entry.factionId = row.i32(16);
             entry.cinematicId = row.i32(17);
@@ -327,10 +331,14 @@ namespace
                 if ((raceMask & (uint64_t{ 1 } << raceBit)) == 0)
                     continue;
 
+                auto const race = raceByPlayableBit.find(raceBit);
+                if (race == raceByPlayableBit.end())
+                    continue;
+
                 for (uint8_t gender = 0; gender < 2; ++gender)
                 {
                     WDB::Structures::CharStartOutfitEntry entry;
-                    entry.race = static_cast<uint8_t>(raceBit + 1);
+                    entry.race = race->second;
                     entry.classId = classId;
                     entry.gender = gender;
                     std::ranges::fill(entry.itemId, -1);

@@ -129,27 +129,19 @@ public:
     void SetAccountFlags(uint32_t /*flags*/)
     {
         // TODO: add a config to determine what flags are allowed on the server.
-        // For now, override the db value depending on the AE Version.
+        // For now, override the db value depending on the server expansion, Mop and later hold every flag.
         // _accountFlags = flags;
 
-        switch (getAEVersion())
-        {
-            case 5875:
-                _accountFlags = 0;
-                break;
-            case 8606:
-                _accountFlags = ACCOUNT_FLAG_XPACK_01;
-                break;
-            case 12340:
-                _accountFlags = AF_FULL_WOTLK;
-                break;
-            case 15595:
-                _accountFlags = AF_FULL_CATA;
-                break;
-            case 18414:
-                _accountFlags = AF_FULL_MOP;
-                break;
-        }
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+            _accountFlags = AF_FULL_MOP;
+        else if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+            _accountFlags = AF_FULL_CATA;
+        else if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+            _accountFlags = AF_FULL_WOTLK;
+        else if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+            _accountFlags = ACCOUNT_FLAG_XPACK_01;
+        else
+            _accountFlags = 0;
     }
 
     bool HasFlag(uint32_t flag) { return (_accountFlags & flag) != 0; }

@@ -2525,6 +2525,7 @@ bool Player::create(CharCreate& charCreateContent)
     if (charCreateContent._race >= RACE_TROLL)
 #endif
     {
+        sLogger.failure("Account {} tried to create race {}, but Account flag is {}!", m_session->GetAccountName(), charCreateContent._race, m_session->_accountFlags);
         m_session->Disconnect();
         return false;
     }

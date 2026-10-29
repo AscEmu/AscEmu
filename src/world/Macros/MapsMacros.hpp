@@ -62,7 +62,7 @@ This file is released under the MIT license. See README-MIT for more information
 // Shadowlands = 3000 - untested, upper bound until Map.db2 of 45745 is extracted
 // Dragonflight = 3000 - untested, upper bound until Map.db2 of 55664 is extracted
 // The War Within = 3000 - untested, upper bound until Map.db2 of 65299 is extracted
-// Midnight = 3000 - untested, upper bound until Map.db2 of 70391 is extracted
+// Midnight = 3106 - Map.db2 of 70575 ends with map 3105
 //
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -82,8 +82,10 @@ This file is released under the MIT license. See README-MIT for more information
     #define MAX_NUM_MAPS 2000
 #elif VERSION_STRING == BfA
     #define MAX_NUM_MAPS 2500
-#elif VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#elif VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin
     #define MAX_NUM_MAPS 3000
+#elif VERSION_STRING == Midnight
+    #define MAX_NUM_MAPS 3106
 #endif
 
 #define CREATURE_SPAWNS_FIELDCOUNT 32

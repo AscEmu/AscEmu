@@ -225,8 +225,8 @@ public:
             case 52: return 1u << 16;   // dracthyr alliance
             case 84: return 1u << 17;   // earthen horde
             case 85: return 1u << 18;   // earthen alliance
-            case 86: return 1u << 19;   // haranir horde
-            case 91: return 1u << 20;   // haranir alliance
+            case 91: return 1u << 19;   // haranir
+            case 86: return 1u << 20;   // haranir
             default: return race >= 1 && race <= 32 ? 1u << (race - 1) : 0;
         }
     }
