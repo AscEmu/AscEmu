@@ -16083,9 +16083,11 @@ float Player::getParryChance()
 
     return std::max(chance, 0.0f);   // Make sure we don't have a negative chance
 }
+#endif
 
 void Player::updateChances()
 {
+#if VERSION_STRING >= TBC
     uint32_t playerClass = getClass();
     uint32_t playerLevel = (getLevel() > DBC_PLAYER_LEVEL_CAP) ? DBC_PLAYER_LEVEL_CAP : getLevel();
 
@@ -16206,8 +16208,8 @@ void Player::updateChances()
         this->calcRating(CR_CRIT_SPELL);
 
     updateChanceFields();
-}
 #endif
+}
 
 void Player::updateChanceFields()
 {

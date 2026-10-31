@@ -894,15 +894,14 @@ enum UnitBytes2_SheathState : uint8_t
     SHEATH_STATE_RANGED           = 0x02  // prepared ranged weapon
 };
 
-#if VERSION_STRING == TBC
-// UNIT_FIELD_BYTES_2, 1
+// tbc (UNIT_FIELD_BYTES_2, 1)
 enum UnitBytes2_PositiveAuraLimit : uint8_t
 {
     POS_AURA_LIMIT_CREATURE       = 0x10, // 16 buff slots for npcs (40 debuffs)
     POS_AURA_LIMIT_PVP_ATTACKABLE = 0x28, // 40 buff slots for players and pets (16 debuffs)
 };
-#elif VERSION_STRING >= WotLK
-// UNIT_FIELD_BYTES_2, 1
+
+// wotlk+ (UNIT_FIELD_BYTES_2, 1)
 enum UnitBytes2_PvPStateFlags : uint8_t
 {
     PVP_STATE_FLAG_NONE           = 0x00,
@@ -916,17 +915,14 @@ enum UnitBytes2_PvPStateFlags : uint8_t
     PVP_STATE_FLAG_UNK8           = 0x80,
     PVP_STATE_FLAG_ALL            = 0xFF
 };
-#endif
 
-#if VERSION_STRING >= TBC
-// byte flags value (UNIT_FIELD_BYTES_2, 2)
+// tbc+ byte flags value (UNIT_FIELD_BYTES_2, 2)
 enum UnitBytes2_PetFlags : uint8_t
 {
     PET_FLAG_NONE                 = 0x00,
     PET_FLAG_CAN_BE_RENAMED       = 0x01,
     PET_FLAG_CAN_BE_ABANDONED     = 0x02
 };
-#endif
 
 // byte value
 // classic (UNIT_FIELD_BYTES_1, 2)
@@ -1265,7 +1261,6 @@ static inline constexpr std::string_view SHEATSTATE[] =
     "ranged"
 };
 
-#if VERSION_STRING >= WotLK
 struct UnitPvPFlagNames
 {
     uint32_t Flag;
@@ -1280,9 +1275,7 @@ static inline constexpr UnitPvPFlagNames UnitPvPFlagToName[] =
 };
 
 static inline constexpr uint32_t numpvpflags = sizeof(UnitPvPFlagToName) / sizeof(UnitPvPFlagNames);
-#endif
 
-#if VERSION_STRING >= TBC
 struct PetFlagNames
 {
     uint32_t Flag;
@@ -1296,7 +1289,6 @@ static inline constexpr PetFlagNames PetFlagToName[] =
 };
 
 static inline constexpr uint32_t numpetflags = sizeof(PetFlagToName) / sizeof(PetFlagNames);
-#endif
 
 enum UnitSpeedType : uint8_t
 {

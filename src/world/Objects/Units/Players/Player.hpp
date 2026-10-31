@@ -2086,8 +2086,8 @@ public:
     float getDodgeChance();
     float getBlockChance();
     float getParryChance();
-    void updateChances();
 #endif
+    void updateChances();
     void updateStats();
     uint32_t getBlockDamageReduction();
     void applyFeralAttackPower(bool apply, Item* item = NULL);
