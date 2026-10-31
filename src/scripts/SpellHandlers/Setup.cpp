@@ -21,15 +21,11 @@ extern "C" SCRIPT_DECL uint32_t _exp_get_script_type()
 
 extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 {
-#if VERSION_STRING >= WotLK
     setupDeathKnightSpells(mgr);
-#endif
     setupDruidSpells(mgr);
     setupHunterSpells(mgr);
     setupMageSpells(mgr);
-#if VERSION_STRING >= Mop
     setupMonkSpells(mgr);
-#endif
     setupPaladinSpells(mgr);
     setupPriestSpells(mgr);
     setupRogueSpells(mgr);

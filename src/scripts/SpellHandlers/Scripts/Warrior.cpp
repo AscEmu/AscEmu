@@ -17,7 +17,6 @@ enum WarriorSpells
     SPELL_FLURRY_PROC_R1    = 12966,
 };
 
-#if VERSION_STRING < Mop
 class Flurry : public SpellScript
 {
 public:
@@ -66,15 +65,16 @@ class FlurryDummy : public SpellScript
         return SpellScriptExecuteState::EXECUTE_PREVENT;
     }
 };
-#endif
 
 void setupWarriorSpells(ScriptMgr* mgr)
 {
     // Call legacy script setup
     SetupLegacyWarriorSpells(mgr);
 
-#if VERSION_STRING < Mop
-    mgr->register_spell_script(SPELL_FLURRY_PROC_R1, new Flurry);
-    mgr->register_spell_script(SPELL_FLURRY_DUMMY_R1, new FlurryDummy);
-#endif
+    // the Flurry procs exist up to Cata
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+    {
+        mgr->register_spell_script(SPELL_FLURRY_PROC_R1, new Flurry);
+        mgr->register_spell_script(SPELL_FLURRY_DUMMY_R1, new FlurryDummy);
+    }
 }

@@ -27,7 +27,6 @@ enum DruidSpells
     SPELL_LIFEBLOOM_MANA                    = 64372,
 };
 
-#if VERSION_STRING < Mop
 class FurorDummy : public SpellScript
 {
 public:
@@ -43,14 +42,17 @@ public:
 
             // Make Furor energy proc on Cat Form passive aura
             const uint32_t energyProcMask[3] = { 0x8000000, 0, 0 };
-#if VERSION_STRING < WotLK
-            aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_FUROR_ENERGY), aur->getSpellInfo(), aur->getCasterGuid(), procChance, PROC_ON_DONE_POSITIVE_SPELL_DAMAGE_CLASS_NONE, energyProcMask, aur);
-#else
-            auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_FUROR_ENERGY), aur->getSpellInfo(), aur->getCasterGuid(), 100, PROC_ON_DONE_POSITIVE_SPELL_DAMAGE_CLASS_NONE, energyProcMask, aur);
-            // Energy amount equals proc chance
-            if (spellProc != nullptr)
-                spellProc->setOverrideEffectDamage(EFF_INDEX_0, procChance);
-#endif
+            if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+            {
+                aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_FUROR_ENERGY), aur->getSpellInfo(), aur->getCasterGuid(), procChance, PROC_ON_DONE_POSITIVE_SPELL_DAMAGE_CLASS_NONE, energyProcMask, aur);
+            }
+            else
+            {
+                auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_FUROR_ENERGY), aur->getSpellInfo(), aur->getCasterGuid(), 100, PROC_ON_DONE_POSITIVE_SPELL_DAMAGE_CLASS_NONE, energyProcMask, aur);
+                // Energy amount equals proc chance
+                if (spellProc != nullptr)
+                    spellProc->setOverrideEffectDamage(EFF_INDEX_0, procChance);
+            }
         }
         else
         {
@@ -71,27 +73,28 @@ public:
         return true;
     }
 };
-#endif
 
-#if VERSION_STRING < Cata
 class ImprovedLeaderOfThePackDummy : public SpellScript
 {
 public:
-#if VERSION_STRING == WotLK
     void onAuraApply(Aura* aur) override
     {
+        if (!WoW::isServerExpansion(WoW::Expansion::_WotLK))
+            return SpellScript::onAuraApply(aur);
+
         auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_LEADER_OF_THE_PACK_MANA), sSpellMgr.getSpellInfo(SPELL_LEADER_OF_THE_PACK_AURA), aur->getCasterGuid(), 100, PROC_ON_TAKEN_POSITIVE_SPELL_DAMAGE_CLASS_NONE, nullptr, aur);
         if (spellProc != nullptr)
             spellProc->setOverrideEffectDamage(EFF_INDEX_0, aur->getSpellInfo()->calculateEffectValue(EFF_INDEX_1));
     }
 
-    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
+    void onAuraRemove(Aura* aur, AuraRemoveMode mode) override
     {
+        if (!WoW::isServerExpansion(WoW::Expansion::_WotLK))
+            return SpellScript::onAuraRemove(aur, mode);
+
         aur->getOwner()->removeProcTriggerSpell(SPELL_LEADER_OF_THE_PACK_MANA, aur->getCasterGuid());
     }
-#endif
 };
-#endif
 
 class LeaderOfThePack : public SpellScript
 {
@@ -164,7 +167,6 @@ public:
     }
 };
 
-#if VERSION_STRING == WotLK
 class LeaderOfThePackMana : public SpellScript
 {
 public:
@@ -184,9 +186,7 @@ public:
         return true;
     }
 };
-#endif
 
-#if VERSION_STRING >= TBC
 class Lifebloom : public SpellScript
 {
     SpellScriptCheckDummy onAuraDummyEffect(Aura* /*aur*/, AuraEffectModifier* /*aurEff*/, bool /*apply*/) override
@@ -207,12 +207,8 @@ class Lifebloom : public SpellScript
         if (bloomSpellInfo == nullptr)
             return;
 
-#if VERSION_STRING == TBC
         // In TBC bloom is unaffected by stack count
-        const auto dummyAurEffValue = dummyAurEff->getEffectFloatDamage() / aur->getStackCount();
-#else
-        const auto dummyAurEffValue = dummyAurEff->getEffectFloatDamage();
-#endif
+        const auto dummyAurEffValue = WoW::isServerExpansion(WoW::Expansion::_TBC) ? dummyAurEff->getEffectFloatDamage() / aur->getStackCount() : dummyAurEff->getEffectFloatDamage();
 
         auto* const unitCaster = aur->getUnitCaster();
         const auto bloomValue = Util::float2int32(aur->getOwner()->applySpellHealingBonus(unitCaster,
@@ -222,25 +218,27 @@ class Lifebloom : public SpellScript
         auto* bloomSpell = sSpellMgr.newSpell(aur->getOwner(), bloomSpellInfo, true, aur);
         bloomSpell->forced_basepoints = std::make_shared<SpellForcedBasePoints>();
         bloomSpell->forced_basepoints->set(EFF_INDEX_0, bloomValue);
-#if VERSION_STRING >= WotLK
-        // Spell is casted by unit who owns the aura but heal effect is done by the druid
-        bloomSpell->setOriginalCasterGuid(aur->getCasterGuid());
-#endif
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        {
+            // Spell is casted by unit who owns the aura but heal effect is done by the druid
+            bloomSpell->setOriginalCasterGuid(aur->getCasterGuid());
+        }
         SpellCastTargets targets(aur->getOwner()->getGuid());
         bloomSpell->prepare(&targets);
 
-#if VERSION_STRING >= WotLK
-        if (unitCaster != nullptr)
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
         {
-            // Druid regains half the cost of the spell (multiplied by stack amount)
-            const auto spellManaCostPct = aur->getSpellInfo()->getManaCostPercentage();
-            const int32_t manaRefund = unitCaster->getBaseMana() * spellManaCostPct * aur->getStackCount() / 100 / 2;
+            if (unitCaster != nullptr)
+            {
+                // Druid regains half the cost of the spell (multiplied by stack amount)
+                const auto spellManaCostPct = aur->getSpellInfo()->getManaCostPercentage();
+                const int32_t manaRefund = unitCaster->getBaseMana() * spellManaCostPct * aur->getStackCount() / 100 / 2;
 
-            SpellForcedBasePoints manaBasePoints;
-            manaBasePoints.set(EFF_INDEX_0, manaRefund);
-            unitCaster->castSpell(unitCaster, SPELL_LIFEBLOOM_MANA, manaBasePoints, true);
+                SpellForcedBasePoints manaBasePoints;
+                manaBasePoints.set(EFF_INDEX_0, manaRefund);
+                unitCaster->castSpell(unitCaster, SPELL_LIFEBLOOM_MANA, manaBasePoints, true);
+            }
         }
-#endif
     }
 };
 
@@ -252,34 +250,38 @@ class LifebloomFinal : public SpellScript
         return SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
     }
 };
-#endif
 
 void setupDruidSpells(ScriptMgr* mgr)
 {
     // Call legacy script setup
     SetupLegacyDruidSpells(mgr);
 
-#if VERSION_STRING < Mop
-    mgr->register_spell_script(SPELL_FUROR_R1, new FurorDummy);
-    mgr->register_spell_script(SPELL_FUROR_RAGE, new Furor);
-    mgr->register_spell_script(SPELL_FUROR_ENERGY, new Furor);
-#endif
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+    {
+        mgr->register_spell_script(SPELL_FUROR_R1, new FurorDummy);
+        mgr->register_spell_script(SPELL_FUROR_RAGE, new Furor);
+        mgr->register_spell_script(SPELL_FUROR_ENERGY, new Furor);
+    }
 
-#if VERSION_STRING < Cata
-    mgr->register_spell_script(SPELL_IMPROVED_LEADER_OF_THE_PACK_R1, new ImprovedLeaderOfThePackDummy);
-#endif
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+    {
+        mgr->register_spell_script(SPELL_IMPROVED_LEADER_OF_THE_PACK_R1, new ImprovedLeaderOfThePackDummy);
+    }
 
-#if VERSION_STRING < Legion
-    mgr->register_spell_script(SPELL_LEADER_OF_THE_PACK_DUMMY, new LeaderOfThePackDummy);
-    mgr->register_spell_script(SPELL_LEADER_OF_THE_PACK_AURA, new LeaderOfThePack);
-    mgr->register_spell_script(SPELL_LEADER_OF_THE_PACK_HEAL, new LeaderOfThePackHeal);
-#endif
-#if VERSION_STRING == WotLK
-    mgr->register_spell_script(SPELL_LEADER_OF_THE_PACK_MANA, new LeaderOfThePackMana);
-#endif
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Legion))
+    {
+        mgr->register_spell_script(SPELL_LEADER_OF_THE_PACK_DUMMY, new LeaderOfThePackDummy);
+        mgr->register_spell_script(SPELL_LEADER_OF_THE_PACK_AURA, new LeaderOfThePack);
+        mgr->register_spell_script(SPELL_LEADER_OF_THE_PACK_HEAL, new LeaderOfThePackHeal);
+    }
+    if (WoW::isServerExpansion(WoW::Expansion::_WotLK))
+    {
+        mgr->register_spell_script(SPELL_LEADER_OF_THE_PACK_MANA, new LeaderOfThePackMana);
+    }
 
-#if VERSION_STRING >= TBC
-    mgr->register_spell_script(SPELL_LIFEBLOOM_R1, new Lifebloom);
-    mgr->register_spell_script(SPELL_LIFEBLOOM_FINAL, new LifebloomFinal);
-#endif
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+    {
+        mgr->register_spell_script(SPELL_LIFEBLOOM_R1, new Lifebloom);
+        mgr->register_spell_script(SPELL_LIFEBLOOM_FINAL, new LifebloomFinal);
+    }
 }

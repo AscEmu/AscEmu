@@ -31,7 +31,6 @@ public:
     }
 };
 
-#if VERSION_STRING >= TBC
 class EarthShieldDummy : public SpellScript
 {
 public:
@@ -68,10 +67,9 @@ class EarthShield : public ElementalShield
 public:
     void onCreateSpellProc(SpellProc* spellProc, Object* obj) override
     {
-#if VERSION_STRING >= WotLK
         // Spell is actually casted by unit who owns the aura but heal effect is done by shaman
-        spellProc->setOriginalCasterGuidForProcSpell(spellProc->getCasterGuid());
-#endif
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+            spellProc->setOriginalCasterGuidForProcSpell(spellProc->getCasterGuid());
         spellProc->setCastedOnProcOwner(true);
 
         ElementalShield::onCreateSpellProc(spellProc, obj);
@@ -96,7 +94,6 @@ public:
         return SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
     }
 };
-#endif
 
 class LightningShieldDummy : public SpellScript
 {
@@ -145,13 +142,15 @@ void setupShamanSpells(ScriptMgr* mgr)
     // Call legacy script setup
     SetupLegacyShamanSpells(mgr);
 
-#if VERSION_STRING >= TBC
-    mgr->register_spell_script(SPELL_EARTH_SHIELD_R1, new EarthShieldDummy);
-    mgr->register_spell_script(SPELL_EARTH_SHIELD_HEAL, new EarthShield);
-#endif
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+    {
+        mgr->register_spell_script(SPELL_EARTH_SHIELD_R1, new EarthShieldDummy);
+        mgr->register_spell_script(SPELL_EARTH_SHIELD_HEAL, new EarthShield);
+    }
 
-#if VERSION_STRING < Legion
-    mgr->register_spell_script(SPELL_LIGHTNING_SHIELD_DUMMY_R1, new LightningShieldDummy);
-    mgr->register_spell_script(SPELL_LIGHTNING_SHIELD_DMG_R1, new LightningShield);
-#endif
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Legion))
+    {
+        mgr->register_spell_script(SPELL_LIGHTNING_SHIELD_DUMMY_R1, new LightningShieldDummy);
+        mgr->register_spell_script(SPELL_LIGHTNING_SHIELD_DMG_R1, new LightningShield);
+    }
 }

@@ -858,11 +858,9 @@ bool X53Mount(uint8_t /*effectIndex*/, Aura *a, bool apply)
                 {
                     if (skill == 300)
                     {
-#if VERSION_STRING >= TBC
-                        if (p->hasSpellWithAuraNameAndBasePoints(SPELL_AURA_ENABLE_FLIGHT2, 310))
+                        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC) && p->hasSpellWithAuraNameAndBasePoints(SPELL_AURA_ENABLE_FLIGHT2, 310))
                             newspell = 76154;
                         else
-#endif
                             newspell = 75972;
                     }
                     else

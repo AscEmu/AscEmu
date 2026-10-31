@@ -13,16 +13,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellScript.hpp"
 #include "Utilities/Random.hpp"
 
-#if VERSION_STRING >= WotLK
 enum DeathknightSpells
 {
     SPELL_ANTIMAGIC_SHELL                   = 48707,
     SPELL_ANTIMAGIC_SHELL_RUNIC_POWER       = 49088,
-#if VERSION_STRING == WotLK
-    SPELL_BLOOD_PRESENCE                    = 48266,
-#else
-    SPELL_BLOOD_PRESENCE                    = 48263,
-#endif
+    SPELL_BLOOD_PRESENCE_WOTLK              = 48266,
+    SPELL_BLOOD_PRESENCE_CATA               = 48263,
     SPELL_BLOOD_PRESENCE_HEAL               = 50475,
     SPELL_BUTCHERY_ENERGIZE                 = 50163,
     SPELL_BUTCHERY_R1                       = 48979,
@@ -30,23 +26,14 @@ enum DeathknightSpells
     SPELL_DEATH_AND_DECAY_R1                = 43265,
     SPELL_DEATH_RUNE_MASTERY_BLOOD          = 50806,
     SPELL_DEATH_RUNE_MASTERY_R1             = 49467,
-#if VERSION_STRING == WotLK
-    SPELL_FROST_PRESENCE                    = 48263,
-#else
-    SPELL_FROST_PRESENCE                    = 48266,
-#endif
-#if VERSION_STRING == WotLK
-    SPELL_IMPROVED_BLOOD_PRESENCE_DUMMY     = 63611,
-#else
-    SPELL_IMPROVED_BLOOD_PRESENCE_DUMMY     = 61261,
-#endif
+    SPELL_FROST_PRESENCE_WOTLK              = 48263,
+    SPELL_FROST_PRESENCE_CATA               = 48266,
+    SPELL_IMPROVED_BLOOD_PRESENCE_DUMMY_WOTLK = 63611,
+    SPELL_IMPROVED_BLOOD_PRESENCE_DUMMY_CATA = 61261,
     SPELL_IMPROVED_BLOOD_PRESENCE_R1        = 50365,
     SPELL_IMPROVED_BLOOD_PRESENCE_R2        = 50371,
-#if VERSION_STRING == WotLK
-    SPELL_IMPROVED_FROST_PRESENCE_DUMMY     = 61261,
-#else
-    SPELL_IMPROVED_FROST_PRESENCE_DUMMY     = 63621,
-#endif
+    SPELL_IMPROVED_FROST_PRESENCE_DUMMY_WOTLK = 61261,
+    SPELL_IMPROVED_FROST_PRESENCE_DUMMY_CATA = 63621,
     SPELL_IMPROVED_FROST_PRESENCE_R1        = 50384,
     SPELL_IMPROVED_FROST_PRESENCE_R2        = 50385,
     SPELL_IMPROVED_UNHOLY_PRESENCE_DUMMY    = 63622,
@@ -59,16 +46,19 @@ enum DeathknightSpells
     SPELL_SPELL_DEFLECTION_R1               = 49145,
     SPELL_UNHOLY_PRESENCE                   = 48265,
     SPELL_UNHOLY_PRESENCE_MOVE_SPEED        = 49772,
-#if VERSION_STRING == WotLK
     SPELL_WILL_OF_THE_NECROPOLIS_DUMMY_R1   = 49189,
     SPELL_WILL_OF_THE_NECROPOLIS_ABSORB_R1  = 52284,
-#else
     SPELL_WILL_OF_THE_NECROPOLIS_PROC       = 81162,
     SPELL_WILL_OF_THE_NECROPOLIS_RUNETAP    = 96171,
-#endif
 };
 
-#if VERSION_STRING < Mop
+// the presence ids and the improved presence dummies swapped with Cata
+static bool wotlkSpells() { return WoW::isServerExpansion(WoW::Expansion::_WotLK); }
+static uint32_t bloodPresenceId() { return wotlkSpells() ? SPELL_BLOOD_PRESENCE_WOTLK : SPELL_BLOOD_PRESENCE_CATA; }
+static uint32_t frostPresenceId() { return wotlkSpells() ? SPELL_FROST_PRESENCE_WOTLK : SPELL_FROST_PRESENCE_CATA; }
+static uint32_t improvedBloodPresenceDummyId() { return wotlkSpells() ? SPELL_IMPROVED_BLOOD_PRESENCE_DUMMY_WOTLK : SPELL_IMPROVED_BLOOD_PRESENCE_DUMMY_CATA; }
+static uint32_t improvedFrostPresenceDummyId() { return wotlkSpells() ? SPELL_IMPROVED_FROST_PRESENCE_DUMMY_WOTLK : SPELL_IMPROVED_FROST_PRESENCE_DUMMY_CATA; }
+
 // This is a common script to handle Death Knight Presences
 class Presences : public SpellScript
 {
@@ -111,7 +101,7 @@ public:
         {
             SpellForcedBasePoints forcedBasePoints;
             forcedBasePoints.set(EFF_INDEX_0, improvedBloodPresence->getAuraEffect(EFF_INDEX_0)->getEffectDamage());
-            aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_IMPROVED_BLOOD_PRESENCE_DUMMY), forcedBasePoints, true);
+            aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(improvedBloodPresenceDummyId()), forcedBasePoints, true);
         }
 
         // Cast Improved Frost Presence in Blood and Unholy presences
@@ -119,38 +109,41 @@ public:
         {
             SpellForcedBasePoints forcedBasePoints;
             forcedBasePoints.set(EFF_INDEX_0, improvedFrostPresence->getAuraEffect(EFF_INDEX_0)->getEffectDamage());
-            aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_IMPROVED_FROST_PRESENCE_DUMMY), forcedBasePoints, true);
+            aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(improvedFrostPresenceDummyId()), forcedBasePoints, true);
         }
 
         if (improvedUnholyPresence != nullptr)
         {
-#if VERSION_STRING == WotLK
-            // Cast Unholy Presence speed aura in Blood and Frost presences
-            if (!isUnholyPresence())
+            if (wotlkSpells())
             {
-                SpellForcedBasePoints forcedBasePoints;
-                forcedBasePoints.set(EFF_INDEX_0, improvedUnholyPresence->getAuraEffect(EFF_INDEX_0)->getEffectDamage());
-                aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_UNHOLY_PRESENCE_MOVE_SPEED), forcedBasePoints, true);
+                // Cast Unholy Presence speed aura in Blood and Frost presences
+                if (!isUnholyPresence())
+                {
+                    SpellForcedBasePoints forcedBasePoints;
+                    forcedBasePoints.set(EFF_INDEX_0, improvedUnholyPresence->getAuraEffect(EFF_INDEX_0)->getEffectDamage());
+                    aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_UNHOLY_PRESENCE_MOVE_SPEED), forcedBasePoints, true);
+                }
+                // Cast Improved Unholy Presence in Unholy Presence
+                else
+                {
+                    SpellForcedBasePoints forcedBasePoints;
+                    const auto basePoints = improvedUnholyPresence->getSpellInfo()->calculateEffectValue(EFF_INDEX_1);
+                    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                        forcedBasePoints.set(i, basePoints);
+
+                    aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_IMPROVED_UNHOLY_PRESENCE_DUMMY), forcedBasePoints, true);
+                }
             }
-            // Cast Improved Unholy Presence in Unholy Presence
             else
             {
-                SpellForcedBasePoints forcedBasePoints;
-                const auto basePoints = improvedUnholyPresence->getSpellInfo()->calculateEffectValue(EFF_INDEX_1);
-                for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                    forcedBasePoints.set(i, basePoints);
-
-                aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_IMPROVED_UNHOLY_PRESENCE_DUMMY), forcedBasePoints, true);
+                // Cast Improved Unholy Presence in Blood and Frost presences
+                if (!isUnholyPresence())
+                {
+                    SpellForcedBasePoints forcedBasePoints;
+                    forcedBasePoints.set(EFF_INDEX_0, improvedUnholyPresence->getAuraEffect(EFF_INDEX_0)->getEffectDamage());
+                    aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_IMPROVED_UNHOLY_PRESENCE_DUMMY), forcedBasePoints, true);
+                }
             }
-#else
-            // Cast Improved Unholy Presence in Blood and Frost presences
-            if (!isUnholyPresence())
-            {
-                SpellForcedBasePoints forcedBasePoints;
-                forcedBasePoints.set(EFF_INDEX_0, improvedUnholyPresence->getAuraEffect(EFF_INDEX_0)->getEffectDamage());
-                aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_IMPROVED_UNHOLY_PRESENCE_DUMMY), forcedBasePoints, true);
-            }
-#endif
         }
     }
 
@@ -159,8 +152,8 @@ public:
         // Remove auras in single loop
         uint32_t spellIds[] =
         {
-            SPELL_IMPROVED_BLOOD_PRESENCE_DUMMY,
-            SPELL_IMPROVED_FROST_PRESENCE_DUMMY,
+            improvedBloodPresenceDummyId(),
+            improvedFrostPresenceDummyId(),
             SPELL_UNHOLY_PRESENCE_MOVE_SPEED,
             SPELL_IMPROVED_UNHOLY_PRESENCE_DUMMY,
             0
@@ -168,7 +161,6 @@ public:
         aur->getOwner()->removeAllAurasById(spellIds);
     }
 };
-#endif
 
 class AntiMagicShell : public SpellScript
 {
@@ -179,21 +171,26 @@ public:
             return SpellScriptExecuteState::EXECUTE_OK;
 
         // Add the refund pct into effect
-#if VERSION_STRING == WotLK
-        // 2% of absorbed damage is turned into Runic Power
-        aurEff->setEffectExtra2Field(20);
-#elif VERSION_STRING == Cata
-        // Find Magic Suppression talent which enables Runic Power return
-        if (const auto* const magicSuppressionAur = aur->getOwner()->getAuraEffectWithAnyRankOfAndByEffect(SPELL_AURA_ADD_FLAT_MODIFIER, SPELL_MAGIC_SUPPRESSION_R1))
+        if (wotlkSpells())
         {
-            // "Patch 4.0.6: The ratio of runic power return from Magic Suppression has been reduced by roughly one third"
-            // Assume 1.3% -Appled
+            // 2% of absorbed damage is turned into Runic Power
+            aurEff->setEffectExtra2Field(20);
+        }
+        else if (WoW::isServerExpansion(WoW::Expansion::_Cata))
+        {
+            // Find Magic Suppression talent which enables Runic Power return
+            if (const auto* const magicSuppressionAur = aur->getOwner()->getAuraEffectWithAnyRankOfAndByEffect(SPELL_AURA_ADD_FLAT_MODIFIER, SPELL_MAGIC_SUPPRESSION_R1))
+            {
+                // "Patch 4.0.6: The ratio of runic power return from Magic Suppression has been reduced by roughly one third"
+                // Assume 1.3% -Appled
+                aurEff->setEffectExtra2Field(13);
+            }
+        }
+        else
+        {
+            // Assume same as cata
             aurEff->setEffectExtra2Field(13);
         }
-#elif VERSION_STRING >= Mop
-        // Assume same as cata
-        aurEff->setEffectExtra2Field(13);
-#endif
 
         return SpellScriptExecuteState::EXECUTE_OK;
     }
@@ -216,7 +213,6 @@ public:
     }
 };
 
-#if VERSION_STRING < Mop
 class BloodPresence : public Presences
 {
 public:
@@ -226,14 +222,12 @@ public:
     {
         Presences::onAuraApply(aur);
 
-        aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_IMPROVED_BLOOD_PRESENCE_DUMMY), true);
+        aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(improvedBloodPresenceDummyId()), true);
 
         // TODO: for cata we are missing the spell for rune regeneration and for reduced chance to be critically hit
     }
 };
-#endif
 
-#if VERSION_STRING == WotLK
 class BloodPresenceHeal : public SpellScript
 {
 public:
@@ -261,9 +255,7 @@ public:
 private:
     uint32_t heal = 0;
 };
-#endif
 
-#if VERSION_STRING < Mop
 class Butchery : public SpellScript
 {
 public:
@@ -283,7 +275,6 @@ public:
         return SpellScriptCheckDummy::DUMMY_OK;
     }
 };
-#endif
 
 class DeathAndDecay : public SpellScript
 {
@@ -301,7 +292,6 @@ public:
     }
 };
 
-#if VERSION_STRING == WotLK
 class DeathRuneMastery : public SpellScript
 {
  public:
@@ -317,9 +307,7 @@ class DeathRuneMastery : public SpellScript
          aur->getOwner()->removeProcTriggerSpell(SPELL_DEATH_RUNE_MASTERY_BLOOD, aur->getCasterGuid());
      }
 };
-#endif
 
-#if VERSION_STRING < Mop
 class FrostPresence : public Presences
 {
 public:
@@ -329,14 +317,13 @@ public:
     {
         Presences::onAuraApply(aur);
 
-#if VERSION_STRING == WotLK
-        aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_IMPROVED_FROST_PRESENCE_DUMMY), true);
-#endif
+        if (wotlkSpells())
+        {
+            aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(improvedFrostPresenceDummyId()), true);
+        }
     }
 };
-#endif
 
-#if VERSION_STRING == WotLK
 class ImprovedBloodPresenceDummy : public SpellScript
 {
 public:
@@ -357,9 +344,7 @@ public:
         return SpellScriptExecuteState::EXECUTE_PREVENT;
     }
 };
-#endif
 
-#if VERSION_STRING == WotLK
 class MarkOfBlood : public SpellScript
 {
 public:
@@ -373,9 +358,7 @@ public:
         return SpellScriptCheckDummy::DUMMY_OK;
     }
 };
-#endif
 
-#if VERSION_STRING == WotLK
 class SpellDeflection : public SpellScript
 {
 public:
@@ -397,9 +380,7 @@ public:
         return SpellScriptExecuteState::EXECUTE_PREVENT;
     }
 };
-#endif
 
-#if VERSION_STRING < Mop
 class UnholyPresence : public Presences
 {
 public:
@@ -409,16 +390,15 @@ public:
     {
         Presences::onAuraApply(aur);
 
-#if VERSION_STRING == WotLK
-        aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_UNHOLY_PRESENCE_MOVE_SPEED), true);
-#endif
+        if (wotlkSpells())
+        {
+            aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_UNHOLY_PRESENCE_MOVE_SPEED), true);
+        }
 
         // TODO: in cata we are missing the spell for rune regeneration
     }
 };
-#endif
 
-#if VERSION_STRING == WotLK
 class WillOfTheNecropolisAbsorb : public SpellScript
 {
 public:
@@ -466,7 +446,6 @@ public:
         return SpellScriptCheckDummy::DUMMY_OK;
     }
 };
-#else // Cata+
 class WillOfTheNecropolisProc : public SpellScript
 {
 public:
@@ -500,57 +479,40 @@ public:
         caster->castSpell(caster, SPELL_WILL_OF_THE_NECROPOLIS_RUNETAP, true);
     }
 };
-#endif
 
 void setupDeathKnightSpells(ScriptMgr* mgr)
 {
+    // the class exists from WotLK on
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        return;
+
     // Call legacy script setup
     SetupLegacyDeathKnightSpells(mgr);
 
     mgr->register_spell_script(SPELL_ANTIMAGIC_SHELL, new AntiMagicShell);
-
-#if VERSION_STRING < Mop
-    mgr->register_spell_script(SPELL_BLOOD_PRESENCE, new BloodPresence);
-#endif
-#if VERSION_STRING == WotLK
-    mgr->register_spell_script(SPELL_BLOOD_PRESENCE_HEAL, new BloodPresenceHeal);
-#endif
-
-#if VERSION_STRING < Mop
-    mgr->register_spell_script(SPELL_BUTCHERY_R1, new Butchery);
-#endif
-
     mgr->register_spell_script(SPELL_DEATH_AND_DECAY_R1, new DeathAndDecay);
 
-#if VERSION_STRING == WotLK
-    mgr->register_spell_script(SPELL_DEATH_RUNE_MASTERY_R1, new DeathRuneMastery);
-#endif
+    // the presences and their talents exist up to Cata
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+    {
+        mgr->register_spell_script(bloodPresenceId(), new BloodPresence);
+        mgr->register_spell_script(SPELL_BUTCHERY_R1, new Butchery);
+        mgr->register_spell_script(frostPresenceId(), new FrostPresence);
+        mgr->register_spell_script(SPELL_UNHOLY_PRESENCE, new UnholyPresence);
+    }
 
-#if VERSION_STRING < Mop
-    mgr->register_spell_script(SPELL_FROST_PRESENCE, new FrostPresence);
-#endif
-
-#if VERSION_STRING == WotLK
-    mgr->register_spell_script(SPELL_IMPROVED_BLOOD_PRESENCE_DUMMY, new ImprovedBloodPresenceDummy);
-#endif
-
-#if VERSION_STRING == WotLK
-    mgr->register_spell_script(SPELL_MARK_OF_BLOOD_DUMMY, new MarkOfBlood);
-#endif
-
-#if VERSION_STRING == WotLK
-    mgr->register_spell_script(SPELL_SPELL_DEFLECTION_R1, new SpellDeflection);
-#endif
-
-#if VERSION_STRING < Mop
-    mgr->register_spell_script(SPELL_UNHOLY_PRESENCE, new UnholyPresence);
-#endif
-
-#if VERSION_STRING == WotLK
-    mgr->register_spell_script(SPELL_WILL_OF_THE_NECROPOLIS_ABSORB_R1, new WillOfTheNecropolisAbsorb);
-    mgr->register_spell_script(SPELL_WILL_OF_THE_NECROPOLIS_DUMMY_R1, new WillOfTheNecropolisDummy);
-#elif VERSION_STRING < Legion
-    mgr->register_spell_script(SPELL_WILL_OF_THE_NECROPOLIS_PROC, new WillOfTheNecropolisProc);
-#endif
+    if (wotlkSpells())
+    {
+        mgr->register_spell_script(SPELL_BLOOD_PRESENCE_HEAL, new BloodPresenceHeal);
+        mgr->register_spell_script(SPELL_DEATH_RUNE_MASTERY_R1, new DeathRuneMastery);
+        mgr->register_spell_script(improvedBloodPresenceDummyId(), new ImprovedBloodPresenceDummy);
+        mgr->register_spell_script(SPELL_MARK_OF_BLOOD_DUMMY, new MarkOfBlood);
+        mgr->register_spell_script(SPELL_SPELL_DEFLECTION_R1, new SpellDeflection);
+        mgr->register_spell_script(SPELL_WILL_OF_THE_NECROPOLIS_ABSORB_R1, new WillOfTheNecropolisAbsorb);
+        mgr->register_spell_script(SPELL_WILL_OF_THE_NECROPOLIS_DUMMY_R1, new WillOfTheNecropolisDummy);
+    }
+    else if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Legion))
+    {
+        mgr->register_spell_script(SPELL_WILL_OF_THE_NECROPOLIS_PROC, new WillOfTheNecropolisProc);
+    }
 }
-#endif

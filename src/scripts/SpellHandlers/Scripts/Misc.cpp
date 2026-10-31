@@ -84,9 +84,7 @@ public:
     {
         if (apply)
         {
-#if VERSION_STRING >= TBC
             aur->getOwner()->addUnitFlags2(UNIT_FLAG2_FEIGN_DEATH);
-#endif
             if (_withDynamicFlag)
                 aur->getOwner()->addDynamicFlags(U_DYN_FLAG_DEAD);
             if (_preventChatEmotes)
@@ -94,9 +92,7 @@ public:
         }
         else
         {
-#if VERSION_STRING >= TBC
             aur->getOwner()->removeUnitFlags2(UNIT_FLAG2_FEIGN_DEATH);
-#endif
             if (_withDynamicFlag)
                 aur->getOwner()->removeDynamicFlags(U_DYN_FLAG_DEAD);
             if (_preventChatEmotes)
@@ -167,11 +163,12 @@ public:
 
         const auto mainHand = player->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
         bool hasPole = mainHand != nullptr && mainHand->getItemProperties()->Class == ITEM_CLASS_WEAPON && mainHand->getItemProperties()->SubClass == ITEM_SUBCLASS_WEAPON_FISHING_POLE;
-#if VERSION_STRING >= Dragonflight
-        // the pole sits in the fishing tool slot
-        if (const auto tool = player->getItemInterface()->GetInventoryItem(PROFESSION_SLOT_FISHING_TOOL))
-            hasPole = hasPole || (tool->getItemProperties()->Class == ITEM_CLASS_PROFESSION && tool->getItemProperties()->SubClass == ITEM_SUBCLASS_PROFESSION_FISHING);
-#endif
+        // from Dragonflight on the pole sits in the fishing tool slot
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Dragonflight))
+        {
+            if (const auto tool = player->getItemInterface()->GetInventoryItem(PROFESSION_SLOT_FISHING_TOOL))
+                hasPole = hasPole || (tool->getItemProperties()->Class == ITEM_CLASS_PROFESSION && tool->getItemProperties()->SubClass == ITEM_SUBCLASS_PROFESSION_FISHING);
+        }
         player->castSpell(player, hasPole ? SPELL_FISHING_WITH_POLE : SPELL_FISHING_NO_POLE, false);
         return SpellScriptCheckDummy::DUMMY_OK;
     }

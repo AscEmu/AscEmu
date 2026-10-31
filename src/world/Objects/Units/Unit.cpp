@@ -3609,7 +3609,6 @@ float_t Unit::applySpellDamageBonus(Unit* originalCaster, SpellInfo const* spell
     return dmg;
 }
 
-#if VERSION_STRING == TBC || VERSION_STRING == WotLK
 float_t Unit::getSpellDownrankingPenalty(uint32_t spellMaxLevel) const
 {
     float_t penalty = 1.0f;
@@ -3631,7 +3630,6 @@ float_t Unit::getSpellDownrankingPenalty(uint32_t spellMaxLevel) const
 
     return penalty;
 }
-#endif
 
 float_t Unit::getCriticalChanceForDamageSpell(Spell* spell, Aura* aura, Unit* target)
 {

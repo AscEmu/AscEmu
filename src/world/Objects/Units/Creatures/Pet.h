@@ -158,10 +158,8 @@ public:
 
     void setActionBarSlot(uint8_t slot, uint32_t spellId, uint8_t state);
 
-#if VERSION_STRING == WotLK || VERSION_STRING == Cata
     uint8_t getTotalTalentPoints() const;
     uint8_t getSpentTalentPoints() const;
-#endif
 
     // Talent reset cost in wotlk and cata
     // Beast training reset cost in classic and tbc
@@ -200,10 +198,8 @@ public:
 
     void WipeTalents();
 
-#if VERSION_STRING == WotLK || VERSION_STRING == Cata
     // talents
     void SendTalentsToOwner(); // Send talentpoints and talent spells to owner
-#endif
 
     void die(Unit* pAttacker, uint32_t damage, uint32_t spellid) override;
 };

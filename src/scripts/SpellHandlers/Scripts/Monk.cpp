@@ -5,8 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 
-#if VERSION_STRING >= Mop
 void setupMonkSpells(ScriptMgr* /*mgr*/)
 {
 }
-#endif

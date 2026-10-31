@@ -22,15 +22,11 @@
 
 
 // Class spell handlers
-#if VERSION_STRING >= WotLK
 void setupDeathKnightSpells(ScriptMgr* mgr);
-#endif
 void setupDruidSpells(ScriptMgr* mgr);
 void setupHunterSpells(ScriptMgr* mgr);
 void setupMageSpells(ScriptMgr* mgr);
-#if VERSION_STRING >= Mop
 void setupMonkSpells(ScriptMgr* mgr);
-#endif
 void setupPaladinSpells(ScriptMgr* mgr);
 void setupPriestSpells(ScriptMgr* mgr);
 void setupRogueSpells(ScriptMgr* mgr);

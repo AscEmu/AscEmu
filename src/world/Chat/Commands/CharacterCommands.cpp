@@ -804,7 +804,6 @@ bool ChatCommandHandler::HandleCharAddCurrencyCommand(const char* args, WorldSes
 
     return true;
 }
-#endif
 
 //.character add copper
 bool ChatCommandHandler::HandleCharAddCopperCommand(const char* args, WorldSession* m_session)
@@ -1007,7 +1006,6 @@ bool ChatCommandHandler::HandleCharResetSkillsCommand(const char* /*args*/, Worl
 
     return true;
 }
-#endif
 
 //.character removeitem
 bool ChatCommandHandler::HandleCharRemoveItemCommand(const char* args, WorldSession* m_session)

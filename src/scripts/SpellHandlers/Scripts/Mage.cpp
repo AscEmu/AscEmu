@@ -16,11 +16,8 @@ enum MageSpells
 {
     SPELL_ARCANE_MISSILES_PROC          = 79683,
     SPELL_DEEP_FREEZE_DAMAGE            = 71757,
-#if VERSION_STRING < Cata
     SPELL_FIRE_WARD_R1                  = 543,
-#elif VERSION_STRING == Cata
-    SPELL_MAGE_WARD                     = 543,
-#endif
+    SPELL_MAGE_WARD                     = 543, // Cata
     SPELL_FROST_WARD_R1                 = 6143,
     SPELL_GLYPH_OF_THE_PENGUIN          = 52648,
     SPELL_HOT_STREAK_BUFF               = 48108,
@@ -48,7 +45,6 @@ enum MageSpells
     CREATURE_CHILLY                     = 29726, // Penguin NPC for Glyph of the Penguin
 };
 
-#if VERSION_STRING >= Cata
 class ArcaneMissilesProc : public SpellScript
 {
 public:
@@ -58,9 +54,7 @@ public:
         return 40;
     }
 };
-#endif
 
-#if VERSION_STRING == WotLK || VERSION_STRING == Cata
 class DeepFreezeDamage : public SpellScript
 {
 public:
@@ -70,9 +64,7 @@ public:
         return false;
     }
 };
-#endif
 
-#if VERSION_STRING == WotLK || VERSION_STRING == Cata
 class HotStreakDummy : public SpellScript
 {
 public:
@@ -124,10 +116,7 @@ public:
 private:
     uint8_t critsInRow = 0;
 };
-#endif
 
-#if VERSION_STRING < Mop
-#if VERSION_STRING >= WotLK
 class ImpactDummy : public SpellScript
 {
 public:
@@ -158,9 +147,7 @@ public:
         return SpellScriptExecuteState::EXECUTE_PREVENT;
     }
 };
-#endif
 
-#if VERSION_STRING == WotLK || VERSION_STRING == Cata
 class IncastersAbsorption : public SpellScript
 {
 public:
@@ -184,7 +171,6 @@ public:
         return SpellScriptEffectDamage::DAMAGE_DEFAULT;
     }
 };
-#endif
 
 class Impact : public SpellScript
 {
@@ -192,23 +178,24 @@ public:
     void onCreateSpellProc([[maybe_unused]] SpellProc* proc, Object* /*obj*/) override
     {
         // TODO: classic and tbc masks
-#if VERSION_STRING >= WotLK
-        // Should proc only from Fire Blast
-        proc->setProcClassMask(EFF_INDEX_0, 0x2);
-#endif
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        {
+            // Should proc only from Fire Blast
+            proc->setProcClassMask(EFF_INDEX_0, 0x2);
+        }
     }
 
-#if VERSION_STRING < WotLK
-    bool canProc(SpellProc* /*spellProc*/, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, DamageInfo damageInfo) override
+    bool canProc(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, DamageInfo damageInfo) override
     {
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+            return SpellScript::canProc(spellProc, victim, castingSpell, damageInfo);
+
         if (damageInfo.weaponType == RANGED)
             return false;
 
         return damageInfo.fullDamage > 0;
     }
-#endif
 };
-#endif
 
 class Invisibility : public SpellScript
 {
@@ -240,7 +227,6 @@ public:
     }
 };
 
-#if VERSION_STRING < Mop
 class MasterOfElementsDummy : public SpellScript
 {
 public:
@@ -264,7 +250,6 @@ public:
     }
 };
 
-#if VERSION_STRING == WotLK || VERSION_STRING == Cata
 // Wotlk: Called on batched absorb for Mana Shield, Frost Ward, Fire Ward and Ice Barrier
 // Cata: Called on batched absorb for Mana Shield and Mage Ward
 // Handles Incaster's Absorption
@@ -287,9 +272,7 @@ public:
         return SpellScriptExecuteState::EXECUTE_OK;
     }
 };
-#endif
 
-#if VERSION_STRING == Cata
 // Handles knockback effect for Incaster's Absorption
 class ManaShield : public MageAbsorbShields
 {
@@ -307,7 +290,6 @@ public:
         aur->getOwner()->castSpell(aur->getOwner(), SPELL_INCASTERS_ABSORPTION_KNOCBACK, true);
     }
 };
-#endif
 
 class MasterOfElements : public SpellScript
 {
@@ -321,16 +303,19 @@ public:
     {
         if (castingSpell == nullptr || damageInfo.weaponType == RANGED)
             return false;
-#if VERSION_STRING < WotLK
-        // Can proc only from fire or frost school
-        if (castingSpell->getSchoolMask() & SCHOOL_MASK_FIRE || castingSpell->getSchoolMask() & SCHOOL_MASK_FROST)
+        if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        {
+            // Can proc only from fire or frost school
+            if (castingSpell->getSchoolMask() & SCHOOL_MASK_FIRE || castingSpell->getSchoolMask() & SCHOOL_MASK_FROST)
+                return true;
+            return false;
+        }
+        else
+        {
+            // Reset aura before continuing
+            originalAura = nullptr;
             return true;
-        return false;
-#else
-        // Reset aura before continuing
-        originalAura = nullptr;
-        return true;
-#endif
+        }
     }
 
     bool canProcOnTriggered(SpellProc* /*spellProc*/, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, Aura* triggeredFromAura) override
@@ -358,12 +343,8 @@ public:
                 if (aurEff->getAuraEffectType() == SPELL_AURA_NONE)
                     continue;
 
-#if VERSION_STRING == Classic
-                if (aurEff->getAuraEffectType() == SPELL_AURA_PERIODIC_TRIGGER_SPELL)
-#else
                 if (aurEff->getAuraEffectType() == SPELL_AURA_PERIODIC_TRIGGER_SPELL ||
                     aurEff->getAuraEffectType() == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE)
-#endif
                 {
                     ticks = originalAura->getPeriodicTickCountForEffect(aurEff->getEffectIndex());
                     break;
@@ -397,7 +378,6 @@ private:
     Aura* originalAura = nullptr;
     int32_t manaReturn = 0;
 };
-#endif
 
 class Polymorph : public SpellScript
 {
@@ -440,60 +420,67 @@ void setupMageSpells(ScriptMgr* mgr)
     // Call legacy script setup
     SetupLegacyMageSpells(mgr);
 
-#if VERSION_STRING >= Cata && VERSION_STRING < BfA
-    mgr->register_spell_script(SPELL_ARCANE_MISSILES_PROC, new ArcaneMissilesProc);
-#endif
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata) && !WoW::isServerExpansionAtLeast(WoW::Expansion::_BfA))
+    {
+        mgr->register_spell_script(SPELL_ARCANE_MISSILES_PROC, new ArcaneMissilesProc);
+    }
 
-#if VERSION_STRING == WotLK || VERSION_STRING == Cata
-    mgr->register_spell_script(SPELL_DEEP_FREEZE_DAMAGE, new DeepFreezeDamage);
-    mgr->register_spell_script(SPELL_HOT_STREAK_R1, new HotStreakDummy);
-    mgr->register_spell_script(SPELL_HOT_STREAK_BUFF, new HotStreak);
-#endif
+    if (WoW::isServerExpansion(WoW::Expansion::_WotLK) || WoW::isServerExpansion(WoW::Expansion::_Cata))
+    {
+        mgr->register_spell_script(SPELL_DEEP_FREEZE_DAMAGE, new DeepFreezeDamage);
+        mgr->register_spell_script(SPELL_HOT_STREAK_R1, new HotStreakDummy);
+        mgr->register_spell_script(SPELL_HOT_STREAK_BUFF, new HotStreak);
+    }
 
-#if VERSION_STRING == WotLK || VERSION_STRING == Cata
-    mgr->register_spell_script(SPELL_INCASTERS_ABSORPTION, new IncastersAbsorption);
-#endif
+    if (WoW::isServerExpansion(WoW::Expansion::_WotLK) || WoW::isServerExpansion(WoW::Expansion::_Cata))
+    {
+        mgr->register_spell_script(SPELL_INCASTERS_ABSORPTION, new IncastersAbsorption);
+    }
 
-#if VERSION_STRING < Mop
-#if VERSION_STRING >= WotLK
-    mgr->register_spell_script(SPELL_IMPACT_DUMMY, new ImpactDummy);
-#endif
-    mgr->register_spell_script(SPELL_IMPACT_STUN, new Impact);
-#endif
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+    {
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        {
+            mgr->register_spell_script(SPELL_IMPACT_DUMMY, new ImpactDummy);
+        }
+        mgr->register_spell_script(SPELL_IMPACT_STUN, new Impact);
+    }
 
     mgr->register_spell_script(SPELL_INVISIBILITY, new Invisibility);
 
-#if VERSION_STRING == WotLK
-    uint32_t mageAbsorbShieldIds[] =
+    if (WoW::isServerExpansion(WoW::Expansion::_WotLK))
     {
-        SPELL_MANA_SHIELD_R1,
-        SPELL_FROST_WARD_R1,
-        SPELL_FIRE_WARD_R1,
-        SPELL_ICE_BARRIER_R1,
-        0
-    };
-    mgr->register_spell_script(mageAbsorbShieldIds, new MageAbsorbShields);
-#elif VERSION_STRING == Cata
-    mgr->register_spell_script(SPELL_MAGE_WARD, new MageAbsorbShields);
-    mgr->register_spell_script(SPELL_MANA_SHIELD_R1, new ManaShield);
-#endif
+        uint32_t mageAbsorbShieldIds[] =
+        {
+            SPELL_MANA_SHIELD_R1,
+            SPELL_FROST_WARD_R1,
+            SPELL_FIRE_WARD_R1,
+            SPELL_ICE_BARRIER_R1,
+            0
+        };
+        mgr->register_spell_script(mageAbsorbShieldIds, new MageAbsorbShields);
+    }
+    else if (WoW::isServerExpansion(WoW::Expansion::_Cata))
+    {
+        mgr->register_spell_script(SPELL_MAGE_WARD, new MageAbsorbShields);
+        mgr->register_spell_script(SPELL_MANA_SHIELD_R1, new ManaShield);
+    }
 
-#if VERSION_STRING < Mop
-    mgr->register_spell_script(SPELL_MASTER_OF_ELEMENTS_R1, new MasterOfElementsDummy);
-    mgr->register_spell_script(SPELL_MASTER_OF_ELEMENTS, new MasterOfElements);
-#endif
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+    {
+        mgr->register_spell_script(SPELL_MASTER_OF_ELEMENTS_R1, new MasterOfElementsDummy);
+        mgr->register_spell_script(SPELL_MASTER_OF_ELEMENTS, new MasterOfElements);
+    }
 
     uint32_t polymorphIds[] =
     {
         SPELL_POLYMORPH_R1,
         SPELL_POLYMORPH_TURTLE,
         SPELL_POLYMORPH_PIG,
-#if VERSION_STRING >= WotLK
-        SPELL_POLYMORPH_SERPENT,
-        SPELL_POLYMORPH_BLACK_CAT,
-        SPELL_POLYMORPH_RABBIT,
-        SPELL_POLYMORPH_TURKEY,
-#endif
+        WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK) ? static_cast<uint32_t>(SPELL_POLYMORPH_SERPENT) : 0u,
+        WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK) ? static_cast<uint32_t>(SPELL_POLYMORPH_BLACK_CAT) : 0u,
+        WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK) ? static_cast<uint32_t>(SPELL_POLYMORPH_RABBIT) : 0u,
+        WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK) ? static_cast<uint32_t>(SPELL_POLYMORPH_TURKEY) : 0u,
         0
     };
     mgr->register_spell_script(polymorphIds, new Polymorph);

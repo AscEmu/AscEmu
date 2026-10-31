@@ -33,11 +33,8 @@ enum PriestSpells
     SPELL_IMPROVED_MIND_BLAST_R1            = 15273,
     SPELL_IMPROVED_SPIRIT_TAP_R1            = 49694,
     SPELL_MIND_TRAUMA                       = 48301,
-#if VERSION_STRING < Cata
     SPELL_SURGE_OF_LIGHT_PROC               = 33151,
-#else
-    SPELL_SURGE_OF_LIGHT_PROC               = 88688,
-#endif
+    SPELL_SURGE_OF_LIGHT_PROC_CATA          = 88688,
     SPELL_VAMPIRIC_EMBRACE_DUMMY            = 15286,
     SPELL_VAMPIRIC_EMBRACE_HEAL             = 15290,
     SPELL_VAMPIRIC_TOUCH_R1                 = 34914,
@@ -48,7 +45,6 @@ enum PriestSpells
     SPELL_ICON_ABOLISH_DISEASE              = 264,
 };
 
-#if VERSION_STRING == WotLK
 class AbolishDisease : public SpellScript
 {
 public:
@@ -58,10 +54,7 @@ public:
         aur->getOwner()->removeAllAurasById(SPELL_BODY_AND_SOUL_POISON);
     }
 };
-#endif
 
-#if VERSION_STRING >= WotLK
-#if VERSION_STRING < Mop
 // Handles only the poison dispel proc (speed buff is handled by spellAuraEffectProcTriggerSpell)
 class BodyAndSoulDummy : public SpellScript
 {
@@ -71,11 +64,7 @@ class BodyAndSoulDummy : public SpellScript
         {
             // Dispel poison proc on Abolish Disease in wotlk and on Cure Disease in cata
             const uint32_t procMask[3] = { 0, 0x1, 0x400 };
-#if VERSION_STRING == WotLK
-            uint32_t spellId = SPELL_BODY_AND_SOUL_POISON;
-#elif VERSION_STRING == Cata
-            uint32_t spellId = SPELL_BODY_AND_SOUL_POISON_SINGLE;
-#endif
+            const uint32_t spellId = WoW::isServerExpansion(WoW::Expansion::_WotLK) ? SPELL_BODY_AND_SOUL_POISON : SPELL_BODY_AND_SOUL_POISON_SINGLE;
             auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(spellId), aur, aur->getCasterGuid(), procMask);
             if (spellProc != nullptr)
             {
@@ -85,11 +74,14 @@ class BodyAndSoulDummy : public SpellScript
         }
         else
         {
-#if VERSION_STRING == Cata
-            aur->getOwner()->removeProcTriggerSpell(SPELL_BODY_AND_SOUL_POISON_SINGLE, aur->getCasterGuid());
-#elif VERSION_STRING == WotLK
-            aur->getOwner()->removeProcTriggerSpell(SPELL_BODY_AND_SOUL_POISON, aur->getCasterGuid());
-#endif
+            if (WoW::isServerExpansion(WoW::Expansion::_Cata))
+            {
+                aur->getOwner()->removeProcTriggerSpell(SPELL_BODY_AND_SOUL_POISON_SINGLE, aur->getCasterGuid());
+            }
+            else if (WoW::isServerExpansion(WoW::Expansion::_WotLK))
+            {
+                aur->getOwner()->removeProcTriggerSpell(SPELL_BODY_AND_SOUL_POISON, aur->getCasterGuid());
+            }
         }
 
         return SpellScriptCheckDummy::DUMMY_OK;
@@ -108,7 +100,6 @@ public:
     }
 };
 
-#if VERSION_STRING == WotLK
 class BodyAndSoulPoison : public SpellScript
 {
     bool canProc(SpellProc* /*spellProc*/, Unit* /*victim*/, SpellInfo const* castingSpell, DamageInfo /*damageInfo*/) override
@@ -121,12 +112,8 @@ class BodyAndSoulPoison : public SpellScript
         return true;
     }
 };
-#endif
-#endif
 
-#endif
 
-#if VERSION_STRING >= WotLK && VERSION_STRING < Mop
 class DivineAegisDummy : public SpellScript
 {
 public:
@@ -184,9 +171,7 @@ public:
 private:
     uint32_t absorbAmount = 0;
 };
-#endif
 
-#if VERSION_STRING == WotLK
 class EmpoweredRenewDummy : public SpellScript
 {
 public:
@@ -196,9 +181,7 @@ public:
         return SpellScriptCheckDummy::DUMMY_OK;
     }
 };
-#endif
 
-#if VERSION_STRING == TBC || VERSION_STRING == WotLK
 class HolyConcentration : public SpellScript
 {
 public:
@@ -207,10 +190,11 @@ public:
         // Should proc on critical Flash Heal, Greater Heal or Binding Heal
         spellProc->setProcClassMask(EFF_INDEX_0, 0x1800);
         spellProc->setProcClassMask(EFF_INDEX_1, 0x4);
-#if VERSION_STRING == WotLK
-        // or on critical Empowered Renew
-        spellProc->setProcClassMask(EFF_INDEX_2, 0x1000);
-#endif
+        if (WoW::isServerExpansion(WoW::Expansion::_WotLK))
+        {
+            // or on critical Empowered Renew
+            spellProc->setProcClassMask(EFF_INDEX_2, 0x1000);
+        }
         spellProc->setExtraProcFlags(EXTRA_PROC_ON_CRIT_ONLY);
     }
 
@@ -220,9 +204,7 @@ public:
         return true;
     }
 };
-#endif
 
-#if VERSION_STRING >= WotLK && VERSION_STRING < Mop
 class ImprovedDevouringPlagueDummy : public SpellScript
 {
 public:
@@ -243,9 +225,7 @@ public:
         return SpellScriptCheckDummy::DUMMY_OK;
     }
 };
-#endif
 
-#if VERSION_STRING >= WotLK && VERSION_STRING < Mop
 class ImprovedMindBlastDummy : public SpellScript
 {
 public:
@@ -274,37 +254,35 @@ public:
         return true;
     }
 };
-#endif
 
-#if VERSION_STRING < Mop && VERSION_STRING >= TBC
 class SurgeOfLight : public SpellScript
 {
 public:
     void onCreateSpellProc(SpellProc* spellProc, Object* /*obj*/) override
     {
-#if VERSION_STRING == Cata
-        // Should proc on Smite, Heal, Flash Heal, Binding Heal and Greater Heal
-        spellProc->setProcClassMask(EFF_INDEX_0, 0x41880);
-        spellProc->setProcClassMask(EFF_INDEX_1, 0x4);
-        spellProc->setProcClassMask(EFF_INDEX_2, 0);
-#endif
+        if (WoW::isServerExpansion(WoW::Expansion::_Cata))
+        {
+            // Should proc on Smite, Heal, Flash Heal, Binding Heal and Greater Heal
+            spellProc->setProcClassMask(EFF_INDEX_0, 0x41880);
+            spellProc->setProcClassMask(EFF_INDEX_1, 0x4);
+            spellProc->setProcClassMask(EFF_INDEX_2, 0);
+        }
         spellProc->setCastedOnProcOwner(true);
     }
 
-#if VERSION_STRING < Cata
-    bool canProc(SpellProc* /*spellProc*/, Unit* /*victim*/, SpellInfo const* castingSpell, DamageInfo damageInfo) override
+    bool canProc(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, DamageInfo damageInfo) override
     {
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+            return SpellScript::canProc(spellProc, victim, castingSpell, damageInfo);
+
         // Should proc from critical spells only
         if (castingSpell == nullptr || damageInfo.weaponType == RANGED)
             return false;
 
         return damageInfo.isCritical;
     }
-#endif
 };
-#endif
 
-#if VERSION_STRING == WotLK
 class ImprovedSpiritTap : public SpellScript
 {
 public:
@@ -336,7 +314,6 @@ public:
         return spellProc->getProcChance();
     }
 };
-#endif
 
 class VampiricEmbraceDummy : public SpellScript
 {
@@ -345,13 +322,16 @@ public:
     {
         if (apply)
         {
-#if VERSION_STRING >= Mop
-            // TODO: Mop
-#else
-            auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_VAMPIRIC_EMBRACE_HEAL), aur, aur->getCasterGuid());
-            if (spellProc != nullptr)
-                spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
-#endif
+            if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+            {
+                // TODO: Mop
+            }
+            else
+            {
+                auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_VAMPIRIC_EMBRACE_HEAL), aur, aur->getCasterGuid());
+                if (spellProc != nullptr)
+                    spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
+            }
         }
         else
         {
@@ -367,11 +347,14 @@ class VampiricEmbrace : public SpellScript
 public:
     void onCreateSpellProc(SpellProc* spellProc, Object* /*obj*/) override
     {
-#if VERSION_STRING < WotLK
-        spellProc->setCastedByProcCreator(true);
-#else
-        spellProc->setCastedOnProcOwner(true);
-#endif
+        if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        {
+            spellProc->setCastedByProcCreator(true);
+        }
+        else
+        {
+            spellProc->setCastedOnProcOwner(true);
+        }
     }
 
     bool canProc([[maybe_unused]]SpellProc* spellProc, [[maybe_unused]]Unit* victim, SpellInfo const* castingSpell, DamageInfo damageInfo) override
@@ -379,11 +362,12 @@ public:
         if (castingSpell == nullptr)
             return false;
 
-#if VERSION_STRING < WotLK
-        // Should proc only for the priest who casted Vampiric Embrace
-        if (victim == nullptr || victim->getGuid() != spellProc->getCasterGuid())
-            return false;
-#endif
+        if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        {
+            // Should proc only for the priest who casted Vampiric Embrace
+            if (victim == nullptr || victim->getGuid() != spellProc->getCasterGuid())
+                return false;
+        }
 
         // Only on shadow damage
         // Check also that it's not procing from wand
@@ -419,15 +403,20 @@ public:
         const auto healPct = spellProc->getOverrideEffectDamage(EFF_INDEX_0);
         selfHeal = static_cast<uint32_t>(std::round(damageInfo.realDamage * healPct / 100.0f));
 
-#if VERSION_STRING >= Mop
-        // TODO: Mop
-#elif VERSION_STRING == Cata
-        const auto partyHealPct = std::round(healPct / 2.0f);
-        partyHeal = static_cast<uint32_t>(std::round(damageInfo.realDamage * partyHealPct / 100.0f));
-#elif VERSION_STRING == WotLK
-        const auto partyHealPct = std::round(healPct / 5.0f);
-        partyHeal = static_cast<uint32_t>(std::round(damageInfo.realDamage * partyHealPct / 100.0f));
-#endif
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+        {
+            // TODO: Mop
+        }
+        else if (WoW::isServerExpansion(WoW::Expansion::_Cata))
+        {
+            const auto partyHealPct = std::round(healPct / 2.0f);
+            partyHeal = static_cast<uint32_t>(std::round(damageInfo.realDamage * partyHealPct / 100.0f));
+        }
+        else if (WoW::isServerExpansion(WoW::Expansion::_WotLK))
+        {
+            const auto partyHealPct = std::round(healPct / 5.0f);
+            partyHeal = static_cast<uint32_t>(std::round(damageInfo.realDamage * partyHealPct / 100.0f));
+        }
 
         if (selfHeal == 0)
             return SpellScriptExecuteState::EXECUTE_PREVENT;
@@ -437,13 +426,16 @@ public:
 
     SpellScriptExecuteState onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* spell) override
     {
-#if VERSION_STRING < WotLK
-        // Same amount for party and self in Classic and TBC
-        spell->forced_basepoints->set(EFF_INDEX_0, selfHeal);
-#else
-        spell->forced_basepoints->set(EFF_INDEX_0, partyHeal);
-        spell->forced_basepoints->set(EFF_INDEX_1, selfHeal);
-#endif
+        if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        {
+            // Same amount for party and self in Classic and TBC
+            spell->forced_basepoints->set(EFF_INDEX_0, selfHeal);
+        }
+        else
+        {
+            spell->forced_basepoints->set(EFF_INDEX_0, partyHeal);
+            spell->forced_basepoints->set(EFF_INDEX_1, selfHeal);
+        }
         selfHeal = 0;
         partyHeal = 0;
         return SpellScriptExecuteState::EXECUTE_OK;
@@ -454,7 +446,6 @@ private:
     uint32_t partyHeal = 0;
 };
 
-#if VERSION_STRING >= TBC
 class VampiricTouchDummy : public SpellScript
 {
 public:
@@ -465,20 +456,25 @@ public:
 
         if (apply)
         {
-#if VERSION_STRING == TBC
-            auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_VAMPIRIC_TOUCH_MANA), aur, aur->getCasterGuid());
-            if (spellProc != nullptr)
-                spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
-#elif VERSION_STRING >= Mop
-            // Should proc only when this aura deals damage
-            const auto& spellFamilyMask = aur->getSpellInfo()->getSpellFamilyFlags();
-            uint32_t procMask[3] = { spellFamilyMask[0], spellFamilyMask[1], spellFamilyMask[2] };
-            aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_VAMPIRIC_TOUCH_MANA), aur, aur->getCasterGuid(), procMask);
-#else
-            // Should proc only on Mind Blast
-            uint32_t procMask[3] = { 0x2000, 0, 0 };
-            aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_VAMPIRIC_TOUCH_MANA), aur, aur->getCasterGuid(), procMask);
-#endif
+            if (WoW::isServerExpansion(WoW::Expansion::_TBC))
+            {
+                auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_VAMPIRIC_TOUCH_MANA), aur, aur->getCasterGuid());
+                if (spellProc != nullptr)
+                    spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
+            }
+            else if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+            {
+                // Should proc only when this aura deals damage
+                const auto& spellFamilyMask = aur->getSpellInfo()->getSpellFamilyFlags();
+                uint32_t procMask[3] = { spellFamilyMask[0], spellFamilyMask[1], spellFamilyMask[2] };
+                aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_VAMPIRIC_TOUCH_MANA), aur, aur->getCasterGuid(), procMask);
+            }
+            else
+            {
+                // Should proc only on Mind Blast
+                uint32_t procMask[3] = { 0x2000, 0, 0 };
+                aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_VAMPIRIC_TOUCH_MANA), aur, aur->getCasterGuid(), procMask);
+            }
         }
         else
         {
@@ -488,9 +484,11 @@ public:
         return SpellScriptCheckDummy::DUMMY_OK;
     }
 
-#if VERSION_STRING == WotLK
     void onAuraRemove(Aura* aur, AuraRemoveMode mode) override
     {
+        if (!WoW::isServerExpansion(WoW::Expansion::_WotLK))
+            return SpellScript::onAuraRemove(aur, mode);
+
         if (mode != AURA_REMOVE_ON_DISPEL)
             return;
 
@@ -501,7 +499,6 @@ public:
         if (caster != nullptr)
             caster->castSpell(aur->getOwner(), SPELL_VAMPIRIC_TOUCH_DISPEL, forcedBasePoints, true);
     }
-#endif
 };
 
 class VampiricTouch : public SpellScript
@@ -528,24 +525,31 @@ public:
 
     SpellScriptExecuteState onDoProcEffect([[maybe_unused]] SpellProc* spellProc, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, [[maybe_unused]]DamageInfo damageInfo) override
     {
-#if VERSION_STRING == TBC
-        manaReturn = static_cast<uint32_t>(std::round(damageInfo.realDamage * spellProc->getOverrideEffectDamage(EFF_INDEX_0) / 100.0f));
-        return SpellScriptExecuteState::EXECUTE_OK;
-#elif VERSION_STRING < Mop
-        const auto caster = spellProc->getProcOwner()->getWorldMapUnit(spellProc->getCasterGuid());
-        if (caster == nullptr)
-            return SpellScriptExecuteState::EXECUTE_PREVENT;
+        if (WoW::isServerExpansion(WoW::Expansion::_TBC))
+        {
+            manaReturn = static_cast<uint32_t>(std::round(damageInfo.realDamage * spellProc->getOverrideEffectDamage(EFF_INDEX_0) / 100.0f));
+            return SpellScriptExecuteState::EXECUTE_OK;
+        }
+        else if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+        {
+            const auto caster = spellProc->getProcOwner()->getWorldMapUnit(spellProc->getCasterGuid());
+            if (caster == nullptr)
+                return SpellScriptExecuteState::EXECUTE_PREVENT;
 
-        caster->castSpell(caster, SPELL_REPLENISHMENT, true);
-        return SpellScriptExecuteState::EXECUTE_PREVENT;
-#else
-        return SpellScriptExecuteState::EXECUTE_OK;
-#endif
+            caster->castSpell(caster, SPELL_REPLENISHMENT, true);
+            return SpellScriptExecuteState::EXECUTE_PREVENT;
+        }
+        else
+        {
+            return SpellScriptExecuteState::EXECUTE_OK;
+        }
     }
 
-#if VERSION_STRING == TBC
-    SpellScriptExecuteState onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* spell) override
+    SpellScriptExecuteState onCastProcSpell(SpellProc* spellProc, Unit* caster, Unit* victim, Spell* spell) override
     {
+        if (!WoW::isServerExpansion(WoW::Expansion::_TBC))
+            return SpellScript::onCastProcSpell(spellProc, caster, victim, spell);
+
         spell->forced_basepoints->set(EFF_INDEX_0, manaReturn);
         manaReturn = 0;
         return SpellScriptExecuteState::EXECUTE_OK;
@@ -553,65 +557,75 @@ public:
 
 private:
     uint32_t manaReturn = 0;
-#endif
 };
-#endif
 
 void setupPriestSpells(ScriptMgr* mgr)
 {
     // Call legacy script setup
     SetupLegacyPriestSpells(mgr);
 
-#if VERSION_STRING >= WotLK
-#if VERSION_STRING < Mop
-    mgr->register_spell_script(SPELL_BODY_AND_SOUL_R1, new BodyAndSoulDummy);
-    mgr->register_spell_script(SPELL_BODY_AND_SOUL_SPEED_R1, new BodyAndSoulSpeed);
-#endif
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
+        if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+        {
+            mgr->register_spell_script(SPELL_BODY_AND_SOUL_R1, new BodyAndSoulDummy);
+            mgr->register_spell_script(SPELL_BODY_AND_SOUL_SPEED_R1, new BodyAndSoulSpeed);
+        }
 
-#if VERSION_STRING == WotLK
-    mgr->register_spell_script(SPELL_ABOLISH_DISEASE, new AbolishDisease);
-    mgr->register_spell_script(SPELL_BODY_AND_SOUL_POISON, new BodyAndSoulPoison);
-#endif
+        if (WoW::isServerExpansion(WoW::Expansion::_WotLK))
+        {
+            mgr->register_spell_script(SPELL_ABOLISH_DISEASE, new AbolishDisease);
+            mgr->register_spell_script(SPELL_BODY_AND_SOUL_POISON, new BodyAndSoulPoison);
+        }
 
-#endif
+    }
 
-#if VERSION_STRING >= WotLK && VERSION_STRING < Mop
-    mgr->register_spell_script(SPELL_DIVINE_AEGIS_R1, new DivineAegisDummy);
-    mgr->register_spell_script(SPELL_DIVINE_AEGIS, new DivineAegis);
-#endif
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK) && !WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+    {
+        mgr->register_spell_script(SPELL_DIVINE_AEGIS_R1, new DivineAegisDummy);
+        mgr->register_spell_script(SPELL_DIVINE_AEGIS, new DivineAegis);
+    }
 
-#if VERSION_STRING == WotLK
-    mgr->register_spell_script(SPELL_EMPOWERED_RENEW_R1, new EmpoweredRenewDummy);
-#endif
+    if (WoW::isServerExpansion(WoW::Expansion::_WotLK))
+    {
+        mgr->register_spell_script(SPELL_EMPOWERED_RENEW_R1, new EmpoweredRenewDummy);
+    }
 
-#if VERSION_STRING == TBC || VERSION_STRING == WotLK
-    mgr->register_spell_script(SPELL_HOLY_CONCENTRATION_R1, new HolyConcentration);
-#endif
+    if (WoW::isServerExpansion(WoW::Expansion::_TBC) || WoW::isServerExpansion(WoW::Expansion::_WotLK))
+    {
+        mgr->register_spell_script(SPELL_HOLY_CONCENTRATION_R1, new HolyConcentration);
+    }
 
-#if VERSION_STRING < Mop && VERSION_STRING >= WotLK
-    mgr->register_spell_script(SPELL_IMPROVED_DEVOURING_PLAGUE_R1, new ImprovedDevouringPlagueDummy);
-#endif
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop) && WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
+        mgr->register_spell_script(SPELL_IMPROVED_DEVOURING_PLAGUE_R1, new ImprovedDevouringPlagueDummy);
+    }
 
-#if VERSION_STRING < Mop && VERSION_STRING >= WotLK
-    mgr->register_spell_script(SPELL_IMPROVED_MIND_BLAST_R1, new ImprovedMindBlastDummy);
-    mgr->register_spell_script(SPELL_MIND_TRAUMA, new MindTrauma);
-#endif
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop) && WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
+        mgr->register_spell_script(SPELL_IMPROVED_MIND_BLAST_R1, new ImprovedMindBlastDummy);
+        mgr->register_spell_script(SPELL_MIND_TRAUMA, new MindTrauma);
+    }
 
-#if VERSION_STRING == WotLK
-    mgr->register_spell_script(SPELL_IMPROVED_SPIRIT_TAP_R1, new ImprovedSpiritTap);
-#endif
+    if (WoW::isServerExpansion(WoW::Expansion::_WotLK))
+    {
+        mgr->register_spell_script(SPELL_IMPROVED_SPIRIT_TAP_R1, new ImprovedSpiritTap);
+    }
 
-#if VERSION_STRING < Mop && VERSION_STRING >= TBC
-    mgr->register_spell_script(SPELL_SURGE_OF_LIGHT_PROC, new SurgeOfLight);
-#endif
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop) && WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+    {
+        mgr->register_spell_script(WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata) ? SPELL_SURGE_OF_LIGHT_PROC_CATA : SPELL_SURGE_OF_LIGHT_PROC, new SurgeOfLight);
+    }
 
     mgr->register_spell_script(SPELL_VAMPIRIC_EMBRACE_DUMMY, new VampiricEmbraceDummy);
     mgr->register_spell_script(SPELL_VAMPIRIC_EMBRACE_HEAL, new VampiricEmbrace);
 
-#if VERSION_STRING >= TBC
-    mgr->register_spell_script(SPELL_VAMPIRIC_TOUCH_R1, new VampiricTouchDummy);
-#if VERSION_STRING < Legion
-    mgr->register_spell_script(SPELL_VAMPIRIC_TOUCH_MANA, new VampiricTouch);
-#endif
-#endif
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+    {
+        mgr->register_spell_script(SPELL_VAMPIRIC_TOUCH_R1, new VampiricTouchDummy);
+        if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Legion))
+        {
+            mgr->register_spell_script(SPELL_VAMPIRIC_TOUCH_MANA, new VampiricTouch);
+        }
+    }
 }

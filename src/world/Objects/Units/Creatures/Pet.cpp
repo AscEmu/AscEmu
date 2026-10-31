@@ -1145,7 +1145,6 @@ void Pet::setActionBarSlot(uint8_t slot, uint32_t spellId, uint8_t state)
     m_actionBar[slot] = PetActionButtonData{ .parts {.spellId = spellId, .state = state } };
 }
 
-#if VERSION_STRING == WotLK || VERSION_STRING == Cata
 uint8_t Pet::getTotalTalentPoints() const
 {
     const auto level = getLevel();
@@ -1157,7 +1156,6 @@ uint8_t Pet::getSpentTalentPoints() const
 {
     return getTotalTalentPoints() - getPetTalentPoints();
 }
-#endif
 
 uint32_t Pet::getUntrainCost()
 {
@@ -1510,9 +1508,9 @@ void Pet::sendPetCastFailed(uint32_t spellId, uint8_t reason)
 // MIT END
 //////////////////////////////////////////////////////////////////////////////////////////
 
-#if VERSION_STRING == WotLK || VERSION_STRING == Cata
 void Pet::SendTalentsToOwner()
 {
+#if VERSION_STRING == WotLK || VERSION_STRING == Cata
     auto* plrOwner = getPlayerOwner();
     if (plrOwner == nullptr || plrOwner->getSession() == nullptr)
         return;
@@ -1556,8 +1554,8 @@ void Pet::SendTalentsToOwner()
 
     SmsgUpdateTalentData managedPacket(std::move(petTalents));
     plrOwner->getSession()->sendManagedPacket(managedPacket);
-}
 #endif
+}
 
 void Pet::WipeTalents()
 {

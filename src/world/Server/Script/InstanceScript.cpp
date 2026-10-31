@@ -349,7 +349,6 @@ void InstanceScript::updateEncounterState(EncounterCreditType type, uint32_t cre
             }
         }
     }
-#endif
 }
 
 void InstanceScript::useDoorOrButton(GameObject* pGameObject, uint32_t withRestoreTime, bool useAlternativeState)

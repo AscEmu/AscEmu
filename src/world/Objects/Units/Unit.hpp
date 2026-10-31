@@ -766,9 +766,8 @@ public:
     float_t applySpellHealingBonus(Unit* originalCaster, SpellInfo const* spellInfo, uint8_t effectIndex, int32_t baseHeal, bool multiplyBaseDmg = false, Spell* castingSpell = nullptr, AuraEffectModifier const* aurEff = nullptr);
     float_t applySpellHealingBonus(Unit* originalCaster, SpellInfo const* spellInfo, uint8_t effectIndex, float_t baseHeal, bool multiplyBaseDmg = false, Spell* castingSpell = nullptr, AuraEffectModifier const* aurEff = nullptr);
 
-#if VERSION_STRING == TBC || VERSION_STRING == WotLK
+    // TBC and WotLK: lower ranks of a spell lose spell power above their level
     float_t getSpellDownrankingPenalty(uint32_t spellMaxLevel) const;
-#endif
 
     float_t getCriticalChanceForDamageSpell(Spell* spell, Aura* aura, Unit* target);
     float_t getCriticalChanceForHealSpell(Spell* spell, Aura* aura, Unit* target);

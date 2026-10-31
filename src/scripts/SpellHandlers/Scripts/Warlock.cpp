@@ -39,7 +39,6 @@ enum WarlockSpells
     SPELL_SUMMON_VOIDWALKER                     = 697,
 };
 
-#if VERSION_STRING >= TBC
 class Backlash : public SpellScript
 {
 public:
@@ -56,9 +55,7 @@ public:
         proc->setCastedOnProcOwner(true);
     }
 };
-#endif
 
-#if VERSION_STRING == TBC || VERSION_STRING == WotLK
 class DemonicKnowledgeDummy : public SpellScript
 {
     // TODO: wow wiki patch notes say this will work with enslaved demons
@@ -117,9 +114,7 @@ class DemonicKnowledge : public SpellScript
         return SpellScriptExecuteState::EXECUTE_OK;
     }
 };
-#endif
 
-#if VERSION_STRING < Mop
 // Spell was removed from players in wotlk but removed from game in mop
 class DemonicSacrifice : public SpellScript
 {
@@ -217,9 +212,7 @@ class DemonicSacrificeEffect : public SpellScript
         return SpellScriptExecuteState::EXECUTE_PREVENT;
     }
 };
-#endif
 
-#if VERSION_STRING < Cata
 class MasterDemonologistDummy : public SpellScript
 {
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
@@ -229,14 +222,15 @@ class MasterDemonologistDummy : public SpellScript
 
         const auto* const scriptedSpellR4 = sSpellMgr.getSpellInfo(SPELL_MASTER_DEMONOLOGIST_SCRIPTED_R4);
         const auto* scriptedSpell = sSpellMgr.getEquivalentSpellRankFor(aur->getSpellInfo(), scriptedSpellR4);
-#if VERSION_STRING == Classic
-        if (aur->getSpellId() == SPELL_MASTER_DEMONOLOGIST_DUMMY_R5)
+        if (WoW::isServerExpansion(WoW::Expansion::_Classic))
         {
-            // Classic is missing rank 5 scripted spell from Spell.dbc
-            // Use rank 4 here and handle this in scripted spell effect
-            scriptedSpell = scriptedSpellR4;
+            if (aur->getSpellId() == SPELL_MASTER_DEMONOLOGIST_DUMMY_R5)
+            {
+                // Classic is missing rank 5 scripted spell from Spell.dbc
+                // Use rank 4 here and handle this in scripted spell effect
+                scriptedSpell = scriptedSpellR4;
+            }
         }
-#endif
         if (scriptedSpell == nullptr)
             return SpellScriptCheckDummy::DUMMY_OK;
 
@@ -273,19 +267,20 @@ class MasterDemonologist : public SpellScript
         {
             spellRank = spell->getSpellInfo()->getRankInfo()->getRank();
 
-#if VERSION_STRING == Classic
-            // In Classic rank 5 is missing so rank 4 was forced from dummy spell
-            if (spellRank == 4)
+            if (WoW::isServerExpansion(WoW::Expansion::_Classic))
             {
-                // Get real rank from dummy effect in this case
-                // There can be only one dummy rank active
-                if (const auto* dummyEffect = warlock->getAuraEffectWithAnyRankOfAndByEffect(SPELL_AURA_DUMMY, SPELL_MASTER_DEMONOLOGIST_DUMMY_R5))
+                // In Classic rank 5 is missing so rank 4 was forced from dummy spell
+                if (spellRank == 4)
                 {
-                    if (const auto* rankInfo = dummyEffect->getAura()->getSpellInfo()->getRankInfo())
-                        spellRank = rankInfo->getRank();
+                    // Get real rank from dummy effect in this case
+                    // There can be only one dummy rank active
+                    if (const auto* dummyEffect = warlock->getAuraEffectWithAnyRankOfAndByEffect(SPELL_AURA_DUMMY, SPELL_MASTER_DEMONOLOGIST_DUMMY_R5))
+                    {
+                        if (const auto* rankInfo = dummyEffect->getAura()->getSpellInfo()->getRankInfo())
+                            spellRank = rankInfo->getRank();
+                    }
                 }
             }
-#endif
         }
 
         uint32_t spellId = 0;
@@ -324,7 +319,6 @@ class MasterDemonologist : public SpellScript
     }
 };
 
-#if VERSION_STRING < WotLK
 class MasterDemonologistResistance : public SpellScript
 {
     bool isFelguardSpell(SpellInfo const* spellInfo) const
@@ -364,10 +358,7 @@ class MasterDemonologistResistance : public SpellScript
         return SpellScriptEffectDamage::DAMAGE_DEFAULT;
     }
 };
-#endif
-#endif
 
-#if VERSION_STRING < Mop
 class NightfallDummy : public SpellScript
 {
 public:
@@ -387,7 +378,6 @@ public:
         return SpellScriptCheckDummy::DUMMY_OK;
     }
 };
-#endif
 
 class ShadowTrance : public SpellScript
 {
@@ -437,54 +427,57 @@ void setupWarlockSpells(ScriptMgr* mgr)
     // Call legacy script setup
     SetupLegacyWarlockSpells(mgr);
 
-#if VERSION_STRING >= TBC && VERSION_STRING < Legion
-    mgr->register_spell_script(SPELL_BACKLASH_PROC, new Backlash);
-#endif
-
-#if VERSION_STRING == TBC || VERSION_STRING == WotLK
-    mgr->register_spell_script(SPELL_DEMONIC_KNOWLEDGE_DUMMY_R1, new DemonicKnowledgeDummy);
-    mgr->register_spell_script(SPELL_DEMONIC_KNOWLEDGE, new DemonicKnowledge);
-#endif
-
-#if VERSION_STRING < Mop
-    mgr->register_spell_script(SPELL_DEMONIC_SACRIFICE, new DemonicSacrifice);
-    uint32_t demonicSacrificeAuras[] =
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC) && !WoW::isServerExpansionAtLeast(WoW::Expansion::_Legion))
     {
-#if VERSION_STRING >= TBC
-        SPELL_DEMONIC_SACRIFICE_FELGUARD,
-#endif
-        SPELL_DEMONIC_SACRIFICE_FELHUNTER,
-        SPELL_DEMONIC_SACRIFICE_IMP,
-        SPELL_DEMONIC_SACRIFICE_SUCCUBUS,
-        SPELL_DEMONIC_SACRIFICE_VOIDWALKER,
-        0
-    };
-    mgr->register_spell_script(demonicSacrificeAuras, new DemonicSacrificeEffect);
-#endif
+        mgr->register_spell_script(SPELL_BACKLASH_PROC, new Backlash);
+    }
 
-#if VERSION_STRING < Cata
-    mgr->register_spell_script(SPELL_MASTER_DEMONOLOGIST_DUMMY_R5, new MasterDemonologistDummy);
-    mgr->register_spell_script(SPELL_MASTER_DEMONOLOGIST_SCRIPTED_R4, new MasterDemonologist);
-#if VERSION_STRING < WotLK
-    uint32_t masterDemonologistResistanceAuras[] =
+    if (WoW::isServerExpansion(WoW::Expansion::_TBC) || WoW::isServerExpansion(WoW::Expansion::_WotLK))
     {
-#if VERSION_STRING == TBC
-        SPELL_MASTER_DEMONOLOGIST_FELGUARD_R1,
-#endif
-        SPELL_MASTER_DEMONOLOGIST_FELHUNTER_R1,
-        0
-    };
-    mgr->register_spell_script(masterDemonologistResistanceAuras, new MasterDemonologistResistance);
-#endif
-#endif
+        mgr->register_spell_script(SPELL_DEMONIC_KNOWLEDGE_DUMMY_R1, new DemonicKnowledgeDummy);
+        mgr->register_spell_script(SPELL_DEMONIC_KNOWLEDGE, new DemonicKnowledge);
+    }
 
-#if VERSION_STRING < Mop
-    mgr->register_spell_script(SPELL_NIGHTFALL_R1, new NightfallDummy);
-#endif
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+    {
+        mgr->register_spell_script(SPELL_DEMONIC_SACRIFICE, new DemonicSacrifice);
+        uint32_t demonicSacrificeAuras[] =
+        {
+            SPELL_DEMONIC_SACRIFICE_FELHUNTER,
+            SPELL_DEMONIC_SACRIFICE_IMP,
+            SPELL_DEMONIC_SACRIFICE_SUCCUBUS,
+            SPELL_DEMONIC_SACRIFICE_VOIDWALKER,
+            WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC) ? static_cast<uint32_t>(SPELL_DEMONIC_SACRIFICE_FELGUARD) : 0u,
+            0
+        };
+        mgr->register_spell_script(demonicSacrificeAuras, new DemonicSacrificeEffect);
+    }
 
-#if VERSION_STRING < Mop
-    mgr->register_spell_script(SPELL_SOUL_LINK_DUMMY, new SoulLinkDummy);
-#endif
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+    {
+        mgr->register_spell_script(SPELL_MASTER_DEMONOLOGIST_DUMMY_R5, new MasterDemonologistDummy);
+        mgr->register_spell_script(SPELL_MASTER_DEMONOLOGIST_SCRIPTED_R4, new MasterDemonologist);
+        if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        {
+            uint32_t masterDemonologistResistanceAuras[] =
+            {
+                SPELL_MASTER_DEMONOLOGIST_FELHUNTER_R1,
+                WoW::isServerExpansion(WoW::Expansion::_TBC) ? static_cast<uint32_t>(SPELL_MASTER_DEMONOLOGIST_FELGUARD_R1) : 0u,
+                0
+            };
+            mgr->register_spell_script(masterDemonologistResistanceAuras, new MasterDemonologistResistance);
+        }
+    }
+
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+    {
+        mgr->register_spell_script(SPELL_NIGHTFALL_R1, new NightfallDummy);
+    }
+
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+    {
+        mgr->register_spell_script(SPELL_SOUL_LINK_DUMMY, new SoulLinkDummy);
+    }
 
     mgr->register_spell_script(SPELL_SHADOW_TRANCE_PROC, new ShadowTrance);
 }
