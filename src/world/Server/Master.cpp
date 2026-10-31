@@ -25,6 +25,7 @@
 #include "BuildInfo.hpp"
 #include "ConfigMgr.hpp"
 #include "DatabaseDefinition.hpp"
+#include "Version/LayoutLimits.hpp"
 #include "Version/VersionRegistry.hpp"
 #include "World.h"
 #include "WorldConf.h"
@@ -66,6 +67,7 @@
 #include <atomic>
 #include <chrono>
 #include <csignal>
+#include <cstdlib>
 #include <cstdarg>
 #include <ctime>
 #include <filesystem>
@@ -120,6 +122,14 @@ namespace
         sLogger.info("Object values: object {}, unit {}, player {}, item {}, container {}, gameobject {}, dynamicobject {}, corpse {}",
             layouts.object.valueCount(), layouts.unit.valueCount(), layouts.player.valueCount(), layouts.item.valueCount(),
             layouts.container.valueCount(), layouts.gameObject.valueCount(), layouts.dynamicObject.valueCount(), layouts.corpse.valueCount());
+
+        // the embedded value storage must hold the layout, a larger layout would write past it
+        if (layouts.player.valueCount() > Version::kMaxPlayerValues || layouts.unit.valueCount() > Version::kMaxUnitValues)
+        {
+            sLogger.fatal("Object values: the layout exceeds the value storage (player {} of {}, unit {} of {})",
+                layouts.player.valueCount(), Version::kMaxPlayerValues, layouts.unit.valueCount(), Version::kMaxUnitValues);
+            std::exit(1);
+        }
     }
 
     void startRemoteConsole(AscEmu::Threading::AEThreadPool& threadPool)

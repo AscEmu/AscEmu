@@ -243,7 +243,7 @@ namespace Version::Tables
         { PlayerField::Mastery,                                { 11224,    4,   1,    0 } },
         { PlayerField::PvpPowerDamage,                         { 11252,    4,   1,    0 } },
         { PlayerField::PvpPowerHealing,                        { 11256,    4,   1,    0 } },
-        { PlayerField::ExploredZones,                          { 11260,    4, 320,    4 } },
+        { PlayerField::ExploredZones,                          { 18820,    4, 480,    4 } },    // behind the client fields, the size of the client bit vector
         { PlayerField::RestStateXp,                            { 12544,    4,   1,    0 } },
         { PlayerField::FieldModDamageDonePositive,             { 12556,    4,   7,    4 } },
         { PlayerField::FieldModDamageDoneNegative,             { 12584,    4,   7,    4 } },
@@ -397,7 +397,7 @@ namespace Version::Tables
     {
         { dragonflightObjectFields, static_cast<uint16_t>(std::size(dragonflightObjectFields)), 48 },  // object
         { dragonflightUnitFields, static_cast<uint16_t>(std::size(dragonflightUnitFields)), 852 },  // unit
-        { dragonflightPlayerFields, static_cast<uint16_t>(std::size(dragonflightPlayerFields)), 18820 },  // player
+        { dragonflightPlayerFields, static_cast<uint16_t>(std::size(dragonflightPlayerFields)), 20740 },  // player
         { dragonflightItemFields, static_cast<uint16_t>(std::size(dragonflightItemFields)), 340 },  // item
         { dragonflightContainerFields, static_cast<uint16_t>(std::size(dragonflightContainerFields)), 920 },  // container
         { dragonflightGameObjectFields, static_cast<uint16_t>(std::size(dragonflightGameObjectFields)), 132 },  // gameObject

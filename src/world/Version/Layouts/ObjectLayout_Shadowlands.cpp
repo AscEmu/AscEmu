@@ -242,7 +242,7 @@ namespace Version::Tables
         { PlayerField::Mastery,                                { 11224,    4,   1,    0 } },
         { PlayerField::PvpPowerDamage,                         { 11252,    4,   1,    0 } },
         { PlayerField::PvpPowerHealing,                        { 11256,    4,   1,    0 } },
-        { PlayerField::ExploredZones,                          { 11260,    4, 320,    4 } },
+        { PlayerField::ExploredZones,                          { 18820,    4, 480,    4 } },    // behind the client fields, the size of the client bit vector
         { PlayerField::RestStateXp,                            { 12544,    4,   1,    0 } },
         { PlayerField::FieldModDamageDonePositive,             { 12556,    4,   7,    4 } },
         { PlayerField::FieldModDamageDoneNegative,             { 12584,    4,   7,    4 } },
@@ -396,7 +396,7 @@ namespace Version::Tables
     {
         { shadowlandsObjectFields, static_cast<uint16_t>(std::size(shadowlandsObjectFields)), 48 },  // object
         { shadowlandsUnitFields, static_cast<uint16_t>(std::size(shadowlandsUnitFields)), 852 },  // unit
-        { shadowlandsPlayerFields, static_cast<uint16_t>(std::size(shadowlandsPlayerFields)), 18820 },  // player
+        { shadowlandsPlayerFields, static_cast<uint16_t>(std::size(shadowlandsPlayerFields)), 20740 },  // player
         { shadowlandsItemFields, static_cast<uint16_t>(std::size(shadowlandsItemFields)), 340 },  // item
         { shadowlandsContainerFields, static_cast<uint16_t>(std::size(shadowlandsContainerFields)), 920 },  // container
         { shadowlandsGameObjectFields, static_cast<uint16_t>(std::size(shadowlandsGameObjectFields)), 132 },  // gameObject

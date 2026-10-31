@@ -243,7 +243,7 @@ namespace Version::Tables
         { PlayerField::Mastery,                                { 11840,    4,   1,    0 } },
         { PlayerField::PvpPowerDamage,                         { 11868,    4,   1,    0 } },
         { PlayerField::PvpPowerHealing,                        { 11872,    4,   1,    0 } },
-        { PlayerField::ExploredZones,                          { 11876,    4, 320,    4 } },
+        { PlayerField::ExploredZones,                          { 18820,    4, 480,    4 } },    // behind the client fields, the size of the client bit vector
         { PlayerField::RestStateXp,                            { 13160,    4,   1,    0 } },
         { PlayerField::FieldModDamageDonePositive,             { 13172,    4,   7,    4 } },
         { PlayerField::FieldModDamageDoneNegative,             { 13200,    4,   7,    4 } },
@@ -397,7 +397,7 @@ namespace Version::Tables
     {
         { midnightObjectFields, static_cast<uint16_t>(std::size(midnightObjectFields)), 48 },  // object
         { midnightUnitFields, static_cast<uint16_t>(std::size(midnightUnitFields)), 852 },  // unit
-        { midnightPlayerFields, static_cast<uint16_t>(std::size(midnightPlayerFields)), 18820 },  // player
+        { midnightPlayerFields, static_cast<uint16_t>(std::size(midnightPlayerFields)), 20740 },  // player
         { midnightItemFields, static_cast<uint16_t>(std::size(midnightItemFields)), 340 },  // item
         { midnightContainerFields, static_cast<uint16_t>(std::size(midnightContainerFields)), 920 },  // container
         { midnightGameObjectFields, static_cast<uint16_t>(std::size(midnightGameObjectFields)), 132 },  // gameObject

@@ -242,7 +242,7 @@ namespace Version::Tables
         { PlayerField::Mastery,                                { 11224,    4,   1,    0 } },
         { PlayerField::PvpPowerDamage,                         { 11252,    4,   1,    0 } },
         { PlayerField::PvpPowerHealing,                        { 11256,    4,   1,    0 } },
-        { PlayerField::ExploredZones,                          { 11260,    4, 320,    4 } },
+        { PlayerField::ExploredZones,                          { 18500,    4, 384,    4 } },    // behind the client fields, the size of the client bit vector
         { PlayerField::RestStateXp,                            { 12544,    4,   1,    0 } },
         { PlayerField::FieldModDamageDonePositive,             { 12556,    4,   7,    4 } },
         { PlayerField::FieldModDamageDoneNegative,             { 12584,    4,   7,    4 } },
@@ -396,7 +396,7 @@ namespace Version::Tables
     {
         { bfaObjectFields, static_cast<uint16_t>(std::size(bfaObjectFields)), 48 },  // object
         { bfaUnitFields, static_cast<uint16_t>(std::size(bfaUnitFields)), 852 },  // unit
-        { bfaPlayerFields, static_cast<uint16_t>(std::size(bfaPlayerFields)), 18500 },  // player
+        { bfaPlayerFields, static_cast<uint16_t>(std::size(bfaPlayerFields)), 20036 },  // player
         { bfaItemFields, static_cast<uint16_t>(std::size(bfaItemFields)), 340 },  // item
         { bfaContainerFields, static_cast<uint16_t>(std::size(bfaContainerFields)), 920 },  // container
         { bfaGameObjectFields, static_cast<uint16_t>(std::size(bfaGameObjectFields)), 132 },  // gameObject

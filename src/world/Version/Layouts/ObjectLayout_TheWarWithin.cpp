@@ -243,7 +243,7 @@ namespace Version::Tables
         { PlayerField::Mastery,                                { 11224,    4,   1,    0 } },
         { PlayerField::PvpPowerDamage,                         { 11252,    4,   1,    0 } },
         { PlayerField::PvpPowerHealing,                        { 11256,    4,   1,    0 } },
-        { PlayerField::ExploredZones,                          { 11260,    4, 320,    4 } },
+        { PlayerField::ExploredZones,                          { 18820,    4, 480,    4 } },    // behind the client fields, the size of the client bit vector
         { PlayerField::RestStateXp,                            { 12544,    4,   1,    0 } },
         { PlayerField::FieldModDamageDonePositive,             { 12556,    4,   7,    4 } },
         { PlayerField::FieldModDamageDoneNegative,             { 12584,    4,   7,    4 } },
@@ -397,7 +397,7 @@ namespace Version::Tables
     {
         { theWarWithinObjectFields, static_cast<uint16_t>(std::size(theWarWithinObjectFields)), 48 },  // object
         { theWarWithinUnitFields, static_cast<uint16_t>(std::size(theWarWithinUnitFields)), 852 },  // unit
-        { theWarWithinPlayerFields, static_cast<uint16_t>(std::size(theWarWithinPlayerFields)), 18820 },  // player
+        { theWarWithinPlayerFields, static_cast<uint16_t>(std::size(theWarWithinPlayerFields)), 20740 },  // player
         { theWarWithinItemFields, static_cast<uint16_t>(std::size(theWarWithinItemFields)), 340 },  // item
         { theWarWithinContainerFields, static_cast<uint16_t>(std::size(theWarWithinContainerFields)), 920 },  // container
         { theWarWithinGameObjectFields, static_cast<uint16_t>(std::size(theWarWithinGameObjectFields)), 132 },  // gameObject
