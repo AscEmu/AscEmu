@@ -308,9 +308,11 @@ std::string InstanceScript::getSaveData()
     return saveStream.str();
 }
 
-void InstanceScript::updateEncounterState([[maybe_unused]] EncounterCreditType type, [[maybe_unused]] uint32_t creditEntry)
+void InstanceScript::updateEncounterState(EncounterCreditType type, uint32_t creditEntry)
 {
-#if VERSION_STRING >= WotLK
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        return;
+
     DungeonEncounterList const* encounters = sObjectMgr.getDungeonEncounterList(mInstance->getBaseMap()->getMapId(), mInstance->getDifficulty());
     if (!encounters)
         return;

@@ -7,9 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AEVersion.hpp"
 
-#ifdef FT_VEHICLES
 #include "Objects/Units/Creatures/Vehicle.hpp"
-#endif
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 
@@ -189,13 +187,11 @@ struct IOCVehicle
     {
         if (creature == nullptr)
             return true;
-#ifdef FT_VEHICLES
         if (creature->getVehicle() == nullptr)
             return true;
 
         if (creature->getVehicle()->getAvailableSeatCount() != creature->getVehicle()->Seats.size())
             return false;
-#endif
 
         return true;
     }

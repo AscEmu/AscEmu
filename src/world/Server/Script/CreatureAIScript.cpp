@@ -77,9 +77,8 @@ void CreatureAIScript::_internalOnDied(Unit* killer)
     // Finish Encounter
     if (getInstanceScript() != nullptr)
     {
-#if VERSION_STRING >= WotLK
-        getInstanceScript()->updateEncountersStateForCreature(getCreature()->getEntry(), getCreature()->getWorldMap()->getDifficulty());
-#endif
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+            getInstanceScript()->updateEncountersStateForCreature(getCreature()->getEntry(), getCreature()->getWorldMap()->getDifficulty());
     }
 
     resetScriptPhase();
@@ -570,14 +569,12 @@ void CreatureAIScript::setWaypointToMove(uint32_t pathId, uint32_t pWaypointId)
 
     switch (waypoint.moveType)
     {
-#if VERSION_STRING >= WotLK
     case WAYPOINT_MOVE_TYPE_LAND:
         init.SetAnimation(ANIMATION_FLAG_GROUND);
         break;
     case WAYPOINT_MOVE_TYPE_TAKEOFF:
         init.SetAnimation(ANIMATION_FLAG_HOVER);
         break;
-#endif
     case WAYPOINT_MOVE_TYPE_RUN:
         init.SetWalk(false);
         break;
@@ -794,10 +791,8 @@ void CreatureAIScript::setZoneWideCombat(Creature* creature)
             for (const auto& summon : plr->getSummonInterface()->getSummons())
                 creature->getAIInterface()->onHostileAction(summon);
 
-#ifdef FT_VEHICLES
             if (Unit* vehicle = plr->getVehicleBase())
                 creature->getAIInterface()->onHostileAction(vehicle);
-#endif
         }
     }
 }
@@ -1068,11 +1063,7 @@ void CreatureAIScript::_setWieldWeapon(bool setWieldWeapon)
 
 void CreatureAIScript::_setDisplayWeapon(bool setMainHand, bool setOffHand)
 {
-#if VERSION_STRING < WotLK
-    _setDisplayWeaponIds(setMainHand ? _creature->getVirtualItemEntry(MELEE) : 0, setOffHand ? _creature->getVirtualItemEntry(OFFHAND) : 0);
-#else
     _setDisplayWeaponIds(setMainHand ? _creature->getVirtualItemSlotId(MELEE) : 0, setOffHand ? _creature->getVirtualItemSlotId(OFFHAND) : 0);
-#endif
 }
 
 void CreatureAIScript::_setDisplayWeaponIds(uint32_t itemId1, uint32_t itemId2, uint32_t itemId3)

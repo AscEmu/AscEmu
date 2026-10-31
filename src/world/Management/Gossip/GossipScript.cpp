@@ -449,11 +449,9 @@ void GossipClassTrainer::onHello(Object* object, Player* player)
                     case ::PRIEST:
                         menuItemName += std::string(playerSession->localizedGossipOption(GI_PRIEST));
                         break;
-    #if VERSION_STRING > TBC
                     case ::DEATHKNIGHT:
                         menuItemName += std::string(playerSession->localizedGossipOption(GI_DEATHKNIGHT));
                         break;
-    #endif
                     default:
                         break;
                 }

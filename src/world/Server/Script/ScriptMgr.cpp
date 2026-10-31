@@ -663,10 +663,8 @@ void ScriptMgr::register_dummy_aura(uint32_t entry, exp_handle_dummy_aura callba
         return;
     }
 
-#if VERSION_STRING >= TBC
-    if (!sp->hasEffectApplyAuraName(SPELL_AURA_DUMMY) && !sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_TRIGGER_DUMMY))
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC) && !sp->hasEffectApplyAuraName(SPELL_AURA_DUMMY) && !sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_TRIGGER_DUMMY))
         sLogger.debugSpell("ScriptMgr registered a dummy aura handler for Spell ID: {} ({}), but spell has no dummy aura!", entry, sp->getName());
-#endif
 
     _auras.insert(HandleDummyAuraMap::value_type(entry, callback));
 }

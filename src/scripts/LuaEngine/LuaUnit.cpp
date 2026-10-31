@@ -5858,14 +5858,12 @@ int LuaUnit::AddAchievement([[maybe_unused]] lua_State* L, Unit* ptr)
         return 0;
     }
 
-#if VERSION_STRING > TBC
     const int32_t achievementID = static_cast<int32_t>(luaL_checkinteger(L, 1));
     Player* plr = dynamic_cast<Player*>(ptr);
-    if (plr->getAchievementMgr()->gmCompleteAchievement(nullptr, achievementID))
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK) && plr->getAchievementMgr()->gmCompleteAchievement(nullptr, achievementID))
         lua_pushboolean(L, 1);
     else
         lua_pushboolean(L, 0);
-#endif
     return 1;
 }
 
@@ -5876,10 +5874,11 @@ int LuaUnit::RemoveAchievement([[maybe_unused]] lua_State* L, Unit* ptr)
         return 0;
     }
 
-#if VERSION_STRING > TBC
-    const int32_t achievementID = static_cast<int32_t>(luaL_checkinteger(L, 1));
-    dynamic_cast<Player*>(ptr)->getAchievementMgr()->gmResetAchievement(achievementID);
-#endif
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
+        const int32_t achievementID = static_cast<int32_t>(luaL_checkinteger(L, 1));
+        dynamic_cast<Player*>(ptr)->getAchievementMgr()->gmResetAchievement(achievementID);
+    }
     return 0;
 }
 
@@ -5890,10 +5889,8 @@ int LuaUnit::HasAchievement([[maybe_unused]] lua_State* L, Unit* ptr)
         return 0;
     }
 
-#if VERSION_STRING > TBC
     const uint32_t achievementID = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-    lua_pushboolean(L, dynamic_cast<Player*>(ptr)->getAchievementMgr()->hasCompleted(achievementID) ? 1 : 0);
-#endif
+    lua_pushboolean(L, WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK) && dynamic_cast<Player*>(ptr)->getAchievementMgr()->hasCompleted(achievementID) ? 1 : 0);
     return 1;
 }
 
@@ -5918,10 +5915,11 @@ int LuaUnit::ResetPetTalents(lua_State* /*L*/, Unit* ptr)
     if (pet != nullptr)
     {
         pet->WipeTalents();
-#if VERSION_STRING == WotLK || VERSION_STRING == Cata
-        pet->setPetTalentPoints(pet->getTotalTalentPoints());
-        pet->SendTalentsToOwner();
-#endif
+        if (WoW::isServerExpansionBetween(WoW::Expansion::_WotLK, WoW::Expansion::_Cata))
+        {
+            pet->setPetTalentPoints(pet->getTotalTalentPoints());
+            pet->SendTalentsToOwner();
+        }
     }
     return 0;
 }
@@ -6386,10 +6384,15 @@ int LuaUnit::GetQuestObjectiveCompletion(lua_State* L, Unit* ptr)
     return 1;
 }
 
-int LuaUnit::IsOnVehicle([[maybe_unused]] lua_State* L, [[maybe_unused]] Unit* ptr)
+// vehicles exist from WotLK on
+static bool vehicleUnit(Unit const* ptr)
 {
-#ifdef FT_VEHICLES
-    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+    return ptr != nullptr && ptr->IsInWorld() && ptr->isCreatureOrPlayer() && WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK);
+}
+
+int LuaUnit::IsOnVehicle(lua_State* L, Unit* ptr)
+{
+    if (!vehicleUnit(ptr))
     {
         return 0;
     }
@@ -6398,14 +6401,12 @@ int LuaUnit::IsOnVehicle([[maybe_unused]] lua_State* L, [[maybe_unused]] Unit* p
         lua_pushboolean(L, 1);
     else
         lua_pushboolean(L, 0);
-#endif
     return 1;
 }
 
-int LuaUnit::SpawnAndEnterVehicle([[maybe_unused]] lua_State* L, [[maybe_unused]] Unit* ptr)
+int LuaUnit::SpawnAndEnterVehicle(lua_State* L, Unit* ptr)
 {
-#ifdef FT_VEHICLES
-    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+    if (!vehicleUnit(ptr))
     {
         return 0;
     }
@@ -6447,14 +6448,12 @@ int LuaUnit::SpawnAndEnterVehicle([[maybe_unused]] lua_State* L, [[maybe_unused]
     c->removeNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
     c->PushToWorld(ptr->getWorldMap());
     c->callEnterVehicle(ptr);
-#endif
     return 0;
 }
 
-int LuaUnit::DismissVehicle(lua_State* /*L*/, [[maybe_unused]] Unit* ptr)
+int LuaUnit::DismissVehicle(lua_State* /*L*/, Unit* ptr)
 {
-#ifdef FT_VEHICLES
-    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+    if (!vehicleUnit(ptr))
     {
         return 0;
     }
@@ -6481,14 +6480,12 @@ int LuaUnit::DismissVehicle(lua_State* /*L*/, [[maybe_unused]] Unit* ptr)
         o->removeAllAurasByAuraEffect(SPELL_AURA_MOUNTED);
     else
         o->destroy();
-#endif
     return 0;
 }
 
-int LuaUnit::AddVehiclePassenger([[maybe_unused]] lua_State* L, [[maybe_unused]] Unit* ptr)
+int LuaUnit::AddVehiclePassenger(lua_State* L, Unit* ptr)
 {
-#ifdef FT_VEHICLES
-    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+    if (!vehicleUnit(ptr))
     {
         return 0;
     }
@@ -6523,14 +6520,12 @@ int LuaUnit::AddVehiclePassenger([[maybe_unused]] lua_State* L, [[maybe_unused]]
         return 0;
     c->PushToWorld(u->getWorldMap());
     c->callEnterVehicle(u);
-#endif
     return 0;
 }
 
-int LuaUnit::HasEmptyVehicleSeat([[maybe_unused]] lua_State* L, [[maybe_unused]] Unit* ptr)
+int LuaUnit::HasEmptyVehicleSeat(lua_State* L, Unit* ptr)
 {
-#ifdef FT_VEHICLES
-    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+    if (!vehicleUnit(ptr))
     {
         return 0;
     }
@@ -6550,14 +6545,12 @@ int LuaUnit::HasEmptyVehicleSeat([[maybe_unused]] lua_State* L, [[maybe_unused]]
         lua_pushboolean(L, 1);
     else
         lua_pushboolean(L, 0);
-#endif
     return 1;
 }
 
-int LuaUnit::EnterVehicle([[maybe_unused]] lua_State* L, [[maybe_unused]] Unit* ptr)
+int LuaUnit::EnterVehicle(lua_State* L, Unit* ptr)
 {
-#ifdef FT_VEHICLES
-    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+    if (!vehicleUnit(ptr))
     {
         return 0;
     }
@@ -6570,14 +6563,12 @@ int LuaUnit::EnterVehicle([[maybe_unused]] lua_State* L, [[maybe_unused]] Unit* 
     Unit* _unit = ptr->getWorldMapUnit(guid);
     if (_unit)
         _unit->callEnterVehicle(ptr);
-#endif
     return 0;
 }
 
-int LuaUnit::ExitVehicle(lua_State* /*L*/, [[maybe_unused]] Unit* ptr)
+int LuaUnit::ExitVehicle(lua_State* /*L*/, Unit* ptr)
 {
-#ifdef FT_VEHICLES
-    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+    if (!vehicleUnit(ptr))
     {
         return 0;
     }
@@ -6591,14 +6582,12 @@ int LuaUnit::ExitVehicle(lua_State* /*L*/, [[maybe_unused]] Unit* ptr)
         if (ptr->isPlayer() && ptr->getVehicle() != nullptr)
             ptr->removeAllAurasByAuraEffect(SPELL_AURA_MOUNTED);
     }
-#endif
     return 0;
 }
 
-int LuaUnit::GetVehicleBase([[maybe_unused]] lua_State* L, [[maybe_unused]] Unit* ptr)
+int LuaUnit::GetVehicleBase(lua_State* L, Unit* ptr)
 {
-#ifdef FT_VEHICLES
-    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+    if (!vehicleUnit(ptr))
     {
         return 0;
     }
@@ -6609,14 +6598,12 @@ int LuaUnit::GetVehicleBase([[maybe_unused]] lua_State* L, [[maybe_unused]] Unit
         PUSH_UNIT(L, u);
     else
         lua_pushnil(L);
-#endif
     return 1;
 }
 
-int LuaUnit::EjectAllVehiclePassengers(lua_State* /*L*/, [[maybe_unused]] Unit* ptr)
+int LuaUnit::EjectAllVehiclePassengers(lua_State* /*L*/, Unit* ptr)
 {
-#ifdef FT_VEHICLES
-    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+    if (!vehicleUnit(ptr))
     {
         return 0;
     }
@@ -6626,14 +6613,12 @@ int LuaUnit::EjectAllVehiclePassengers(lua_State* /*L*/, [[maybe_unused]] Unit* 
         return 0;
 
     u->getVehicle()->removeAllPassengers();
-#endif
     return 0;
 }
 
-int LuaUnit::EjectVehiclePassengerFromSeat([[maybe_unused]] lua_State* L, [[maybe_unused]] Unit* ptr)
+int LuaUnit::EjectVehiclePassengerFromSeat(lua_State* L, Unit* ptr)
 {
-#ifdef FT_VEHICLES
-    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+    if (!vehicleUnit(ptr))
     {
         return 0;
     }
@@ -6652,14 +6637,12 @@ int LuaUnit::EjectVehiclePassengerFromSeat([[maybe_unused]] lua_State* L, [[mayb
 
     if (Unit* passenger = u->getVehicle()->getPassenger(seat))
         passenger->callExitVehicle();
-#endif
     return 0;
 }
 
-int LuaUnit::MoveVehiclePassengerToSeat([[maybe_unused]] lua_State* L, [[maybe_unused]] Unit* ptr)
+int LuaUnit::MoveVehiclePassengerToSeat(lua_State* L, Unit* ptr)
 {
-#ifdef FT_VEHICLES
-    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreatureOrPlayer())
+    if (!vehicleUnit(ptr))
     {
         return 0;
     }
@@ -6678,7 +6661,6 @@ int LuaUnit::MoveVehiclePassengerToSeat([[maybe_unused]] lua_State* L, [[maybe_u
         return 0;
 
     passenger->callChangeSeat(seat);
-#endif
     return 0;
 }
 
