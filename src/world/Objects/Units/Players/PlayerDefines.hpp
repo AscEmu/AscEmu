@@ -974,7 +974,6 @@ enum CurrencyTypeFlags : uint32_t
 
 static inline constexpr uint32_t CURRENCY_PRECISION = 100;
 
-#if VERSION_STRING >= Cata
 enum CurrencyIds : uint32_t
 {
     CURRENCY_TYPE_CONQUEST_POINTS = 390,
@@ -985,7 +984,6 @@ enum CurrencyIds : uint32_t
 
 // Justice Points over the total cap convert to money at 47s50c per point.
 static inline constexpr uint32_t JUSTICE_POINTS_CONVERSION_MONEY = 4750;
-#endif
 
 // the currencies of a character, filled from 4.x on
 struct PlayerCurrency

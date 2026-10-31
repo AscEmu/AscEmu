@@ -4013,7 +4013,6 @@ bool Player::hasCurrency(uint32_t id, uint32_t count) const
     return itr != m_currencies.end() && itr->second.quantity >= count;
 }
 
-#if VERSION_STRING >= Cata
 bool Player::loadCurrencies(QueryResult* result)
 {
     if (result == nullptr)
@@ -4044,7 +4043,6 @@ bool Player::loadCurrencies(QueryResult* result)
 
     return true;
 }
-#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spells and skills
@@ -13652,7 +13650,6 @@ bool Player::saveReputations(bool newCharacter, QueryBuffer* buf)
     return true;
 }
 
-#if VERSION_STRING >= Cata
 bool Player::saveCurrencies(bool newCharacter, QueryBuffer* buf)
 {
     if (!newCharacter && (buf == nullptr))
@@ -13842,7 +13839,6 @@ void Player::sendSmsgSetupCurrency()
     AscEmu::Packets::SmsgSetupCurrency setupPacket(std::move(records));
     m_session->sendManagedPacket(setupPacket);
 }
-#endif
 
 bool Player::saveSpells(bool newCharacter, QueryBuffer* buf)
 {

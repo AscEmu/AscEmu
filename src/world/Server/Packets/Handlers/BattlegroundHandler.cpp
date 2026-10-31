@@ -165,13 +165,9 @@ void WorldSession::handleBattlefieldListOpcode(WorldPacket& recvPacket)
 
     sLogger.debugOpcode("Received CMSG_BATTLEFIELD_LIST: {} (bgType), {} (fromType).", srlPacket.bgType, srlPacket.fromType);
 
-#if VERSION_STRING <= WotLK
-    sBattlegroundManager.handleBattlegroundListPacket(this, srlPacket.bgType, srlPacket.fromType);
- #else
     WoWGuid guid;
     guid.init(uint64_t(0));
-    sBattlegroundManager.handleBattlegroundListPacket(guid, this, srlPacket.bgType);
-#endif
+    sBattlegroundManager.handleBattlegroundListPacket(guid, this, srlPacket.bgType, srlPacket.fromType);
 }
 
 void WorldSession::handleBattleMasterHelloOpcode(WorldPacket& recvPacket)
@@ -337,11 +333,7 @@ void WorldSession::sendBattlegroundList(Creature* creature, uint32_t mapId)
         battlegroundType = mapId;
     }
 
-#if VERSION_STRING <= WotLK
-    sBattlegroundManager.handleBattlegroundListPacket(this, battlegroundType);
-#else
     sBattlegroundManager.handleBattlegroundListPacket(guid, this, battlegroundType);
-#endif
 }
 
 void WorldSession::handleRequestRatedBgInfoOpcode([[maybe_unused]] WorldPacket& recvPacket)

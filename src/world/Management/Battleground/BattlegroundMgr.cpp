@@ -72,13 +72,23 @@ void BattlegroundManager::registerMapForBgType(uint32_t type, uint32_t map)
     m_bgMaps[type] = map;
 }
 
-#if VERSION_STRING <= WotLK
-void BattlegroundManager::handleBattlegroundListPacket(WorldSession* session, uint32_t battlegroundType, uint8_t from)
+void BattlegroundManager::handleBattlegroundListPacket(WoWGuid& wowGuid, WorldSession* session, uint32_t battlegroundType, uint8_t from)
 {
+    // from Cata on the client requests the list right after login, its standard addons need 5 seconds
+    const bool levelGroups = WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata);
+    if (levelGroups && session->m_currMsTime - session->m_loginTime < 5 * 1000)
+        return;
+
+    if (battlegroundType >= BATTLEGROUND_NUM_TYPES)
+        return;
+
     SmsgBattlefieldList managedPacket;
     managedPacket.playerGuid = session->GetPlayer()->getGuid();
+    managedPacket.guid = wowGuid;
     managedPacket.from = from;
     managedPacket.battlegroundType = battlegroundType;
+    managedPacket.minLevel = 10;
+    managedPacket.maxLevel = static_cast<uint8_t>(worldConfig.player.playerLevelCap);
 
     if (battlegroundType == BattlegroundDef::TYPE_RANDOM)
     {
@@ -89,50 +99,24 @@ void BattlegroundManager::handleBattlegroundListPacket(WorldSession* session, ui
         session->GetPlayer()->fillRandomBattlegroundReward(false, managedPacket.honorPointsForLosing, arenaPointsForLosing);
     }
 
-    if (!Battleground::isTypeArena(battlegroundType))
+    // up to WotLK arenas have no instance list, from Cata on the list is bound to the level group
+    if (levelGroups || !Battleground::isTypeArena(battlegroundType))
     {
-        if (battlegroundType >= BATTLEGROUND_NUM_TYPES) // VLack: Nasty hackers might try to abuse this packet to crash us...
-            return;
-
-        // Append the battlegrounds
         std::lock_guard instanceLock(m_instanceLock);
         for (auto itr : m_instances[battlegroundType])
         {
-            if (itr.second->CanPlayerJoin(session->GetPlayer(), battlegroundType) && !itr.second->hasEnded())
-                managedPacket.bgInstanceIds.push_back(itr.first);
-        }
-    }
-
-    session->sendManagedPacket(managedPacket);
-}
-#else
-void BattlegroundManager::handleBattlegroundListPacket(WoWGuid& wowGuid, WorldSession* session, uint32_t battlegroundType)
-{
-    // Zyres: For some reason client requests bg list on login after reaching level 10
-    // patiently wait 5 seconds after login. This issue is located in the client standard addons.
-    if (session->m_currMsTime - session->m_loginTime < 5 * 1000)
-        return;
-
-    SmsgBattlefieldList managedPacket;
-    managedPacket.guid = wowGuid;
-    managedPacket.battlegroundType = battlegroundType;
-    managedPacket.minLevel = 10;
-    managedPacket.maxLevel = static_cast<uint8_t>(worldConfig.player.playerLevelCap);
-
-    std::lock_guard instanceLock(m_instanceLock);
-    for (auto itr : m_instances[battlegroundType])
-    {
-        if (itr.second->CanPlayerJoin(session->GetPlayer(), battlegroundType) && !itr.second->hasEnded())
-        {
-            if (session->GetPlayer()->getLevelGrouping() != itr.second->getLevelGroup())
+            if (!itr.second->CanPlayerJoin(session->GetPlayer(), battlegroundType) || itr.second->hasEnded())
                 continue;
-            managedPacket.bgInstanceIds.push_back(itr.second->getId());
+
+            if (levelGroups && session->GetPlayer()->getLevelGrouping() != itr.second->getLevelGroup())
+                continue;
+
+            managedPacket.bgInstanceIds.push_back(itr.first);
         }
     }
 
     session->sendManagedPacket(managedPacket);
 }
-#endif
 
 void BattlegroundManager::handleBattlegroundJoin(WorldSession* session, uint32_t bgType, uint32_t instanceId, bool asGroup)
 {

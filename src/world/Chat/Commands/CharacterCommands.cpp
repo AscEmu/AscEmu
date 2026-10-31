@@ -410,7 +410,7 @@ bool ChatCommandHandler::HandleCharLearnCommand(const char* args, WorldSession* 
             selected_player->addSpell(classSpells[i]);
         }
 
-        static uint32_t paladinspellarrayLegacy[DBC_NUM_RACES][5] =
+        static const uint32_t paladinspellarrayLegacy[][5] =
         {
             { 0 },                                  // RACE 0
             { 23214, 13819, 31801, 53720, 0 },      // HUMAN  Charger, Warhorse, Seal of Vengeance, Seal of Martyr
@@ -424,7 +424,7 @@ bool ChatCommandHandler::HandleCharLearnCommand(const char* args, WorldSession* 
             { 34767, 34769, 31892, 53736, 0 },      // BLOODELF  Summon Charger, Summon Warhorse, Seal of Blood, Seal of Corruption
             { 23214, 13819, 31801, 53720, 0 },      // DRAENEI  Charger, Warhorse, Seal of Vengeance, Seal of Martyr
         };
-        static uint32_t paladinspellarrayCata[DBC_NUM_RACES][3] =
+        static const uint32_t paladinspellarrayCata[][3] =
         {
             { 0 },                  // RACE 0
             { 13819, 23214, 0 },    // HUMAN  Summon Warhorse, Summon Charger
@@ -451,7 +451,7 @@ bool ChatCommandHandler::HandleCharLearnCommand(const char* args, WorldSession* 
             { 0 },                  // WORGEN
         };
 
-        static uint32_t shamanspellarrayLegacy[DBC_NUM_RACES][2] =
+        static const uint32_t shamanspellarrayLegacy[][2] =
         {
             { 0 },                                  // RACE 0
             { 0 },                                  // HUMAN
@@ -465,7 +465,7 @@ bool ChatCommandHandler::HandleCharLearnCommand(const char* args, WorldSession* 
             { 0 },                                  // BLOODELF
             { 32182, 0 },                           // DRAENEI Heroism
         };
-        static uint32_t shamanspellarrayCata[DBC_NUM_RACES][2] =
+        static const uint32_t shamanspellarrayCata[][2] =
         {
             { 0 },                                  // RACE 0
             { 0 },                                  // HUMAN
@@ -491,7 +491,7 @@ bool ChatCommandHandler::HandleCharLearnCommand(const char* args, WorldSession* 
             { 0 },                                  // WORGEN
         };
 
-        static uint32_t magespellarrayLegacy[DBC_NUM_RACES][13] =
+        static const uint32_t magespellarrayLegacy[][13] =
         {
             { 0 },                                                                                  // RACE 0
             { 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 33690, 33691, 49359, 49360, 0 }, // HUMAN
@@ -505,7 +505,7 @@ bool ChatCommandHandler::HandleCharLearnCommand(const char* args, WorldSession* 
             { 3563, 3566, 3567, 11417, 11418, 11420, 32267, 32272, 35715, 35717, 49358, 49361, 0 }, // BLOODELF
             { 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 33690, 33691, 49359, 49360, 0 }, // DRAENEI
         };
-        static uint32_t magespellarrayCata[DBC_NUM_RACES][17] =
+        static const uint32_t magespellarrayCata[][17] =
         {
             { 0 },      // RACE 0
             { 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 53142, 33690, 33691, 49360, 49359, 53140, 88342, 88345, 0 },       // HUMAN
@@ -532,10 +532,13 @@ bool ChatCommandHandler::HandleCharLearnCommand(const char* args, WorldSession* 
             { 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 53142, 33690, 33691, 49360, 49359, 53140, 88342, 88345, 0 },       // WORGEN
         };
 
-        uint8_t player_race = selected_player->getRace();
-        const uint32_t* paladinSpells = cataclysmSpells ? paladinspellarrayCata[player_race] : paladinspellarrayLegacy[player_race];
-        const uint32_t* mageSpells = cataclysmSpells ? magespellarrayCata[player_race] : magespellarrayLegacy[player_race];
-        const uint32_t* shamanSpells = cataclysmSpells ? shamanspellarrayCata[player_race] : shamanspellarrayLegacy[player_race];
+        // the tables end at the last race that has spells
+        static const uint32_t noRaceSpells[1] = { 0 };
+        const uint8_t player_race = selected_player->getRace();
+        const auto raceSpells = [player_race](const auto& table) -> const uint32_t* { return player_race < std::size(table) ? table[player_race] : noRaceSpells; };
+        const uint32_t* paladinSpells = cataclysmSpells ? raceSpells(paladinspellarrayCata) : raceSpells(paladinspellarrayLegacy);
+        const uint32_t* mageSpells = cataclysmSpells ? raceSpells(magespellarrayCata) : raceSpells(magespellarrayLegacy);
+        const uint32_t* shamanSpells = cataclysmSpells ? raceSpells(shamanspellarrayCata) : raceSpells(shamanspellarrayLegacy);
         switch (player_class)
         {
             case PALADIN:

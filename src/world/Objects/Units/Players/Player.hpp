@@ -1746,7 +1746,6 @@ public:
 private:
     CurrencyMap m_currencies;
 
-#if VERSION_STRING >= Cata
 public:
     bool loadCurrencies(QueryResult* result);
     bool saveCurrencies(bool newCharacter, QueryBuffer* buf);
@@ -1755,7 +1754,6 @@ public:
     void modifyCurrency(uint32_t id, int32_t count, bool printLog = true, bool ignoreMultipliers = false);
     void resetCurrencyWeekCap();
     void sendSmsgSetupCurrency();
-#endif
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // Drunk system
