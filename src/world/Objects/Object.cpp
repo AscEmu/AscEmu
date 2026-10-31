@@ -537,7 +537,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
             break;
     }
 
-#ifdef FT_VEHICLES
+#if VERSION_STRING >= WotLK // update packet layout
     if (isVehicle())
         updateFlags |= UPDATEFLAG_VEHICLE;
 #endif
@@ -1981,7 +1981,6 @@ bool Object::isValidAttackableTarget(Object const* target, SpellInfo const* bySp
                 return false;
         }
 
-#ifdef FT_VEHICLES
         // Own vehicle or passengers cannot be attacked
         if (unitSelf->getVehicle() != nullptr && unitTarget != nullptr)
         {
@@ -1991,7 +1990,6 @@ bool Object::isValidAttackableTarget(Object const* target, SpellInfo const* bySp
             if (unitSelf->getVehicleBase()->isOnVehicle(unitTarget))
                 return false;
         }
-#endif
     }
 
     if (unitTarget != nullptr)
@@ -2164,7 +2162,6 @@ bool Object::isValidAssistableTarget(Object const* target, SpellInfo const* bySp
             }
         }
 
-#ifdef FT_VEHICLES
         // Own vehicle or passengers cannot be assisted
         if (unitSelf->getVehicle() != nullptr && unitTarget != nullptr)
         {
@@ -2174,7 +2171,6 @@ bool Object::isValidAssistableTarget(Object const* target, SpellInfo const* bySp
             if (unitSelf->getVehicleBase()->isOnVehicle(unitTarget))
                 return false;
         }
-#endif
     }
 
     if (unitTarget != nullptr)
@@ -4338,7 +4334,6 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
             }
         }
 
-#ifdef FT_VEHICLES
         if (isCreatureOrPlayer())
         {
             if (ToUnit()->getVehicleKit() != nullptr)
@@ -4346,7 +4341,6 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
                 ToUnit()->getVehicleKit()->relocatePassengers();
             }
         }
-#endif
 
         updatePositionData();
 

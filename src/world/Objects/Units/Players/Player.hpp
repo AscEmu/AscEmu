@@ -2081,12 +2081,10 @@ public:
     float m_spellHasteRatingBonus = 1.0f;
     void updateAttackSpeed();
 
-#if VERSION_STRING >= TBC // support classic
     float getDefenseChance(uint32_t opLevel);
     float getDodgeChance();
     float getBlockChance();
     float getParryChance();
-#endif
     void updateChances();
     void updateStats();
     uint32_t getBlockDamageReduction();

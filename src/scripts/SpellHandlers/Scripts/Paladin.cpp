@@ -157,7 +157,7 @@ private:
 };
 
 // TODO: move this to SpellInfo when working with single target auras
-static constexpr bool isSealSpell(SpellInfo const* spellInfo)
+static bool isSealSpell(SpellInfo const* spellInfo)
 {
     const auto spellId = spellInfo->hasSpellRanks() ?
         spellInfo->getRankInfo()->getFirstSpell()->getId() :
@@ -171,28 +171,19 @@ static constexpr bool isSealSpell(SpellInfo const* spellInfo)
         case SPELL_SEAL_OF_RIGHTEOUSNESS_DUMMY_CATA:
         case SPELL_SEAL_OF_COMMAND_DUMMY_R1:
         case SPELL_SEAL_OF_COMMAND_DUMMY_R1_MOP:
-        if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
-        {
-            case SPELL_SEAL_OF_WISDOM_DUMMY_R1:
-        }
-        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
-        {
-            case SPELL_SEAL_OF_VENGEANCE_DUMMY: // Seal of Vengeance / Seal of Truth
-        }
-        if (WoW::isServerExpansion(WoW::Expansion::_TBC) || WoW::isServerExpansion(WoW::Expansion::_WotLK))
-        {
-            case SPELL_SEAL_OF_BLOOD_DUMMY:
-        }
-        if (WoW::isServerExpansion(WoW::Expansion::_WotLK))
-        {
-            case SPELL_SEAL_OF_CORRUPTION_DUMMY:
-            case SPELL_SEAL_OF_THE_MARTYR_DUMMY:
-        }
-        if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
-        {
-            case SPELL_SEAL_OF_THE_CRUSADER_R1:
-        }
             return true;
+        // seals that only some expansions have
+        case SPELL_SEAL_OF_WISDOM_DUMMY_R1:
+            return !WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata);
+        case SPELL_SEAL_OF_VENGEANCE_DUMMY: // Seal of Vengeance / Seal of Truth
+            return WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC);
+        case SPELL_SEAL_OF_BLOOD_DUMMY:
+            return WoW::isServerExpansionBetween(WoW::Expansion::_TBC, WoW::Expansion::_WotLK);
+        case SPELL_SEAL_OF_CORRUPTION_DUMMY:
+        case SPELL_SEAL_OF_THE_MARTYR_DUMMY:
+            return WoW::isServerExpansion(WoW::Expansion::_WotLK);
+        case SPELL_SEAL_OF_THE_CRUSADER_R1:
+            return !WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK);
         default:
             return false;
     }

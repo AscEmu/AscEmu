@@ -1163,7 +1163,6 @@ public:
 private:
     std::unique_ptr<SummonHandler> m_summonInterface;
 
-#ifdef FT_VEHICLES
     //////////////////////////////////////////////////////////////////////////////////////////
     // Vehicle
 protected:
@@ -1188,17 +1187,6 @@ public:
     // shouldnt be called directly always use the functions above
     void exitVehicle(LocationVector const* exitPosition = nullptr);
     void enterVehicle(Vehicle* vehicle, int8_t seatId);
-#else
-public:
-    void handleSpellClick(Unit* clicker);
-
-    // without vehicle support the vehicle calls of scripts do nothing
-    bool createVehicleKit(uint32_t /*id*/, uint32_t /*creatureEntry*/) { return false; }
-    Vehicle* getVehicleKit() const { return nullptr; }
-    Unit* getVehicleBase() const { return nullptr; }
-    void callEnterVehicle(Unit* /*base*/, int8_t /*seatId*/ = -1) { }
-    void exitVehicle(LocationVector const* /*exitPosition*/ = nullptr) { }
-#endif
 
     bool isMounted() const;
     void mount(uint32_t mount, uint32_t vehicleId = 0, uint32_t creatureEntry = 0);

@@ -1093,10 +1093,8 @@ void World::loadMySQLTablesByTask()
             sObjectMgr.loadGroups();
             sObjectMgr.loadGroupInstances();
             sObjectMgr.loadArenaTeams();
-#ifdef FT_VEHICLES
             sObjectMgr.loadVehicleAccessories();
             sObjectMgr.loadVehicleSeatAddon();
-#endif
             sObjectMgr.loadWorldStateTemplates();
 
 #if VERSION_STRING > TBC

@@ -22,7 +22,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-#ifdef FT_VEHICLES
 
 Vehicle::Vehicle(Unit* unit, WDB::Structures::VehicleEntry const* vehInfo, uint32_t creatureEntry) :
     usableSeatNum(0), _owner(unit), _vehicleInfo(vehInfo), _creatureEntry(creatureEntry), _status(STATUS_NONE), _lastShootPos()
@@ -684,4 +683,3 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
             getBase()->GetPositionX(), getBase()->GetPositionY(),
             getBase()->GetPositionZ(), getBase()->GetOrientation());
     }
-#endif

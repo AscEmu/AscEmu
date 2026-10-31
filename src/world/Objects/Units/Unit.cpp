@@ -118,9 +118,7 @@ Unit::Unit() :
     i_movementManager(std::make_unique<MovementManager>(this)),
     m_aiInterface(std::make_unique<AIInterface>()),
     m_summonInterface(std::make_unique<SummonHandler>(this)),
-#ifdef FT_VEHICLES
     m_vehicleKit(nullptr),
-#endif
     m_damageSplitTarget(nullptr)
 {
     m_objectType |= TYPE_UNIT;
@@ -332,13 +330,11 @@ void Unit::onPreDetachFromWorld()
     if (!IsInWorld())
         return;
 
-#ifdef FT_VEHICLES
     if (isVehicle())
         removeVehicleKit();
 
     // a passenger leaving the world leaves its vehicle, otherwise the vehicle keeps a passenger without a map
     exitVehicle();
-#endif
     removeAllFollowers();
 
     getCombatHandler().onRemoveFromWorld();
@@ -2847,7 +2843,6 @@ void Unit::updateSplinePosition()
         pos.z = loc.z;
         pos.o = LocationVector::normalizeOrientation(loc.orientation);
 
-#ifdef FT_VEHICLES
         if (TransportBase* vehicle = getVehicle())
         {
             vehicle->calculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
@@ -2860,16 +2855,6 @@ void Unit::updateSplinePosition()
         {
             return;
         }
-#else
-        if (TransportBase* transport = GetTransport())
-        {
-            transport->calculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
-        }
-        else
-        {
-            return;
-        }
-#endif
     }
 
     if (hasUnitStateFlag(UNIT_STATE_CANNOT_TURN))
@@ -7474,17 +7459,11 @@ void Unit::setDeathState(DeathState state)
 {
     m_deathState = state;
 
-#ifdef FT_VEHICLES
     bool isOnVehicle = getVehicle() != nullptr;
-#else
-    bool isOnVehicle = false;
-#endif
 
     if (state != ALIVE && state != JUST_RESPAWNED)
     {
-#ifdef FT_VEHICLES
         exitVehicle();
-#endif
         removeAllNonPersistentAuras();
         
         if (!isPet())
@@ -7540,20 +7519,16 @@ TotemSummon* Unit::getTotem(SummonSlot slot) const
 
 uint32_t Unit::getVehicleSeatId() const
 {
-#ifdef FT_VEHICLES
     if (Vehicle const* vehicle = getVehicleKit())
         return vehicle->getVehicleInfo()->seatID[obj_movement_info.transport_seat];
-#endif
 
     return 0;
 }
 
 Unit* Unit::getVehiclePassenger([[maybe_unused]] int8_t seatId) const
 {
-#ifdef FT_VEHICLES
     if (Vehicle const* vehicle = getVehicleKit())
         return vehicle->getPassenger(seatId);
-#endif
 
     return nullptr;
 }
@@ -7615,10 +7590,8 @@ bool Unit::isUnitOwnerInRaid(Unit* unit)
 
 uint64_t Unit::getTransGuid()
 {
-#ifdef FT_VEHICLES
     if (getVehicle())
         return getVehicleBase()->getGuid();
-#endif
     if (GetTransport())
         return GetTransport()->getGuid();
 
@@ -7808,7 +7781,6 @@ bool Unit::isLootable()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Vehicle
-#ifdef FT_VEHICLES
 bool Unit::createVehicleKit(uint32_t id, uint32_t creatureEntry)
 {
     auto vehInfo = sVehicleStore.lookupEntry(id);
@@ -7816,7 +7788,9 @@ bool Unit::createVehicleKit(uint32_t id, uint32_t creatureEntry)
         return false;
 
     m_vehicleKit = std::make_unique<Vehicle>(this, vehInfo, creatureEntry);
+#if VERSION_STRING >= WotLK // update packet layout
     m_updateFlag |= UPDATEFLAG_VEHICLE;
+#endif
     return true;
 }
 
@@ -7828,7 +7802,9 @@ void Unit::removeVehicleKit()
     m_vehicleKit->deactivate();
     m_vehicleKit = nullptr;
 
+#if VERSION_STRING >= WotLK // update packet layout
     m_updateFlag &= ~UPDATEFLAG_VEHICLE;
+#endif
     removeNpcFlags(UNIT_NPC_FLAG_SPELLCLICK | UNIT_NPC_FLAG_PLAYER_VEHICLE);
 }
 
@@ -8119,42 +8095,6 @@ void Unit::exitVehicle(LocationVector const* exitPosition)
         }
     }
 }
-#else
-void Unit::handleSpellClick(Unit* clicker)
-{
-    bool spellClickHandled = false;
-    uint32_t spellClickEntry = getEntry();
-
-    std::vector<SpellClickInfo> clickBounds = sMySQLStore.getSpellClickInfo(spellClickEntry);
-    for (const auto& clickPair : clickBounds)
-    {
-        //! First check simple relations from clicker to clickee
-        if (!clickPair.isFitToRequirements(clicker, this))
-            continue;
-
-        Unit* caster = (clickPair.castFlags & NPC_CLICK_CAST_CASTER_CLICKER) ? clicker : this;
-        Unit* target = (clickPair.castFlags & NPC_CLICK_CAST_TARGET_CLICKER) ? clicker : this;
-        auto* const unitOwner = getUnitOwner();
-        [[maybe_unused]] uint64_t origCasterGUID = (unitOwner && clickPair.castFlags & NPC_CLICK_CAST_ORIG_CASTER_OWNER) ? unitOwner->getGuid() : clicker->getGuid();
-
-        SpellInfo const* spellEntry = sSpellMgr.getSpellInfo(clickPair.spellId);
-
-        // Creatures like Lightwell...
-        if (IsInMap(caster))
-            caster->castSpell(target, spellEntry->getId(), true);
-
-        spellClickHandled = true;
-    }
-
-    if (isCreature())
-    {
-        if (CreatureAIScript* ai = ToCreature()->GetScript())
-        {
-            ai->OnSpellClick(clicker, spellClickHandled);
-        }
-    }
-}
-#endif
 
 bool Unit::isMounted() const
 {
@@ -8444,10 +8384,8 @@ void Unit::buildMovementPacket(ByteBuffer* data)
                 obj_movement_info.transport_guid = plr->obj_movement_info.transport_guid;
             }
         }
-#ifdef FT_VEHICLES
         if (Unit* u = getVehicleBase())
             obj_movement_info.transport_guid = u->getGuid();
-#endif
         * data << obj_movement_info.transport_guid;
         *data << obj_movement_info.transport_guid;
         *data << GetTransOffsetX();
@@ -8455,13 +8393,12 @@ void Unit::buildMovementPacket(ByteBuffer* data)
         *data << GetTransOffsetZ();
         *data << GetTransOffsetO();
         *data << GetTransTime();
-#ifdef FT_VEHICLES
-        * data << GetTransSeat();
-
-        // TODO what is this in BC?
-        if (getExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
-            *data << getMovementInfo()->transport_time2;
-#endif
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        {
+            *data << GetTransSeat();
+            if (getExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
+                *data << getMovementInfo()->transport_time2;
+        }
     }
 
     // 0x02200000
@@ -8512,12 +8449,12 @@ void Unit::buildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
         *data << GetTransOffsetZ();
         *data << GetTransOffsetO();
         *data << GetTransTime();
-#ifdef FT_VEHICLES
-        * data << GetTransSeat();
-
-        if (getExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
-            *data << getMovementInfo()->transport_time2;
-#endif
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        {
+            *data << GetTransSeat();
+            if (getExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
+                *data << getMovementInfo()->transport_time2;
+        }
     }
 
     // 0x02200000
@@ -11514,9 +11451,7 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             if (Util::checkChance(pr->getSkillUpChance(SKILL_DEFENSE) * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
             {
                 pr->advanceSkillLine(SKILL_DEFENSE, static_cast<uint16_t>(Util::float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE))));
-#if VERSION_STRING >= TBC // support classic
                 pr->updateChances();
-#endif
             }
         }
         else

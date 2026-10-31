@@ -266,15 +266,10 @@ void MoveSplineInit::SetFacing(float angle)
 {
     if (args.TransformForTransport)
     {
-#ifdef FT_VEHICLES
         if (Unit* vehicle = unit->getVehicleBase())
             angle -= vehicle->GetOrientation();
         else if (Transporter* transport = unit->GetTransport())
             angle -= transport->GetOrientation();
-#else
-        if (Transporter* transport = unit->GetTransport())
-            angle -= transport->GetOrientation();
-#endif
     }
 
     args.facing.angle = G3D::wrap(angle, 0.f, (float)G3D::twoPi());
@@ -316,7 +311,6 @@ Vector3 TransportPathTransform::operator()(Vector3 input)
 {
     if (_transformForTransport)
     {
-#ifdef FT_VEHICLES
         if (TransportBase* vehicle = _owner->getVehicle())
         {
             vehicle->calculatePassengerOffset(input.x, input.y, input.z);
@@ -325,12 +319,6 @@ Vector3 TransportPathTransform::operator()(Vector3 input)
         {
             transport->calculatePassengerOffset(input.x, input.y, input.z);
         }
-#else 
-        if (TransportBase* transport = _owner->GetTransport())
-        {
-            transport->calculatePassengerOffset(input.x, input.y, input.z);
-        }
-#endif
     }
     return input;
 }

@@ -1937,9 +1937,7 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
         m_flyingAura = 0;
     }
 
-#ifdef FT_VEHICLES
     callExitVehicle();
-#endif
 
     if (m_bg && m_bg->getWorldMap() && getWorldMap() &&
         getWorldMap()->getBaseMap()->getMapInfo()->mapid != mapId)
@@ -7493,9 +7491,7 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
     if (getDeathState() != ALIVE)
         return;
 
-#ifdef FT_VEHICLES
     callExitVehicle();
-#endif
 
     if (unitAttacker != nullptr)
     {
@@ -12920,11 +12916,7 @@ bool Player::isPetRequiringTemporaryUnsummon() const
     // In classic pets were not despawned when mounted
     // In tbc and wotlk they despawned, but this was again changed around patch 4.1
 #if VERSION_STRING == TBC || VERSION_STRING == WotLK
-#ifdef FT_VEHICLES
     if (isMounted() || isOnVehicle())
-#else
-    if (isMounted())
-#endif
     {
         if (const auto* const pet = getPet())
         {
@@ -15973,7 +15965,6 @@ void Player::_loadQuestLogEntry(QueryResult* result)
     }
 }
 
-#if VERSION_STRING >= TBC
 float Player::getDefenseChance([[maybe_unused]] uint32_t opLevel)
 {
 #if VERSION_STRING >= Cata
@@ -16083,11 +16074,9 @@ float Player::getParryChance()
 
     return std::max(chance, 0.0f);   // Make sure we don't have a negative chance
 }
-#endif
 
 void Player::updateChances()
 {
-#if VERSION_STRING >= TBC
     uint32_t playerClass = getClass();
     uint32_t playerLevel = (getLevel() > DBC_PLAYER_LEVEL_CAP) ? DBC_PLAYER_LEVEL_CAP : getLevel();
 
@@ -16208,7 +16197,6 @@ void Player::updateChances()
         this->calcRating(CR_CRIT_SPELL);
 
     updateChanceFields();
-#endif
 }
 
 void Player::updateChanceFields()

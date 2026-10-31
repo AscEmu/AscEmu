@@ -311,15 +311,11 @@ enum NPCFlags : uint32_t
     UNIT_NPC_FLAG_STABLEMASTER          = 0x00400000,
     UNIT_NPC_FLAG_GUILD_BANKER          = 0x00800000,
     UNIT_NPC_FLAG_SPELLCLICK            = 0x01000000,
-#if VERSION_STRING >= WotLK
     UNIT_NPC_FLAG_PLAYER_VEHICLE        = 0x02000000,
     UNIT_NPC_FLAG_MAILBOX               = 0x04000000,
-#endif
-#if VERSION_STRING >= Cata
     UNIT_NPC_FLAG_REFORGER              = 0x08000000,
     UNIT_NPC_FLAG_TRANSMOGRIFIER        = 0x10000000,
     UNIT_NPC_FLAG_VOID_STORAGE          = 0x20000000,
-#endif
     // TODO: move these flags elsewhere, mop+ flags will collide with these
     UNIT_NPC_FLAG_DISABLE_REGEN         = 0x40000000,       // custom Disable Creature Health reg
     UNIT_NPC_FLAG_DISABLE_PWREGEN       = 0x80000000,       // custom Disable Creature Power reg

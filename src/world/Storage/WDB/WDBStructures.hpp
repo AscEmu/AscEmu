@@ -771,7 +771,6 @@ namespace WDB::Structures
     };
 #endif
 
-#if VERSION_STRING >= WotLK
     struct DungeonEncounterEntry
     {
         uint32_t id;                                                // 0 unique id
@@ -783,7 +782,6 @@ namespace WDB::Structures
         //uint32_t nameFlags;                                       // 21
         //uint32_t unk1;                                            // 22
     };
-#endif
 
 #if VERSION_STRING >= Cata
     struct EmotesEntry

@@ -2873,13 +2873,8 @@ void Spell::SpellEffectJumpTarget(uint8_t effectIndex)
     if (u_caster == nullptr)
         return;
 
-#ifdef FT_VEHICLES
     if (u_caster->getVehicleKit() || u_caster->isTrainingDummy())
         return;
-#else
-    if (u_caster->isTrainingDummy())
-        return;
-#endif
 
     float x = 0;
     float y = 0;

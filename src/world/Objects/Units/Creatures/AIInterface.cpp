@@ -2622,14 +2622,12 @@ void AIInterface::setCreatureProtoDifficulty(uint32_t entry)
             else
                 getUnit()->getAIInterface()->setGuard(false);
 
-#ifdef FT_VEHICLES
             if (getUnit()->isVehicle())
             {
                 getUnit()->createVehicleKit(properties_difficulty->Id, properties_difficulty->vehicleid);
                 getUnit()->addNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
                 getUnit()->setAItoUse(false);
             }
-#endif
 
             if (properties_difficulty->rooted)
                 getUnit()->setMoveRoot(true);

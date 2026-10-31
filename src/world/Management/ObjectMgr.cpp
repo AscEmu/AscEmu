@@ -118,11 +118,9 @@ void ObjectMgr::finalize()
     sLogger.info("ObjectMgr : Clearing Arena Teams...");
     m_arenaTeams.clear();
 
-#ifdef FT_VEHICLES
     sLogger.info("ObjectMgr : Cleaning up vehicle accessories...");
     m_vehicleAccessoryStore.clear();
     m_vehicleSeatAddonStore.clear();
-#endif
 
     sLogger.info("ObjectMgr : Cleaning up worldstate templates...");
     m_worldstateTemplates.clear();
@@ -1175,7 +1173,6 @@ std::unordered_map<uint32_t, Player*> ObjectMgr::getPlayerStorage()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Vehicle
-#ifdef FT_VEHICLES
 void ObjectMgr::loadVehicleAccessories()
 {
     m_vehicleAccessoryStore.clear();
@@ -1261,7 +1258,6 @@ VehicleSeatAddon const* ObjectMgr::getVehicleSeatAddon(uint32_t _seatId) const
 
     return nullptr;
 }
-#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // EventScripts
@@ -2117,7 +2113,7 @@ void ObjectMgr::loadInstanceEncounters()
 
 #if VERSION_STRING <= TBC
         DungeonEncounterList& encounters = m_dungeonEncounterStore[mapId];
-        encounters.emplace_back(std::make_unique<DungeonEncounter>(EncounterCreditType(creditType), creditEntry));
+        encounters.emplace_back(std::make_unique<DungeonEncounter>(nullptr, EncounterCreditType(creditType), creditEntry, lastEncounterDungeon));
 #else
         DungeonEncounterList& encounters = m_dungeonEncounterStore[static_cast<int32_t>(static_cast<uint16_t>(dungeonEncounter->mapId) | (static_cast<uint32_t>(dungeonEncounter->difficulty) << 16))];
         encounters.emplace_back(std::make_unique<DungeonEncounter>(dungeonEncounter, EncounterCreditType(creditType), creditEntry, lastEncounterDungeon));

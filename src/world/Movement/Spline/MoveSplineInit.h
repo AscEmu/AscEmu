@@ -49,11 +49,9 @@ public:
     // can't be combined with final animation
     void SetParabolic(float amplitude, float start_time);
 
-#if VERSION_STRING >= WotLK
     // Plays animation after movement done
     // can't be combined with parabolic movement
     void SetAnimation(UnitBytes1_AnimationFlag anim);
-#endif
 
     // Adds final facing animation
     // sets unit's facing to specified point/angle after all path done
@@ -128,6 +126,9 @@ public:
     void SetCyclic();
     // Enables falling mode. Disabled by default
     void SetFall();
+    // the transport spline flags exist from wotlk on
+    void SetTransportEnter();
+    void SetTransportExit();
 #endif
 
     // Sets the velocity (in case you want to have custom movement velocity)
@@ -176,6 +177,8 @@ inline void MoveSplineInit::SetWalk(bool enable) { args.walk = enable; }
 inline void MoveSplineInit::SetCyclic() { args.flags.cyclic = true; }
 inline void MoveSplineInit::SetFall() { args.flags.EnableFalling(); }
 inline void MoveSplineInit::SetVelocity(float vel) { args.velocity = vel; args.HasVelocity = true; }
+inline void MoveSplineInit::SetTransportEnter() { }
+inline void MoveSplineInit::SetTransportExit() { }
 #endif
 
 
@@ -188,13 +191,13 @@ inline void MoveSplineInit::SetParabolic(float amplitude, float time_shift)
 #endif
 }
 
-#if VERSION_STRING >= WotLK
-inline void MoveSplineInit::SetAnimation(UnitBytes1_AnimationFlag anim)
+inline void MoveSplineInit::SetAnimation([[maybe_unused]] UnitBytes1_AnimationFlag anim)
 {
+#if VERSION_STRING >= WotLK
     args.time_perc = 0.f;
     args.flags.EnableAnimation(static_cast<uint8_t>(anim));
-}
 #endif
+}
 
 inline void MoveSplineInit::DisableTransportPathTransformations() { args.TransformForTransport = false; }
 

@@ -4941,7 +4941,6 @@ void Aura::SpellAuraReduceEffectDuration(AuraEffectModifier* aurEff, bool apply)
 // Target = vehicle
 void Aura::HandleAuraControlVehicle([[maybe_unused]] AuraEffectModifier* aurEff, [[maybe_unused]] bool apply)
 {
-#ifdef FT_VEHICLES
     if (!getCaster())
         return;
 
@@ -4976,7 +4975,6 @@ void Aura::HandleAuraControlVehicle([[maybe_unused]] AuraEffectModifier* aurEff,
         // some SPELL_AURA_CONTROL_VEHICLE auras have a dummy effect on the player - remove them
         caster->removeAllAurasById(getSpellId());
     }
-#endif
 }
 
 void Aura::SpellAuraModCombatResultChance(AuraEffectModifier* aurEff, bool apply)

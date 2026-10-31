@@ -426,7 +426,6 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
                 mover->obj_movement_info.transport_position.o = sessionMovementInfo.transport_position.o;
             }
         }
-#ifdef FT_VEHICLES
         // Transports like Elevators
         if (!mover->GetTransport() && !mover->getVehicle())
         {
@@ -434,15 +433,6 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
             if (!go || go->getOType() != GAMEOBJECT_TYPE_TRANSPORT)
                 movementInfo.removeMovementFlag(MOVEFLAG_TRANSPORT);
         }
-#else
-        // Transports like Elevators
-        if (!mover->GetTransport())
-        {
-            GameObject* go = mover->getWorldMapGameObject(movementInfo.transport_guid);
-            if (!go || go->getOType() != GAMEOBJECT_TYPE_TRANSPORT)
-                movementInfo.removeMovementFlag(MOVEFLAG_TRANSPORT);
-        }
-#endif
     }
     else if (mover->ToPlayer() && mover->GetTransport()) // if we were on a transport, leave
     {
@@ -562,7 +552,6 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     SmsgPlayerMove managedPacket(sessionMovementInfo, true, static_cast<uint16_t>(opcode));
     PacketBroadcast::sendToSet(*mover, managedPacket, false);
 
-#ifdef FT_VEHICLES
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Some vehicles allow the passenger to turn by himself
     if (Vehicle* vehicle = mover->getVehicle())
@@ -580,7 +569,6 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
         }
         return;
     }
-#endif
 }
 
 void WorldSession::handleAcknowledgementOpcodes(WorldPacket& recvPacket)

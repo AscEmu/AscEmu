@@ -17,9 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace WDB::Structures
 {
-#if VERSION_STRING >= WotLK
     struct DungeonEncounterEntry;
-#endif
     struct SummonPropertiesEntry;
 }
 
@@ -49,7 +47,6 @@ enum EncounterCreditType : uint8_t
     ENCOUNTER_CREDIT_CAST_SPELL     = 1
 };
 
-#if VERSION_STRING >= WotLK
 struct DungeonEncounter
 {
     DungeonEncounter(WDB::Structures::DungeonEncounterEntry const* _dbcEntry, EncounterCreditType _creditType, uint32_t _creditEntry, uint32_t _lastEncounterDungeon)
@@ -60,16 +57,6 @@ struct DungeonEncounter
     uint32_t creditEntry;
     uint32_t lastEncounterDungeon;
 };
-#else
-struct DungeonEncounter
-{
-    DungeonEncounter(EncounterCreditType _creditType, uint32_t _creditEntry)
-        : creditEntry(_creditEntry), creditType(_creditType) { }
-
-    uint32_t creditEntry;
-    EncounterCreditType creditType;
-};
-#endif
 
 typedef std::list<std::unique_ptr<DungeonEncounter>> DungeonEncounterList;
 
@@ -328,7 +315,6 @@ private:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Vehicle
-#ifdef FT_VEHICLES
 public:
     void loadVehicleAccessories();
     VehicleAccessoryList const* getVehicleAccessories(uint32_t _entry);
@@ -339,7 +325,6 @@ public:
 private:
     VehicleAccessoryContainer m_vehicleAccessoryStore;
     VehicleSeatAddonContainer m_vehicleSeatAddonStore;
-#endif
     //////////////////////////////////////////////////////////////////////////////////////////
     // EventScripts
 public:

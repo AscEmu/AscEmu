@@ -1190,7 +1190,6 @@ static inline constexpr UnitFlagNames UnitFlagToName[] =
 
 static inline constexpr uint32_t numflags = sizeof(UnitFlagToName) / sizeof(UnitFlagNames);
 
-#if VERSION_STRING >= TBC
 static inline constexpr UnitFlagNames UnitFlagToName2[] =
 {
     { UNIT_FLAG2_FEIGN_DEATH, "UNIT_FLAG2_FEIGN_DEATH" },
@@ -1200,7 +1199,6 @@ static inline constexpr UnitFlagNames UnitFlagToName2[] =
     { UNIT_FLAG2_MIRROR_IMAGE, "UNIT_FLAG2_MIRROR_IMAGE" },
     { UNIT_FLAG2_UNK5, "UNIT_FLAG2_UNK5" },
     { UNIT_FLAG2_FORCE_MOVE, "UNIT_FLAG2_FORCE_MOVE" },
-#if VERSION_STRING >= WotLK
     { UNIT_FLAG2_DISARM_OFFHAND, "UNIT_FLAG2_DISARM_OFFHAND" },
     { UNIT_FLAG2_UNK8, "UNIT_FLAG2_UNK8" },
     { UNIT_FLAG2_UNK9, "UNIT_FLAG2_UNK9" },
@@ -1213,11 +1211,9 @@ static inline constexpr UnitFlagNames UnitFlagToName2[] =
     { UNIT_FLAG2_UNK10, "UNIT_FLAG2_UNK10" },
     { UNIT_FLAG2_PLAY_DEATH_ANIM, "UNIT_FLAG2_PLAY_DEATH_ANIM" },
     { UNIT_FLAG2_ALLOW_CHEAT_SPELLS, "UNIT_FLAG2_ALLOW_CHEAT_SPELLS" }
-#endif
 };
 
 static inline constexpr uint32_t numflags2 = sizeof(UnitFlagToName2) / sizeof(UnitFlagNames);
-#endif
 
 static inline constexpr UnitDynFlagNames UnitDynFlagToName[] =
 {

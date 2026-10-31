@@ -11,7 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <set>
 
-#ifdef FT_VEHICLES
 
 class WoWGuid;
 class Unit;
@@ -87,4 +86,3 @@ private:
     bool _aiEnabledBeforeControl = false;
     LocationVector _lastShootPos;
 };
-#endif

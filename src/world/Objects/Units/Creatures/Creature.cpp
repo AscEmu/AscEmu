@@ -966,10 +966,8 @@ void Creature::OnRespawn()
     // Re-initialize reactstate that could be altered by movementgenerators
     getAIInterface()->initializeReactState();
 
-#ifdef FT_VEHICLES
     // Init Vehicle
     createVehicleKit(GetCreatureProperties()->vehicleid, getEntry());
-#endif
 
     m_PickPocketed = false;
 
@@ -1941,14 +1939,12 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         addSpellImmunity(immunityMask, true);
     }
 
-#ifdef FT_VEHICLES
     if (isVehicle())
     {
         createVehicleKit(creature_properties->vehicleid, creature_properties->Id);
         addNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
         setAItoUse(false);
     }
-#endif
 
     if (getMovementTemplate().isRooted())
         setControlled(true, UNIT_STATE_ROOTED);
@@ -2223,14 +2219,12 @@ bool Creature::LoadFromDB(MySQLStructure::CreatureSpawn* spawn, WorldMap* map, b
         addSpellImmunity(immunityMask, true);
     }
 
-#ifdef FT_VEHICLES
     if (isVehicle())
     {
         createVehicleKit(creature_properties->vehicleid, creature_properties->Id);
         addNpcFlags(UNIT_NPC_FLAG_SPELLCLICK);
         setAItoUse(false);
     }
-#endif
 
     if (getMovementTemplate().isRooted())
         setControlled(true, UNIT_STATE_ROOTED);
@@ -2542,10 +2536,8 @@ bool Creature::isCritter()
 
 void Creature::die(Unit* pAttacker, uint32_t /*damage*/, [[maybe_unused]] uint32_t spellid)
 {
-#ifdef FT_VEHICLES
     // Exit Vehicle
     callExitVehicle();
-#endif
 
     //general hook for die
     if (pAttacker != nullptr && !sHookInterface.OnPreUnitDie(pAttacker, this))
