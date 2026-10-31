@@ -418,6 +418,7 @@ bool ChatCommandHandler::HandleGoStartLocationCommand(const char* args, WorldSes
     uint8_t raceid = 0;
     uint8_t classid = 0;
 
+    const bool cataclysmRaces = WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata);
     if (strlen(args) > 0)
     {
         race = args;
@@ -437,27 +438,22 @@ bool ChatCommandHandler::HandleGoStartLocationCommand(const char* args, WorldSes
             raceid = 7;
         else if (race == "troll")
             raceid = 8;
-#if VERSION_STRING >= Cata
-        else if (race == "goblin")
+        else if (race == "goblin" && cataclysmRaces)
             raceid = 9;
-#endif
         else if (race == "bloodelf")
             raceid = 10;
         else if (race == "draenei")
             raceid = 11;
         else if (race == "deathknight")
             classid = 6;
-#if VERSION_STRING >= Cata
-        else if (race == "worgen")
+        else if (race == "worgen" && cataclysmRaces)
             raceid = 22;
-#endif
         else
         {
-#if VERSION_STRING >= Cata
-            redSystemMessage(m_session, "Invalid start location! Valid locations are: human, dwarf, gnome, nightelf, draenei, orc, troll, goblin, tauren, undead, bloodelf, worgen, deathknight");
-#else
-            redSystemMessage(m_session, "Invalid start location! Valid locations are: human, dwarf, gnome, nightelf, draenei, orc, troll, tauren, undead, bloodelf, deathknight");
-#endif
+            if (cataclysmRaces)
+                redSystemMessage(m_session, "Invalid start location! Valid locations are: human, dwarf, gnome, nightelf, draenei, orc, troll, goblin, tauren, undead, bloodelf, worgen, deathknight");
+            else
+                redSystemMessage(m_session, "Invalid start location! Valid locations are: human, dwarf, gnome, nightelf, draenei, orc, troll, tauren, undead, bloodelf, deathknight");
             return true;
         }
     }
@@ -829,13 +825,11 @@ bool ChatCommandHandler::HandleGPSCommand(const char* args, WorldSession* m_sess
     systemMessage(m_session, "[DBC Debug] AreaID: {} | ZoneID: {} | ExploreFlag: {} | Flags: {:#x}",
                   at->id, at->zone, at->explore_flag, at->flags);
 
-#if VERSION_STRING < Cata
     if (obj->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT))
     {
         systemMessage(m_session, "Transport position:");
         systemMessage(m_session, "  X: {}  Y: {}  Z: {}  O: {}", obj->GetTransOffsetX(), obj->GetTransOffsetY(), obj->GetTransOffsetZ(), obj->GetTransOffsetO());
     }
-#endif
 
     // ".gps 1" will save gps info to file logs/gps.log - This probably isn't very multithread safe so don't have many gms spamming it!
     if (args != nullptr && *args == '1')
@@ -1056,14 +1050,10 @@ bool ChatCommandHandler::HandleAppearCommand(const char* args, WorldSession* m_s
             systemMessage(chr->getSession(),"GM {} teleported to your location.", m_session->GetPlayer()->getName());
         }
 
-#if VERSION_STRING < Cata
         if (m_session->GetPlayer()->GetMapId() == chr->GetMapId() && m_session->GetPlayer()->GetInstanceID() == chr->GetInstanceID())
             m_session->GetPlayer()->safeTeleport(chr->GetMapId(), chr->GetInstanceID(), chr->GetPosition());
         else
             m_session->GetPlayer()->safeTeleport(chr->getWorldMap(), chr->GetPosition());
-#else
-        m_session->GetPlayer()->safeTeleport(chr->GetMapId(), 0, chr->GetPosition());
-#endif
 
     }
     else

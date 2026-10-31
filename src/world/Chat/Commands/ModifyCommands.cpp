@@ -105,10 +105,15 @@ bool ChatCommandHandler::HandleModifyEnergy(const char* args, WorldSession* sess
     return false;
 }
 
-#if VERSION_STRING >= WotLK
 //.modify runicpower
 bool ChatCommandHandler::HandleModifyRunicpower(const char* args, WorldSession* session)
 {
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
+        redSystemMessage(session, "Runic power is not available in this expansion.");
+        return true;
+    }
+
     if (!args)
         return true;
 
@@ -128,7 +133,6 @@ bool ChatCommandHandler::HandleModifyRunicpower(const char* args, WorldSession* 
 
     return false;
 }
-#endif
 
 //.modify strength
 bool ChatCommandHandler::HandleModifyStrength(const char* args, WorldSession* session)
@@ -531,10 +535,15 @@ bool ChatCommandHandler::HandleModifyDynamicflags(const char* args, WorldSession
     return false;
 }
 
-#if VERSION_STRING < Cata
 //.modify happiness
 bool ChatCommandHandler::HandleModifyHappiness(const char* args, WorldSession* session)
 {
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+    {
+        redSystemMessage(session, "Pet happiness is not available in this expansion.");
+        return true;
+    }
+
     if (!args)
         return true;
 
@@ -551,7 +560,6 @@ bool ChatCommandHandler::HandleModifyHappiness(const char* args, WorldSession* s
 
     return false;
 }
-#endif
 
 //.modify boundingradius
 bool ChatCommandHandler::HandleModifyBoundingradius(const char* args, WorldSession* session)

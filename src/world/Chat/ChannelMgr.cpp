@@ -14,9 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Strings.hpp"
 #include "Utilities/Util.hpp"
 
-#if VERSION_STRING < Cata
 #include "Server/World.h"
-#endif
 
 using namespace AscEmu::Packets;
 
@@ -140,14 +138,12 @@ bool ChannelMgr::canPlayerJoinDefaultChannel(Player const* player, [[maybe_unuse
     if (player == nullptr || channelDbc == nullptr)
         return false;
 
-#if VERSION_STRING < Mop
-    // City specific channels
-    if (channelDbc->flags & (CHANNEL_DBC_CITY_ONLY_1 | CHANNEL_DBC_CITY_ONLY_2))
+    // city channels up to Cata
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop) && (channelDbc->flags & (CHANNEL_DBC_CITY_ONLY_1 | CHANNEL_DBC_CITY_ONLY_2)))
     {
         if (areaEntry == nullptr || !(areaEntry->flags & MapManagement::AreaManagement::AREA_FLAG_CAPITAL))
             return false;
     }
-#endif
 
     // Channels with zone name
     if (channelDbc->flags & CHANNEL_DBC_HAS_ZONENAME)

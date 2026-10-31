@@ -210,9 +210,7 @@ public:
     bool HandleCharAddHonorKillCommand(const char* args, WorldSession* m_session);
     bool HandleCharAddItemCommand(const char* args, WorldSession* m_session);
     bool HandleCharAddItemSetCommand(const char* args, WorldSession* m_session);
-#if VERSION_STRING >= Cata
     bool HandleCharAddCurrencyCommand(const char* args, WorldSession* m_session);
-#endif
 
     // Character set commands
     bool HandleCharSetAllExploredCommand(const char* /*args*/, WorldSession* m_session);
@@ -232,9 +230,7 @@ public:
     bool HandleCharSetRaceChangeCommand(const char* args, WorldSession* m_session);
     bool HandleCharResetTalentsCommand(const char* /*args*/, WorldSession* m_session);
 
-#if VERSION_STRING >= TBC // support classic
     bool HandleCharResetSkillsCommand(const char* /*args*/, WorldSession* m_session);
-#endif
 
     bool HandleCharRemoveItemCommand(const char* args, WorldSession* m_session);
     bool HandleCharIncreaseWeaponSkill(const char* args, WorldSession* m_session);
@@ -440,9 +436,7 @@ public:
     bool HandleModifyFlags(const char* args, WorldSession* session);
     bool HandleModifyFaction(const char* args, WorldSession* session);
     bool HandleModifyDynamicflags(const char* args, WorldSession* session);
-#if VERSION_STRING < Cata
     bool HandleModifyHappiness(const char* args, WorldSession* session);
-#endif
     bool HandleModifyBoundingradius(const char* args, WorldSession* session);
     bool HandleModifyCombatreach(const char* args, WorldSession* session);
     bool HandleModifyEmotestate(const char* args, WorldSession* session);
@@ -609,13 +603,11 @@ public:
     bool HandleRecallPortPlayerCommand(const char* args, WorldSession* m_session);
     bool HandleRecallPortUsCommand(const char* args, WorldSession* m_session);
 
-#ifdef FT_VEHICLES
     // Vehicle
     bool HandleVehicleEjectPassengerCommand(const char* args, WorldSession* session);
     bool HandleVehicleEjectAllPassengersCommand(const char* /*args*/, WorldSession* session);
     bool HandleVehicleInstallAccessoriesCommand(const char* /*args*/, WorldSession* session);
     bool HandleVehicleAddPassengerCommand(const char* args, WorldSession* session);
-#endif
 
     // Waypoint
     bool HandleWayPointAddCommand(const char* args, WorldSession* m_session);

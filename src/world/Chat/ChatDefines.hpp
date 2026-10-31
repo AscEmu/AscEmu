@@ -80,24 +80,16 @@ enum Languages : int32_t
     LANG_TROLL              = 0x00E,
     LANG_GUTTERSPEAK        = 0x021,
     LANG_DRAENEI            = 0x023,
-#if VERSION_STRING < Cata
-    NUM_LANGUAGES           = 0x024
-#else // >= Cata
     LANG_ZOMBIE             = 0x024,
     LANG_GNOMISH_BINARY     = 0x025,
     LANG_GOBLIN_BINARY      = 0x026,
     LANG_WORGEN             = 0x027,
     LANG_GOBLIN             = 0x028,
-#if VERSION_STRING == Cata
-    NUM_LANGUAGES           = 0x029
-#else // == Mop
     LANG_PANDAREN_NEUTRAL   = 0x02A,
     LANG_PANDAREN_ALLIANCE  = 0x02B,
     LANG_PANDAREN_HORDE     = 0x02C,
     LANG_RIKKITUN           = 0x0A8,
     NUM_LANGUAGES           = 0x0A9
-#endif
-#endif
 };
 
 struct LanguageSkillSpell

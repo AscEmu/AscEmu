@@ -18,9 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Strings.hpp"
 #include "Management/ItemInterface.h"
 
-#if VERSION_STRING < Cata
 #include "Server/World.h"
-#endif
 
 //.lookup achievement
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -34,7 +32,12 @@ This file is released under the MIT license. See README-MIT for more information
 //////////////////////////////////////////////////////////////////////////////////////////
 bool ChatCommandHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* args, [[maybe_unused]]WorldSession* m_session)
 {
-#if VERSION_STRING > TBC
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
+        redSystemMessage(m_session, "Achievements are not available in this expansion.");
+        return true;
+    }
+
     if (!*args)
         return false;
 
@@ -261,7 +264,6 @@ bool ChatCommandHandler::HandleLookupAchievementCommand([[maybe_unused]]const ch
         SendMultilineMessage(m_session, recout.c_str());
     }
     blueSystemMessage(m_session, "Search completed in {} ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-#endif
     return true;
 }
 
@@ -651,19 +653,13 @@ bool ChatCommandHandler::HandleLookupSkillCommand(const char* args, WorldSession
         if (skill_line == nullptr)
             continue;
 
-#if VERSION_STRING < Cata
-        std::string y = std::string(skill_line->Name[sWorld.getDbcLocaleLanguageId()]);
-#else
-        std::string y = std::string(skill_line->Name[0]);
-#endif
+        // the skill names carry locales up to WotLK
+        const auto nameIndex = WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata) ? 0 : sWorld.getDbcLocaleLanguageId();
+        std::string y = std::string(skill_line->Name[nameIndex]);
         AscEmu::Util::Strings::toLowerCase(y);
         if (AscEmu::Util::Strings::contains(x, y))
         {
-#if VERSION_STRING < Cata
-            SendHighlightedName(m_session, "Skill", skill_line->Name[sWorld.getDbcLocaleLanguageId()], y, x, skill_line->id);
-#else
-            SendHighlightedName(m_session, "Skill", skill_line->Name[0], y, x, skill_line->id);
-#endif
+            SendHighlightedName(m_session, "Skill", skill_line->Name[nameIndex], y, x, skill_line->id);
             ++count;
             if (count == 25)
             {

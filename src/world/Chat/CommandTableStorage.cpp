@@ -78,9 +78,7 @@ CommandTableStorage::CommandTableStorage()
         {"character add honorkills",      "m", 1, wrap(&ChatCommandHandler::HandleCharAddHonorKillCommand),     "Adds x amount of honor kills" },
         {"character add item",            "m", 1, wrap(&ChatCommandHandler::HandleCharAddItemCommand),          "Adds item x count y" },
         {"character add itemset",         "m", 1, wrap(&ChatCommandHandler::HandleCharAddItemSetCommand),       "Adds item set to inv." },
-#if VERSION_STRING >= Cata
         {"character add currency",        "m", 2, wrap(&ChatCommandHandler::HandleCharAddCurrencyCommand),      "Adds x amount of currency (by CurrencyTypes.dbc id) to character." },
-#endif
 
         {"character set",                 "m", 0 },
         {"character set allexplored",     "m", 0, wrap(&ChatCommandHandler::HandleCharSetAllExploredCommand),   "Reveals the unexplored parts of the map." },
@@ -120,9 +118,7 @@ CommandTableStorage::CommandTableStorage()
         {"character resetreputation",     "n", 0, wrap(&ChatCommandHandler::HandleCharResetReputationCommand),  "Resets reputation to start levels." },
         {"character resetspells",         "n", 0, wrap(&ChatCommandHandler::HandleCharResetSpellsCommand),      "Resets all spells of selected player." },
         {"character resettalents",        "n", 0, wrap(&ChatCommandHandler::HandleCharResetTalentsCommand),     "Resets all talents of selected player." },
-#if VERSION_STRING >= TBC
         {"character resetskills",         "n", 0, wrap(&ChatCommandHandler::HandleCharResetSkillsCommand),      "Resets all skills." },
-#endif
         {"character removeitem",          "m", 1, wrap(&ChatCommandHandler::HandleCharRemoveItemCommand),       "Removes item x count y." },
         {"character advanceallskills",    "m", 0, wrap(&ChatCommandHandler::HandleAdvanceAllSkillsCommand),     "Advances all skills <x> points." },
 
@@ -320,9 +316,7 @@ CommandTableStorage::CommandTableStorage()
         {"modify mana",                   "m", 1, wrap(&ChatCommandHandler::HandleModifyMana),                    "Mods mana points of selected target." },
         {"modify rage",                   "m", 1, wrap(&ChatCommandHandler::HandleModifyRage),                    "Mods rage points of selected target." },
         {"modify energy",                 "m", 1, wrap(&ChatCommandHandler::HandleModifyEnergy),                  "Mods energy points of selected target." },
-#if VERSION_STRING >= WotLK
         {"modify runicpower",             "m", 1, wrap(&ChatCommandHandler::HandleModifyRunicpower),              "Mods runic power points of selected target." },
-#endif
         {"modify strength",               "m", 1, wrap(&ChatCommandHandler::HandleModifyStrength),                "Mods strength value of the selected target." },
         {"modify agility",                "m", 1, wrap(&ChatCommandHandler::HandleModifyAgility),                 "Mods agility value of the selected target." },
         {"modify intelligence",           "m", 1, wrap(&ChatCommandHandler::HandleModifyIntelligence),            "Mods intelligence value of the selected target." },
@@ -343,9 +337,7 @@ CommandTableStorage::CommandTableStorage()
         {"modify flags",                  "m", 1, wrap(&ChatCommandHandler::HandleModifyFlags),                   "Mods flags of the selected target." },
         {"modify faction",                "m", 1, wrap(&ChatCommandHandler::HandleModifyFaction),                 "Mods faction template of the selected target." },
         {"modify dynamicflags",           "m", 1, wrap(&ChatCommandHandler::HandleModifyDynamicflags),            "Mods dynamic flags of the selected target." },
-#if VERSION_STRING < Cata
         {"modify happiness",              "m", 1, wrap(&ChatCommandHandler::HandleModifyHappiness),               "Mods happiness value of the selected target." },
-#endif
         {"modify boundingradius",         "m", 1, wrap(&ChatCommandHandler::HandleModifyBoundingradius),          "Mods bounding radius of the selected target." },
         {"modify combatreach",            "m", 1, wrap(&ChatCommandHandler::HandleModifyCombatreach),             "Mods combat reach of the selected target." },
         {"modify emotestate",             "m", 1, wrap(&ChatCommandHandler::HandleModifyEmotestate),              "Mods Unit emote state of the selected target." },
@@ -490,12 +482,10 @@ CommandTableStorage::CommandTableStorage()
         {"unroot",                        "b", 0, wrap(&ChatCommandHandler::HandleUnrootCommand),                 "Unroots selected target." },
 
         {"vehicle",                       "m", 0 },
-#ifdef FT_VEHICLES
         {"vehicle ejectpassenger",        "m", 1, wrap(&ChatCommandHandler::HandleVehicleEjectPassengerCommand),     "Ejects the passenger from the specified seat" },
         {"vehicle ejectallpassengers",    "m", 0, wrap(&ChatCommandHandler::HandleVehicleEjectAllPassengersCommand), "Ejects all passengers from the vehicle" },
         {"vehicle installaccessories",    "m", 0, wrap(&ChatCommandHandler::HandleVehicleInstallAccessoriesCommand), "Installs the accessories for the selected vehicle" },
         {"vehicle addpassenger",          "m", 1, wrap(&ChatCommandHandler::HandleVehicleAddPassengerCommand),       "Adds a new NPC passenger to the vehicle" },
-#endif
 
         {"wannounce",                     "u", 1, wrap(&ChatCommandHandler::handleWAnnounceCommand),              "Sends a widescreen announcement to all players." },
 

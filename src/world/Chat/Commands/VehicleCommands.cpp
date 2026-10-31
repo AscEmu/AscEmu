@@ -13,10 +13,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Storage/MySQLDataStore.hpp"
 
-#ifdef FT_VEHICLES
 //.vehicle ejectpassenger
 bool ChatCommandHandler::HandleVehicleEjectPassengerCommand(const char* args, WorldSession* session)
 {
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
+        redSystemMessage(session, "Vehicles are not available in this expansion.");
+        return true;
+    }
+
     if (!args)
     {
         redSystemMessage(session, "You need to specify a seat number.");
@@ -50,6 +55,12 @@ bool ChatCommandHandler::HandleVehicleEjectPassengerCommand(const char* args, Wo
 //.vehicle ejectallpassengers
 bool ChatCommandHandler::HandleVehicleEjectAllPassengersCommand(const char* /*args*/, WorldSession* session)
 {
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
+        redSystemMessage(session, "Vehicles are not available in this expansion.");
+        return true;
+    }
+
     Player* p = session->GetPlayer();
     if (p->getTargetGuid() == 0)
     {
@@ -74,6 +85,12 @@ bool ChatCommandHandler::HandleVehicleEjectAllPassengersCommand(const char* /*ar
 //.vehicle installaccessories
 bool ChatCommandHandler::HandleVehicleInstallAccessoriesCommand(const char* /*args*/, WorldSession* session)
 {
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
+        redSystemMessage(session, "Vehicles are not available in this expansion.");
+        return true;
+    }
+
     Player* p = session->GetPlayer();
     if (p->getTargetGuid() == 0)
     {
@@ -98,6 +115,12 @@ bool ChatCommandHandler::HandleVehicleInstallAccessoriesCommand(const char* /*ar
 //.vehicle addpassenger
 bool ChatCommandHandler::HandleVehicleAddPassengerCommand(const char* args, WorldSession* session)
 {
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
+        redSystemMessage(session, "Vehicles are not available in this expansion.");
+        return true;
+    }
+
     std::stringstream ss(args);
     uint32_t creature_entry;
     ss >> creature_entry;
@@ -142,4 +165,3 @@ bool ChatCommandHandler::HandleVehicleAddPassengerCommand(const char* args, Worl
 
     return true;
 }
-#endif

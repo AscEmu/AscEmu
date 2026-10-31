@@ -364,9 +364,8 @@ bool ChatCommandHandler::HandleCharLearnCommand(const char* args, WorldSession* 
         sGMLog.writefromsession(m_session, "Taught {} all spells.", selected_player->getName());
         systemMessage(m_session, "Taught {} all spells.", selected_player->getName());
 
-        static uint32_t spellarray[DRUID + 1][512] =
+        static uint32_t spellarrayLegacy[DRUID + 1][512] =
         {
-#if VERSION_STRING < Cata
             { 0 }, // N/A
             { 6673, 2457, 78, 100, 772, 6343, 1715, 284, 2687, 71, 6546, 7386, 355, 5242, 7384, 72, 1160, 6572, 285, 694, 2565, 676, 8198, 845, 6547, 20230, 12678, 6192, 5246, 7405, 6190, 5308, 1608, 6574, 1161, 6178, 871, 8204, 2458, 7369, 20252, 6548, 1464, 11549, 18499, 20658, 11564, 11554, 7379, 8380, 1680, 6552, 8820, 8205, 11608, 20660, 11565, 11572, 23922, 11550, 11555, 11600, 11578, 11604, 11596, 20661, 11566, 23923, 11580, 11609, 1719, 11573, 11551, 11556, 11601, 23924, 11605, 20662, 11567, 11597, 11581, 25289, 20569, 25286, 11574, 25288, 23925, 25241, 25202, 34428, 25269, 23920, 25234, 29707, 25258, 25225, 25264, 25231, 469, 25208, 2048, 25242, 25203, 25236, 30324, 3411, 30357, 30356, 46845, 47519, 47449, 47470, 47501, 47439, 47474, 55694, 47487, 47450, 47465, 47520, 47467, 47436, 47502, 47437, 47475, 47440, 47471, 57755, 57823, 47488, 674, 750, 64382, 0 }, // Warrior
             { 465, 643, 1032, 10290, 10291, 10292, 10293, 27149, 48941, 48942, 635, 21084, 19740, 20271, 498, 639, 853, 1152, 1022, 633, 19834, 53408, 7328, 19742, 647, 31789, 62124, 7294, 25780, 1044, 31785, 26573, 879, 19750, 5502, 19835, 19746, 1026, 20164, 19850, 5588, 5599, 10322, 10326, 19939, 1038, 10298, 5614, 53407, 19876, 20116, 19752, 1042, 2800, 20165, 19836, 19888, 19852, 642, 19940, 5615, 19891, 10324, 10299, 10278, 3472, 20166, 20922, 5589, 19895, 19837, 4987, 19941, 19853, 10312, 19897, 24275, 6940, 10328, 10300, 19899, 20772, 20923, 19942, 2812, 10310, 19838, 10313, 25782, 24274, 19896, 19854, 25894, 10308, 10329, 19898, 10301, 19943, 25291, 25290, 20924, 10314, 19900, 25898, 25916, 25899, 25918, 24239, 25292, 10318, 53651, 20773, 32223, 27135, 27151, 27142, 27143, 27137, 27150, 33776, 27138, 27152, 27180, 27139, 27154, 31884, 27140, 27173, 27153, 27141, 27136, 48935, 54428, 48937, 48816, 48949, 48931, 48800, 48933, 48784, 48805, 48818, 48781, 53600, 54043, 48943, 48936, 48945, 48938, 48947, 48817, 48788, 48932, 48801, 48785, 48934, 48950, 48819, 48806, 48782, 53601, 61411, 750, 20217, 53736, 33388, 0 }, // Paladin
@@ -379,7 +378,9 @@ bool ChatCommandHandler::HandleCharLearnCommand(const char* args, WorldSession* 
             { 59671, 687, 348, 686, 688, 172, 702, 1454, 695, 980, 5782, 6201, 696, 1120, 707, 697, 1108, 755, 705, 6222, 704, 689, 1455, 5697, 693, 1014, 5676, 706, 3698, 1094, 5740, 698, 1088, 712, 6202, 6205, 699, 126, 6223, 5138, 8288, 5500, 1714, 132, 1456, 17919, 710, 6366, 6217, 7658, 3699, 1106, 20752, 1086, 709, 1098, 5784, 1949, 2941, 691, 1490, 7646, 6213, 6229, 7648, 5699, 6219, 17920, 17951, 2362, 3700, 11687, 7641, 11711, 7651, 8289, 20755, 11733, 5484, 11665, 7659, 11707, 6789, 11683, 17921, 11739, 11671, 11725, 11693, 11659, 17952, 11729, 11721, 11699, 11688, 11677, 18647, 17727, 11712, 6353, 20756, 11719, 17925, 11734, 11667, 1122, 17922, 11708, 11675, 11694, 11660, 11740, 11672, 11700, 11684, 17928, 17953, 11717, 6215, 11689, 17924, 11730, 11713, 17926, 11726, 11678, 17923, 25311, 20757, 17728, 603, 11722, 11735, 54785, 11695, 11668, 25309, 50589, 18540, 11661, 50581, 28610, 27224, 23161, 27219, 28176, 25307, 29722, 27211, 27216, 27210, 27250, 28172, 29858, 27218, 27217, 27259, 27230, 27223, 27213, 27222, 29893, 27226, 27228, 30909, 27220, 28189, 27215, 27212, 27209, 27238, 30910, 27260, 32231, 30459, 27243, 30545, 47812, 50511, 47886, 61191, 47819, 47890, 47871, 47863, 47859, 60219, 47892, 47837, 47814, 47808, 47810, 47835, 47897, 47824, 47884, 47793, 47856, 47813, 47855, 47888, 47865, 47860, 47857, 47823, 47891, 47878, 47864, 57595, 47893, 47820, 47815, 47809, 60220, 47867, 47889, 48018, 48020, 47811, 47838, 57946, 58887, 47836, 61290, 47825, 0 }, // Warlock
             { 0 }, // N/A
             { 5185, 1126, 5176, 8921, 774, 467, 5177, 339, 5186, 5487, 99, 6795, 5232, 6807, 8924, 16689, 1058, 18960, 5229, 8936, 50769, 5211, 8946, 5187, 782, 5178, 1066, 8925, 1430, 779, 1062, 770, 16857, 2637, 6808, 16810, 8938, 768, 1082, 1735, 5188, 6756, 5215, 20484, 1079, 2912, 8926, 2090, 5221, 2908, 5179, 1822, 8939, 2782, 50768, 780, 1075, 5217, 2893, 1850, 5189, 6809, 8949, 5209, 3029, 8998, 5195, 8927, 16811, 2091, 9492, 6798, 778, 17390, 5234, 20739, 8940, 6800, 740, 783, 5180, 9490, 22568, 6778, 6785, 5225, 8972, 8928, 1823, 3627, 8950, 769, 8914, 22842, 9005, 8941, 50767, 9493, 6793, 5201, 5196, 8903, 18657, 16812, 8992, 8955, 6780, 9000, 20719, 22827, 16914, 29166, 8907, 8929, 20742, 8910, 8918, 9747, 9749, 17391, 9745, 6787, 9750, 8951, 22812, 9758, 1824, 9752, 9754, 9756, 8983, 9821, 9833, 9823, 9839, 9829, 8905, 9849, 9852, 22828, 16813, 9856, 50766, 9845, 21849, 9888, 17401, 9884, 9880, 9866, 20747, 9875, 9862, 9892, 9898, 9834, 9840, 9894, 9907, 17392, 9904, 9857, 9830, 9901, 9908, 9910, 9912, 22829, 9889, 9827, 9850, 9853, 18658, 33986, 33982, 9881, 9835, 17329, 9867, 9841, 9876, 31709, 31018, 21850, 25297, 17402, 9885, 20748, 9858, 25299, 50765, 9896, 25298, 9846, 9863, 53223, 27001, 26984, 26998, 26978, 22570, 24248, 26987, 26981, 33763, 27003, 26997, 26992, 33357, 26980, 26993, 27011, 33745, 27006, 27005, 27000, 26996, 27008, 26986, 26989, 33943, 33987, 33983, 27009, 27004, 26979, 26994, 26982, 50764, 26985, 33786, 26991, 27012, 26990, 26988, 27002, 26995, 26983, 53225, 48559, 48442, 49799, 40120, 62078, 50212, 48576, 48450, 48573, 48464, 48561, 48569, 48567, 48479, 48578, 48377, 49802, 53307, 48459, 48563, 48565, 48462, 48440, 52610, 48571, 48446, 53226, 48575, 48476, 48475, 48560, 49803, 48443, 48562, 53308, 48577, 53312, 48574, 48465, 48570, 48378, 48480, 48579, 48477, 50213, 48461, 48470, 48467, 48568, 48451, 48564, 48566, 48469, 48463, 50464, 48441, 50763, 49800, 48572, 48447, 53227, 61384, 62600, 0 }, // Druid
-#else
+        };
+        static uint32_t spellarrayCata[DRUID + 1][512] =
+        {
             { 0 }, // N/A
             { 750, 84614, 84615, 12809, 71, 7376, 20243, 676, 49410, 3411, 12975, 3127, 6572, 2565, 23922, 871, 46968, 23920, 12678, 7386, 355, 50720, 6673, 18499, 2458, 7381, 23881, 23885, 23880, 1161, 845, 469, 12292, 1160, 55694, 5308, 60970, 6544, /*52174,*/ 1134, 20252, /*20253,*/ 5246, 12323, 6552, 85288, 96103, 85384, 97462, 1719, 1464, 34428, 1680, 2457, 21156, 46924, 100, 86346, 1715, 78, 57755, 12294, 76858, 7384, 772, 94009, 20230, 64382, 64380, 88161, 12328, 85388, 6343, 86526, 72, 86479, 0 }, // Warrior
             { 750, 53563, 53652, 4987, 19746, 26573, 54968, 82326, 54428, 879, 19750, 635, 64891, 82327, 20473, 25912, 25914, 2812, 20187, 633, 53651, 7328, 20165, 10326, 85673, 53600, 26017, 20154, 82242, 19891, 31789, 25780, 20911, 84628, 84629, 20164, 86150, 20217, 465, 498, 642, 96231, 20271, 31804, 96231, 20066, 7294, 85285, 84963, 85256, 85696, 31801, 86525, 53385, 24275, 35395, 31935, 49410, 75806, 85043, 86150, 853, 53595, 1044, 1022, 62124, 6940, 1038, 20925, 31884, 19740, 31803, 32223, 86474, 0 }, // Paladin
@@ -392,24 +393,24 @@ bool ChatCommandHandler::HandleCharLearnCommand(const char* args, WorldSession* 
             { 126, 172, 348, 689, 698, 702, 980, 710, 755, 603, 687, 693, 1490, 1714, 6789, 6229, 29858, 18540, 30146, 691, 688, 1122, 712, 697, 5697, 1098, 85403, 19483, 20153, /*50590,*/ 50589, /*22703,*/ 29893, 28176, 5784, 71521, 6201, 29886, 54785, 54786, 48018, 48020, 47193, 23161, 89420, 1120, 5782, 50796, 17962, 29722, 91711, 5740, 42223, 5676, 47897, /*47960,*/ 30283, 6353, 1949, 5857, 48181, 5484, 1454, 18094, 18095, 27243, 27285, 86121, 86213, 30108, 91986, 85112, 80240, 18662, 80398, 93375, 93376, 77801, 77799, 79268, 19028, 74434, 86091, 86478, 0 }, // Warlock
             { 0 }, // N/A
             { 99, 339, 770, 774, 740, 783, 779, 33831, 24858, 24905, 16979, 49376, 80861, 33878, 33876, 84736, 24907, 33891, 50516, 61391, 48438, 50334, 81283, 81291, 62078, 5217, 5221, 78675, 80313, 80951, 48505, 50288, 78674, 93402, 61336, 5225, 1079, 40120, 52610, 2912, 467, 6785, 81170, 9005, 18960, 2908, 64801, 8936, 50769, 20484, 2782, 44203, 1066, 5421, 1178, 8998, 1850, 5229, 20719, 16857, 60089, 5209, 5211, 33943, 22842, 6807, 1126, 50464, 33745, 5185, 33763, 22570, 16914, 42231, 2637, 33786, 22812, 29166, 16689, 768, 1082, 5487, 22568, 1822, 5215, 6795, 8921, 86530, 16864, 80964, 80965, 88747, 88751, 77764, 62600, 77758, 77761, 5570, 86470, 0 }, // Druid
-#endif
         };
 
         uint8_t player_class = selected_player->getClass();
-        for (uint32_t i = 0; spellarray[player_class][i] != 0; ++i)
+        const bool cataclysmSpells = WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata);
+        const uint32_t* classSpells = cataclysmSpells ? spellarrayCata[player_class] : spellarrayLegacy[player_class];
+        for (uint32_t i = 0; classSpells[i] != 0; ++i)
         {
-            spell_entry = sSpellMgr.getSpellInfo(spellarray[player_class][i]);
+            spell_entry = sSpellMgr.getSpellInfo(classSpells[i]);
             if (spell_entry == nullptr)
                 continue;
 
-            if (selected_player->hasSpell(spellarray[player_class][i]))
+            if (selected_player->hasSpell(classSpells[i]))
                 continue;
 
-            selected_player->addSpell(spellarray[player_class][i]);
+            selected_player->addSpell(classSpells[i]);
         }
 
-#if VERSION_STRING < Cata
-        static uint32_t paladinspellarray[DBC_NUM_RACES][5] =
+        static uint32_t paladinspellarrayLegacy[DBC_NUM_RACES][5] =
         {
             { 0 },                                  // RACE 0
             { 23214, 13819, 31801, 53720, 0 },      // HUMAN  Charger, Warhorse, Seal of Vengeance, Seal of Martyr
@@ -420,13 +421,10 @@ bool ChatCommandHandler::HandleCharLearnCommand(const char* args, WorldSession* 
             { 0 },                                  // TAUREN
             { 0 },                                  // GNOME
             { 0 },                                  // TROLL
-#if VERSION_STRING > Classic
             { 34767, 34769, 31892, 53736, 0 },      // BLOODELF  Summon Charger, Summon Warhorse, Seal of Blood, Seal of Corruption
             { 23214, 13819, 31801, 53720, 0 },      // DRAENEI  Charger, Warhorse, Seal of Vengeance, Seal of Martyr
-#endif
         };
-#else
-        static uint32_t paladinspellarray[DBC_NUM_RACES][3] =
+        static uint32_t paladinspellarrayCata[DBC_NUM_RACES][3] =
         {
             { 0 },                  // RACE 0
             { 13819, 23214, 0 },    // HUMAN  Summon Warhorse, Summon Charger
@@ -452,11 +450,9 @@ bool ChatCommandHandler::HandleCharLearnCommand(const char* args, WorldSession* 
             { 0 },                  // RACE 21
             { 0 },                  // WORGEN
         };
-#endif
 
-        static uint32_t shamanspellarray[DBC_NUM_RACES][2] =
+        static uint32_t shamanspellarrayLegacy[DBC_NUM_RACES][2] =
         {
-#if VERSION_STRING < Cata
             { 0 },                                  // RACE 0
             { 0 },                                  // HUMAN
             { 2825, 0 },                            // ORC Bloodlust
@@ -466,11 +462,11 @@ bool ChatCommandHandler::HandleCharLearnCommand(const char* args, WorldSession* 
             { 2825, 0 },                            // TAUREN Bloodlust
             { 0 },                                  // GNOME
             { 2825, 0 },                            // TROLL Bloodlust
-#if VERSION_STRING > Classic
             { 0 },                                  // BLOODELF
             { 32182, 0 },                           // DRAENEI Heroism
-#endif
-#else
+        };
+        static uint32_t shamanspellarrayCata[DBC_NUM_RACES][2] =
+        {
             { 0 },                                  // RACE 0
             { 0 },                                  // HUMAN
             { 2825, 0 },                            // ORC Bloodlust
@@ -493,11 +489,9 @@ bool ChatCommandHandler::HandleCharLearnCommand(const char* args, WorldSession* 
             { 0 },                                  // RACE 20
             { 0 },                                  // RACE 21
             { 0 },                                  // WORGEN
-#endif
         };
 
-#if VERSION_STRING < Cata
-        static uint32_t magespellarray[DBC_NUM_RACES][13] =
+        static uint32_t magespellarrayLegacy[DBC_NUM_RACES][13] =
         {
             { 0 },                                                                                  // RACE 0
             { 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 33690, 33691, 49359, 49360, 0 }, // HUMAN
@@ -508,13 +502,10 @@ bool ChatCommandHandler::HandleCharLearnCommand(const char* args, WorldSession* 
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },                                              // TAUREN
             { 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 33690, 33691, 49359, 49360, 0 }, // GNOME
             { 3563, 3566, 3567, 11417, 11418, 11420, 32267, 32272, 35715, 35717, 49358, 49361, 0 }, // TROLL
-#if VERSION_STRING > Classic
             { 3563, 3566, 3567, 11417, 11418, 11420, 32267, 32272, 35715, 35717, 49358, 49361, 0 }, // BLOODELF
             { 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 33690, 33691, 49359, 49360, 0 }, // DRAENEI
-#endif
         };
-#else
-        static uint32_t magespellarray[DBC_NUM_RACES][17] =
+        static uint32_t magespellarrayCata[DBC_NUM_RACES][17] =
         {
             { 0 },      // RACE 0
             { 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 53142, 33690, 33691, 49360, 49359, 53140, 88342, 88345, 0 },       // HUMAN
@@ -540,48 +531,50 @@ bool ChatCommandHandler::HandleCharLearnCommand(const char* args, WorldSession* 
             { 0 },       // RACE 21
             { 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 53142, 33690, 33691, 49360, 49359, 53140, 88342, 88345, 0 },       // WORGEN
         };
-#endif
 
         uint8_t player_race = selected_player->getRace();
+        const uint32_t* paladinSpells = cataclysmSpells ? paladinspellarrayCata[player_race] : paladinspellarrayLegacy[player_race];
+        const uint32_t* mageSpells = cataclysmSpells ? magespellarrayCata[player_race] : magespellarrayLegacy[player_race];
+        const uint32_t* shamanSpells = cataclysmSpells ? shamanspellarrayCata[player_race] : shamanspellarrayLegacy[player_race];
         switch (player_class)
         {
             case PALADIN:
-                for (uint32_t i = 0; paladinspellarray[player_race][i] != 0; ++i)
+                for (uint32_t i = 0; paladinSpells[i] != 0; ++i)
                 {
-                    spell_entry = sSpellMgr.getSpellInfo(paladinspellarray[player_race][i]);
+                    spell_entry = sSpellMgr.getSpellInfo(paladinSpells[i]);
                     if (spell_entry == nullptr)
                         continue;
 
-                    if (selected_player->hasSpell(paladinspellarray[player_race][i]))
+                    if (selected_player->hasSpell(paladinSpells[i]))
                         continue;
 
-                    selected_player->addSpell(paladinspellarray[player_race][i]);
+                    selected_player->addSpell(paladinSpells[i]);
                 }
                 break;
             case MAGE:
-                for (uint32_t i = 0; magespellarray[player_race][i] != 0; ++i)
+                for (uint32_t i = 0; mageSpells[i] != 0; ++i)
                 {
-                    spell_entry = sSpellMgr.getSpellInfo(magespellarray[player_race][i]);
+                    spell_entry = sSpellMgr.getSpellInfo(mageSpells[i]);
                     if (spell_entry == nullptr)
                         continue;
 
-                    if (selected_player->hasSpell(magespellarray[player_race][i]))
+                    if (selected_player->hasSpell(mageSpells[i]))
                         continue;
 
-                    selected_player->addSpell(magespellarray[player_race][i]);
+                    selected_player->addSpell(mageSpells[i]);
                 }
                 break;
             case SHAMAN:
-                for (uint32_t i = 0; shamanspellarray[player_race][i] != 0; ++i)
+                for (uint32_t i = 0; shamanSpells[i] != 0; ++i)
                 {
-                    spell_entry = sSpellMgr.getSpellInfo(shamanspellarray[player_race][i]);
+                    spell_entry = sSpellMgr.getSpellInfo(shamanSpells[i]);
                     if (spell_entry == nullptr)
                         continue;
 
-                    if (selected_player->hasSpell(shamanspellarray[player_race][i]))
+                    if (selected_player->hasSpell(shamanSpells[i]))
                         continue;
 
-                    selected_player->addSpell(shamanspellarray[player_race][i]);
+                    selected_player->addSpell(shamanSpells[i]);
                 }
                 break;
         }
@@ -657,10 +650,8 @@ bool ChatCommandHandler::HandleCharAddHonorKillCommand(const char* args, WorldSe
 
     player_target->incrementKills(kill_amount);
 
-#if VERSION_STRING != Classic
     player_target->setFieldKills(uint32_t(player_target->getKillsToday() | (player_target->getKillsYesterday() << 16)));
     player_target->setLifetimeHonorableKills(player_target->getKillsLifetime());
-#endif
 
     return true;
 }
@@ -777,10 +768,15 @@ bool ChatCommandHandler::HandleCharAddItemSetCommand(const char* args, WorldSess
     return true;
 }
 
-#if VERSION_STRING >= Cata
 //.character add currency
 bool ChatCommandHandler::HandleCharAddCurrencyCommand(const char* args, WorldSession* m_session)
 {
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+    {
+        redSystemMessage(m_session, "Currencies are not available in this expansion.");
+        return true;
+    }
+
     uint32_t currencyId = 0;
     int32_t amount = 0;
 
@@ -978,10 +974,15 @@ bool ChatCommandHandler::HandleCharAddGoldCommand(const char* args, WorldSession
     return true;
 }
 
-#if VERSION_STRING >= TBC // support classic
 //.character resetskills
 bool ChatCommandHandler::HandleCharResetSkillsCommand(const char* /*args*/, WorldSession* m_session)
 {
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+    {
+        redSystemMessage(m_session, "This command is not available in this expansion.");
+        return true;
+    }
+
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
         return true;
@@ -1188,11 +1189,10 @@ bool ChatCommandHandler::HandleCharIncreaseWeaponSkill(const char* args, WorldSe
             case 15: // daggers
                 SubClassSkill = SKILL_DAGGERS;
                 break;
-#if VERSION_STRING <= Cata
-            case 16: // thrown
-                SubClassSkill = SKILL_THROWN;
+            case 16: // thrown, removed in Mop
+                if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+                    SubClassSkill = SKILL_THROWN;
                 break;
-#endif
             case 18: // crossbows
                 SubClassSkill = SKILL_CROSSBOWS;
                 break;
@@ -1336,20 +1336,21 @@ bool ChatCommandHandler::HandleCharSetGenderCommand(const char* args, WorldSessi
     player_target->setGender(gender);
     systemMessage(m_session, "Set gender for player {} to {} ({}).", player_target->getName(), gender ? "Female" : "Male", gender);
 
-#if VERSION_STRING > Classic
-    uint32_t displayId = player_target->getNativeDisplayId();
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+    {
+        uint32_t displayId = player_target->getNativeDisplayId();
 
-    if (player_target->getGender() == 0)
-    {
-        player_target->setDisplayId((player_target->getRace() == RACE_BLOODELF) ? ++displayId : --displayId);
-        player_target->setNativeDisplayId(displayId);
+        if (player_target->getGender() == 0)
+        {
+            player_target->setDisplayId((player_target->getRace() == RACE_BLOODELF) ? ++displayId : --displayId);
+            player_target->setNativeDisplayId(displayId);
+        }
+        else
+        {
+            player_target->setDisplayId((player_target->getRace() == RACE_BLOODELF) ? --displayId : ++displayId);
+            player_target->setNativeDisplayId(displayId);
+        }
     }
-    else
-    {
-        player_target->setDisplayId((player_target->getRace() == RACE_BLOODELF) ? --displayId : ++displayId);
-        player_target->setNativeDisplayId(displayId);
-    }
-#endif
 
     player_target->eventModelChange();
 
@@ -1639,12 +1640,15 @@ bool ChatCommandHandler::HandleCharSetTalentpointsCommand(const char* args, Worl
     ss >> primary_amount;
     ss >> secondary_amount;
 
-#ifndef FT_DUAL_SPEC
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
         player_target->getActiveSpec().setTalentPoints(primary_amount);
-#else
+    }
+    else
+    {
         player_target->m_specs[SPEC_PRIMARY].setTalentPoints(primary_amount);
         player_target->m_specs[SPEC_SECONDARY].setTalentPoints(secondary_amount);
-#endif
+    }
 
     player_target->sendTalentsInfo();
 
@@ -1665,7 +1669,12 @@ bool ChatCommandHandler::HandleCharSetTalentpointsCommand(const char* args, Worl
 //.character set title
 bool ChatCommandHandler::HandleCharSetTitleCommand([[maybe_unused]] const char* args, WorldSession* m_session)
 {
-#if VERSION_STRING > Classic
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+    {
+        redSystemMessage(m_session, "Titles are not available in this expansion.");
+        return true;
+    }
+
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
         return true;
@@ -1679,10 +1688,8 @@ bool ChatCommandHandler::HandleCharSetTitleCommand([[maybe_unused]] const char* 
     if (title == 0)
     {
         player_target->setKnownTitles(0, 0);
-#if VERSION_STRING > TBC
         player_target->setKnownTitles(1, 0);
         player_target->setKnownTitles(2, 0);
-#endif
     }
     else if (title > 0)
     {
@@ -1693,9 +1700,7 @@ bool ChatCommandHandler::HandleCharSetTitleCommand([[maybe_unused]] const char* 
         player_target->setKnownPvPTitle(static_cast<RankTitles>(-title), false);
     }
 
-#if VERSION_STRING > Classic
     player_target->setChosenTitle(0);  // better remove chosen one
-#endif
     systemMessage(m_session, "Title has been {}.", title > 0 ? "set" : "reset");
 
     if (title > 0)
@@ -1708,10 +1713,6 @@ bool ChatCommandHandler::HandleCharSetTitleCommand([[maybe_unused]] const char* 
     }
 
     return true;
-#else
-    redSystemMessage(m_session, "This command is not available for Classic!");
-    return true;
-#endif
 }
 
 //.character set forcerename

@@ -431,13 +431,16 @@ bool ChatCommandHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession
 
     systemMessage(m_session, "Damage (min / max): {} / {}", creature_target->getMinDamage(), creature_target->getMaxDamage());
 
-#if VERSION_STRING < WotLK
-    if (creature_target->getPetLoyalty() != 0)
-        systemMessage(m_session, "Pet loyalty level: {}", creature_target->getPetLoyalty());
-#elif VERSION_STRING < Mop
-    if (creature_target->getPetTalentPoints() != 0)
-        systemMessage(m_session, "Free pet talent points: {}", creature_target->getPetTalentPoints());
-#endif
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
+        if (creature_target->getPetLoyalty() != 0)
+            systemMessage(m_session, "Pet loyalty level: {}", creature_target->getPetLoyalty());
+    }
+    else if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+    {
+        if (creature_target->getPetTalentPoints() != 0)
+            systemMessage(m_session, "Free pet talent points: {}", creature_target->getPetTalentPoints());
+    }
 
     if (creature_target->GetCreatureProperties()->vehicleid > 0)
         systemMessage(m_session, "VehicleID: {}", creature_target->GetCreatureProperties()->vehicleid);
@@ -493,39 +496,42 @@ bool ChatCommandHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession
 
     sstext << "UNIT_FIELD_BYTES_1 are:" << '\n';
     sstext << " -StandState: " << std::to_string(creature_target->getStandState()) << '\n';
-#if VERSION_STRING < WotLK
-    sstext << " -Pet Loyalty: " << std::to_string(creature_target->getPetLoyalty()) << '\n';
-#elif VERSION_STRING < Mop
-    sstext << " -Pet TP: " << std::to_string(creature_target->getPetTalentPoints()) << '\n';
-#else
-    const auto theBytes = creature_target->getBytes1();
-    sstext << " -Unk1: " << std::to_string(uint16_t((uint8_t)(theBytes >> 8) & 0xFF)) << '\n';
-#endif
-#if VERSION_STRING == Classic
-    sstext << " -ShapeShift Form: " << std::to_string(creature_target->getShapeShiftForm()) << '\n';
-    sstext << " -StandState Flag: " << std::to_string(creature_target->getStandStateFlags()) << '\n';
-#else
-    sstext << " -StandState Flag: " << std::to_string(creature_target->getStandStateFlags()) << '\n';
-    sstext << " -Animation Flag: " << std::to_string(creature_target->getAnimationFlags()) << '\n';
-#endif
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        sstext << " -Pet Loyalty: " << std::to_string(creature_target->getPetLoyalty()) << '\n';
+    else if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+        sstext << " -Pet TP: " << std::to_string(creature_target->getPetTalentPoints()) << '\n';
+    else
+        sstext << " -Unk1: " << std::to_string(uint16_t((uint8_t)(creature_target->getBytes1() >> 8) & 0xFF)) << '\n';
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+    {
+        sstext << " -ShapeShift Form: " << std::to_string(creature_target->getShapeShiftForm()) << '\n';
+        sstext << " -StandState Flag: " << std::to_string(creature_target->getStandStateFlags()) << '\n';
+    }
+    else
+    {
+        sstext << " -StandState Flag: " << std::to_string(creature_target->getStandStateFlags()) << '\n';
+        sstext << " -Animation Flag: " << std::to_string(creature_target->getAnimationFlags()) << '\n';
+    }
     sstext << '\n';
 
     sstext << "UNIT_FIELD_BYTES_2 are:" << '\n';
     sstext << " -SheathType: " << std::to_string(creature_target->getSheathType()) << '\n';
-#if VERSION_STRING == Classic
-    const auto theBytes = creature_target->getBytes2();
-    sstext << " -Unk1: " << uint16_t((uint8_t)(theBytes >> 8) & 0xFF) << '\n';
-    sstext << " -Unk2: " << uint16_t((uint8_t)(theBytes >> 16) & 0xFF) << '\n';
-    sstext << " -Unk3: " << uint16_t((uint8_t)(theBytes >> 24) & 0xFF) << '\n';
-#else
-#if VERSION_STRING == TBC
-    sstext << " -Positive Aura Limit: " << std::to_string(creature_target->getPositiveAuraLimit()) << '\n';
-#else
-    sstext << " -PvP Flag: " << std::to_string(creature_target->getPvpFlags()) << '\n';
-#endif
-    sstext << " -Pet Flag: " << std::to_string(creature_target->getPetFlags()) << '\n';
-    sstext << " -ShapeShift Form: " << std::to_string(creature_target->getShapeShiftForm()) << '\n';
-#endif
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+    {
+        const auto theBytes = creature_target->getBytes2();
+        sstext << " -Unk1: " << uint16_t((uint8_t)(theBytes >> 8) & 0xFF) << '\n';
+        sstext << " -Unk2: " << uint16_t((uint8_t)(theBytes >> 16) & 0xFF) << '\n';
+        sstext << " -Unk3: " << uint16_t((uint8_t)(theBytes >> 24) & 0xFF) << '\n';
+    }
+    else
+    {
+        if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+            sstext << " -Positive Aura Limit: " << std::to_string(creature_target->getPositiveAuraLimit()) << '\n';
+        else
+            sstext << " -PvP Flag: " << std::to_string(creature_target->getPvpFlags()) << '\n';
+        sstext << " -Pet Flag: " << std::to_string(creature_target->getPetFlags()) << '\n';
+        sstext << " -ShapeShift Form: " << std::to_string(creature_target->getShapeShiftForm()) << '\n';
+    }
     sstext << '\0';
 
     systemMessage(m_session, "UNIT_FIELD_BYTES =================");
@@ -538,25 +544,24 @@ bool ChatCommandHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession
     std::string s = getNpcFlagString(creature_target);
     greenSystemMessage(m_session, "NpcFlags: {}{}", creature_target->getNpcFlags(), s);
 
-#if VERSION_STRING >= WotLK
-    uint8_t pvp_flags = creature_target->getPvpFlags();
-    greenSystemMessage(m_session, "PvPFlags: {}", pvp_flags);
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
+        uint8_t pvp_flags = creature_target->getPvpFlags();
+        greenSystemMessage(m_session, "PvPFlags: {}", pvp_flags);
 
-    for (uint32_t i = 0; i < numpvpflags; i++)
-        if ((pvp_flags & UnitPvPFlagToName[i].Flag) != 0)
-            greenSystemMessage(m_session, "{}", UnitPvPFlagToName[i].Name.data());
-#endif
+        for (uint32_t i = 0; i < numpvpflags; i++)
+            if ((pvp_flags & UnitPvPFlagToName[i].Flag) != 0)
+                greenSystemMessage(m_session, "{}", UnitPvPFlagToName[i].Name.data());
+    }
 
-#if VERSION_STRING >= TBC
     uint8_t pet_flags = creature_target->getPetFlags();
-    if (pet_flags != 0)
+    if (pet_flags != 0 && WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
     {
         greenSystemMessage(m_session, "PetFlags: {}", pet_flags);
         for (uint32_t i = 0; i < numpetflags; i++)
             if ((pet_flags & PetFlagToName[i].Flag) != 0)
                 greenSystemMessage(m_session, "{}", PetFlagToName[i].Name.data());
     }
-#endif
 
     uint32_t unit_flags = creature_target->getUnitFlags();
     greenSystemMessage(m_session, "UnitFlags: {}", unit_flags);
@@ -565,14 +570,15 @@ bool ChatCommandHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession
         if ((unit_flags & UnitFlagToName[i].Flag) != 0)
             greenSystemMessage(m_session, "-- {}", UnitFlagToName[i].Name.data());
 
-#if VERSION_STRING > Classic
-    uint32_t unit_flags2 = creature_target->getUnitFlags2();
-    greenSystemMessage(m_session, "UnitFlags2: {}", unit_flags2);
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+    {
+        uint32_t unit_flags2 = creature_target->getUnitFlags2();
+        greenSystemMessage(m_session, "UnitFlags2: {}", unit_flags2);
 
-    for (uint32_t i = 0; i < numflags2; i++)
-        if ((unit_flags2 & UnitFlagToName2[i].Flag) != 0)
-            greenSystemMessage(m_session, "-- {}", UnitFlagToName2[i].Name.data());
-#endif
+        for (uint32_t i = 0; i < numflags2; i++)
+            if ((unit_flags2 & UnitFlagToName2[i].Flag) != 0)
+                greenSystemMessage(m_session, "-- {}", UnitFlagToName2[i].Name.data());
+    }
 
     uint32_t dyn_flags = creature_target->getDynamicFlags();
     greenSystemMessage(m_session, "UnitDynamicFlags: {}", dyn_flags);
@@ -634,27 +640,19 @@ bool ChatCommandHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession
     //////////////////////////////////////////////////////////////////////////////////////////
     // equipment
     greenSystemMessage(m_session, "Equipment ============================");
-#if VERSION_STRING < WotLK
-    greenSystemMessage(m_session, "-- Melee: {}", creature_target->getVirtualItemEntry(MELEE));
-    greenSystemMessage(m_session, "-- Offhand: {}", creature_target->getVirtualItemEntry(OFFHAND));
-    greenSystemMessage(m_session, "-- Ranged: {}", creature_target->getVirtualItemEntry(RANGED));
-#else
     greenSystemMessage(m_session, "-- Melee: {}", creature_target->getVirtualItemSlotId(MELEE));
     greenSystemMessage(m_session, "-- Offhand: {}", creature_target->getVirtualItemSlotId(OFFHAND));
     greenSystemMessage(m_session, "-- Ranged: {}", creature_target->getVirtualItemSlotId(RANGED));
-#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // transport
     if (creature_target->GetTransport())
     {
         systemMessage(m_session, "Creature is on Transporter!");
-#if VERSION_STRING < Cata
         if (creature_target->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT))
             systemMessage(m_session, "Creature has MovementFlag MOVEFLAG_TRANSPORT");
         else
             systemMessage(m_session, "!!!!!!!!! NO MovementFlag MOVEFLAG_TRANSPORT !!!!!!!!!!!!");
-#endif
     }
 
     if (sScriptMgr.has_creature_script(creature_target->getEntry()))
@@ -1285,11 +1283,7 @@ bool ChatCommandHandler::HandleNpcSetEquipCommand(const char* args, WorldSession
         return true;
     }
 
-#if VERSION_STRING < WotLK
-    const auto previousValue = creature_target->getVirtualItemEntry(equipment_slot);
-#else
     const auto previousValue = creature_target->getVirtualItemSlotId(equipment_slot);
-#endif
 
     switch (equipment_slot)
     {

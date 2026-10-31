@@ -122,7 +122,12 @@ bool ChatCommandHandler::HandleGMBlockWhispersCommand(const char* args, WorldSes
 //.gm devtag
 bool ChatCommandHandler::HandleGMDevTagCommand([[maybe_unused]] const char* args, [[maybe_unused]] WorldSession* m_session)
 {
-#if VERSION_STRING >= WotLK
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
+        redSystemMessage(m_session, "The developer tag is not available in this expansion.");
+        return true;
+    }
+
     auto player = m_session->GetPlayer();
     bool toggle_no_notice = std::string(args) == "no_notice" ? true : false;
     if (player->hasPlayerFlags(PLAYER_FLAG_DEVELOPER))
@@ -143,7 +148,6 @@ bool ChatCommandHandler::HandleGMDevTagCommand([[maybe_unused]] const char* args
         blueSystemMessage(m_session, "<DEV> will now appear above your name and in chat messages until you use this command again.");
         player->addPlayerFlags(PLAYER_FLAG_DEVELOPER);
     }
-#endif
 
     return true;
 }
