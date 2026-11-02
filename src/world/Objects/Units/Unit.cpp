@@ -123,11 +123,9 @@ Unit::Unit() :
 {
     m_objectType |= TYPE_UNIT;
 
-#if VERSION_STRING < Cata
-    m_updateFlag = (UPDATEFLAG_LIVING | UPDATEFLAG_HAS_POSITION);
-#else
     m_updateFlag = UPDATEFLAG_LIVING;
-#endif
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+        m_updateFlag |= UPDATEFLAG_HAS_POSITION;
 
     m_lastAiInterfaceUpdateTime = Util::getMSTime();
 
@@ -7788,9 +7786,7 @@ bool Unit::createVehicleKit(uint32_t id, uint32_t creatureEntry)
         return false;
 
     m_vehicleKit = std::make_unique<Vehicle>(this, vehInfo, creatureEntry);
-#if VERSION_STRING >= WotLK // update packet layout
     m_updateFlag |= UPDATEFLAG_VEHICLE;
-#endif
     return true;
 }
 
@@ -7802,9 +7798,7 @@ void Unit::removeVehicleKit()
     m_vehicleKit->deactivate();
     m_vehicleKit = nullptr;
 
-#if VERSION_STRING >= WotLK // update packet layout
     m_updateFlag &= ~UPDATEFLAG_VEHICLE;
-#endif
     removeNpcFlags(UNIT_NPC_FLAG_SPELLCLICK | UNIT_NPC_FLAG_PLAYER_VEHICLE);
 }
 

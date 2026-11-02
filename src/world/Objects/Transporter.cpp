@@ -62,21 +62,11 @@ namespace
 
 Transporter::Transporter(uint64_t guid) : GameObject(guid), _passengerTeleportItr(_passengers.begin())
 {
-#if VERSION_STRING == Classic
-    m_updateFlag = (UPDATEFLAG_TRANSPORT | UPDATEFLAG_ALL | UPDATEFLAG_HAS_POSITION);
-#endif
-#if VERSION_STRING == TBC
-    m_updateFlag = (UPDATEFLAG_TRANSPORT | UPDATEFLAG_LOWGUID | UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION);
-#endif
-#if VERSION_STRING == WotLK
-    m_updateFlag = (UPDATEFLAG_TRANSPORT | UPDATEFLAG_LOWGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
-#endif
-#if VERSION_STRING == Cata
-    m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
-#endif
-#if VERSION_STRING >= Mop
-    m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
-#endif
+    m_updateFlag = UPDATEFLAG_LEGACY_GUID | UPDATEFLAG_HAS_POSITION;
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+        m_updateFlag |= UPDATEFLAG_TRANSPORT;
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        m_updateFlag |= UPDATEFLAG_ROTATION;
 }
 
 Transporter::~Transporter()

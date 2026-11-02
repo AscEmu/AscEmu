@@ -5,192 +5,76 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "AEVersion.hpp"
+#include "Server/ClientProtocol.hpp"
 
 #include <cstdint>
 
-#if VERSION_STRING == Classic
+// state of a trainer spell for the player, the trainer list packet writes the value of the client version
 enum TrainerSpellState : uint8_t
 {
-    TRAINER_SPELL_GREEN                 = 0,
-    TRAINER_SPELL_RED                   = 1,
-    TRAINER_SPELL_GRAY                  = 2,
+    TRAINER_SPELL_GRAY                  = 0,
+    TRAINER_SPELL_GREEN                 = 1,
+    TRAINER_SPELL_RED                   = 2,
     TRAINER_SPELL_GREEN_DISABLED        = 10
 };
 
+// what the create update of an object carries, clientUpdateFlags() gives the value of the client version
 enum ObjectUpdateFlags : uint16_t
 {
     UPDATEFLAG_NONE                     = 0x0000,
     UPDATEFLAG_SELF                     = 0x0001,
     UPDATEFLAG_TRANSPORT                = 0x0002,
     UPDATEFLAG_HAS_TARGET               = 0x0004,
-    UPDATEFLAG_HIGHGUID                 = 0x0008,
-    UPDATEFLAG_ALL                      = 0x0010,
-    UPDATEFLAG_LIVING                   = 0x0020,
-    UPDATEFLAG_HAS_POSITION             = 0x0040,
-};
-#endif
-
-#if VERSION_STRING == TBC
-enum TrainerSpellState : uint8_t
-{
-    TRAINER_SPELL_GREEN                 = 0,
-    TRAINER_SPELL_RED                   = 1,
-    TRAINER_SPELL_GRAY                  = 2,
-    TRAINER_SPELL_GREEN_DISABLED        = 10
-};
-
-enum ObjectUpdateFlags : uint16_t
-{
-    UPDATEFLAG_NONE                     = 0x0000,
-    UPDATEFLAG_SELF                     = 0x0001,
-    UPDATEFLAG_TRANSPORT                = 0x0002,
-    UPDATEFLAG_HAS_TARGET               = 0x0004,
-    UPDATEFLAG_LOWGUID                  = 0x0008,
-    UPDATEFLAG_HIGHGUID                 = 0x0010,
-    UPDATEFLAG_LIVING                   = 0x0020,
-    UPDATEFLAG_HAS_POSITION             = 0x0040,
-};
-#endif
-
-#if VERSION_STRING == WotLK
-enum TrainerSpellState : uint8_t
-{
-    TRAINER_SPELL_GREEN                 = 0,
-    TRAINER_SPELL_RED                   = 1,
-    TRAINER_SPELL_GRAY                  = 2,
-    TRAINER_SPELL_GREEN_DISABLED        = 10
-};
-
-enum ObjectUpdateFlags : uint16_t
-{
-    UPDATEFLAG_NONE                     = 0x0000,
-    UPDATEFLAG_SELF                     = 0x0001,
-    UPDATEFLAG_TRANSPORT                = 0x0002,
-    UPDATEFLAG_HAS_TARGET               = 0x0004,
-    UPDATEFLAG_UNKNOWN                  = 0x0008,
-    UPDATEFLAG_LOWGUID                  = 0x0010,
-    UPDATEFLAG_LIVING                   = 0x0020,
-    UPDATEFLAG_HAS_POSITION             = 0x0040,
-    UPDATEFLAG_VEHICLE                  = 0x0080,
-    UPDATEFLAG_POSITION                 = 0x0100,
-    UPDATEFLAG_ROTATION                 = 0x0200,
-    UPDATEFLAG_UNK1                     = 0x0400,
-    UPDATEFLAG_ANIM_KITS                = 0x0800,
-    UPDATEFLAG_TRANSPORT_ARR            = 0x1000,
+    UPDATEFLAG_LIVING                   = 0x0008,
+    UPDATEFLAG_HAS_POSITION             = 0x0010, // stationary position
+    UPDATEFLAG_VEHICLE                  = 0x0020,
+    UPDATEFLAG_POSITION                 = 0x0040, // transport position
+    UPDATEFLAG_ROTATION                 = 0x0080,
+    UPDATEFLAG_ANIM_KITS                = 0x0100,
+    UPDATEFLAG_AREATRIGGER              = 0x0200,
+    UPDATEFLAG_PLAY_HOVER_ANIM          = 0x0400,
+    UPDATEFLAG_SUPPRESSED_GREETINGS     = 0x0800,
+    UPDATEFLAG_NO_BIRTH_ANIM            = 0x1000,
     UPDATEFLAG_ENABLE_PORTALS           = 0x2000,
-    UPDATEFLAG_UNK2                     = 0x4000
+    UPDATEFLAG_LEGACY_GUID              = 0x4000  // guid block of the clients up to wotlk
 };
-#endif
 
-#if VERSION_STRING == Cata
-enum TrainerSpellState : uint8_t
+// the clients up to wotlk read the flags as one value with their own bits, the later clients get the bits by name
+inline uint16_t clientUpdateFlags(uint16_t updateFlags, WoW::Expansion expansion)
 {
-    TRAINER_SPELL_GRAY                  = 0,
-    TRAINER_SPELL_GREEN                 = 1,
-    TRAINER_SPELL_RED                   = 2,
-    TRAINER_SPELL_GREEN_DISABLED        = 10
-};
+    if (expansion >= WoW::Expansion::_Cata)
+        return updateFlags;
 
-enum ObjectUpdateFlags : uint32_t
-{
-    UPDATEFLAG_NONE                     = 0x00000,
-    UPDATEFLAG_SELF                     = 0x00001,
-    UPDATEFLAG_TRANSPORT                = 0x00002,
-    UPDATEFLAG_HAS_TARGET               = 0x00004,
-    UPDATEFLAG_UNKNOWN                  = 0x00008,
-    UPDATEFLAG_LOWGUID                  = 0x00010,
-    UPDATEFLAG_LIVING                   = 0x00020,
-    UPDATEFLAG_HAS_POSITION             = 0x00040,
-    UPDATEFLAG_VEHICLE                  = 0x00080,
-    UPDATEFLAG_POSITION                 = 0x00100,
-    UPDATEFLAG_ROTATION                 = 0x00200,
-    UPDATEFLAG_UNKNOWN1                 = 0x00400,
-    UPDATEFLAG_ANIM_KITS                = 0x00800,
-    UPDATEFLAG_AREATRIGGER              = 0x01000,
-    UPDATEFLAG_UNKNOWN2                 = 0x02000,
-    UPDATEFLAG_PLAY_HOVER_ANIM          = 0x04000,
-    UPDATEFLAG_SUPPRESSED_GREETINGS     = 0x08000,
-    UPDATEFLAG_NO_BIRTH_ANIM            = 0x10000,
-    UPDATEFLAG_ENABLE_PORTALS           = 0x20000,
-};
-#endif
+    struct ClientBit
+    {
+        uint16_t flag;
+        uint16_t classic;
+        uint16_t tbc;
+        uint16_t wotlk;
+    };
+    static constexpr ClientBit bits[] =
+    {
+        { UPDATEFLAG_SELF,           0x01, 0x01, 0x0001 },
+        { UPDATEFLAG_TRANSPORT,      0x02, 0x02, 0x0002 },
+        { UPDATEFLAG_HAS_TARGET,     0x04, 0x04, 0x0004 },
+        { UPDATEFLAG_LEGACY_GUID,    0x10, 0x18, 0x0010 },
+        { UPDATEFLAG_LIVING,         0x20, 0x20, 0x0020 },
+        { UPDATEFLAG_HAS_POSITION,   0x40, 0x40, 0x0040 },
+        { UPDATEFLAG_VEHICLE,        0x00, 0x00, 0x0080 },
+        { UPDATEFLAG_POSITION,       0x00, 0x00, 0x0100 },
+        { UPDATEFLAG_ROTATION,       0x00, 0x00, 0x0200 },
+        { UPDATEFLAG_ANIM_KITS,      0x00, 0x00, 0x0800 },
+        { UPDATEFLAG_ENABLE_PORTALS, 0x00, 0x00, 0x2000 }
+    };
 
-#if VERSION_STRING == Mop
-enum TrainerSpellState : uint8_t
-{
-    TRAINER_SPELL_GRAY                  = 0,
-    TRAINER_SPELL_GREEN                 = 1,
-    TRAINER_SPELL_RED                   = 2,
-    TRAINER_SPELL_GREEN_DISABLED        = 10
-};
+    uint16_t value = 0;
+    for (const auto& bit : bits)
+    {
+        if ((updateFlags & bit.flag) == 0)
+            continue;
 
-enum ObjectUpdateFlags : uint16_t
-{
-    UPDATEFLAG_NONE                     = 0x0000,
-    UPDATEFLAG_SELF                     = 0x0001,
-    UPDATEFLAG_TRANSPORT                = 0x0002,
-    UPDATEFLAG_HAS_TARGET               = 0x0004,
-    UPDATEFLAG_LIVING                   = 0x0008,
-    UPDATEFLAG_HAS_POSITION             = 0x0010, //stationary
-    UPDATEFLAG_VEHICLE                  = 0x0020,
-    UPDATEFLAG_POSITION                 = 0x0040, //transport position
-    UPDATEFLAG_ROTATION                 = 0x0080,
-    UPDATEFLAG_ANIM_KITS                = 0x0100,
-};
+        value |= expansion == WoW::Expansion::_Classic ? bit.classic : expansion == WoW::Expansion::_TBC ? bit.tbc : bit.wotlk;
+    }
 
-#endif
-
-#if VERSION_STRING == WoD
-enum TrainerSpellState : uint8_t
-{
-    TRAINER_SPELL_GRAY                  = 0,
-    TRAINER_SPELL_GREEN                 = 1,
-    TRAINER_SPELL_RED                   = 2,
-    TRAINER_SPELL_GREEN_DISABLED        = 10
-};
-
-enum ObjectUpdateFlags : uint16_t
-{
-    UPDATEFLAG_NONE                     = 0x0000,
-    UPDATEFLAG_SELF                     = 0x0001,
-    UPDATEFLAG_TRANSPORT                = 0x0002,
-    UPDATEFLAG_HAS_TARGET               = 0x0004,
-    UPDATEFLAG_LIVING                   = 0x0008,
-    UPDATEFLAG_HAS_POSITION             = 0x0010, //stationary
-    UPDATEFLAG_VEHICLE                  = 0x0020,
-    UPDATEFLAG_POSITION                 = 0x0040, //transport position
-    UPDATEFLAG_ROTATION                 = 0x0080,
-    UPDATEFLAG_ANIM_KITS                = 0x0100,
-};
-
-#endif
-
-#if VERSION_STRING == Legion || VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
-enum TrainerSpellState : uint8_t
-{
-    TRAINER_SPELL_GRAY                  = 0,
-    TRAINER_SPELL_GREEN                 = 1,
-    TRAINER_SPELL_RED                   = 2,
-    TRAINER_SPELL_GREEN_DISABLED        = 10
-};
-
-enum ObjectUpdateFlags : uint16_t
-{
-    UPDATEFLAG_NONE                     = 0x0000,
-    UPDATEFLAG_SELF                     = 0x0001,
-    UPDATEFLAG_TRANSPORT                = 0x0002,
-    UPDATEFLAG_HAS_TARGET               = 0x0004,
-    UPDATEFLAG_LIVING                   = 0x0008,
-    UPDATEFLAG_HAS_POSITION             = 0x0010, //stationary
-    UPDATEFLAG_VEHICLE                  = 0x0020,
-    UPDATEFLAG_POSITION                 = 0x0040, //transport position
-    UPDATEFLAG_ROTATION                 = 0x0080,
-    UPDATEFLAG_ANIM_KITS                = 0x0100,
-    UPDATEFLAG_SCENE_OBJECT             = 0x0200,
-    UPDATEFLAG_AREA_TRIGGER             = 0x0400,
-    UPDATEFLAG_HAS_WORLD_EFFECT_ID      = 0x0800,
-    UPDATEFLAG_PLAY_HOVER_ANIM          = 0x1000,
-};
-
-#endif
+    return value;
+}

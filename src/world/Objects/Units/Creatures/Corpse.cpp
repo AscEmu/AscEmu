@@ -23,21 +23,9 @@ using Version::CorpseField;
 
 Corpse::Corpse(uint64_t guid)
 {
-#if VERSION_STRING == Classic
-    m_updateFlag = (UPDATEFLAG_ALL | UPDATEFLAG_HAS_POSITION);
-#endif
-#if VERSION_STRING == TBC
-    m_updateFlag = (UPDATEFLAG_LOWGUID | UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION);
-#endif
-#if VERSION_STRING == WotLK
-    m_updateFlag = (UPDATEFLAG_LOWGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_POSITION);
-#endif
-#if VERSION_STRING == Cata
-    m_updateFlag = UPDATEFLAG_POSITION;
-#endif
-#if VERSION_STRING >= Mop
-    m_updateFlag = UPDATEFLAG_HAS_POSITION;
-#endif
+    m_updateFlag = UPDATEFLAG_LEGACY_GUID | (WoW::isServerExpansion(WoW::Expansion::_Cata) ? UPDATEFLAG_POSITION : UPDATEFLAG_HAS_POSITION);
+    if (WoW::isServerExpansion(WoW::Expansion::_WotLK))
+        m_updateFlag |= UPDATEFLAG_POSITION;
 
     const uint16_t valueCount = Version::layouts().corpse.valueCount();
 

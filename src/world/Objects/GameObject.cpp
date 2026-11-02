@@ -91,15 +91,11 @@ QuaternionData QuaternionData::fromEulerAnglesZYX(float Z, float Y, float X)
 
 GameObject::GameObject(uint64_t guid)
 {
-#if VERSION_STRING == Classic
-    m_updateFlag = (UPDATEFLAG_ALL | UPDATEFLAG_HAS_POSITION);
-#elif VERSION_STRING == TBC
-    m_updateFlag = (UPDATEFLAG_LOWGUID | UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION);
-#elif VERSION_STRING == WotLK
-    m_updateFlag = (UPDATEFLAG_LOWGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_POSITION | UPDATEFLAG_ROTATION);
-#else
-    m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
-#endif
+    m_updateFlag = UPDATEFLAG_LEGACY_GUID | UPDATEFLAG_HAS_POSITION;
+    if (WoW::isServerExpansion(WoW::Expansion::_WotLK))
+        m_updateFlag |= UPDATEFLAG_POSITION;
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        m_updateFlag |= UPDATEFLAG_ROTATION;
 
     const uint16_t valueCount = Version::layouts().gameObject.valueCount();
     m_valuesCount = valueCount;
@@ -723,21 +719,7 @@ bool GameObject::create(uint32_t entry, WorldMap* map, uint32_t phase, LocationV
         {
             m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE; //Make it forever visible on the same map;
 
-            #if VERSION_STRING == Classic
-                    m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT);
-            #endif
-            #if VERSION_STRING == TBC
-                    m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT);
-            #endif
-            #if VERSION_STRING == WotLK
-                    m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT) & ~UPDATEFLAG_POSITION;
-            #endif
-            #if VERSION_STRING == Cata
-                    m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT) & ~UPDATEFLAG_POSITION;
-            #endif
-            #if VERSION_STRING >= Mop
-                    m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT) & ~UPDATEFLAG_POSITION;
-            #endif
+            m_updateFlag = (m_updateFlag | UPDATEFLAG_TRANSPORT) & ~UPDATEFLAG_POSITION;
 
             setLevel(gameobject_properties->transport.pause);
             setState(gameobject_properties->transport.startOpen ? GO_STATE_OPEN : GO_STATE_CLOSED);

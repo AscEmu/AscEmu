@@ -40,21 +40,21 @@ namespace AscEmu::Packets
         }
 
     protected:
-        // the client encodes the state as known 0, available 1, unavailable 2 since Cata
+        // the client encodes the state as green 0, red 1, gray 2 up to wotlk and as gray 0, green 1, red 2 since cata
         uint8_t clientSpellState(TrainerSpell const* trainerSpell) const
         {
             const auto state = player->getSession()->trainerGetSpellStatus(trainerSpell);
-            if (m_protocol.expansion < WoW::Expansion::_Cata)
-                return static_cast<uint8_t>(state);
-
+            const bool legacy = m_protocol.expansion < WoW::Expansion::_Cata;
             switch (state)
             {
-                case TRAINER_SPELL_GRAY:
-                    return 0;
                 case TRAINER_SPELL_GREEN:
-                    return 1;
+                    return legacy ? 0 : 1;
+                case TRAINER_SPELL_RED:
+                    return legacy ? 1 : 2;
+                case TRAINER_SPELL_GRAY:
+                    return legacy ? 2 : 0;
                 default:
-                    return 2;
+                    return legacy ? 10 : 2;
             }
         }
 

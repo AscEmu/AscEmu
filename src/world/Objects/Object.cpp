@@ -537,10 +537,8 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
             break;
     }
 
-#if VERSION_STRING >= WotLK // update packet layout
     if (isVehicle())
         updateFlags |= UPDATEFLAG_VEHICLE;
-#endif
 
     if (isCreatureOrPlayer())
     {
@@ -2440,7 +2438,7 @@ uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* ma
 #if VERSION_STRING == Classic
 void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, [[maybe_unused]] Player* target)
 {
-    *data << static_cast<uint8_t>(updateFlags);
+    *data << static_cast<uint8_t>(clientUpdateFlags(updateFlags, WoW::Expansion::_Classic));
 
     if (updateFlags & UPDATEFLAG_LIVING) //0x20
     {
@@ -2516,10 +2514,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, [[maybe
         }
     }
 
-    if (updateFlags & UPDATEFLAG_HIGHGUID)
-        *data << uint32_t(static_cast<uint32_t>(GetNewGUID().getHighType()));
-
-    if (updateFlags & UPDATEFLAG_ALL)
+    if (updateFlags & UPDATEFLAG_LEGACY_GUID)
         *data << uint32_t(0x1);
 
     if (updateFlags & UPDATEFLAG_TRANSPORT) // 0x2
@@ -2536,7 +2531,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, [[maybe
 #if VERSION_STRING == TBC
 void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, [[maybe_unused]] Player* target)
 {
-    *data << static_cast<uint8_t>(updateFlags);
+    *data << static_cast<uint8_t>(clientUpdateFlags(updateFlags, WoW::Expansion::_TBC));
 
     if (updateFlags & UPDATEFLAG_LIVING)  //0x20
     {
@@ -2630,7 +2625,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, [[maybe
         }
     }
 
-    if (updateFlags & UPDATEFLAG_LOWGUID) //0x10
+    if (updateFlags & UPDATEFLAG_LEGACY_GUID) // low guid
     {
         switch (getOType())
         {
@@ -2657,7 +2652,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, [[maybe
         }
     }
 
-    if (updateFlags & UPDATEFLAG_HIGHGUID)
+    if (updateFlags & UPDATEFLAG_LEGACY_GUID) // high guid
     {
         switch (getOType())
         {
@@ -2697,7 +2692,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, [[maybe
 #if VERSION_STRING == WotLK
 void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* /*target*/)
 {
-    *data << uint16_t(updateFlags);
+    *data << clientUpdateFlags(updateFlags, WoW::Expansion::_WotLK);
 
     if (updateFlags & UPDATEFLAG_LIVING)  //0x20
     {
@@ -2821,10 +2816,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         }
     }
 
-    if (updateFlags & UPDATEFLAG_UNKNOWN)     //0x08
-        *data << uint32_t(0);
-
-    if (updateFlags & UPDATEFLAG_LOWGUID)    //0x10
+    if (updateFlags & UPDATEFLAG_LEGACY_GUID)
     {
         switch (getOType())
         {
