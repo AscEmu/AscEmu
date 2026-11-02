@@ -884,6 +884,7 @@ namespace WDB::Structures
     {
         float val;                                                  // 0
     };
+#endif
 
     struct GuildPerkSpellsEntry
     {
@@ -891,7 +892,6 @@ namespace WDB::Structures
         uint32_t Level;                                             // 1
         uint32_t SpellId;                                           // 2
     };
-#endif
 
 #if VERSION_STRING >= WotLK
 #define MAX_HOLIDAY_DURATIONS 10

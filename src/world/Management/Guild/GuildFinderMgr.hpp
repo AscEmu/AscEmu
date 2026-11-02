@@ -5,8 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#if VERSION_STRING >= Cata
-
 #include <string>
 #include <map>
 #include <vector>
@@ -226,5 +224,3 @@ public:
 };
 
 #define sGuildFinderMgr GuildFinderMgr::getInstance()
-
-#endif

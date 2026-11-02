@@ -291,10 +291,8 @@ namespace AscEmu::Packets
                     }
                     case GE_RANK_UPDATED:
                     case GE_RANK_DELETED:
-#if VERSION_STRING >= Cata
                     case GE_RANK_CREATED:
                     case GE_RANK_ORDER_CHANGED:
-#endif
                     {
                         packet.setOpcode(SMSG_GUILD_EVENT_RANKS_UPDATED);
                         return true;
@@ -348,9 +346,10 @@ namespace AscEmu::Packets
                 }
             }
 
-            if (m_protocol.expansion >= WoW::Expansion::_Classic)
+            const uint8_t clientEvent = clientGuildEvent(guildEvent, m_protocol.expansion);
+            if (clientEvent != GUILD_EVENT_NOT_IN_CLIENT)
             {
-                packet << guildEvent << textCount;
+                packet << clientEvent << textCount;
 
                 for (const auto& stringVars : text)
                     packet << stringVars.c_str();

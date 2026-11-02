@@ -37,10 +37,9 @@ void HonorHandler::AddHonorPointsToPlayer(Player* pPlayer, uint32_t uAmount)
 {
     pPlayer->addHonor(uAmount, true);
 
-#if VERSION_STRING >= Cata
-    if (pPlayer->getBattleground() != nullptr)
+    // honor is a currency from cata on
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata) && pPlayer->getBattleground() != nullptr)
         pPlayer->modifyCurrency(CURRENCY_TYPE_HONOR_POINTS, static_cast<int32_t>(uAmount));
-#endif
 }
 
 void HonorHandler::AddBattlegroundObjectiveXp(Player* pPlayer, uint32_t honorableKillEquivalents)

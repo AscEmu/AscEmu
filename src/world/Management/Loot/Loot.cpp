@@ -134,9 +134,8 @@ void Loot::addLootCurrency(LootStoreItem const& item)
     currencies.push_back(currency);
 }
 
-void Loot::lootCurrencyInSlot([[maybe_unused]] uint8_t slot, [[maybe_unused]] Player* player)
+void Loot::lootCurrencyInSlot(uint8_t slot, Player* player)
 {
-#if VERSION_STRING >= Cata
     if (player == nullptr || slot >= currencies.size())
         return;
 
@@ -146,7 +145,6 @@ void Loot::lootCurrencyInSlot([[maybe_unused]] uint8_t slot, [[maybe_unused]] Pl
 
     currency.is_looted = true;
     player->modifyCurrency(currency.currencyId, static_cast<int32_t>(currency.count));
-#endif
 }
 
 void Loot::clear()

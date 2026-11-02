@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "GuildEventLog.hpp"
 #include "WoWGuid.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/ClientProtocol.hpp"
 
 GuildEventLogEntry::GuildEventLogEntry(uint32_t guildId, uint32_t guid, GuildEventLogTypes eventType, uint32_t playerGuid1, uint32_t playerGuid2, uint8_t newRank) :
     GuildLogEntry(guildId, guid), mEventType(eventType), mPlayerGuid1(playerGuid1), mPlayerGuid2(playerGuid2), mNewRank(newRank)
@@ -29,60 +30,77 @@ void GuildEventLogEntry::saveGuildLogToDB() const
         mGuildId, mGuid, uint8_t(mEventType), mPlayerGuid1, mPlayerGuid2, (uint32_t)mNewRank, mTimestamp);
 }
 
-#if VERSION_STRING == Cata
 void GuildEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& content) const
 {
+    // the bit packed layout of the server expansion
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+    {
+        data << uint8_t(mEventType);
+        data << WoWGuid(mPlayerGuid1, 0, HIGHGUID_TYPE_PLAYER);
+
+        if (mEventType != GE_LOG_JOIN_GUILD && mEventType != GE_LOG_LEAVE_GUILD)
+            data << WoWGuid(mPlayerGuid2, 0, HIGHGUID_TYPE_PLAYER);
+
+        if (mEventType == GE_LOG_PROMOTE_PLAYER || mEventType == GE_LOG_DEMOTE_PLAYER)
+            data << uint8_t(mNewRank);
+
+        data << uint32_t(::time(nullptr) - mTimestamp);
+        return;
+    }
+
+    if (WoW::isServerExpansion(WoW::Expansion::_Cata))
+    {
+        WoWGuid guid1(mPlayerGuid1, 0, HIGHGUID_TYPE_PLAYER);
+        WoWGuid guid2(mPlayerGuid2, 0, HIGHGUID_TYPE_PLAYER);
+
+        data.writeBit(guid1[2]);
+        data.writeBit(guid1[4]);
+        data.writeBit(guid2[7]);
+        data.writeBit(guid2[6]);
+        data.writeBit(guid1[3]);
+        data.writeBit(guid2[3]);
+        data.writeBit(guid2[5]);
+        data.writeBit(guid1[7]);
+        data.writeBit(guid1[5]);
+        data.writeBit(guid1[0]);
+        data.writeBit(guid2[4]);
+        data.writeBit(guid2[2]);
+        data.writeBit(guid2[0]);
+        data.writeBit(guid2[1]);
+        data.writeBit(guid1[1]);
+        data.writeBit(guid1[6]);
+
+        content.writeByteSeq(guid2[3]);
+        content.writeByteSeq(guid2[2]);
+        content.writeByteSeq(guid2[5]);
+
+        content << uint8_t(mNewRank);
+
+        content.writeByteSeq(guid2[4]);
+        content.writeByteSeq(guid1[0]);
+        content.writeByteSeq(guid1[4]);
+
+        content << uint32_t(::time(nullptr) - mTimestamp);
+
+        content.writeByteSeq(guid1[7]);
+        content.writeByteSeq(guid1[3]);
+        content.writeByteSeq(guid2[0]);
+        content.writeByteSeq(guid2[6]);
+        content.writeByteSeq(guid2[7]);
+        content.writeByteSeq(guid1[5]);
+
+        content << uint8_t(mEventType);
+
+        content.writeByteSeq(guid2[1]);
+        content.writeByteSeq(guid1[2]);
+        content.writeByteSeq(guid1[6]);
+        content.writeByteSeq(guid1[1]);
+        return;
+    }
+
     WoWGuid guid1(mPlayerGuid1, 0, HIGHGUID_TYPE_PLAYER);
     WoWGuid guid2(mPlayerGuid2, 0, HIGHGUID_TYPE_PLAYER);
 
-    data.writeBit(guid1[2]);
-    data.writeBit(guid1[4]);
-    data.writeBit(guid2[7]);
-    data.writeBit(guid2[6]);
-    data.writeBit(guid1[3]);
-    data.writeBit(guid2[3]);
-    data.writeBit(guid2[5]);
-    data.writeBit(guid1[7]);
-    data.writeBit(guid1[5]);
-    data.writeBit(guid1[0]);
-    data.writeBit(guid2[4]);
-    data.writeBit(guid2[2]);
-    data.writeBit(guid2[0]);
-    data.writeBit(guid2[1]);
-    data.writeBit(guid1[1]);
-    data.writeBit(guid1[6]);
-
-    content.writeByteSeq(guid2[3]);
-    content.writeByteSeq(guid2[2]);
-    content.writeByteSeq(guid2[5]);
-
-    content << uint8_t(mNewRank);
-
-    content.writeByteSeq(guid2[4]);
-    content.writeByteSeq(guid1[0]);
-    content.writeByteSeq(guid1[4]);
-
-    content << uint32_t(::time(nullptr) - mTimestamp);
-
-    content.writeByteSeq(guid1[7]);
-    content.writeByteSeq(guid1[3]);
-    content.writeByteSeq(guid2[0]);
-    content.writeByteSeq(guid2[6]);
-    content.writeByteSeq(guid2[7]);
-    content.writeByteSeq(guid1[5]);
-
-    content << uint8_t(mEventType);
-
-    content.writeByteSeq(guid2[1]);
-    content.writeByteSeq(guid1[2]);
-    content.writeByteSeq(guid1[6]);
-    content.writeByteSeq(guid1[1]);
-#elif VERSION_STRING >= Mop
-void GuildEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& content) const
-{
-    WoWGuid guid1(mPlayerGuid1, 0, HIGHGUID_TYPE_PLAYER);
-    WoWGuid guid2(mPlayerGuid2, 0, HIGHGUID_TYPE_PLAYER);
-
     data.writeBit(guid1[6]);
     data.writeBit(guid1[1]);
     data.writeBit(guid2[5]);
@@ -125,18 +143,4 @@ void GuildEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& cont
     content << uint8_t(mNewRank);
 
     content.writeByteSeq(guid2[3]);
-#else
-void GuildEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& /*content*/) const
-{
-    data << uint8_t(mEventType);
-    data << WoWGuid(mPlayerGuid1, 0, HIGHGUID_TYPE_PLAYER);
-
-    if (mEventType != GE_LOG_JOIN_GUILD && mEventType != GE_LOG_LEAVE_GUILD)
-        data << WoWGuid(mPlayerGuid2, 0, HIGHGUID_TYPE_PLAYER);
-
-    if (mEventType == GE_LOG_PROMOTE_PLAYER || mEventType == GE_LOG_DEMOTE_PLAYER)
-        data << uint8_t(mNewRank);
-
-    data << uint32_t(::time(nullptr) - mTimestamp);
-#endif
 }

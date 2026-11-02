@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Logging/Logger.hpp"
 #include "Objects/Item.hpp"
 #include "Management/ObjectMgr.hpp"
+#include "Server/ClientProtocol.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/WorldSession.h"
@@ -62,22 +63,24 @@ void GuildBankTab::removeBankTabItemFromDB(bool removeItemsFromDB)
 
 void GuildBankTab::writeInfoPacket(WorldPacket& data) const
 {
-#if VERSION_STRING < Cata
-    uint8_t count = 0;
+    // up to wotlk the tab info is the slot list, from cata on name and icon
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+    {
+        uint8_t count = 0;
 
-    size_t pos = data.wpos();
-    data << uint8_t(0);
+        size_t pos = data.wpos();
+        data << uint8_t(0);
 
-    for (uint8_t slotId = 0; slotId < MAX_GUILD_BANK_SLOTS; ++slotId)
-        if (writeSlotPacket(data, slotId))
-            ++count;
+        for (uint8_t slotId = 0; slotId < MAX_GUILD_BANK_SLOTS; ++slotId)
+            if (writeSlotPacket(data, slotId))
+                ++count;
 
-    data.put<uint8_t>(pos, count);
-#else
+        data.put<uint8_t>(pos, count);
+        return;
+    }
 
     data << mName;
     data << mIcon;
-#endif
 }
 
 bool GuildBankTab::writeSlotPacket(WorldPacket& data, uint8_t slotId, bool ignoreEmpty) const

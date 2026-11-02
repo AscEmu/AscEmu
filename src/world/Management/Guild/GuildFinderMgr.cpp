@@ -8,8 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Opcodes.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
-#if VERSION_STRING >= Cata
-
 #include "GuildFinderMgr.hpp"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/Guild/Guild.hpp"
@@ -338,4 +336,3 @@ void GuildFinderMgr::sendMembershipRequestListUpdate(Player& player)
     SmsgLfGuildApplicationsListChanged managedPacket;
     PacketBroadcast::sendToSet(player, managedPacket, false);
 }
-#endif

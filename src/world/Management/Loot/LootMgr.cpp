@@ -275,12 +275,10 @@ bool LootMgr::addLootRow(LootRowSet& set, LootRow const& row, std::string const&
         set.addIndependent(entry);
         return true;
     }
-#if VERSION_STRING >= Cata
     else if (row.isCurrency)
     {
         entry.item = LootStoreItem(row.itemId, row.chance, row.minCount, row.maxCount);
     }
-#endif
     else
     {
         const auto itemProto = sMySQLStore.getItemProperties(row.itemId);

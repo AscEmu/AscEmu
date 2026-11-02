@@ -47,16 +47,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 
-#if VERSION_STRING >= Cata
 #include "Management/Guild/GuildFinderMgr.hpp"
-#endif
-
-#if VERSION_STRING >= Cata
 #include "Server/Packets/SmsgGuildBankMoneyWithdrawn.h"
 #include "Server/Packets/SmsgGuildMemberDailyReset.h"
-#else
 #include "Server/Packets/MsgGuildBankMoneyWithdrawn.h"
-#endif
 
 using namespace AscEmu::Packets;
 
@@ -189,9 +183,7 @@ bool Guild::create(Player* pLeader, std::string const& name)
 
     if (ret)
     {
-#if VERSION_STRING >= Cata
         broadcastEvent(GE_FOUNDER, 0, {});
-#endif
         sHookInterface.OnGuildCreate(pLeader, this);
     }
 
@@ -224,9 +216,7 @@ void Guild::disband()
     CharacterDatabase.execute("DELETE FROM guild_logs WHERE guildId = %u", m_id);
 
     CharacterDatabase.execute("DELETE FROM guild_bank_logs WHERE guildId = %u", m_id);
-#if VERSION_STRING >= Cata
     sGuildFinderMgr.deleteGuild(m_id);
-#endif
 
     sGuildMgr.removeGuild(m_id);
 }
@@ -363,7 +353,6 @@ void Guild::handleQuery(WorldSession* session)
     //sLogger.debugOpcode("SMSG_GUILD_QUERY_RESPONSE {}", session->GetPlayer()->getName());
 }
 
-#if VERSION_STRING >= Cata
 void Guild::sendGuildRankInfo(WorldSession* session) const
 {
     std::vector<GuildRankData> ranks;
@@ -399,7 +388,6 @@ void Guild::sendGuildRankInfo(WorldSession* session) const
 
     sLogger.debugOpcode("SMSG_GUILD_RANK {}", session->GetPlayer()->getName());
 }
-#endif
 
 void Guild::handleSetMOTD(WorldSession* session, std::string const& motd)
 {
@@ -475,7 +463,6 @@ void Guild::handleSetNewGuildMaster(WorldSession* session, std::string const& na
     }
 }
 
-#if VERSION_STRING >= Cata
 void Guild::handleReplaceGuildMaster(WorldSession* session)
 {
     Player* player = session->GetPlayer();
@@ -509,7 +496,6 @@ void Guild::handleReplaceGuildMaster(WorldSession* session)
     oldGuildMaster->changeRank(_getLowestRankId());
     broadcastEvent(GE_LEADER_CHANGED, 0, { oldGuildMasterName, newGuildMasterName });
 }
-#endif
 
 void Guild::handleSetBankTabInfo(WorldSession* session, uint8_t tabId, std::string const& name, std::string const& icon)
 {
@@ -623,13 +609,11 @@ void Guild::handleLeaveMember(WorldSession* session)
             SmsgGuildCommandResult managedPacket(GC_TYPE_QUIT, "", GC_ERROR_LEADER_LEAVE);
             session->sendManagedPacket(managedPacket);
         }
-#if VERSION_STRING >= Cata
-        else if (getLevel() >= worldConfig.guild.undeletableLevel)
+        else if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata) && getLevel() >= worldConfig.guild.undeletableLevel)
         {
             SmsgGuildCommandResult managedPacket(GC_TYPE_QUIT, "", GC_ERROR_UNDELETABLE_DUE_TO_LEVEL);
             session->sendManagedPacket(managedPacket);
         }
-#endif
         else
             disband();
     }
@@ -776,9 +760,7 @@ void Guild::handleSetMemberRank(WorldSession* session, [[maybe_unused]] uint64_t
         return;
     }
 
-#if VERSION_STRING >= Cata
     sendGuildRanksUpdate(setterGuid, targetGuid, rank);
-#endif
 }
 
 void Guild::handleAddNewRank(WorldSession* session, std::string const& name)
@@ -791,11 +773,7 @@ void Guild::handleAddNewRank(WorldSession* session, std::string const& name)
     {
         if (createRank(name, GR_RIGHT_GCHATLISTEN | GR_RIGHT_GCHATSPEAK))
         {
-#if VERSION_STRING >= Cata
             broadcastEvent(GE_RANK_CREATED, 0, {});
-#else
-            broadcastEvent(GE_RANK_UPDATED, 0, {});
-#endif
         }
     }
 }
@@ -897,17 +875,20 @@ void Guild::handleGuildPartyRequest(WorldSession* session)
 
 void Guild::sendEventLog(WorldSession* session) const
 {
-#if VERSION_STRING >= Cata
-    SmsgGuildEventLogQueryResult managedPacket(mEventLog.get());
-#else
-    MsgGuildEventLogQuery managedPacket(mEventLog.get());
-#endif
-    session->sendManagedPacket(managedPacket);
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+    {
+        SmsgGuildEventLogQueryResult managedPacket(mEventLog.get());
+        session->sendManagedPacket(managedPacket);
+    }
+    else
+    {
+        MsgGuildEventLogQuery managedPacket(mEventLog.get());
+        session->sendManagedPacket(managedPacket);
+    }
 
     sLogger.debugOpcode("SMSG_GUILD_EVENT_LOG_QUERY_RESULT {}", session->GetPlayer()->getName());
 }
 
-#if VERSION_STRING >= Cata
 void Guild::sendNewsUpdate(WorldSession* session)
 {
     GuildLog* logs = mNewsLog->getGuildLog();
@@ -940,7 +921,6 @@ void Guild::sendNewsUpdate(WorldSession* session)
 
     sLogger.debugOpcode("SMSG_GUILD_NEWS_UPDATE {}", session->GetPlayer()->getName());
 }
-#endif
 
 void Guild::sendBankLog(WorldSession* session, uint8_t tabId) const
 {
@@ -948,12 +928,16 @@ void Guild::sendBankLog(WorldSession* session, uint8_t tabId) const
     {
         GuildLogHolder const* log = mBankEventLog[tabId].get();
 
-#if VERSION_STRING >= Cata
-        SmsgGuildBankLogQueryResult managedPacket(tabId, getLevel() >= 5 && tabId == MAX_GUILD_BANK_TABS, log);
-#else
-        MsgGuildBankLogQuery managedPacket(tabId, log);
-#endif
-        session->sendManagedPacket(managedPacket);
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+        {
+            SmsgGuildBankLogQueryResult managedPacket(tabId, getLevel() >= 5 && tabId == MAX_GUILD_BANK_TABS, log);
+            session->sendManagedPacket(managedPacket);
+        }
+        else
+        {
+            MsgGuildBankLogQuery managedPacket(tabId, log);
+            session->sendManagedPacket(managedPacket);
+        }
 
         sLogger.debugOpcode("SMSG_GUILD_BANK_LOG_QUERY_RESULT {} TabId: {}", session->GetPlayer()->getName(), tabId);
     }
@@ -978,13 +962,17 @@ void Guild::sendPermissions(WorldSession* session) const
     for (uint8_t tabId = 0; tabId < MAX_GUILD_BANK_TABS; ++tabId)
         tabs.emplace_back(static_cast<uint32_t>(getRankBankTabRights(rankId, tabId)), static_cast<uint32_t>(getMemberRemainingSlots(member, tabId)));
 
-#if VERSION_STRING >= Cata
-    SmsgGuildPermissionsQueryResults managedPacket(rankId, _getPurchasedTabsSize(), getRankRights(rankId), static_cast<uint32_t>(getMemberRemainingMoney(member)),
-        static_cast<uint32_t>(getRankBankMoneyPerDay(rankId)), tabs);
-#else
-    MsgGuildPermissions managedPacket(rankId, getRankRights(rankId), static_cast<uint32_t>(getMemberRemainingMoney(member)), _getPurchasedTabsSize(), tabs);
-#endif
-    session->sendManagedPacket(managedPacket);
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+    {
+        SmsgGuildPermissionsQueryResults managedPacket(rankId, _getPurchasedTabsSize(), getRankRights(rankId), static_cast<uint32_t>(getMemberRemainingMoney(member)),
+            static_cast<uint32_t>(getRankBankMoneyPerDay(rankId)), tabs);
+        session->sendManagedPacket(managedPacket);
+    }
+    else
+    {
+        MsgGuildPermissions managedPacket(rankId, getRankRights(rankId), static_cast<uint32_t>(getMemberRemainingMoney(member)), _getPurchasedTabsSize(), tabs);
+        session->sendManagedPacket(managedPacket);
+    }
 
     sLogger.debugOpcode("SMSG_GUILD_PERMISSIONS_QUERY_RESULTS {} Rank: {}", session->GetPlayer()->getName(), rankId);
 }
@@ -997,13 +985,16 @@ void Guild::sendMoneyInfo(WorldSession* session) const
 
     const int32_t amount = getMemberRemainingMoney(member);
 
-#if VERSION_STRING >= Cata
-    SmsgGuildBankMoneyWithdrawn managedPacket(amount);
-#else
-    MsgGuildBankMoneyWithdrawn managedPacket(amount);
-#endif
-
-    session->sendManagedPacket(managedPacket);
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+    {
+        SmsgGuildBankMoneyWithdrawn managedPacket(amount);
+        session->sendManagedPacket(managedPacket);
+    }
+    else
+    {
+        MsgGuildBankMoneyWithdrawn managedPacket(amount);
+        session->sendManagedPacket(managedPacket);
+    }
 }
 
 void Guild::sendLoginInfo(WorldSession* session)
@@ -1017,18 +1008,21 @@ void Guild::sendLoginInfo(WorldSession* session)
 
     Player* player = session->GetPlayer();
 
-#if VERSION_STRING < Cata
-    sendBankList(session, 0, false, true);
-
-    handleRoster(session);
-    broadcastEvent(GE_SIGNED_ON, player->getGuid(), { player->getName() });
-
-    if (GuildMember* member = getMember(player->getGuid()))
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
     {
-        member->setStats(player);
-        member->addFlag(GEM_STATUS_ONLINE);
+        sendBankList(session, 0, false, true);
+
+        handleRoster(session);
+        broadcastEvent(GE_SIGNED_ON, player->getGuid(), { player->getName() });
+
+        if (GuildMember* member = getMember(player->getGuid()))
+        {
+            member->setStats(player);
+            member->addFlag(GEM_STATUS_ONLINE);
+        }
+        return;
     }
-#else
+
     sendGuildRankInfo(session);
     broadcastEvent(GE_SIGNED_ON, player->getGuid(), { player->getName() });
 
@@ -1056,7 +1050,6 @@ void Guild::sendLoginInfo(WorldSession* session)
         member->setStats(player);
         member->addFlag(GEM_STATUS_ONLINE);
     }
-#endif
 }
 
 bool Guild::loadGuildFromDB(Field* fields)
@@ -1071,15 +1064,11 @@ bool Guild::loadGuildFromDB(Field* fields)
     m_motd = fields[9].asCString();
     m_createdDate = time_t(fields[10].asUint32());
     m_bankMoney = fields[11].asUint64();
-#if VERSION_STRING >= Cata
     m_level = fields[12].asUint8();
     m_experience = fields[13].asUint64();
     m_todayExperience = fields[14].asUint64();
 
     uint8_t purchasedTabs = fields[15].asUint8();
-#else
-    uint8_t purchasedTabs = fields[12].asUint8();
-#endif
     if (purchasedTabs > MAX_GUILD_BANK_TABS)
     {
         purchasedTabs = MAX_GUILD_BANK_TABS;
@@ -1396,9 +1385,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
         player->setGuildId(m_id);
         player->setInvitedByGuildId(0);
         player->setGuildRank(rankId);
-#if VERSION_STRING >= Cata
         player->setGuildLevel(getLevel());
-#endif
         sendLoginInfo(player->getSession());
         name = player->getName();
     }
@@ -1432,9 +1419,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
 
     logEvent(GE_LOG_JOIN_GUILD, lowguid);
     broadcastEvent(GE_JOINED, guid, { name });
-#if VERSION_STRING >= Cata
     sGuildFinderMgr.removeAllMembershipRequestsFromPlayer(lowguid);
-#endif
     sHookInterface.OnGuildJoin(player, this);
 
     return true;
@@ -1481,7 +1466,6 @@ void Guild::deleteMember(uint64_t guid, bool isDisbanding, bool /*isKicked*/)
     {
         player->setGuildId(0);
         player->setGuildRank(0);
-#if VERSION_STRING >= Cata
         player->setGuildLevel(0);
 
         for (uint32_t i = 0; i < sGuildPerkSpellsStore.getNumRows(); ++i)
@@ -1494,7 +1478,6 @@ void Guild::deleteMember(uint64_t guid, bool isDisbanding, bool /*isKicked*/)
                 }
             }
         }
-#endif
     }
 
     CharacterDatabase.execute("DELETE FROM guild_members WHERE guildId = %u", lowguid);
@@ -1529,9 +1512,9 @@ void Guild::setBankTabText(uint8_t tabId, std::string const& text)
     {
         pTab->setText(text);
         pTab->sendText(this, nullptr);
-#if VERSION_STRING >= Mop
-        broadcastEvent(GE_BANK_TEXT_CHANGED, 0, { std::to_string(tabId) });
-#endif
+        // the 5.x client gets its own text changed event, the older ones send the text on request
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+            broadcastEvent(GE_BANK_TEXT_CHANGED, 0, { std::to_string(tabId) });
     }
 }
 
@@ -1796,98 +1779,100 @@ void Guild::broadcastEvent(GuildEvents guildEvent, uint64_t guid, std::vector<st
     sLogger.debugOpcode("SMSG_GUILD_EVENT: {} ({})", _GetGuildEventString(guildEvent), guildEvent);
 }
 
-#if VERSION_STRING < Cata
-void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool /*withContent*/, bool /*withTabInfo*/) const
-{
-    const bool sendAllSlots = true;
-    const bool withTabInfo = !tabId;
-    const auto tab = getBankTab(tabId);
-
-    std::vector<GuildBankListTabInfo> tabInfo;
-    if (withTabInfo)
-    {
-        tabInfo.reserve(_getPurchasedTabsSize());
-        for (uint8_t i = 0; i < _getPurchasedTabsSize(); ++i)
-            tabInfo.push_back({ _guildBankTabsStore[i]->getName(), _guildBankTabsStore[i]->getIcon() });
-    }
-
-    SmsgGuildBankList managedPacket(m_bankMoney, tabId, 0, sendAllSlots, withTabInfo, 21, tab, {}, tabInfo, {});
-
-    if (session)
-    {
-        int32_t numSlots = 0;
-        if (GuildMember const* member = getMember(session->GetPlayer()->getGuid()))
-            numSlots = getRankBankTabSlotsPerDay(member->getRankId(), tabId);
-        managedPacket.remainingSlots = static_cast<uint32_t>(numSlots);
-        session->sendManagedPacket(managedPacket);
-    }
-    else
-    {
-        for (auto itr = _guildMembersStore.begin(); itr != _guildMembersStore.end(); ++itr)
-        {
-            if (!memberHasTabRights(itr->second->getGUID(), tabId, GB_RIGHT_VIEW_TAB))
-                continue;
-
-            Player* player =  sObjectMgr.getPlayer(itr->second->getName().c_str(), true);
-            if (!player)
-                continue;
-
-            managedPacket.remainingSlots = static_cast<uint32_t>(getRankBankTabSlotsPerDay(itr->second->getRankId(), tabId));
-            player->getSession()->sendManagedPacket(managedPacket);
-        }
-    }
-}
-#elif VERSION_STRING == Cata
 void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent, bool withTabInfo) const
 {
-    GuildMember const* member = getMember(session->GetPlayer()->getGuid());
-    if (member == nullptr)
-        return;
-
-    std::vector<GuildBankListItemSlot> items;
-    if (withContent && memberHasTabRights(session->GetPlayer()->getGuid(), tabId, GB_RIGHT_VIEW_TAB))
+    // the list of the server expansion: whole tab up to wotlk, bit packed from cata on
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
     {
-        if (GuildBankTab const* tab = getBankTab(tabId))
+        const bool sendAllSlots = true;
+        const bool wholeTabInfo = !tabId;
+        const auto tab = getBankTab(tabId);
+
+        std::vector<GuildBankListTabInfo> tabInfo;
+        if (wholeTabInfo)
         {
-            for (uint8_t slotId = 0; slotId < MAX_GUILD_BANK_SLOTS; ++slotId)
+            tabInfo.reserve(_getPurchasedTabsSize());
+            for (uint8_t i = 0; i < _getPurchasedTabsSize(); ++i)
+                tabInfo.push_back({ _guildBankTabsStore[i]->getName(), _guildBankTabsStore[i]->getIcon() });
+        }
+
+        SmsgGuildBankList managedPacket(m_bankMoney, tabId, 0, sendAllSlots, wholeTabInfo, 21, tab, {}, tabInfo, {});
+
+        if (session)
+        {
+            int32_t numSlots = 0;
+            if (GuildMember const* member = getMember(session->GetPlayer()->getGuid()))
+                numSlots = getRankBankTabSlotsPerDay(member->getRankId(), tabId);
+            managedPacket.remainingSlots = static_cast<uint32_t>(numSlots);
+            session->sendManagedPacket(managedPacket);
+        }
+        else
+        {
+            for (auto itr = _guildMembersStore.begin(); itr != _guildMembersStore.end(); ++itr)
             {
-                if (Item* tabItem = tab->getItem(slotId))
+                if (!memberHasTabRights(itr->second->getGUID(), tabId, GB_RIGHT_VIEW_TAB))
+                    continue;
+
+                Player* player =  sObjectMgr.getPlayer(itr->second->getName().c_str(), true);
+                if (!player)
+                    continue;
+
+                managedPacket.remainingSlots = static_cast<uint32_t>(getRankBankTabSlotsPerDay(itr->second->getRankId(), tabId));
+                player->getSession()->sendManagedPacket(managedPacket);
+            }
+        }
+        return;
+    }
+
+    if (WoW::isServerExpansion(WoW::Expansion::_Cata))
+    {
+        GuildMember const* member = getMember(session->GetPlayer()->getGuid());
+        if (member == nullptr)
+            return;
+
+        std::vector<GuildBankListItemSlot> items;
+        if (withContent && memberHasTabRights(session->GetPlayer()->getGuid(), tabId, GB_RIGHT_VIEW_TAB))
+        {
+            if (GuildBankTab const* tab = getBankTab(tabId))
+            {
+                for (uint8_t slotId = 0; slotId < MAX_GUILD_BANK_SLOTS; ++slotId)
                 {
-                    GuildBankListItemSlot item;
-                    item.slotId = slotId;
-                    item.entry = tabItem->getEntry();
-                    item.stackCount = tabItem->getStackCount();
-                    item.randomPropertiesId = tabItem->getRandomPropertiesId();
-                    item.propertySeed = tabItem->getPropertySeed();
-
-                    for (uint32_t ench = 0; ench < MAX_ENCHANTMENT_SLOT; ++ench)
+                    if (Item* tabItem = tab->getItem(slotId))
                     {
-                        if (uint32_t enchantId = tabItem->getEnchantmentId(static_cast<uint8_t>(EnchantmentSlot(ench))))
-                            item.enchants.emplace_back(enchantId, ench);
-                    }
+                        GuildBankListItemSlot item;
+                        item.slotId = slotId;
+                        item.entry = tabItem->getEntry();
+                        item.stackCount = tabItem->getStackCount();
+                        item.randomPropertiesId = tabItem->getRandomPropertiesId();
+                        item.propertySeed = tabItem->getPropertySeed();
 
-                    items.push_back(std::move(item));
+                        for (uint32_t ench = 0; ench < MAX_ENCHANTMENT_SLOT; ++ench)
+                        {
+                            if (uint32_t enchantId = tabItem->getEnchantmentId(static_cast<uint8_t>(EnchantmentSlot(ench))))
+                                item.enchants.emplace_back(enchantId, ench);
+                        }
+
+                        items.push_back(std::move(item));
+                    }
                 }
             }
         }
+
+        std::vector<GuildBankListTabInfo> tabInfo;
+        if (withTabInfo)
+        {
+            tabInfo.reserve(_getPurchasedTabsSize());
+            for (uint8_t i = 0; i < _getPurchasedTabsSize(); ++i)
+                tabInfo.push_back({ _guildBankTabsStore[i]->getName(), _guildBankTabsStore[i]->getIcon() });
+        }
+
+        SmsgGuildBankList managedPacket(m_bankMoney, tabId, static_cast<uint32_t>(getMemberRemainingSlots(member, tabId)),
+            false, withTabInfo, 22, nullptr, {}, tabInfo, items);
+
+        session->sendManagedPacket(managedPacket);
+        return;
     }
 
-    std::vector<GuildBankListTabInfo> tabInfo;
-    if (withTabInfo)
-    {
-        tabInfo.reserve(_getPurchasedTabsSize());
-        for (uint8_t i = 0; i < _getPurchasedTabsSize(); ++i)
-            tabInfo.push_back({ _guildBankTabsStore[i]->getName(), _guildBankTabsStore[i]->getIcon() });
-    }
-
-    SmsgGuildBankList managedPacket(m_bankMoney, tabId, static_cast<uint32_t>(getMemberRemainingSlots(member, tabId)),
-        false, withTabInfo, 22, nullptr, {}, tabInfo, items);
-
-    session->sendManagedPacket(managedPacket);
-}
-#elif VERSION_STRING >= Mop
-void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent, bool withTabInfo) const
-{
     GuildMember const* member = getMember(session->GetPlayer()->getGuid());
     if (member == nullptr)
         return;
@@ -1935,10 +1920,8 @@ void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent,
 
     session->sendManagedPacket(managedPacket);
 }
-#endif
 
 
-#if VERSION_STRING >= Cata
 void Guild::sendGuildRanksUpdate(uint64_t setterGuid, uint64_t targetGuid, uint32_t rank)
 {
     GuildMember* member = getMember(targetGuid);
@@ -2061,14 +2044,12 @@ void Guild::addGuildNews(uint8_t type, uint64_t guid, uint32_t flags, uint32_t v
     SmsgGuildNewsUpdate managedPacket(std::vector<GuildNewsEntryData>{ entry });
     PacketBroadcast::sendFromGuild(*this, managedPacket);
 }
-#endif
 
 bool Guild::hasAchieved(uint32_t /*achievementId*/) const
 {
     return false;
 }
 
-#if VERSION_STRING >= Cata
 void Guild::handleNewsSetSticky(WorldSession* session, uint32_t newsId, bool sticky)
 {
     GuildLog* logs = mNewsLog->getGuildLog();
@@ -2104,7 +2085,6 @@ void Guild::handleGuildRequestChallengeUpdate(WorldSession* session)
     SmsgGuildChallengeUpdated managedPacket;
     session->sendManagedPacket(managedPacket);
 }
-#endif
 
 void Guild::sendTurnInPetitionResult(WorldSession* pClient, uint32_t result)
 {
@@ -2276,48 +2256,81 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
 
 void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots, bool sendAllSlots) const
 {
-#if VERSION_STRING < Cata
-    const bool withTabInfo = !tabId && sendAllSlots;
-    const auto tab = getBankTab(tabId);
-
-    std::vector<GuildBankListTabInfo> tabInfo;
-    if (withTabInfo)
+    // the content update of the server expansion: whole tab up to wotlk, bit packed from cata on
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
     {
-        tabInfo.reserve(_getPurchasedTabsSize());
-        for (uint8_t i = 0; i < _getPurchasedTabsSize(); ++i)
-            tabInfo.push_back({ _guildBankTabsStore[i]->getName(), _guildBankTabsStore[i]->getIcon() });
-    }
+        const bool withTabInfo = !tabId && sendAllSlots;
+        const auto tab = getBankTab(tabId);
 
-    SmsgGuildBankList managedPacket(m_bankMoney, tabId, 0, sendAllSlots, withTabInfo, 21, tab, slots, tabInfo, {});
-
-    for (auto itr = _guildMembersStore.begin(); itr != _guildMembersStore.end(); ++itr)
-    {
-        if (!memberHasTabRights(itr->second->getGUID(), tabId, GB_RIGHT_VIEW_TAB))
-            continue;
-
-        Player* player = sObjectMgr.getPlayer(itr->second->getName().c_str(), true);
-        if (!player)
-            continue;
-
-        managedPacket.remainingSlots = static_cast<uint32_t>(getRankBankTabSlotsPerDay(itr->second->getRankId(), tabId));
-        player->getSession()->sendManagedPacket(managedPacket);
-    }
-#elif VERSION_STRING == Cata
-    if (GuildBankTab const* guildBankTab = getBankTab(tabId))
-    {
-        std::vector<GuildBankListItemSlot> items;
-
-        if (sendAllSlots)
+        std::vector<GuildBankListTabInfo> tabInfo;
+        if (withTabInfo)
         {
-            items.reserve(MAX_GUILD_BANK_SLOTS);
-            for (uint8_t slotId = 0; slotId < MAX_GUILD_BANK_SLOTS; ++slotId)
+            tabInfo.reserve(_getPurchasedTabsSize());
+            for (uint8_t i = 0; i < _getPurchasedTabsSize(); ++i)
+                tabInfo.push_back({ _guildBankTabsStore[i]->getName(), _guildBankTabsStore[i]->getIcon() });
+        }
+
+        SmsgGuildBankList managedPacket(m_bankMoney, tabId, 0, sendAllSlots, withTabInfo, 21, tab, slots, tabInfo, {});
+
+        for (auto itr = _guildMembersStore.begin(); itr != _guildMembersStore.end(); ++itr)
+        {
+            if (!memberHasTabRights(itr->second->getGUID(), tabId, GB_RIGHT_VIEW_TAB))
+                continue;
+
+            Player* player = sObjectMgr.getPlayer(itr->second->getName().c_str(), true);
+            if (!player)
+                continue;
+
+            managedPacket.remainingSlots = static_cast<uint32_t>(getRankBankTabSlotsPerDay(itr->second->getRankId(), tabId));
+            player->getSession()->sendManagedPacket(managedPacket);
+        }
+        return;
+    }
+
+    if (WoW::isServerExpansion(WoW::Expansion::_Cata))
+    {
+        if (GuildBankTab const* guildBankTab = getBankTab(tabId))
+        {
+            std::vector<GuildBankListItemSlot> items;
+
+            if (sendAllSlots)
             {
-                if (const auto tab = getBankTab(tabId))
+                items.reserve(MAX_GUILD_BANK_SLOTS);
+                for (uint8_t slotId = 0; slotId < MAX_GUILD_BANK_SLOTS; ++slotId)
                 {
-                    Item* tabItem = tab->getItem(slotId);
+                    if (const auto tab = getBankTab(tabId))
+                    {
+                        Item* tabItem = tab->getItem(slotId);
+
+                        GuildBankListItemSlot item;
+                        item.slotId = slotId;
+                        item.entry = tabItem ? tabItem->getEntry() : 0;
+                        item.stackCount = tabItem ? tabItem->getStackCount() : 0;
+                        item.randomPropertiesId = tabItem ? tabItem->getRandomPropertiesId() : 0;
+                        item.propertySeed = tabItem ? tabItem->getPropertySeed() : 0;
+
+                        if (tabItem)
+                        {
+                            for (uint32_t enchSlot = 0; enchSlot < MAX_ENCHANTMENT_SLOT; ++enchSlot)
+                            {
+                                if (uint32_t enchantId = tabItem->getEnchantmentId(static_cast<uint8_t>(EnchantmentSlot(enchSlot))))
+                                    item.enchants.emplace_back(enchantId, enchSlot);
+                            }
+                        }
+
+                        items.push_back(std::move(item));
+                    }
+                }
+            }
+            else
+            {
+                items.reserve(slots.size());
+                for (auto itr = slots.begin(); itr != slots.end(); ++itr)
+                {
+                    Item* tabItem = guildBankTab->getItem(*itr);
 
                     GuildBankListItemSlot item;
-                    item.slotId = slotId;
+                    item.slotId = *itr;
                     item.entry = tabItem ? tabItem->getEntry() : 0;
                     item.stackCount = tabItem ? tabItem->getStackCount() : 0;
                     item.randomPropertiesId = tabItem ? tabItem->getRandomPropertiesId() : 0;
@@ -2335,51 +2348,26 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots, bool sendAllSlo
                     items.push_back(std::move(item));
                 }
             }
-        }
-        else
-        {
-            items.reserve(slots.size());
-            for (auto itr = slots.begin(); itr != slots.end(); ++itr)
+
+            SmsgGuildBankList managedPacket(m_bankMoney, tabId, 0, sendAllSlots, false, 22, nullptr, {}, {}, items);
+
+            for (GuildMembersStore::const_iterator itr = _guildMembersStore.begin(); itr != _guildMembersStore.end(); ++itr)
             {
-                Item* tabItem = guildBankTab->getItem(*itr);
-
-                GuildBankListItemSlot item;
-                item.slotId = *itr;
-                item.entry = tabItem ? tabItem->getEntry() : 0;
-                item.stackCount = tabItem ? tabItem->getStackCount() : 0;
-                item.randomPropertiesId = tabItem ? tabItem->getRandomPropertiesId() : 0;
-                item.propertySeed = tabItem ? tabItem->getPropertySeed() : 0;
-
-                if (tabItem)
+                if (memberHasTabRights(itr->second->getGUID(), tabId, GB_RIGHT_VIEW_TAB))
                 {
-                    for (uint32_t enchSlot = 0; enchSlot < MAX_ENCHANTMENT_SLOT; ++enchSlot)
+                    if (Player* player = itr->second->getPlayerByGuid(itr->second->getGUID()))
                     {
-                        if (uint32_t enchantId = tabItem->getEnchantmentId(static_cast<uint8_t>(EnchantmentSlot(enchSlot))))
-                            item.enchants.emplace_back(enchantId, enchSlot);
+                        managedPacket.remainingSlots = static_cast<uint32_t>(getMemberRemainingSlots(itr->second.get(), tabId));
+                        player->getSession()->sendManagedPacket(managedPacket);
                     }
                 }
-
-                items.push_back(std::move(item));
             }
+
+            sLogger.debugOpcode("SMSG_GUILD_BANK_LIST");
         }
-
-        SmsgGuildBankList managedPacket(m_bankMoney, tabId, 0, sendAllSlots, false, 22, nullptr, {}, {}, items);
-
-        for (GuildMembersStore::const_iterator itr = _guildMembersStore.begin(); itr != _guildMembersStore.end(); ++itr)
-        {
-            if (memberHasTabRights(itr->second->getGUID(), tabId, GB_RIGHT_VIEW_TAB))
-            {
-                if (Player* player = itr->second->getPlayerByGuid(itr->second->getGUID()))
-                {
-                    managedPacket.remainingSlots = static_cast<uint32_t>(getMemberRemainingSlots(itr->second.get(), tabId));
-                    player->getSession()->sendManagedPacket(managedPacket);
-                }
-            }
-        }
-
-        sLogger.debugOpcode("SMSG_GUILD_BANK_LIST");
+        return;
     }
-#elif VERSION_STRING >= Mop
+
     if (GuildBankTab const* guildBankTab = getBankTab(tabId))
     {
         std::vector<GuildBankListItemSlot> items;
@@ -2458,7 +2446,6 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots, bool sendAllSlo
 
         sLogger.debugOpcode("SMSG_GUILD_BANK_LIST");
     }
-#endif
 }
 
 Guild::GuildMember::GuildMember(uint32_t guildId, uint64_t guid, uint8_t rankId) : mGuildId(guildId), mGuid(guid), mZoneId(0), mLevel(0), mClass(0),

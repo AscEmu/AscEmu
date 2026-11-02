@@ -40,10 +40,12 @@ void GuildMgr::update(uint32_t /*diff*/)
 
 void GuildMgr::saveGuilds()
 {
-#if VERSION_STRING >= Cata
+    // the guild level and experience exist from cata on
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+        return;
+
     for (GuildContainer::iterator itr = GuildStore.begin(); itr != GuildStore.end(); ++itr)
         itr->second->saveGuildToDB();
-#endif
 }
 
 Guild* GuildMgr::createGuild(Player* guildLeader, std::string const& guildName)
@@ -100,19 +102,11 @@ void GuildMgr::loadGuildDataFromDB()
     {
         const auto startTime = Util::TimeNow();
 
-#if VERSION_STRING < Cata
-    //                                                     0          1            2             3              4              5              6
-        auto result = CharacterDatabase.query("SELECT g.guildId, g.guildName, g.leaderGuid, g.emblemStyle, g.emblemColor, g.borderStyle, g.borderColor, "
-        //           7               8          9          10            11            12
-        "g.backgroundColor, g.guildInfo, g.motd, g.createdate, g.bankBalance, COUNT(gbt.guildId) "
-        "FROM guilds g LEFT JOIN guild_bank_tabs gbt ON g.guildId = gbt.guildId GROUP BY g.guildId ORDER BY g.guildId ASC");
-#else
     //                                                     0          1            2             3              4              5              6
         auto result = CharacterDatabase.query("SELECT g.guildId, g.guildName, g.leaderGuid, g.emblemStyle, g.emblemColor, g.borderStyle, g.borderColor, "
         //           7               8          9          10            11            12              13                 4                   15
         "g.backgroundColor, g.guildInfo, g.motd, g.createdate, g.bankBalance, g.guildLevel, g.guildExperience, g.todayExperience, COUNT(gbt.guildId) "
         "FROM guilds g LEFT JOIN guild_bank_tabs gbt ON g.guildId = gbt.guildId GROUP BY g.guildId ORDER BY g.guildId ASC");
-#endif
         if (result == nullptr)
         {
             sLogger.debug("Loaded 0 guild definitions. DB table `guild` is empty.");
@@ -522,7 +516,6 @@ void GuildMgr::loadGuildRewardsFromDB()
     sLogger.debug("Loaded {} guild reward definitions in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
-#if VERSION_STRING >= Cata
 void GuildMgr::resetTimes(bool week)
 {
     for (auto itr = GuildStore.begin(); itr != GuildStore.end(); ++itr)
@@ -531,4 +524,3 @@ void GuildMgr::resetTimes(bool week)
             guild->resetTimes(week);
     }
 }
-#endif

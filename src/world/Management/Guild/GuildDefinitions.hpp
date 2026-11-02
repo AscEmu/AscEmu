@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "AEVersion.hpp"
+#include "Server/ClientProtocol.hpp"
 
 #include <string>
 #include <cstdint>
@@ -136,9 +137,9 @@ enum GuildCommandError
     GC_ERROR_REP_TOO_LOW = 39
 };
 
+// the guild events with the values of the 4.x and 5.x clients, clientGuildEvent() gives the value of a client version
 enum GuildEvents : uint8_t
 {
-#if VERSION_STRING >= Cata
     GE_PROMOTION = 1,
     GE_DEMOTION = 2,
     GE_MOTD = 3,
@@ -164,29 +165,48 @@ enum GuildEvents : uint8_t
     GE_BANK_TEXT_CHANGED = 23,
     GE_SIGNED_ON_MOBILE = 25,
     GE_SIGNED_Off_MOBILE = 26
-#else
-    GE_PROMOTION = 0,
-    GE_DEMOTION = 1,
-    GE_MOTD = 2,
-    GE_JOINED = 3,
-    GE_LEFT = 4,
-    GE_REMOVED = 5,
-    GE_LEADER_IS = 6,
-    GE_LEADER_CHANGED = 7,
-    GE_DISBANDED = 8,
-    GE_TABARDCHANGE = 9,
-    GE_RANK_UPDATED = 10,
-    GE_RANK_DELETED = 11,
-    GE_SIGNED_ON = 12,
-    GE_SIGNED_OFF = 13,
-    GE_GUILDBANKBAGSLOTS_CHANGED = 14,
-    GE_BANK_TAB_PURCHASED = 15,
-    GE_BANK_TAB_UPDATED = 16,
-    GE_BANK_MONEY_SET = 17,
-    GE_BANK_TAB_AND_MONEY_UPDATED = 18,
-    GE_BANK_TEXT_CHANGED = 19
-#endif
 };
+
+static inline constexpr uint8_t GUILD_EVENT_NOT_IN_CLIENT = 0xFF;
+
+// the clients up to wotlk count the events from 0 and have no rank creation, order or founder event
+inline uint8_t clientGuildEvent(uint8_t guildEvent, WoW::Expansion expansion)
+{
+    if (expansion >= WoW::Expansion::_Cata)
+        return guildEvent;
+
+    switch (guildEvent)
+    {
+        case GE_PROMOTION:
+        case GE_DEMOTION:
+        case GE_MOTD:
+        case GE_JOINED:
+        case GE_LEFT:
+        case GE_REMOVED:
+        case GE_LEADER_IS:
+        case GE_LEADER_CHANGED:
+        case GE_DISBANDED:
+        case GE_TABARDCHANGE:
+        case GE_RANK_UPDATED:
+            return guildEvent - 1;
+        case GE_RANK_CREATED:
+        case GE_RANK_ORDER_CHANGED:
+            return GE_RANK_UPDATED - 1;
+        case GE_RANK_DELETED:
+            return 11;
+        case GE_SIGNED_ON:
+        case GE_SIGNED_OFF:
+        case GE_GUILDBANKBAGSLOTS_CHANGED:
+        case GE_BANK_TAB_PURCHASED:
+        case GE_BANK_TAB_UPDATED:
+        case GE_BANK_MONEY_SET:
+        case GE_BANK_TAB_AND_MONEY_UPDATED:
+        case GE_BANK_TEXT_CHANGED:
+            return guildEvent - 4;
+        default:
+            return GUILD_EVENT_NOT_IN_CLIENT;
+    }
+}
 
 enum PetitionError
 {

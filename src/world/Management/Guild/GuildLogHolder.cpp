@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "GuildLogHolder.hpp"
 #include "Macros/GuildMacros.hpp"
 #include "Management/Guild/GuildDefinitions.hpp"
+#include "Server/ClientProtocol.hpp"
 
 GuildLogHolder::GuildLogHolder(uint32_t /*guildId*/, uint32_t maxRecords) : mMaxRecords(maxRecords), mNextGUID(static_cast<uint32_t>(UNK_EVENT_LOG_GUID))
 {
@@ -48,28 +49,22 @@ void GuildLogHolder::addEvent(std::unique_ptr<GuildLogEntry> entry)
 
 void GuildLogHolder::writeLogHolderPacket(WorldPacket& data) const
 {
-#if VERSION_STRING == Cata
     ByteBuffer buffer;
-    data.writeBits(mLog.size(), 23);
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+    {
+        data << uint8_t(mLog.size());
+        for (auto itr = mLog.begin(); itr != mLog.end(); ++itr)
+            (*itr)->writeGuildLogPacket(data, buffer);
+        return;
+    }
+
+    // the count has 23 bits in cata and 21 from mop on
+    data.writeBits(mLog.size(), WoW::isServerExpansion(WoW::Expansion::_Cata) ? 23 : 21);
     for (GuildLog::const_iterator itr = mLog.begin(); itr != mLog.end(); ++itr)
         (*itr)->writeGuildLogPacket(data, buffer);
 
     data.flushBits();
     data.append(buffer);
-#elif VERSION_STRING >= Mop
-    ByteBuffer buffer;
-    data.writeBits(mLog.size(), 21);
-    for (GuildLog::const_iterator itr = mLog.begin(); itr != mLog.end(); ++itr)
-        (*itr)->writeGuildLogPacket(data, buffer);
-
-    data.flushBits();
-    data.append(buffer);
-#else
-    ByteBuffer buffer;
-    data << uint8_t(mLog.size());
-    for (auto itr = mLog.begin(); itr != mLog.end(); ++itr)
-        (*itr)->writeGuildLogPacket(data, buffer);
-#endif
 }
 
 uint32_t GuildLogHolder::getNextGUID()
