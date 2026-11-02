@@ -3966,6 +3966,8 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
         QuaternionData rot = QuaternionData::fromEulerAnglesZYX(u_caster->GetOrientation(), 0.f, 0.f);
 
         go = u_caster->getWorldMap()->getSpawnManager().summonGameObject(entry, pos, rot);
+        if (go == nullptr)
+            return;
 
         go->setGoType(GAMEOBJECT_TYPE_FISHINGNODE);
         go->setCreatedByGuid(m_caster->getGuid());
@@ -3990,6 +3992,8 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
         QuaternionData rot = QuaternionData::fromEulerAnglesZYX(u_caster->GetOrientation(), 0.f, 0.f);
        
         go = u_caster->getWorldMap()->getSpawnManager().summonGameObject(entry, pos, rot);
+        if (go == nullptr)
+            return;
 
         go->setCreatedByGuid(m_caster->getGuid());
         u_caster->addGameObject(go);
@@ -4657,6 +4661,8 @@ void Spell::SpellEffectSummonObjectWild(uint8_t effectIndex)
 
     // spawn a new one
     GameObject* GoSummon = u_caster->getWorldMap()->getSpawnManager().summonGameObject(gameobject_id, pos, rot);
+    if (GoSummon == nullptr)
+        return;
 
     int32_t duration = getDuration();
 
@@ -5214,6 +5220,8 @@ void Spell::SpellEffectSummonObjectSlot(uint8_t effectIndex)
     
     // spawn a new one
     GoSummon = u_caster->getWorldMap()->getSpawnManager().summonGameObject(getSpellInfo()->getEffectMiscValue(effectIndex), pos, rot);
+    if (GoSummon == nullptr)
+        return;
 
     GoSummon->m_phase = m_caster->GetPhase();
     GoSummon->setLevel(u_caster->getLevel());
