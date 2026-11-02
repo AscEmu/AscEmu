@@ -38,8 +38,6 @@
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Random.hpp"
 
-uint32_t LfgDungeonTypes[MAX_DUNGEONS];
-
 LfgMgr& LfgMgr::getInstance()
 {
     static LfgMgr mInstance;
