@@ -46,24 +46,33 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            // Packet exist since Cata, ranks before use SmsgGuildRoster
+            if (!m_protocol.isMainlineAtLeast(WoW::Expansion::_Cata))
+            {
+                return false;
+            }
+
+            if (m_protocol.isMainlineAtLeast(WoW::Expansion::_WoD))
             {
                 // every rank with order, rights, gold limit and the eight bank tabs; 8.x and later send the rank id as byte
-                packet << uint32_t(ranks.size());
+                packet << static_cast<uint32_t>(ranks.size());
                 for (const auto& rank : ranks)
                 {
-                    if (m_protocol.isWoD() || m_protocol.isLegion())
-                        packet << uint32_t(rank.id);
+                    if (m_protocol.expansion <= WoW::Expansion::_Legion)
+                        packet << static_cast<uint32_t>(rank.id);
                     else
-                        packet << uint8_t(rank.id);
-                    packet << int32_t(rank.index);
-                    packet << uint32_t(rank.rights);
-                    packet << uint32_t(rank.bankMoneyPerDay);
-                    for (uint8_t i = 0; i < 8; ++i)
+                        packet << static_cast<uint8_t>(rank.id);
+
+                    packet << static_cast<int32_t>(rank.index);
+                    packet << static_cast<uint32_t>(rank.rights);
+                    packet << static_cast<uint32_t>(rank.bankMoneyPerDay);
+
+                    for (uint8_t i = 0; i < MAX_GUILD_BANK_TABS; ++i)
                     {
-                        packet << uint32_t(i < MAX_GUILD_BANK_TABS ? rank.tabRights[i] : 0);
-                        packet << uint32_t(i < MAX_GUILD_BANK_TABS ? rank.tabSlotsPerDay[i] : 0);
+                        packet << static_cast<uint32_t>(rank.tabRights[i]);
+                        packet << static_cast<uint32_t>(rank.tabSlotsPerDay[i]);
                     }
+
                     packet.writeBits(static_cast<uint32_t>(rank.name.length()), 7);
                     packet.flushBits();
                     packet.writeString(rank.name);
@@ -71,11 +80,7 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            if (m_protocol.expansion < WoW::Expansion::_Cata)
-            {
-                return false;
-            }
-            else if (m_protocol.isCata())
+            if (m_protocol.isCata())
             {
                 ByteBuffer rankData(100);
                 packet.writeBits(ranksSize, 18);
@@ -84,21 +89,21 @@ namespace AscEmu::Packets
                 {
                     packet.writeBits(rank.name.length(), 7);
 
-                    rankData << uint32_t(rank.id);
+                    rankData << static_cast<uint32_t>(rank.id);
 
                     for (uint8_t j = 0; j < MAX_GUILD_BANK_TABS; ++j)
                     {
-                        rankData << uint32_t(rank.tabSlotsPerDay[j]);
-                        rankData << uint32_t(rank.tabRights[j]);
+                        rankData << static_cast<uint32_t>(rank.tabSlotsPerDay[j]);
+                        rankData << static_cast<uint32_t>(rank.tabRights[j]);
                     }
 
-                    rankData << uint32_t(rank.bankMoneyPerDay);
-                    rankData << uint32_t(rank.rights);
+                    rankData << static_cast<uint32_t>(rank.bankMoneyPerDay);
+                    rankData << static_cast<uint32_t>(rank.rights);
 
-                    if (rank.name.length())
+                    if (!rank.name.empty())
                         rankData.writeString(rank.name);
 
-                    rankData << uint32_t(rank.index);
+                    rankData << static_cast<uint32_t>(rank.index);
                 }
 
                 packet.flushBits();
@@ -106,7 +111,8 @@ namespace AscEmu::Packets
 
                 return true;
             }
-            else if (m_protocol.isMop())
+
+            if (m_protocol.isMop())
             {
                 ByteBuffer rankData(100);
                 packet.writeBits(ranksSize, 17);
@@ -116,20 +122,20 @@ namespace AscEmu::Packets
 
                 for (const auto& rank : ranks)
                 {
-                    rankData << uint32_t(rank.index);
-                    rankData << uint32_t(rank.bankMoneyPerDay);
+                    rankData << static_cast<uint32_t>(rank.index);
+                    rankData << static_cast<uint32_t>(rank.bankMoneyPerDay);
 
                     for (uint8_t j = 0; j < MAX_GUILD_BANK_TABS; ++j)
                     {
-                        rankData << uint32_t(rank.tabSlotsPerDay[j]);
-                        rankData << uint32_t(rank.tabRights[j]);
+                        rankData << static_cast<uint32_t>(rank.tabSlotsPerDay[j]);
+                        rankData << static_cast<uint32_t>(rank.tabRights[j]);
                     }
 
-                    if (rank.name.length())
+                    if (!rank.name.empty())
                         rankData.writeString(rank.name);
 
-                    rankData << uint32_t(rank.id);
-                    rankData << uint32_t(rank.rights);
+                    rankData << static_cast<uint32_t>(rank.id);
+                    rankData << static_cast<uint32_t>(rank.rights);
                 }
 
                 packet.flushBits();

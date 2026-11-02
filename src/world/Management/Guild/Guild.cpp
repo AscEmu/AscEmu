@@ -4,6 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Guild.hpp"
+
+#include <algorithm>
 #include "GuildMgr.hpp"
 #include "GuildBankEventLog.hpp"
 #include "GuildEventLog.hpp"
@@ -65,8 +67,8 @@ Guild::Guild() : m_id(0), m_leaderGuid(0), m_createdDate(0), m_bankMoney(0),
 inline uint32_t GetGuildBankTabPrice(uint8_t tabId)
 {
     // these prices are in gold units, not copper
-    static uint32_t const tabPrices[MAX_GUILD_BANK_TABS] = { 100, 250, 500, 1000, 2500, 5000 };
-    ASSERT(tabId < MAX_GUILD_BANK_TABS);
+    static uint32_t const tabPrices[MAX_GUILD_BANK_TABS] = {100, 250, 500, 1000, 2500, 5000, 10000, 20000};
+    ASSERT(tabId < getGuildBankMaxTabs());
 
     return tabPrices[tabId];
 }
@@ -277,7 +279,7 @@ void Guild::handleRoster(WorldSession* session)
         rankData.rights = ritr->getRights();
         rankData.bankMoneyPerDay = static_cast<uint32_t>(ritr->getBankMoneyPerDay());
 
-        for (uint8_t i = 0; i < MAX_GUILD_BANK_TABS; ++i)
+        for (uint8_t i = 0; i < getGuildBankMaxTabs(); ++i)
         {
             rankData.bankTabRights[i] = static_cast<uint32_t>(ritr->getBankTabRights(i));
             rankData.bankTabSlotsPerDay[i] = static_cast<uint32_t>(ritr->getBankTabSlotsPerDay(i));
@@ -370,7 +372,7 @@ void Guild::sendGuildRankInfo(WorldSession* session) const
         rankData.id = rankInfo->getId();
         rankData.name = rankInfo->getName();
 
-        for (uint8_t j = 0; j < MAX_GUILD_BANK_TABS; ++j)
+        for (uint8_t j = 0; j < getGuildBankMaxTabs(); ++j)
         {
             rankData.tabSlotsPerDay[j] = static_cast<uint32_t>(rankInfo->getBankTabSlotsPerDay(j));
             rankData.tabRights[j] = static_cast<uint32_t>(rankInfo->getBankTabRights(j));
@@ -560,13 +562,13 @@ void Guild::handleBuyBankTab(WorldSession* session, uint8_t tabId)
     if (member == nullptr)
         return;
 
-    if (_getPurchasedTabsSize() >= MAX_GUILD_BANK_TABS)
+    if (_getPurchasedTabsSize() >= getGuildBankMaxTabs())
         return;
 
     if (tabId != _getPurchasedTabsSize())
         return;
 
-    if (tabId < MAX_GUILD_BANK_TABS - 2)
+    if (tabId < getGuildBankMaxTabs() - 2)
     {
         uint32_t tabCost = _GetGuildBankTabPrice(tabId) * GOLD;
         if (tabCost == 0)
@@ -958,8 +960,8 @@ void Guild::sendPermissions(WorldSession* session) const
     uint8_t rankId = member->getRankId();
 
     std::vector<std::pair<uint32_t, uint32_t>> tabs;
-    tabs.reserve(MAX_GUILD_BANK_TABS);
-    for (uint8_t tabId = 0; tabId < MAX_GUILD_BANK_TABS; ++tabId)
+    tabs.reserve(getGuildBankMaxTabs());
+    for (uint8_t tabId = 0; tabId < getGuildBankMaxTabs(); ++tabId)
         tabs.emplace_back(static_cast<uint32_t>(getRankBankTabRights(rankId, tabId)), static_cast<uint32_t>(getMemberRemainingSlots(member, tabId)));
 
     if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
@@ -1069,10 +1071,7 @@ bool Guild::loadGuildFromDB(Field* fields)
     m_todayExperience = fields[14].asUint64();
 
     uint8_t purchasedTabs = fields[15].asUint8();
-    if (purchasedTabs > MAX_GUILD_BANK_TABS)
-    {
-        purchasedTabs = MAX_GUILD_BANK_TABS;
-    }
+    purchasedTabs = std::min(purchasedTabs, getGuildBankMaxTabs());
 
     _guildBankTabsStore.resize(purchasedTabs);
     for (uint8_t i = 0; i < purchasedTabs; ++i)

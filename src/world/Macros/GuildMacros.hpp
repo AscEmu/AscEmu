@@ -11,15 +11,16 @@ This file is released under the MIT license. See README-MIT for more information
 /// -
 #define MAX_GUILD_BANK_SLOTS        98
 
-/// -
-#if VERSION_STRING >= Cata
-#define MAX_GUILD_BANK_TABS         8
-#else
-#define MAX_GUILD_BANK_TABS         6
-#endif
+/// Maximum number of guild bank tabs, 6 for pre-Cata, 8 for Cata and later
+inline constexpr uint8_t MAX_GUILD_BANK_TABS = 8;
 
-/// -
-#define GUILD_BANK_MONEY_TAB        100
+inline uint8_t getGuildBankMaxTabs()
+{
+    return WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata) ? 8 : 6;
+}
+
+///
+inline constexpr uint8_t GUILD_BANK_MONEY_TAB = 100;
 
 /// -
 #define MIN_GUILD_RANKS             2

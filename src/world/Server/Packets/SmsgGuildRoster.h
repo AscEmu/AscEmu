@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "ManagedPacket.h"
-#include <ctime>
 #include "Macros/GuildMacros.hpp"
 #include "Server/Definitions.h"
 #include <array>
@@ -67,7 +66,7 @@ namespace AscEmu::Packets
         }
 
         SmsgGuildRoster(std::string motd, std::string info, std::vector<GuildRosterRankData> ranks, std::vector<GuildRosterMemberData> members,
-            bool canSeeOfficerNote, uint32_t accountsNumber, uint32_t maxRepPerWeek, time_t createdDate) :
+                        bool canSeeOfficerNote, uint32_t accountsNumber, uint32_t maxRepPerWeek, time_t createdDate) :
             ManagedPacket(SMSG_GUILD_ROSTER, 100),
             motd(std::move(motd)), info(std::move(info)), ranks(std::move(ranks)), members(std::move(members)),
             canSeeOfficerNote(canSeeOfficerNote), accountsNumber(accountsNumber), maxRepPerWeek(maxRepPerWeek), createdDate(createdDate)
@@ -77,12 +76,13 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override
         {
-            return 4 + motd.size() + 1 + info.size() + 1 + 4 + ranks.size() * (4 + 4 + MAX_GUILD_BANK_TABS * (4 + 4)) + members.size() * 50;
+            uint8_t const clientTabs = m_protocol.isMainlineAtLeast(WoW::Expansion::_Cata) ? 8 : 6;
+            return 4 + motd.size() + 1 + info.size() + 1 + 4 + ranks.size() * (4 + 4 + clientTabs * (4 + 4)) + members.size() * 50;
         }
 
         bool internalSerialise(WorldPacket& packet) override
         {
-            if (m_protocol.isWoD() || m_protocol.isLegion() || m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
+            if (m_protocol.isMainlineAtLeast(WoW::Expansion::_WoD))
             {
                 // accounts, creation, flags, the members with their notes, the texts; the text lengths stand in front
                 // of the members from 7.x to 11.x
@@ -93,7 +93,7 @@ namespace AscEmu::Packets
                 // 6.x: both texts with 10 bits, 7.x: the info text with 11 bits, 8.x and later: both with 11 bits
                 const uint32_t motdBits = isWoD || m_protocol.isLegion() ? 10 : 11;
                 const uint32_t infoBits = isWoD ? 10 : 11;
-                const std::time_t now = ::time(nullptr);
+                const std::time_t now = std::time(nullptr);
 
                 const auto writeTextLengths = [&]()
                 {
@@ -104,7 +104,7 @@ namespace AscEmu::Packets
 
                 packet << int32_t(accountsNumber);
                 packet.appendPackedTime(createdDate);
-                packet << int32_t(0);                                   // guild flags
+                packet << int32_t(0); // guild flags
                 packet << uint32_t(members.size());
                 if (textLengthFirst)
                     writeTextLengths();
@@ -122,9 +122,9 @@ namespace AscEmu::Packets
                     packet << float(daysSinceLogout);
                     for (uint8_t i = 0; i < 2; ++i)
                     {
-                        packet << int32_t(0);                           // profession
-                        packet << int32_t(0);                           // rank
-                        packet << int32_t(0);                           // step
+                        packet << int32_t(0); // profession
+                        packet << int32_t(0); // rank
+                        packet << int32_t(0); // step
                     }
                     packet << uint32_t(m_protocol.getVirtualRealmAddress());
                     packet << uint8_t(member.flags);
@@ -143,14 +143,14 @@ namespace AscEmu::Packets
                         packet << uint8_t(member.race);
                     }
                     if (m_protocol.isTheWarWithinOrLater())
-                        packet << int32_t(0);                           // timerunning season
+                        packet << int32_t(0); // timerunning season
 
                     packet.writeBits(static_cast<uint32_t>(member.name.length()), 6);
                     packet.writeBits(static_cast<uint32_t>(member.publicNote.length()), 8);
                     packet.writeBits(static_cast<uint32_t>(officerNote.length()), 8);
-                    packet.writeBit(false);                             // authenticated
+                    packet.writeBit(false); // authenticated
                     if (!m_protocol.isTheWarWithinOrLater())
-                        packet.writeBit(false);                         // scroll of resurrection eligible
+                        packet.writeBit(false); // scroll of resurrection eligible
                     packet.flushBits();
 
                     // 9.x to 11.x: the dungeon score behind the bits
@@ -186,7 +186,7 @@ namespace AscEmu::Packets
                     else
                         packet << uint32_t(rank.bankMoneyPerDay);
 
-                    for (uint8_t i = 0; i < MAX_GUILD_BANK_TABS; ++i)
+                    for (uint8_t i = 0; i < (m_protocol.isMainlineAtLeast(WoW::Expansion::_Cata) ? 8 : 6); ++i)
                     {
                         packet << uint32_t(rank.bankTabRights[i]);
                         packet << uint32_t(rank.bankTabSlotsPerDay[i]);
@@ -205,7 +205,7 @@ namespace AscEmu::Packets
                         << uint32_t(member.zoneId);
 
                     if (member.flags == 0)
-                        packet << float(float(::time(nullptr) - member.logoutTime) / static_cast<uint64_t>(DAY));
+                        packet << float(float(std::time(nullptr) - member.logoutTime) / static_cast<uint64_t>(DAY));
 
                     packet << member.publicNote;
 
@@ -217,7 +217,8 @@ namespace AscEmu::Packets
 
                 return true;
             }
-            else if (m_protocol.isCata())
+
+            if (m_protocol.isCata())
             {
                 ByteBuffer memberData(100);
                 packet.writeBits(motd.length(), 11);
@@ -274,7 +275,7 @@ namespace AscEmu::Packets
                     memberData.writeByteSeq(guid[4]);
                     memberData << uint8_t(0);
                     memberData.writeByteSeq(guid[1]);
-                    memberData << float(member.isOnline ? 0.0f : float(::time(nullptr) - member.logoutTime) / static_cast<uint64_t>(DAY));
+                    memberData << float(member.isOnline ? 0.0f : float(std::time(nullptr) - member.logoutTime) / static_cast<uint64_t>(DAY));
 
                     if (offNoteLength)
                         memberData.writeString(member.officerNote);
@@ -300,7 +301,8 @@ namespace AscEmu::Packets
 
                 return true;
             }
-            else if (m_protocol.isMop())
+
+            if (m_protocol.isMop())
             {
                 // NOTE: sends the officer note unconditionally (no permission gate)
                 // for the Cata+ wire format; canSeeOfficerNote only applies to
@@ -345,7 +347,7 @@ namespace AscEmu::Packets
                     memberData.writeByteSeq(guid[3]);
                     memberData << uint64_t(member.totalActivity);
                     memberData.writeString(member.officerNote);
-                    memberData << float(member.isOnline ? 0.0f : float(::time(nullptr) - member.logoutTime) / static_cast<uint64_t>(DAY));
+                    memberData << float(member.isOnline ? 0.0f : float(std::time(nullptr) - member.logoutTime) / static_cast<uint64_t>(DAY));
                     memberData << uint8_t(0); // gender
                     memberData << uint32_t(member.rankId);
                     memberData << uint32_t(0); // virtual realm address

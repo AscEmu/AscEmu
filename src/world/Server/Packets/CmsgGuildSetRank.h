@@ -58,7 +58,7 @@ namespace AscEmu::Packets
                     uint32_t bankRights;
                     uint32_t slots;
                     packet >> bankRights >> slots;
-                    if (tabId < MAX_GUILD_BANK_TABS)
+                    if (tabId < getGuildBankMaxTabs())
                         _rightsAndSlots.push_back(GuildBankRightsAndSlots(tabId, static_cast<uint8_t>(bankRights), slots));
                 }
 
@@ -111,7 +111,7 @@ namespace AscEmu::Packets
         void readBankRightsAndSlots(WorldPacket& packet)
         {
             GuildBankRightsAndSlotsVec rightsAndSlots(MAX_GUILD_BANK_TABS);
-            for (uint8_t tabId = 0; tabId < MAX_GUILD_BANK_TABS; ++tabId)
+            for (uint8_t tabId = 0; tabId < getGuildBankMaxTabs(); ++tabId)
             {
                 uint32_t bankRights;
                 uint32_t slots;
