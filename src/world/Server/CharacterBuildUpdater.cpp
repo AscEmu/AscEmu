@@ -85,7 +85,7 @@ namespace
         { 0,                                 0, 19, -1, 23, 16, 39, 28, 67, 7, 74 },
         { WoW::Build::SHADOWLANDS_BUILD,     0, 19, -1, 23, 20, 51, 28, 79, 7, 86 },
         { WoW::Build::DRAGONFLIGHT_BUILD,   11, 30, 34, 35, 20, 63, 28, 91, 7, 98 },
-        { WoW::Build::MIDNIGHT_BUILD,       11, 30, 34, 35, 20, 63,  0, 63, 6, 69 }
+        { WoW::Build::MIDNIGHT_FIRST_BUILD, 11, 30, 34, 35, 20, 63,  0, 63, 6, 69 }
     };
 
     constexpr int32_t EquipmentSlotCount = 19;

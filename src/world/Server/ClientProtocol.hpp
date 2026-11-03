@@ -33,7 +33,8 @@ namespace WoW::Build {
     inline constexpr uint32_t SHADOWLANDS_BUILD = 45745; // 9.2.7
     inline constexpr uint32_t DRAGONFLIGHT_BUILD = 55664; // 10.2.7
     inline constexpr uint32_t TWW_BUILD = 65299; // 11.2.7
-    inline constexpr uint32_t MIDNIGHT_BUILD = 70575; // 12.1.5
+    inline constexpr uint32_t MIDNIGHT_BUILD = 70688; // 12.1.5, the build of the world data rows; the client builds 70391, 70529 and 70575 share the protocol
+    inline constexpr uint32_t MIDNIGHT_FIRST_BUILD = 70391; // the first 12.x client build, the character layouts of 12.x begin with it
 
     // TODO: Check versions and builds for the following expansions, they are not final and may change in the future
     // Modern Classic Timeline
@@ -351,7 +352,10 @@ namespace WoW {
             case Build::SHADOWLANDS_BUILD: return Expansion::_Shadowlands;
             case Build::DRAGONFLIGHT_BUILD: return Expansion::_Dragonflight;
             case Build::TWW_BUILD: return Expansion::_TheWarWithin;
-            case Build::MIDNIGHT_BUILD: return Expansion::_Midnight;
+            case Build::MIDNIGHT_BUILD:
+            case 70391:
+            case 70529:
+            case 70575: return Expansion::_Midnight;
             default:                   return Expansion::Unknown;
         }
     }

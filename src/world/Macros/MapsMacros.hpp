@@ -62,7 +62,7 @@ This file is released under the MIT license. See README-MIT for more information
 // Shadowlands = 3000 - untested, upper bound until Map.db2 of 45745 is extracted
 // Dragonflight = 3000 - untested, upper bound until Map.db2 of 55664 is extracted
 // The War Within = 3000 - untested, upper bound until Map.db2 of 65299 is extracted
-// Midnight = 3106 - Map.db2 of 70575 ends with map 3105
+// Midnight = 3106 - Map.db2 of 12.1.5 ends with map 3105
 //
 //////////////////////////////////////////////////////////////////////////////////////////
 
