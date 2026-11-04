@@ -2305,8 +2305,9 @@ void ObjectMgr::generateLevelUpInfo()
     for (uint8_t currentClass = WARRIOR; currentClass < MAX_PLAYER_CLASSES; ++currentClass)
     {
         auto playerClass = static_cast<Classes>(currentClass);
-        for (uint8_t currentRace = RACE_HUMAN; currentRace < DBC_NUM_RACES; ++currentRace)
+        for (uint32_t raceId : std::views::keys(sChrRacesStore))
         {
+            const auto currentRace = static_cast<uint8_t>(raceId);
             auto playerRace = static_cast<Races>(currentRace);
 
             // the player create info of the build decides which class/race pairs exist
@@ -2334,7 +2335,7 @@ void ObjectMgr::generateLevelUpInfo()
                 {
                     levelInfo->HP = 0;
                     levelInfo->Mana = 0;
-                    _missingHealthLevelData.push_back({ level, currentRace, currentClass });
+                    _missingHealthLevelData.push_back({level, currentRace, currentClass});
                 }
 
                 if (auto* playerLevelstats = sMySQLStore.getPlayerLevelstats(level, static_cast<uint8_t>(playerRace), static_cast<uint8_t>(playerClass)))
@@ -2351,7 +2352,7 @@ void ObjectMgr::generateLevelUpInfo()
                     for (unsigned int& id : levelInfo->Stat)
                         id = 0;
 
-                    _missingStatLevelData.push_back({ level, currentRace, currentClass });
+                    _missingStatLevelData.push_back({level, currentRace, currentClass});
                 }
             }
         }

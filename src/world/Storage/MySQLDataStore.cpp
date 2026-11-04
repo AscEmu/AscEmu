@@ -2995,7 +2995,14 @@ void MySQLDataStore::loadPlayerCreateInfoTable()
 
         uint8_t _race = fields[0].asUint8();
         uint8_t _class = fields[1].asUint8();
+
+        // Validate race and class values to ensure they are within valid ranges
         if (_race >= DBC_NUM_RACES || _class >= MAX_PLAYER_CLASSES)
+        {
+            continue;
+        }
+
+        if (!sChrRacesStore.lookupEntry(_race) || !sChrClassesStore.lookupEntry(_class))
         {
             sLogger.debugDbTables("Table `playercreateinfo` race {} class {} is unknown to this version. Skipped.", _race, _class);
             continue;
@@ -3012,7 +3019,6 @@ void MySQLDataStore::loadPlayerCreateInfoTable()
         playerCreateInfo->orientation = fields[7].asFloat();
 
         player_create_info_count++;
-
     } while (player_create_info_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `playercreateinfo` table in {} ms!", player_create_info_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));

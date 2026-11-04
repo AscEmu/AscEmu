@@ -30,6 +30,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Strings.hpp"
 #include "Version/ObjectLayout.hpp"
 
+#include <charconv>
+
 using Version::PlayerField;
 
 //.character clearcooldowns
