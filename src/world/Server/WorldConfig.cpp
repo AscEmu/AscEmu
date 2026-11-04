@@ -71,8 +71,9 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
 
     // world.conf - Player Settings
     player.playerStartingLevel = 1;
-    player.playerLevelCap = DBC_PLAYER_LEVEL_CAP;
-    player.playerGeneratedInformationByLevelCap = DBC_PLAYER_LEVEL_CAP;
+    const uint32_t nativeCap = WoW::getExpansionMaxLevel(WoW::getServerExpansion());
+    player.playerLevelCap = nativeCap;
+    player.playerGeneratedInformationByLevelCap = nativeCap;
     player.deathKnightStartTalentPoints = 0;
     player.deathKnightPreReq = false;
     player.deathKnightLimit = false;

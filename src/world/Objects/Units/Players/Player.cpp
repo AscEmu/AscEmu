@@ -16023,11 +16023,11 @@ float Player::getDodgeChance()
     // confirmed against the real Cata gtChanceToMeleeCrit.dbc, so Cata keeps the old formula below.
     auto baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(level - 1 + (playerClass - 1) * 100);
     if (baseCrit == nullptr)
-        baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+        baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(WoW::getExpansionMaxLevel(WoW::getServerExpansion()) - 1 + (playerClass - 1) * 100);
 
     auto critPerAgi = sGtChanceToMeleeCritStore.lookupEntry(level - 1 + (playerClass - 1) * 100);
     if (critPerAgi == nullptr)
-        critPerAgi = sGtChanceToMeleeCritStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+        critPerAgi = sGtChanceToMeleeCritStore.lookupEntry(WoW::getExpansionMaxLevel(WoW::getServerExpansion()) - 1 + (playerClass - 1) * 100);
 
     const float baseCritVal = baseCrit ? baseCrit->val : 0.0f;
     const float critPerAgiVal = critPerAgi ? critPerAgi->val : 0.0f;
@@ -16041,7 +16041,7 @@ float Player::getDodgeChance()
 
     auto critPerAgi = sGtChanceToMeleeCritStore.lookupEntry(level - 1 + (playerClass - 1) * 100);
     if (critPerAgi == nullptr)
-        critPerAgi = sGtChanceToMeleeCritStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+        critPerAgi = sGtChanceToMeleeCritStore.lookupEntry(WoW::getExpansionMaxLevel(WoW::getServerExpansion()) - 1 + (playerClass - 1) * 100);
 
     const float baseCritVal = baseCrit ? baseCrit->val : 0.0f;
     const float critPerAgiVal = critPerAgi ? critPerAgi->val : 0.0f;
@@ -16063,7 +16063,7 @@ float Player::getBlockChance()
     chance += calcRating(CR_BLOCK);
     chance += getBlockFromSpell();
 
-    return std::max(chance, 0.0f);   // Make sure we don't have a negative chance
+    return std::max(chance, 0.0f); // Make sure we don't have a negative chance
 }
 
 float Player::getParryChance()
@@ -16072,13 +16072,13 @@ float Player::getParryChance()
     chance += calcRating(CR_PARRY);
     chance += getParryFromSpell();
 
-    return std::max(chance, 0.0f);   // Make sure we don't have a negative chance
+    return std::max(chance, 0.0f); // Make sure we don't have a negative chance
 }
 
 void Player::updateChances()
 {
     uint32_t playerClass = getClass();
-    uint32_t playerLevel = (getLevel() > DBC_PLAYER_LEVEL_CAP) ? DBC_PLAYER_LEVEL_CAP : getLevel();
+    uint32_t playerLevel = (getLevel() > WoW::getExpansionMaxLevel(WoW::getServerExpansion())) ? WoW::getExpansionMaxLevel(WoW::getServerExpansion()) : getLevel();
 
     float tmp = 0;
     float defence_contribution = 0;
@@ -16126,11 +16126,11 @@ void Player::updateChances()
 #if VERSION_STRING >= Mop
     auto baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
     if (baseCrit == nullptr)
-        baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+        baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(WoW::getExpansionMaxLevel(WoW::getServerExpansion()) - 1 + (playerClass - 1) * 100);
 
     auto CritPerAgi = sGtChanceToMeleeCritStore.lookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
     if (CritPerAgi == nullptr)
-        CritPerAgi = sGtChanceToMeleeCritStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+        CritPerAgi = sGtChanceToMeleeCritStore.lookupEntry(WoW::getExpansionMaxLevel(WoW::getServerExpansion()) - 1 + (playerClass - 1) * 100);
 
     tmp = 100 * (baseCrit ? baseCrit->val : 0.0f);
     if (CritPerAgi != nullptr && CritPerAgi->val != 0.0f)
@@ -16140,7 +16140,7 @@ void Player::updateChances()
 
     auto CritPerAgi = sGtChanceToMeleeCritStore.lookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
     if (CritPerAgi == nullptr)
-        CritPerAgi = sGtChanceToMeleeCritStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+        CritPerAgi = sGtChanceToMeleeCritStore.lookupEntry(WoW::getExpansionMaxLevel(WoW::getServerExpansion()) - 1 + (playerClass - 1) * 100);
 
     tmp = 100 * ((baseCrit ? baseCrit->val : 0.0f) + getStat(STAT_AGILITY) * (CritPerAgi ? CritPerAgi->val : 0.0f));
 #endif
@@ -16173,11 +16173,11 @@ void Player::updateChances()
 #if VERSION_STRING >= Mop
     auto SpellCritBase = sGtChanceToSpellCritBaseStore.lookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
     if (SpellCritBase == nullptr)
-        SpellCritBase = sGtChanceToSpellCritBaseStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+        SpellCritBase = sGtChanceToSpellCritBaseStore.lookupEntry(WoW::getExpansionMaxLevel(WoW::getServerExpansion()) - 1 + (playerClass - 1) * 100);
 
     auto SpellCritPerInt = sGtChanceToSpellCritStore.lookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
     if (SpellCritPerInt == nullptr)
-        SpellCritPerInt = sGtChanceToSpellCritStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+        SpellCritPerInt = sGtChanceToSpellCritStore.lookupEntry(WoW::getExpansionMaxLevel(WoW::getServerExpansion()) - 1 + (playerClass - 1) * 100);
 
     float spellCritFromStats = 100 * (SpellCritBase ? SpellCritBase->val : 0.0f);
     if (SpellCritPerInt != nullptr && SpellCritPerInt->val != 0.0f)
@@ -16187,7 +16187,7 @@ void Player::updateChances()
 
     auto SpellCritPerInt = sGtChanceToSpellCritStore.lookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
     if (SpellCritPerInt == nullptr)
-        SpellCritPerInt = sGtChanceToSpellCritStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+        SpellCritPerInt = sGtChanceToSpellCritStore.lookupEntry(WoW::getExpansionMaxLevel(WoW::getServerExpansion()) - 1 + (playerClass - 1) * 100);
 
     float spellCritFromStats = 100 * ((SpellCritBase ? SpellCritBase->val : 0.0f) + getStat(STAT_INTELLECT) * (SpellCritPerInt ? SpellCritPerInt->val : 0.0f));
 #endif

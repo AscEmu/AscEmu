@@ -75,6 +75,40 @@ namespace WoW {
         Unknown = 255
     };
 
+    constexpr uint32_t getExpansionMaxLevel(Expansion exp) noexcept
+    {
+        switch (exp)
+        {
+            case Expansion::_Classic:
+            case Expansion::_Classic_Era:
+            case Expansion::_Shadowlands:
+                return 60;
+            case Expansion::_TBC:
+            case Expansion::_TBC_Classic:
+            case Expansion::_Dragonflight:
+                return 70;
+            case Expansion::_WotLK:
+            case Expansion::_WotLK_Classic:
+            case Expansion::_TheWarWithin:
+                return 80;
+            case Expansion::_Cata:
+            case Expansion::_Cata_Classic:
+                return 85;
+            case Expansion::_Mop:
+            case Expansion::_MoP_Classic:
+            case Expansion::_Midnight:
+                return 90;
+            case Expansion::_WoD:
+                return 100;
+            case Expansion::_Legion:
+                return 110;
+            case Expansion::_BfA:
+                return 120;
+            default:
+                return 60;
+        }
+    }
+
     enum class ClientFlavor : uint8_t
     {
         LEGACY,         // Original 1.12, 2.4.3, 3.3.5a, 5.4.8

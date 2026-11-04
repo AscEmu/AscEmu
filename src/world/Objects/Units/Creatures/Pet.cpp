@@ -1743,7 +1743,7 @@ void Pet::ApplyPetLevelAbilities()
     if (pet_abilities == nullptr)
     {
         sLogger.failure("No abilities for level {} in table pet_level_abilities! Auto apply abilities of level 80!", level);
-        pet_abilities = sMySQLStore.getPetLevelAbilities(DBC_PLAYER_LEVEL_CAP);
+        pet_abilities = sMySQLStore.getPetLevelAbilities(WoW::getExpansionMaxLevel(WoW::getServerExpansion()));
     }
 
     m_baseResistance[0] = pet_abilities->armor;

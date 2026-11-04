@@ -40,218 +40,97 @@
 
 using Version::UnitField;
 
-// APGL End
-// MIT Start
-
 bool isGrayLevel(uint32_t attackerLevel, uint32_t victimLevel)
 {
-    if (victimLevel >= attackerLevel)
-        return false;
-
-    // https://wow.gamepedia.com/Experience_point#Mob_gray_level
-    const uint8_t grayLevelForLevel[59] =
-    {
-        0, 0, 0, 0, 0, 1, 2, 3, 4, 4,               // 1-10
-        5, 6, 7, 8, 9, 10, 11, 12, 13, 13,          // 11-20
-        14, 15, 16, 17, 18, 19, 20, 21, 22, 22,     // 21-30
-        23, 24, 25, 26, 27, 28, 29, 30, 31, 31,     // 31-40
-        32, 33, 34, 35, 35, 36, 37, 38, 39, 39,     // 41-50
-        40, 41, 42, 43, 43, 44, 45, 46, 47          // 51-59
-    };
-
-    if (attackerLevel <= 59)
-    {
-        const auto grayLevel = grayLevelForLevel[attackerLevel - 1];
-        return victimLevel <= grayLevel;
-    }
-    else
-    {
-        // At level 60 and higher the gray level is simply 9 levels below
-        return (attackerLevel - victimLevel) >= 9;
-    }
+    return getConColor(static_cast<uint16_t>(attackerLevel), static_cast<uint16_t>(victimLevel)) == 0;
 }
 
-// MIT End
-// APGL Start
-
-uint32_t getConColor(uint16_t AttackerLvl, uint16_t VictimLvl)
+namespace
 {
-#if VERSION_STRING == Classic
-    const uint32_t grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
+    // Pre-Squish: Classic to BfA (to level 120)
+    constexpr std::array<uint32_t, 121> grayLevelPreSquish =
     {
-        0,                                          //0
-        0, 0, 0, 0, 0, 0, 1, 2, 3, 4,               //1-10
-        5, 6, 7, 8, 9, 10, 11, 12, 13, 13,          //11-20
-        14, 15, 16, 17, 18, 19, 20, 21, 22, 22,     //21-30
-        23, 24, 25, 26, 27, 28, 29, 30, 31, 31,     //31-40
-        32, 33, 34, 35, 35, 36, 37, 38, 39, 39,     //41-50
-        40, 41, 42, 43, 43, 44, 45, 46, 47, 47      //51-60
+        0,                                                  // 0
+        0, 0, 0, 0, 0, 0, 1, 2, 3, 4,                       // 1-10
+        5, 6, 7, 8, 9, 10, 11, 12, 13, 13,                  // 11-20
+        14, 15, 16, 17, 18, 19, 20, 21, 22, 22,             // 21-30
+        23, 24, 25, 26, 27, 28, 29, 30, 31, 31,             // 31-40
+        32, 33, 34, 35, 35, 36, 37, 38, 39, 39,             // 41-50
+        40, 41, 42, 43, 43, 44, 45, 46, 47, 47,             // 51-60
+        48, 49, 50, 51, 51, 52, 53, 54, 55, 56,             // 61-70
+        57, 58, 59, 60, 61, 62, 63, 64, 65, 65,             // 71-80
+        65, 66, 67, 68, 69, 70, 71, 72, 74, 75,             // 81-90
+        76, 77, 78, 79, 80, 81, 82, 83, 84, 85,             // 91-100 (WoD)
+        86, 87, 88, 89, 90, 91, 92, 93, 94, 95,             // 101-110 (Legion)
+        96, 97, 98, 99, 100, 101, 102, 103, 104, 105        // 111-120 (BfA)
     };
-#endif
 
-#if VERSION_STRING == TBC
-    const uint32_t grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
+    // Post-Squish: Shadowlands to Midnight (to level 90)
+    constexpr std::array<uint32_t, 91> grayLevelPostSquish =
     {
-        0,                                          //0
-        0, 0, 0, 0, 0, 0, 1, 2, 3, 4,               //1-10
-        5, 6, 7, 8, 9, 10, 11, 12, 13, 13,          //11-20
-        14, 15, 16, 17, 18, 19, 20, 21, 22, 22,     //21-30
-        23, 24, 25, 26, 27, 28, 29, 30, 31, 31,     //31-40
-        32, 33, 34, 35, 35, 36, 37, 38, 39, 39,     //41-50
-        40, 41, 42, 43, 43, 44, 45, 46, 47, 47,     //51-60
-        48, 49, 50, 51, 51, 52, 53, 54, 55, 56      //61-70
+        0,                                                  // 0
+        0, 0, 0, 0, 0, 0, 1, 2, 3, 4,                       // 1-10
+        5, 6, 7, 8, 8, 9, 10, 11, 12, 12,                   // 11-20
+        13, 14, 15, 16, 16, 17, 18, 19, 20, 20,             // 21-30
+        21, 22, 23, 24, 25, 26, 27, 28, 29, 30,             // 31-40
+        31, 32, 33, 34, 35, 36, 37, 38, 39, 40,             // 41-50
+        41, 42, 43, 44, 45, 46, 47, 48, 49, 50,             // 51-60 (Shadowlands)
+        51, 52, 53, 54, 55, 56, 57, 58, 59, 60,             // 61-70 (Dragonflight)
+        61, 62, 63, 64, 65, 66, 67, 68, 69, 70,             // 71-80 (The War Within)
+        71, 72, 73, 74, 75, 76, 77, 78, 79, 80              // 81-90 (Midnight)
     };
-#endif
+}
 
-#if VERSION_STRING == WotLK
-    const uint32_t grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
+uint32_t getConColor(uint16_t attackerLevel, uint16_t victimLevel)
+{
+    if (attackerLevel + 5 <= victimLevel)
     {
-        0,                                          //0
-        0, 0, 0, 0, 0, 0, 1, 2, 3, 4,               //1-10
-        5, 6, 7, 8, 9, 10, 11, 12, 13, 13,          //11-20
-        14, 15, 16, 17, 18, 19, 20, 21, 22, 22,     //21-30
-        23, 24, 25, 26, 27, 28, 29, 30, 31, 31,     //31-40
-        32, 33, 34, 35, 35, 36, 37, 38, 39, 39,     //41-50
-        40, 41, 42, 43, 43, 44, 45, 46, 47, 47,     //51-60
-        48, 49, 50, 51, 51, 52, 53, 54, 55, 56,     //61-70
-        57, 58, 59, 60, 61, 62, 63, 64, 65, 65      //71-80
-    };
-#endif
-
-#if VERSION_STRING == Cata
-    const uint32_t grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
-    {
-        0,                                          //0
-        0, 0, 0, 0, 0, 0, 1, 2, 3, 4,               //1-10
-        5, 6, 7, 8, 9, 10, 11, 12, 13, 13,          //11-20
-        14, 15, 16, 17, 18, 19, 20, 21, 22, 22,     //21-30
-        23, 24, 25, 26, 27, 28, 29, 30, 31, 31,     //31-40
-        32, 33, 34, 35, 35, 36, 37, 38, 39, 39,     //41-50
-        40, 41, 42, 43, 43, 44, 45, 46, 47, 47,     //51-60
-        48, 49, 50, 51, 51, 52, 53, 54, 55, 56,     //61-70
-        57, 58, 59, 60, 61, 62, 63, 64, 65, 65,     //71-80
-        65, 66, 67, 68, 69                          //81-85
-    };
-#endif
-
-#if VERSION_STRING >= Mop && VERSION_STRING != Shadowlands && VERSION_STRING != Dragonflight && VERSION_STRING != TheWarWithin && VERSION_STRING != Midnight
-    const uint32_t grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
-    {
-        0,                                          //0
-        0, 0, 0, 0, 0, 0, 1, 2, 3, 4,               //1-10
-        5, 6, 7, 8, 9, 10, 11, 12, 13, 13,          //11-20
-        14, 15, 16, 17, 18, 19, 20, 21, 22, 22,     //21-30
-        23, 24, 25, 26, 27, 28, 29, 30, 31, 31,     //31-40
-        32, 33, 34, 35, 35, 36, 37, 38, 39, 39,     //41-50
-        40, 41, 42, 43, 43, 44, 45, 46, 47, 47,     //51-60
-        48, 49, 50, 51, 51, 52, 53, 54, 55, 56,     //61-70
-        57, 58, 59, 60, 61, 62, 63, 64, 65, 65,     //71-80
-        65, 66, 67, 68, 69, 70, 71, 72, 74, 75      //81-90
-    };
-#endif
-
-#if VERSION_STRING == Shadowlands
-    // 9.x after the level squish: no gray level below 7, up to 34 the level less 7 and less one per fifth level
-    // from 15 on, from 35 on the level less 10
-    const uint32_t grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
-    {
-        0,                                          //0
-        0, 0, 0, 0, 0, 0, 1, 2, 3, 4,               //1-10
-        5, 6, 7, 8, 8, 9, 10, 11, 12, 12,           //11-20
-        13, 14, 15, 16, 16, 17, 18, 19, 20, 20,     //21-30
-        21, 22, 23, 24, 25, 26, 27, 28, 29, 30,     //31-40
-        31, 32, 33, 34, 35, 36, 37, 38, 39, 40,     //41-50
-        41, 42, 43, 44, 45, 46, 47, 48, 49, 50      //51-60
-    };
-#endif
-
-#if VERSION_STRING == Dragonflight
-    // 10.x keeps the 9.x gray levels, the cap is 70
-    const uint32_t grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
-    {
-        0,                                          //0
-        0, 0, 0, 0, 0, 0, 1, 2, 3, 4,               //1-10
-        5, 6, 7, 8, 8, 9, 10, 11, 12, 12,           //11-20
-        13, 14, 15, 16, 16, 17, 18, 19, 20, 20,     //21-30
-        21, 22, 23, 24, 25, 26, 27, 28, 29, 30,     //31-40
-        31, 32, 33, 34, 35, 36, 37, 38, 39, 40,     //41-50
-        41, 42, 43, 44, 45, 46, 47, 48, 49, 50,     //51-60
-        51, 52, 53, 54, 55, 56, 57, 58, 59, 60      //61-70
-    };
-#endif
-
-#if VERSION_STRING == TheWarWithin
-    // 11.x keeps the 9.x gray levels, the cap is 80
-    const uint32_t grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
-    {
-        0,                                          //0
-        0, 0, 0, 0, 0, 0, 1, 2, 3, 4,               //1-10
-        5, 6, 7, 8, 8, 9, 10, 11, 12, 12,           //11-20
-        13, 14, 15, 16, 16, 17, 18, 19, 20, 20,     //21-30
-        21, 22, 23, 24, 25, 26, 27, 28, 29, 30,     //31-40
-        31, 32, 33, 34, 35, 36, 37, 38, 39, 40,     //41-50
-        41, 42, 43, 44, 45, 46, 47, 48, 49, 50,     //51-60
-        51, 52, 53, 54, 55, 56, 57, 58, 59, 60,     //61-70
-        61, 62, 63, 64, 65, 66, 67, 68, 69, 70      //71-80
-    };
-#endif
-
-#if VERSION_STRING == Midnight
-    // 12.x keeps the 9.x gray levels, the cap is 90
-    const uint32_t grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
-    {
-        0,                                          //0
-        0, 0, 0, 0, 0, 0, 1, 2, 3, 4,               //1-10
-        5, 6, 7, 8, 8, 9, 10, 11, 12, 12,           //11-20
-        13, 14, 15, 16, 16, 17, 18, 19, 20, 20,     //21-30
-        21, 22, 23, 24, 25, 26, 27, 28, 29, 30,     //31-40
-        31, 32, 33, 34, 35, 36, 37, 38, 39, 40,     //41-50
-        41, 42, 43, 44, 45, 46, 47, 48, 49, 50,     //51-60
-        51, 52, 53, 54, 55, 56, 57, 58, 59, 60,     //61-70
-        61, 62, 63, 64, 65, 66, 67, 68, 69, 70,     //71-80
-        71, 72, 73, 74, 75, 76, 77, 78, 79, 80      //81-90
-    };
-#endif
-
-    if (AttackerLvl + 5 <= VictimLvl)
-    {
-        if (AttackerLvl + 10 <= VictimLvl)
+        if (attackerLevel + 10 <= victimLevel)
         {
-            return 5;
+            return 5; // red
         }
-        return 4;
+        return 4; // orange
     }
-    else
+
+    switch (victimLevel - attackerLevel)
     {
-        switch (VictimLvl - AttackerLvl)
-        {
-            case 4:
-            case 3:
-                return 3;
-                break;
-            case 2:
-            case 1:
-            case 0:
-            case -1:
-            case -2:
-                return 2;
-                break;
-            default:
-                // More adv formula for grey/green lvls:
-                if (AttackerLvl <= 6)
-                {
-                    return 1; //All others are green.
-                }
-                else
-                {
-                    if (AttackerLvl > DBC_PLAYER_LEVEL_CAP)
-                        return 1;//gm
-                    if (AttackerLvl < DBC_PLAYER_LEVEL_CAP && VictimLvl <= grayLevel[AttackerLvl])
-                        return 0;
-                    else
-                        return 1;
-                }
-        }
+        case 4:
+        case 3:
+            return 3; // yellow
+        case 2:
+        case 1:
+        case 0:
+        case -1:
+        case -2:
+            return 2; // yello/green
+        default:
+            // More adv formula for grey/green lvls:
+            if (attackerLevel <= 6)
+            {
+                return 1; // All others are green.
+            }
+
+            const uint32_t maxLevel = worldConfig.player.playerLevelCap;
+            if (attackerLevel > maxLevel)
+            {
+                return 1; // GM-Level over cap level is always green
+            }
+
+            // Post-squish for mainline since shadowland (excluded modern classic)
+            const auto expansion = WoW::getServerExpansion();
+            const bool isPostSquish = (expansion >= WoW::Expansion::_Shadowlands && expansion <= WoW::Expansion::_Midnight);
+            std::span<const uint32_t> grayLevels = grayLevelPreSquish;
+            if (isPostSquish)
+            {
+                grayLevels = grayLevelPostSquish;
+            }
+
+            if (attackerLevel < grayLevels.size() && victimLevel <= grayLevels[attackerLevel])
+            {
+                return 0; // grey
+            }
+
+            return 1; // green
     }
 }
 
@@ -288,7 +167,7 @@ uint32_t CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
     float g = 5;
 
     // get zero diff
-    if (AttackerLvl >= DBC_PLAYER_LEVEL_CAP)
+    if (AttackerLvl >= worldConfig.player.playerLevelCap)
     {
         zd = 21;
         g = 17;

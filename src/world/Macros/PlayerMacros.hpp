@@ -7,49 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AEVersion.hpp"
 
-//////////////////////////////////////////////////////////////////////////////////////////
-// DBC_NUM_RACES
-//
-// \param max num races + 1
-//
-// Vanilla = 10
-// The Burning Crusade = 19
-// Wrath of the Lich King = 22
-// Cataclysm = 24
-// Mists of Pandaria = 27
-// Warlords of Draenor = 27
-// Legion = 31 (nightborne, highmountain tauren, void elves and lightforged draenei are the races 27 to 30)
-// Battle for Azeroth = 38 (zandalari 31, kul tirans 32, dark iron dwarves 34, vulpera 35, mag'har 36, mechagnomes 37)
-// Shadowlands = 38
-// Dragonflight = 71 (the Horde dracthyr are race 70)
-// The War Within = 88 (the earthen are the races 84 and 85)
-// Midnight = 92 (the haranir are the races 86 and 91)
-//
-//////////////////////////////////////////////////////////////////////////////////////////
-
-#if VERSION_STRING == Classic
-    #define DBC_NUM_RACES 10
-#elif VERSION_STRING == TBC
-    #define DBC_NUM_RACES 19
-#elif VERSION_STRING == WotLK
-    #define DBC_NUM_RACES 22
-#elif VERSION_STRING == Cata
-    #define DBC_NUM_RACES 24
-#elif VERSION_STRING == Mop
-    #define DBC_NUM_RACES 27
-#elif VERSION_STRING == WoD
-    #define DBC_NUM_RACES 27
-#elif VERSION_STRING == Legion
-    #define DBC_NUM_RACES 31
-#elif VERSION_STRING == BfA || VERSION_STRING == Shadowlands
-    #define DBC_NUM_RACES 38
-#elif VERSION_STRING == Dragonflight
-    #define DBC_NUM_RACES 71
-#elif VERSION_STRING == TheWarWithin
-    #define DBC_NUM_RACES 88
-#elif VERSION_STRING == Midnight
-    #define DBC_NUM_RACES 92
-#endif
+inline constexpr uint32_t DBC_NUM_RACES = 92;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // DBC_TAXI_MASK_SIZE
@@ -84,51 +42,8 @@ This file is released under the MIT license. See README-MIT for more information
     #define DBC_TAXI_MASK_SIZE 258
 #endif
 
-//////////////////////////////////////////////////////////////////////////////////////////
-// DBC_PLAYER_LEVEL_CAP
-//
-// \param level cap
-//
-// Vanilla = 60
-// The Burning Crusade = 70
-// Wrath of the Lich King = 80
-// Cataclysm = 85
-// Mists of Pandaria = 90
-// Warlords of Draenor = 100
-// Legion = 110
-// Battle for Azeroth = 120
-// Shadowlands = 60
-// Dragonflight = 70
-// The War Within = 80
-// Midnight = 90
-//
-//////////////////////////////////////////////////////////////////////////////////////////
-
-#if VERSION_STRING == Classic
-    #define DBC_PLAYER_LEVEL_CAP 60
-#elif VERSION_STRING == TBC
-    #define DBC_PLAYER_LEVEL_CAP 70
-#elif VERSION_STRING == WotLK
-    #define DBC_PLAYER_LEVEL_CAP 80
-#elif VERSION_STRING == Cata
-    #define DBC_PLAYER_LEVEL_CAP 85
-#elif VERSION_STRING == Mop
-    #define DBC_PLAYER_LEVEL_CAP 90
-#elif VERSION_STRING == WoD
-    #define DBC_PLAYER_LEVEL_CAP 100
-#elif VERSION_STRING == Legion
-    #define DBC_PLAYER_LEVEL_CAP 110
-#elif VERSION_STRING == BfA
-    #define DBC_PLAYER_LEVEL_CAP 120
-#elif VERSION_STRING == Shadowlands
-    #define DBC_PLAYER_LEVEL_CAP 60
-#elif VERSION_STRING == Dragonflight
-    #define DBC_PLAYER_LEVEL_CAP 70
-#elif VERSION_STRING == TheWarWithin
-    #define DBC_PLAYER_LEVEL_CAP 80
-#elif VERSION_STRING == Midnight
-    #define DBC_PLAYER_LEVEL_CAP 90
-#endif
+// Highest level of all expansions (BfA)
+inline constexpr uint32_t MAX_LEVEL_CAP = 120;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // DBC_STAT_LEVEL_CAP
