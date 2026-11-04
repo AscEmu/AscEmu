@@ -654,7 +654,7 @@ void Battleground::removePlayer(Player* plr, bool logout, bool teleport)
         // a teleport that already runs leaves the battleground on its own way
         if (teleport)
         {
-            if (!IS_INSTANCE(plr->getBGEntryMapId()))
+            if (!isInstance(plr->getBGEntryMapId()))
                 plr->safeTeleport(plr->getBGEntryMapId(), plr->getBGEntryInstanceId(), plr->getBGEntryPosition());
             else
                 plr->safeTeleport(plr->getBindMapId(), 0, plr->getBindPosition());

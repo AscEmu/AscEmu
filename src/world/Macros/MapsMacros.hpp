@@ -5,88 +5,38 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-//////////////////////////////////////////////////////////////////////////////////////////
-// IS_INSTANCE
-//
-// \param
-//
-// Vanilla = 600 - untested
-// The Burning Crusade = 600 - untested
-// Wrath of the Lich King = 800
-// Cataclysm = 975
-// Mists of Pandaria = 1161 - untested
-// Warlords of Draenor = untested
-// Legion = untested
-//
-//////////////////////////////////////////////////////////////////////////////////////////
+constexpr bool isInstance(uint32_t mapId) noexcept
+{
+    if (mapId <= 1)
+        return false; // 0 = Eastern Kingdoms, 1 = Kalimdor
 
-#if VERSION_STRING == Classic
-    #define IS_INSTANCE(a) ((a > 1))                                                         // Classic WoW
-#elif VERSION_STRING == TBC
-    #define IS_INSTANCE(a) ((a > 1) && (a != 530))                                           // The Burning Crusade
-#elif VERSION_STRING == WotLK
-    #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571))                             // Wrath of the Lich King
-#elif VERSION_STRING == Cata
-    #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637))               // Cataclysm
-#elif VERSION_STRING == Mop
-    #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637) && (a != 860)) //  Mists of Pandaria (untested)
-#elif VERSION_STRING == WoD
-    #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637) && (a != 860) && (a != 870) && (a != 1116)) // Warlords of Draenor (untested)
-#elif VERSION_STRING == Legion
-    #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637) && (a != 860) && (a != 870) && (a != 1116) && (a != 1220) && (a != 1669)) // Legion (untested)
-#elif VERSION_STRING == BfA
-    #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637) && (a != 860) && (a != 870) && (a != 1116) && (a != 1220) && (a != 1642) && (a != 1643) && (a != 1669) && (a != 1718)) // Battle for Azeroth (untested)
-#elif VERSION_STRING == Shadowlands
-    #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637) && (a != 860) && (a != 870) && (a != 1116) && (a != 1220) && (a != 1642) && (a != 1643) && (a != 1669) && (a != 1718) && (a != 2175) && (a != 2222)) // Shadowlands (untested)
-#elif VERSION_STRING == Dragonflight
-    #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637) && (a != 860) && (a != 870) && (a != 1116) && (a != 1220) && (a != 1642) && (a != 1643) && (a != 1669) && (a != 1718) && (a != 2175) && (a != 2222) && (a != 2444) && (a != 2454) && (a != 2548)) // Dragonflight (untested)
-#elif VERSION_STRING == TheWarWithin
-    #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637) && (a != 860) && (a != 870) && (a != 1116) && (a != 1220) && (a != 1642) && (a != 1643) && (a != 1669) && (a != 1718) && (a != 2175) && (a != 2222) && (a != 2444) && (a != 2454) && (a != 2548) && (a != 2552)) // The War Within (untested)
-#elif VERSION_STRING == Midnight
-    #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571) && (a != 637) && (a != 860) && (a != 870) && (a != 1116) && (a != 1220) && (a != 1642) && (a != 1643) && (a != 1669) && (a != 1718) && (a != 2175) && (a != 2222) && (a != 2444) && (a != 2454) && (a != 2548) && (a != 2552)) // Midnight (untested)
-#endif
+    switch (mapId)
+    {
+        // Open continents (Classic to The War Within / Midnight)
+        case 530: // Outland (TBC)
+        case 571: // Northrend (WotLK)
+        case 637: // Abyssal Depths / Gilneas / Kezan (Cata)
+        case 860: // Wandering Isle (MoP)
+        case 870: // Pandaria (MoP)
+        case 1116: // Draenor (WoD)
+        case 1220: // Broken Isles (Legion)
+        case 1642: // Zandalar (BfA)
+        case 1643: // Kul Tiras (BfA)
+        case 1669: // Argus (Legion)
+        case 1718: // Nazjatar (BfA)
+        case 2175: // Shadowlands
+        case 2222: // Zereth Mortis (Shadowlands)
+        case 2444: // Dragon Isles (Dragonflight)
+        case 2454: // Zaralek Cavern (Dragonflight)
+        case 2548: // Emerald Dream (Dragonflight)
+        case 2552: // Khaz Algar (The War Within / Midnight)
+            return false;
+        default:
+            return true;
+    }
+}
 
-//////////////////////////////////////////////////////////////////////////////////////////
-// MAX_NUM_MAPS
-//
-// \param Max maps 
-//
-// Vanilla = 600 - untested
-// The Burning Crusade = 600 - untested
-// Wrath of the Lich King = 800
-// Cataclysm = 975
-// Mists of Pandaria = 1161 - untested
-// Warlords of Draenor = 1600 - untested, upper bound until Map.dbc of 21742 is extracted
-// Legion = 2000 - untested, upper bound until Map.db2 of 26972 is extracted
-// Battle for Azeroth = 2500 - untested, upper bound until Map.db2 of 35662 is extracted
-// Shadowlands = 3000 - untested, upper bound until Map.db2 of 45745 is extracted
-// Dragonflight = 3000 - untested, upper bound until Map.db2 of 55664 is extracted
-// The War Within = 3000 - untested, upper bound until Map.db2 of 65299 is extracted
-// Midnight = 3106 - Map.db2 of 12.1.5 ends with map 3105
-//
-//////////////////////////////////////////////////////////////////////////////////////////
-
-#if VERSION_STRING == Classic
-    #define MAX_NUM_MAPS 600
-#elif VERSION_STRING == TBC
-    #define MAX_NUM_MAPS 600
-#elif VERSION_STRING == WotLK
-    #define MAX_NUM_MAPS 800
-#elif VERSION_STRING == Cata
-    #define MAX_NUM_MAPS 975
-#elif VERSION_STRING == Mop
-    #define MAX_NUM_MAPS 1161
-#elif VERSION_STRING == WoD
-    #define MAX_NUM_MAPS 1600
-#elif VERSION_STRING == Legion
-    #define MAX_NUM_MAPS 2000
-#elif VERSION_STRING == BfA
-    #define MAX_NUM_MAPS 2500
-#elif VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin
-    #define MAX_NUM_MAPS 3000
-#elif VERSION_STRING == Midnight
-    #define MAX_NUM_MAPS 3106
-#endif
+inline constexpr uint32_t MAX_NUM_MAPS = 3106; // Maximum value for all expansions
 
 #define CREATURE_SPAWNS_FIELDCOUNT 32
 #define GO_SPAWNS_FIELDCOUNT 17

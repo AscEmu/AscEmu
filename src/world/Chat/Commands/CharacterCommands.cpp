@@ -1475,7 +1475,7 @@ bool ChatCommandHandler::HandleCharSetNameCommand(const char* args, WorldSession
 
     auto isAlphaAscii = [](unsigned char c) {
         return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
-        };
+    };
 
     if (!std::all_of(new_name_cmd.begin(), new_name_cmd.end(), isAlphaAscii))
     {
@@ -1701,7 +1701,7 @@ bool ChatCommandHandler::HandleCharSetTitleCommand([[maybe_unused]] const char* 
         player_target->setKnownPvPTitle(static_cast<RankTitles>(-title), false);
     }
 
-    player_target->setChosenTitle(0);  // better remove chosen one
+    player_target->setChosenTitle(0); // better remove chosen one
     systemMessage(m_session, "Title has been {}.", title > 0 ? "set" : "reset");
 
     if (title > 0)
@@ -1918,17 +1918,35 @@ bool ChatCommandHandler::handleCharListSpellsCommand(const char* args, WorldSess
 //.character list standing
 bool ChatCommandHandler::HandleCharListStandingCommand(const char* args, WorldSession* m_session)
 {
-    uint32_t faction = atoi(args);
-    auto player_target = GetSelectedPlayer(m_session, true, true);
-    if (player_target == nullptr)
+    if (!args || !*args)
+    {
+        systemMessage(m_session, "Syntax: .character list standing <factionId>");
+        return true;
+    }
+
+    while (*args == ' ')
+    {
+        ++args;
+    }
+
+    uint32_t faction = 0;
+    auto [ptr, ec] = std::from_chars(args, args + std::strlen(args), faction);
+    if (ec != std::errc{})
+    {
+        systemMessage(m_session, "Unknown faction ID.");
+        return true;
+    }
+
+    auto playerTarget = GetSelectedPlayer(m_session, true, true);
+    if (playerTarget == nullptr)
         return true;
 
-    int32_t standing = player_target->getFactionStanding(faction).value_or(0);
-    int32_t bstanding = player_target->getBaseFactionStanding(faction).value_or(0);
+    int32_t standing = playerTarget->getFactionStanding(faction).value_or(0);
+    int32_t baseStanding = playerTarget->getBaseFactionStanding(faction).value_or(0);
 
-    systemMessage(m_session, "==== {} standing ====", player_target->getName());
+    systemMessage(m_session, "==== {} standing ====", playerTarget->getName());
     systemMessage(m_session, "Reputation for faction {}:", faction);
-    systemMessage(m_session, " Base Standing: {}", bstanding);
+    systemMessage(m_session, " Base Standing: {}", baseStanding);
     systemMessage(m_session, " Standing: {}", standing);
     return true;
 }
@@ -1980,15 +1998,12 @@ bool ChatCommandHandler::HandleCharListInstanceCommand(const char* /*args*/, Wor
     std::stringstream ss;
     ss << "Show persistent instances of " << MSG_COLOR_CYAN << player_target->getName().c_str() << "|r\n";
 
-    for (uint32_t mapId = 0; mapId < MAX_NUM_MAPS; mapId++)
+    for (const auto& mapId : sMapStore | std::views::keys)
     {
-        const auto save = player_target->getInstanceSave(mapId, false);
-
-        if (save)
+        if (const auto save = player_target->getInstanceSave(mapId, false))
         {
             count++;
-            MySQLStructure::MapInfo const* mapInfo = sMySQLStore.getWorldMapInfo(mapId);
-            if (mapInfo)
+            if (MySQLStructure::MapInfo const* mapInfo = sMySQLStore.getWorldMapInfo(mapId))
             {
                 ss << " - " << MSG_COLOR_CYAN << mapInfo->mapid << "|r";
                 ss << " (" << MSG_COLOR_CYAN << mapInfo->name << "|r)";
@@ -2000,8 +2015,7 @@ bool ChatCommandHandler::HandleCharListInstanceCommand(const char* /*args*/, Wor
                 }
                 ss << " - ";
 
-                InstanceMap* instance = sMapMgr.findInstanceMap(save->getInstanceId());
-                if (instance == nullptr)
+                if (InstanceMap* instance = sMapMgr.findInstanceMap(save->getInstanceId()); instance == nullptr)
                     ss << MSG_COLOR_LIGHTRED << "Shut Down|r";
                 else
                 {
@@ -2010,7 +2024,6 @@ bool ChatCommandHandler::HandleCharListInstanceCommand(const char* /*args*/, Wor
                     else
                         ss << MSG_COLOR_GREEN << "In use|r";
                 }
-
             }
         }
         ss << "\n";

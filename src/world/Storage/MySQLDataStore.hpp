@@ -281,7 +281,7 @@ public:
     std::string getLocaleGossipTitleOrElse(uint32_t entry, uint32_t sessionLocale);
 
     //std::set<SpellInfo const*>* getDefaultPetSpellsByEntry(uint32_t entry);     Zyres 2017/07/16 not used
-    
+
     GossipMenuInitMap const* getGossipMenuInitTextId() { return &_gossipMenuInitStore; }
 
     RecallMap const& getRecallStore() const { return _recallStore; }
@@ -451,7 +451,7 @@ public:
 
     ItemSetDefinedSetBonusContainer _definedItemSetBonusStore;
 
-    std::array<std::array<std::unique_ptr<PlayerCreateInfo>, MAX_PLAYER_CLASSES>, DBC_NUM_RACES> _playerCreateInfoStoreNew = {{ nullptr }};
+    std::array<std::array<std::unique_ptr<PlayerCreateInfo>, MAX_PLAYER_CLASSES>, DBC_NUM_RACES> _playerCreateInfoStoreNew = {{nullptr}};
     std::array<CreateInfo_ClassLevelStatsVector, MAX_PLAYER_CLASSES> _playerClassLevelStatsStore;
     PlayerXPperLevel _playerXPperLevelStore;
 

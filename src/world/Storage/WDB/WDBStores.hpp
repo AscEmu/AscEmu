@@ -193,7 +193,7 @@ inline MapDifficultyMap sMapDifficultyMap;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::NameGenEntry> sNameGenStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SkillLineAbilityEntry> sSkillLineAbilityStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SkillLineEntry> sSkillLineStore;
-extern SERVER_DECL std::unordered_map<uint32_t, std::vector<uint32_t>> sSkillLineChildren;     // parent skill line -> expansion lines, own client data only
+extern SERVER_DECL std::unordered_map<uint32_t, std::vector<uint32_t>> sSkillLineChildren; // parent skill line -> expansion lines, own client data only
 
 // an item effect of the client data: the spell an item casts by its trigger
 struct ClientItemEffect

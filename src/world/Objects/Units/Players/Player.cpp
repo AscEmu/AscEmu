@@ -2142,7 +2142,7 @@ void Player::setFallDisabledUntil(time_t time) { m_fallDisabledUntil = time; }
 
 void Player::setMapEntryPoint(uint32_t mapId)
 {
-    if (IS_INSTANCE(GetMapId()))
+    if (isInstance(GetMapId()))
         return;
 
     if (MySQLStructure::MapInfo const* mapInfo = sMySQLStore.getWorldMapInfo(mapId))
@@ -2390,7 +2390,7 @@ void Player::eventExploration()
 
 void Player::ejectFromInstance()
 {
-    if (hasValidBGEntryPoint() && !IS_INSTANCE(getBGEntryMapId()))
+    if (hasValidBGEntryPoint() && !isInstance(getBGEntryMapId()))
         if (safeTeleport(getBGEntryMapId(), getBGEntryInstanceId(), getBGEntryPosition()))
             return;
 
@@ -9799,7 +9799,7 @@ void Player::logIntoBattleground()
     // The stored battleground no longer exists (for example after a server
     // restart), has ended, or has no valid battleground object. Return to the
     // saved entry point, otherwise to the character bind position.
-    if (hasValidBGEntryPoint() && !IS_INSTANCE(getBGEntryMapId()))
+    if (hasValidBGEntryPoint() && !isInstance(getBGEntryMapId()))
     {
         m_position.changeCoords(getBGEntryPosition());
         m_mapId = getBGEntryMapId();
@@ -11970,7 +11970,7 @@ void Player::onKillUnitReputation(Unit* unit, bool innerLoop)
             if (!mod->faction[team])
                 continue;
 
-            if (!IS_INSTANCE(GetMapId()) || (IS_INSTANCE(GetMapId()) && !InstanceDifficulty::isHeroicDungeonDifficulty(m_dungeonDifficulty)))
+            if (!isInstance(GetMapId()) || !InstanceDifficulty::isHeroicDungeonDifficulty(m_dungeonDifficulty))
                 if (mod->replimit)
                     if (getFactionStanding(mod->faction[team]) >= static_cast<int32_t>(mod->replimit))
                         continue;
@@ -11980,7 +11980,7 @@ void Player::onKillUnitReputation(Unit* unit, bool innerLoop)
     }
     else
     {
-        if (IS_INSTANCE(GetMapId()) && sObjectMgr.handleInstanceReputationModifiers(this, unit))
+        if (isInstance(GetMapId()) && sObjectMgr.handleInstanceReputationModifiers(this, unit))
             return;
 
         if (unit->getServersideFactionEntry()->reputationIndex < 0)
@@ -14255,7 +14255,7 @@ void Player::eventAttackStop()
 
 void Player::eventDeath()
 {
-    if (!IS_INSTANCE(GetMapId()) && !sEventMgr.HasEvent(this, EVENT_PLAYER_FORCED_RESURRECT)) //Should never be true
+    if (!isInstance(GetMapId()) && !sEventMgr.HasEvent(this, EVENT_PLAYER_FORCED_RESURRECT)) //Should never be true
         sEventMgr.AddEvent(this, &Player::repopRequest, EVENT_PLAYER_FORCED_RESURRECT, forcedResurrectInterval, 1, 0); //in case he forgets to release spirit (afk or something)
 
     removeAllNegativeAuras();
@@ -15774,7 +15774,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
             uint32_t fallbackInstanceId = 0;
             LocationVector fallbackPosition;
 
-            if (hasValidBGEntryPoint() && !IS_INSTANCE(getBGEntryMapId()))
+            if (hasValidBGEntryPoint() && !isInstance(getBGEntryMapId()))
             {
                 fallbackMapId = getBGEntryMapId();
                 fallbackInstanceId = getBGEntryInstanceId();
