@@ -1513,6 +1513,7 @@ public:
     bool hasAnyQuestInQuestSlot() const;
     bool hasQuestInQuestLog(uint32_t questId) const;
     uint8_t getFreeQuestSlot() const;
+    uint32_t getMaxQuestSlots() const;
 
     QuestLogEntry* getQuestLogByQuestId(uint32_t questId) const;
     QuestLogEntry* getQuestLogBySlotId(uint32_t slotId) const;

@@ -159,7 +159,7 @@ bool ChatCommandHandler::HandleQuestStartCommand(const char* args, WorldSession*
             else
             {
                 uint8_t open_slot = player->getFreeQuestSlot();
-                if (open_slot > MAX_QUEST_SLOT)
+                if (open_slot > player->getMaxQuestSlots())
                 {
                     sQuestMgr.SendQuestLogFull(player);
                     recout += "Player's quest log is full.";

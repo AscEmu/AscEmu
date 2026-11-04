@@ -1259,7 +1259,7 @@ void WorldSession::handlePushQuestToPartyOpcode(WorldPacket& recvPacket)
                         {
                             response = QUEST_SHARE_MSG_CANT_TAKE_QUEST;
                         }
-                        else if (pPlayer->getFreeQuestSlot() > MAX_QUEST_SLOT)
+                        else if (pPlayer->getFreeQuestSlot() >= pPlayer->getMaxQuestSlots())
                         {
                             response = QUEST_SHARE_MSG_LOG_FULL;
                         }

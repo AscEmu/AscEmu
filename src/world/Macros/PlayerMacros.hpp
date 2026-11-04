@@ -151,12 +151,8 @@ inline constexpr size_t MIN_PLAYER_ACTION_BUTTON_PACKET_SIZE = 120 * 4;
 #define MAX_SPEC_COUNT 1
 #endif
 
-/// -
-#if VERSION_STRING == Classic
-#define MAX_QUEST_SLOT 20
-#else
-#define MAX_QUEST_SLOT 25
-#endif
+/// Maximum number of glyphs a player can have in a single spec (25 since TBC)
+inline constexpr uint32_t MAX_QUEST_SLOT = 25;
 
 //#define TOTAL_NORMAL_RUNE_TYPES 3
 //#define TOTAL_USED_RUNES (TOTAL_NORMAL_RUNE_TYPES * 2)

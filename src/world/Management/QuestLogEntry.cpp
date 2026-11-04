@@ -115,11 +115,12 @@ void QuestLogEntry::saveToDB(QueryBuffer* queryBuffer)
 }
 
 uint8_t QuestLogEntry::getSlot() const { return m_slot; }
+
 void QuestLogEntry::setSlot(uint8_t slot)
 {
-    if (slot > MAX_QUEST_LOG_SIZE)
+    if (slot >= MAX_QUEST_LOG_SIZE)
     {
-        sLogger.failure("{} is not a valid questlog slot!", uint32_t(slot));
+        sLogger.failure("{} is not a valid questlog slot!", static_cast<uint32_t>(slot));
         return;
     }
 
@@ -218,7 +219,7 @@ bool QuestLogEntry::canBeFinished() const
 
     if (m_state == QUEST_FAILED)
         return false;
-    
+
     if (m_state == QUEST_COMPLETE)
         return true;
 
@@ -394,8 +395,8 @@ void QuestLogEntry::updatePlayerFields()
     if (m_questProperties->time != 0 && m_state != QUEST_FAILED)
     {
         m_player->setQuestLogExpireTimeBySlot(m_slot, m_expirytime);
-        sEventMgr.AddEvent(m_player, &Player::eventTimedQuestExpire, m_questProperties->id, EVENT_TIMED_QUEST_EXPIRE, 
-            (m_expirytime - UNIXTIME) * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(m_player, &Player::eventTimedQuestExpire, m_questProperties->id, EVENT_TIMED_QUEST_EXPIRE,
+                           (m_expirytime - UNIXTIME) * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
     else
     {
@@ -422,8 +423,8 @@ void QuestLogEntry::sendUpdateAddKill(uint8_t index)
         return;
     }
 
-    sQuestMgr.SendQuestUpdateAddKill(m_player, m_questProperties->id, m_questProperties->required_mob_or_go[index], 
-        m_mobcount[index], m_questProperties->required_mob_or_go_count[index], 0);
+    sQuestMgr.SendQuestUpdateAddKill(m_player, m_questProperties->id, m_questProperties->required_mob_or_go[index],
+                                     m_mobcount[index], m_questProperties->required_mob_or_go_count[index], 0);
 }
 
 QuestScript* QuestLogEntry::getQuestScript() const

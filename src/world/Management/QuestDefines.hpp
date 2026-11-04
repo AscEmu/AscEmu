@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AEVersion.hpp"
 
-#define MAX_QUEST_LOG_SIZE 25
+inline constexpr uint32_t MAX_QUEST_LOG_SIZE = 25;
 
 namespace QuestStatus
 {

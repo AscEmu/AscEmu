@@ -9208,11 +9208,17 @@ bool Player::hasQuestInQuestLog(uint32_t questId) const
 
 uint8_t Player::getFreeQuestSlot() const
 {
-    for (uint8_t slotId = 0; slotId < MAX_QUEST_LOG_SIZE; ++slotId)
+    const uint32_t maxSlots = getMaxQuestSlots();
+    for (uint8_t slotId = 0; slotId < maxSlots; ++slotId)
         if (m_questlog[slotId] == nullptr)
             return slotId;
 
-    return MAX_QUEST_LOG_SIZE + 1;
+    return static_cast<uint8_t>(maxSlots);
+}
+
+uint32_t Player::getMaxQuestSlots() const
+{
+    return WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC) ? MAX_QUEST_SLOT : 20;
 }
 
 QuestLogEntry* Player::getQuestLogByQuestId(uint32_t questId) const
