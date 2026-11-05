@@ -4578,7 +4578,7 @@ void Spell::SpellEffectUseGlyph([[maybe_unused]] uint8_t effectIndex)
     if (!p_caster)
         return;
 
-    if (m_glyphslot >= GLYPHS_COUNT)
+    if (m_glyphslot >= getGlyphsCount())
         return;
 
     const auto glyphSlot = static_cast<uint16_t>(m_glyphslot);

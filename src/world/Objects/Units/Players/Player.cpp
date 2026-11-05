@@ -6569,7 +6569,7 @@ void Player::activateTalentSpec([[maybe_unused]]uint8_t specId)
     sendActionBars(2);
 
     // Remove old glyphs
-    for (uint8_t i = 0; i < GLYPHS_COUNT; ++i)
+    for (uint8_t i = 0; i < getGlyphsCount(); ++i)
     {
         const auto glyphProperties = sGlyphPropertiesStore.lookupEntry(m_specs[m_talentActiveSpec].getGlyph(i));
         if (glyphProperties != nullptr)
@@ -6587,7 +6587,7 @@ void Player::activateTalentSpec([[maybe_unused]]uint8_t specId)
     m_talentActiveSpec = specId;
 
     // Add new glyphs
-    for (uint8_t i = 0; i < GLYPHS_COUNT; ++i)
+    for (uint8_t i = 0; i < getGlyphsCount(); ++i)
     {
         const auto glyphProperties = sGlyphPropertiesStore.lookupEntry(m_specs[m_talentActiveSpec].getGlyph(i));
         if (glyphProperties != nullptr)
@@ -6637,10 +6637,10 @@ void Player::setTalentResetsCount(uint32_t value) { m_talentResetsCount = value;
 uint32_t Player::calcTalentResetCost(uint32_t resetnum) const
 {
     if (resetnum == 0)
-        return  10000;
+        return 10000;
 
     if (resetnum > 10)
-        return  500000;
+        return 500000;
 
     return resetnum * 50000;
 }
@@ -14859,7 +14859,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
     for (uint8_t s = 0; s < MAX_SPEC_COUNT; ++s)
     {
         ss << "'";
-        for (uint8_t i = 0; i < GLYPHS_COUNT; ++i)
+        for (uint8_t i = 0; i < getGlyphsCount(); ++i)
             ss << uint32_t(m_specs[s].getGlyph(i)) << ",";
 
         ss << "', '";
@@ -14870,7 +14870,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
     }
 #else
     ss << "'";
-    for (uint8_t i = 0; i < GLYPHS_COUNT; ++i)
+    for (uint8_t i = 0; i < getGlyphsCount(); ++i)
         ss << uint32_t(m_specs[SPEC_PRIMARY].getGlyph(i)) << ",";
 
     ss << "', '";
@@ -14880,7 +14880,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
     ss << "'" << ", ";
 
     ss << "'";
-    for (uint8_t i = 0; i < GLYPHS_COUNT; ++i)
+    for (uint8_t i = 0; i < getGlyphsCount(); ++i)
         ss << uint32_t(0) << ",";
 
     ss << "', '', ";
@@ -15591,7 +15591,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     {
         start = (char*)field[80 + 2 * s].asCString();
         uint8_t glyphid = 0;
-        while (glyphid < GLYPHS_COUNT)
+        while (glyphid < getGlyphsCount())
         {
             end = strchr(start, ',');
             if (!end)break;
@@ -15705,7 +15705,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
 #if VERSION_STRING > TBC
     updateGlyphs();
 
-    for (uint8_t i = 0; i < GLYPHS_COUNT; ++i)
+    for (uint8_t i = 0; i < getGlyphsCount(); ++i)
         setGlyph(i, m_specs[m_talentActiveSpec].getGlyph(i));
 #endif
 
@@ -16992,7 +16992,7 @@ void Player::completeLoading()
 
 #if VERSION_STRING > TBC
     // add glyphs
-    for (uint8_t j = 0; j < GLYPHS_COUNT; ++j)
+    for (uint8_t j = 0; j < getGlyphsCount(); ++j)
     {
         auto glyph_properties = sGlyphPropertiesStore.lookupEntry(m_specs[m_talentActiveSpec].getGlyph(j));
         if (glyph_properties == nullptr)

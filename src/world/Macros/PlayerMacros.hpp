@@ -64,38 +64,6 @@ inline constexpr uint8_t PLAYER_ACTION_BUTTON_COUNT = 180;
 inline constexpr size_t MIN_PLAYER_ACTION_BUTTON_PACKET_SIZE = 120 * 4;
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// GLYPHS_COUNT
-// 
-// \param Action bar / button defines 
-// 
-// Vanilla = 
-// The Burning Crusade = 
-// Wrath of the Lich King = 
-// Cataclysm = 
-// Mists of Pandaria = 
-// Warlords of Draenor = 
-// Legion = 
-//
-//////////////////////////////////////////////////////////////////////////////////////////
-
-#if VERSION_STRING == Classic
-    #define GLYPHS_COUNT 6
-#elif VERSION_STRING == TBC
-    #define GLYPHS_COUNT 6
-#elif VERSION_STRING == WotLK
-    #define GLYPHS_COUNT 6
-#elif VERSION_STRING == Cata
-    #define GLYPHS_COUNT 9
-#elif VERSION_STRING == Mop
-    #define GLYPHS_COUNT 6
-#elif VERSION_STRING == WoD
-    #define GLYPHS_COUNT 6
-#elif VERSION_STRING == Legion || VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
-    // 7.x and later have no glyph slots anymore (a glyph list per specialization); keeps the 6.x slot count until glyphs are ported
-    #define GLYPHS_COUNT 6
-#endif
-
-//////////////////////////////////////////////////////////////////////////////////////////
 // Minimum level required arena
 #define PLAYER_ARENA_MIN_LEVEL 70
 

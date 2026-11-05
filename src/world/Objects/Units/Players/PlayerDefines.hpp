@@ -1093,6 +1093,26 @@ struct PlayerCooldown
     uint32_t SpellId;
 };
 
+inline constexpr size_t MAX_GLYPHS_COUNT = 9;
+
+[[nodiscard]] constexpr uint8_t getGlyphsCount(WoW::Expansion expansion) noexcept
+{
+    // 7.x and later have no glyph slots anymore (a glyph list per specialization); keeps the 6.x slot count until glyphs are ported
+
+    switch (expansion)
+    {
+    case WoW::Expansion::_Cata:
+        return 9;
+    default:
+        return 6;
+    }
+}
+
+[[nodiscard]] inline uint8_t getGlyphsCount() noexcept
+{
+    return getGlyphsCount(WoW::getServerExpansion());
+}
+
 class PlayerSpec
 {
 public:
@@ -1134,7 +1154,7 @@ public:
 
     uint16_t getGlyph(uint16_t slot) const
     {
-        if (slot >= GLYPHS_COUNT)
+        if (slot >= getGlyphsCount())
             return 0;
 
         return mGlyphs[slot];
@@ -1142,13 +1162,13 @@ public:
 
     void setGlyph(uint16_t glyphId, uint16_t slot)
     {
-        if (slot >= GLYPHS_COUNT)
+        if (slot >= getGlyphsCount())
             return;
 
         mGlyphs[slot] = glyphId;
     }
 
-    std::array<uint16_t, GLYPHS_COUNT> const& getGlyphs() const { return mGlyphs; }
+    std::array<uint16_t, MAX_GLYPHS_COUNT> const& getGlyphs() const { return mGlyphs; }
 
     std::map<uint32_t, uint8_t> const& getTalents() const { return mTalents; }
     ActionButton& getActionButton(uint8_t slot) { return mActions[slot]; }
@@ -1162,7 +1182,7 @@ private:
     uint32_t mTalentPoints = 0;
     std::map<uint32_t, uint8_t> mTalents;
 
-    std::array<uint16_t, GLYPHS_COUNT> mGlyphs = {0};
+    std::array<uint16_t, MAX_GLYPHS_COUNT> mGlyphs = {0};
 
     std::array<ActionButton, PLAYER_ACTION_BUTTON_COUNT> mActions = {ActionButton()};
 
