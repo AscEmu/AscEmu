@@ -61,11 +61,12 @@ void WorldSession::sendTaxiMenu(Creature* unit)
 
     const auto& taxiMask = GetPlayer()->getTaxiData()->getTaxiMask(GetPlayer()->m_cheats.hasTaxiCheat);
 
-    // the clients from 6.x on read as many mask bytes as their taxi nodes need
-    uint32_t maskSize = DBC_TAXI_MASK_SIZE;
-#if VERSION_STRING >= WoD
-    maskSize = std::min<uint32_t>(DBC_TAXI_MASK_SIZE, (sTaxiNodesStore.getNumRows() - 1) / 8 + 1);
-#endif
+    uint32_t maskSize = static_cast<uint32_t>(getTaxiMaskSize(getClientProtocol().getContentExpansion()));
+
+    // The clients from 6.x on read as many mask bytes as their taxi nodes need
+    if (getClientProtocol().isContentAtLeast(WoW::Expansion::_WoD))
+        maskSize = std::min<uint32_t>(maskSize, (sTaxiNodesStore.getNumRows() - 1) / 8 + 1);
+
     SmsgShowTaxiNodes managedPacket(unit->getGuid(), nearestNode, taxiMask, unit->GetMapId(), maskSize);
     sendManagedPacket(managedPacket);
 

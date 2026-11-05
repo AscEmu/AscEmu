@@ -18,11 +18,11 @@ namespace AscEmu::Packets
     public:
         uint64_t guid;
         uint32_t nearestNode;
-        std::array<uint8_t, DBC_TAXI_MASK_SIZE> taxiMask;
-        uint32_t mapId;         // the map of the flight master, part of its 128 bit guid from 6.x on
-        uint32_t maskSize;      // the mask bytes the client of the build reads, 6.x and later
+        std::array<uint8_t, MAX_TAXI_MASK_SIZE> taxiMask;
+        uint32_t mapId; // the map of the flight master, part of its 128 bit guid from 6.x on
+        uint32_t maskSize; // the mask bytes the client of the build reads, 6.x and later
 
-        SmsgShowTaxiNodes(uint64_t guid, uint32_t nearestNode, std::array<uint8_t, DBC_TAXI_MASK_SIZE> const& taxiMask, uint32_t mapId = 0, uint32_t maskSize = DBC_TAXI_MASK_SIZE) :
+        SmsgShowTaxiNodes(uint64_t guid, uint32_t nearestNode, std::array<uint8_t, MAX_TAXI_MASK_SIZE> const& taxiMask, uint32_t mapId = 0, uint32_t maskSize = MAX_TAXI_MASK_SIZE) :
             ManagedPacket(SMSG_SHOWTAXINODES, 0),
             guid(guid),
             nearestNode(nearestNode),
@@ -36,8 +36,8 @@ namespace AscEmu::Packets
 size_t expectedSize() const override
         {
             return m_protocol.expansion < WoW::Expansion::_Cata ?
-                4 + 8 + 4 + (4 * DBC_TAXI_MASK_SIZE) :
-                4 + 8 + 4 + 4 + DBC_TAXI_MASK_SIZE;
+                       4 + 8 + 4 + (4 * maskSize) :
+                       4 + 8 + 4 + 4 + maskSize;
         }
 
         bool internalSerialise(WorldPacket& packet) override
@@ -50,7 +50,7 @@ size_t expectedSize() const override
                 const bool twoMasks = m_protocol.expansion >= WoW::Expansion::_Legion;
                 const uint32_t size = blocks ? ((maskSize + 7) / 8) * 8 : maskSize;
 
-                packet.writeBit(true);                                  // window info
+                packet.writeBit(true); // window info
                 packet.flushBits();
                 packet << uint32_t(blocks ? size / 8 : size);
                 if (twoMasks)
@@ -80,7 +80,7 @@ size_t expectedSize() const override
                 packet.writeBit(npcGuid[6]);
                 packet.writeBit(npcGuid[5]);
 
-                packet.writeBits(DBC_TAXI_MASK_SIZE, 24);
+                packet.writeBits(maskSize, 24);
                 packet.flushBits();
 
                 packet.writeByteSeq(npcGuid[0]);
@@ -104,7 +104,7 @@ size_t expectedSize() const override
             packet << uint32_t(1) << guid << nearestNode;
             if (m_protocol.isCata())
             {
-                packet << uint32_t(DBC_TAXI_MASK_SIZE);
+                packet << uint32_t(maskSize);
             }
             for (auto tMask : taxiMask)
             {

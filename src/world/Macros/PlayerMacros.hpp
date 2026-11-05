@@ -5,42 +5,37 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Server/ClientProtocol.hpp"
 #include "AEVersion.hpp"
 
 inline constexpr uint32_t DBC_NUM_RACES = 92;
 
-//////////////////////////////////////////////////////////////////////////////////////////
-// DBC_TAXI_MASK_SIZE
-//
-// \param max taxi mask
-//
-// Vanilla = ??
-// The Burning Crusade = ??
-// Wrath of the Lich King = 12
-// Cataclysm = 114
-// Mists of Pandaria = ??
-// Warlords of Draenor = ??
-// Legion = ??
-// Battle for Azeroth = ??
-// Shadowlands = ??
-//
-//////////////////////////////////////////////////////////////////////////////////////////
+inline constexpr size_t MAX_TAXI_MASK_SIZE = 258;
 
-#if VERSION_STRING == Classic
-    #define DBC_TAXI_MASK_SIZE 12
-#elif VERSION_STRING == TBC
-    #define DBC_TAXI_MASK_SIZE 12
-#elif VERSION_STRING == WotLK
-    #define DBC_TAXI_MASK_SIZE 14
-#elif VERSION_STRING == Cata
-    #define DBC_TAXI_MASK_SIZE 114
-#elif VERSION_STRING == Mop
-    #define DBC_TAXI_MASK_SIZE 255
-#elif VERSION_STRING == WoD
-    #define DBC_TAXI_MASK_SIZE 217
-#elif VERSION_STRING == Legion || VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
-    #define DBC_TAXI_MASK_SIZE 258
-#endif
+[[nodiscard]] constexpr size_t getTaxiMaskSize(WoW::Expansion expansion) noexcept
+{
+    switch (expansion)
+    {
+        case WoW::Expansion::_Classic:
+        case WoW::Expansion::_TBC:
+            return 12;
+        case WoW::Expansion::_WotLK:
+            return 14;
+        case WoW::Expansion::_Cata:
+            return 114;
+        case WoW::Expansion::_Mop:
+            return 255;
+        case WoW::Expansion::_WoD:
+            return 217;
+        default: // Legion to Midnight (incl. fallback)
+            return 258;
+    }
+}
+
+[[nodiscard]] inline size_t getTaxiMaskSize() noexcept
+{
+    return getTaxiMaskSize(WoW::getServerExpansion());
+}
 
 // Highest level of all expansions (BfA)
 inline constexpr uint32_t MAX_LEVEL_CAP = 120;

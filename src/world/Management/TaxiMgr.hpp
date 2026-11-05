@@ -20,7 +20,7 @@ class LocationVector;
 class Player;
 struct TaxiPathBySourceAndDestination;
 
-typedef std::array<uint8_t, DBC_TAXI_MASK_SIZE> TaxiMask;
+typedef std::array<uint8_t, MAX_TAXI_MASK_SIZE> TaxiMask;
 typedef std::unordered_map<uint32_t, uint8_t> TaxiNodeLevelDataContainer;
 typedef std::map<uint32_t, TaxiPathBySourceAndDestination> TaxiPathSetForSource;
 typedef std::map<uint32_t, TaxiPathSetForSource> TaxiPathSetBySource;

@@ -27,161 +27,140 @@ TaxiMask sDeathKnightTaxiNodesMask;
 
 static uint8_t getFieldForTaxiNode(uint32_t nodeId)
 {
-#if VERSION_STRING < Cata
-    return static_cast<uint8_t>((nodeId - 1) / 32);
-#else
     return static_cast<uint8_t>((nodeId - 1) / 8);
-#endif
 }
 
 static uint8_t getSubmaskForTaxiNode(uint32_t nodeId)
 {
-#if VERSION_STRING < Cata
-    return 1 << ((nodeId - 1) % 32);
-#else
-    return 1 << ((nodeId - 1) % 8);
-#endif
+    return static_cast<uint8_t>(1 << ((nodeId - 1) % 8));
 }
 
 TaxiPath::TaxiPath()
-{ 
+{
     m_taximask.fill(0);
 }
 
-void TaxiPath::initTaxiNodesForLevel(uint32_t race, [[maybe_unused]] uint32_t chrClass, [[maybe_unused]] uint8_t level)
+void TaxiPath::initTaxiNodesForLevel(uint32_t race, uint32_t chrClass, uint8_t level)
 {
-#if VERSION_STRING >= WotLK
-    // class specific initial known nodes
-    switch (chrClass)
+    // Class specific initial known nodes (WotLK+)
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK) && chrClass == DEATHKNIGHT)
     {
-        case DEATHKNIGHT:
-            {
-                for (uint32_t i = 0; i < DBC_TAXI_MASK_SIZE; ++i)
-                    m_taximask[i] |= sOldContinentsNodesMask[i];
-                break;
-            }
+        for (uint32_t i = 0; i < getTaxiMaskSize(); ++i)
+            m_taximask[i] |= sOldContinentsNodesMask[i];
     }
-#endif
 
     const auto team = getSideByRace(static_cast<uint8_t>(race));
 
-#if VERSION_STRING < Cata
-    // Add race specific initial nodes
-    switch (race)
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
     {
-        case RACE_HUMAN:
-            // Stormwind
-            setTaximaskNode(2);
-            break;
-        case RACE_ORC:
-            // Orgrimmar
-            setTaximaskNode(23);
-            break;
-        case RACE_DWARF:
-            // Ironforge
-            setTaximaskNode(6);
-            break;
-        case RACE_NIGHTELF:
-            // Auberdine
-            setTaximaskNode(26);
-            // Rut'theran Village
-            setTaximaskNode(27);
-            break;
-        case RACE_UNDEAD:
-            // Undercity
-            setTaximaskNode(11);
-            break;
-        case RACE_TAUREN:
-            // Thunder Bluff
-            setTaximaskNode(22);
-            break;
-        case RACE_GNOME:
-            // Ironforge
-            setTaximaskNode(6);
-            break;
-        case RACE_TROLL:
-            // Orgrimmar
-            setTaximaskNode(23);
-            break;
-#if VERSION_STRING >= TBC
-        case RACE_BLOODELF:
-            // Silvermoon City
-            setTaximaskNode(82);
-            break;
-        case RACE_DRAENEI:
-            // Exodar
-            setTaximaskNode(94);
-            break;
-#endif
-#if VERSION_STRING >= Cata
-        case RACE_GOBLIN:
-            setTaximaskNode(23);
-            break;
-        case RACE_WORGEN:
-            setTaximaskNode(2);
-            break;
-#endif
-#if VERSION_STRING >= Mop
-        case RACE_PANDAREN_ALLIANCE:
-            setTaximaskNode(2);
-            break;
-        case RACE_PANDAREN_HORDE:
-            setTaximaskNode(23);
-            break;
-#endif
-        default:
-            break;
-    }
-
-#if VERSION_STRING >= TBC
-    // Isle of Queldanas
-    if (level >= 68)
-        setTaximaskNode(213);
-#endif
-#else
-    // Patch 4.2: players will now unlock all taxi nodes within the recommended level range of the player
-    for (uint32_t i = 0; i < sTaxiNodesStore.getNumRows(); ++i)
-    {
-        if (const auto itr = sTaxiNodesStore.lookupEntry(i))
+        // Patch 4.2+: Players will now unlock all taxi nodes within the recommended level range of the player
+        for (uint32_t i = 0; i < sTaxiNodesStore.getNumRows(); ++i)
         {
-            // Skip scripted and debug nodes
-            if (itr->flags == TAXI_NODE_FLAG_SCRIPT)
-                continue;
+            if (const auto itr = sTaxiNodesStore.lookupEntry(i))
+            {
+                // Skip scripted and debug nodes
+                if (itr->flags == TAXI_NODE_FLAG_SCRIPT)
+                    continue;
 
-            // Skip nodes that are restricted the player's opposite faction
-            if ((!(itr->flags & TAXI_NODE_FLAG_ALLIANCE_RESTRICTED) && team == TEAM_ALLIANCE)
-                || (!(itr->flags & TAXI_NODE_FLAG_HORDE_RESTRICTED) && team == TEAM_HORDE))
-                continue;
+                // Skip nodes that are restricted to the player's opposite faction
+                if ((!(itr->flags & TAXI_NODE_FLAG_ALLIANCE_RESTRICTED) && team == TEAM_ALLIANCE)
+                    || (!(itr->flags & TAXI_NODE_FLAG_HORDE_RESTRICTED) && team == TEAM_HORDE))
+                    continue;
 
-            if (sTaxiMgr.isTaxiNodeUnlockedFor(itr->id, level))
-                setTaximaskNode(itr->id);
+                if (sTaxiMgr.isTaxiNodeUnlockedFor(itr->id, level))
+                    setTaximaskNode(itr->id);
+            }
         }
     }
-#endif
+    else
+    {
+        // Pre-Cata: Add race specific initial nodes
+        switch (race)
+        {
+            case RACE_HUMAN:
+                // Stormwind
+                setTaximaskNode(2);
+                break;
+            case RACE_ORC:
+                // Orgrimmar
+                setTaximaskNode(23);
+                break;
+            case RACE_DWARF:
+                // Ironforge
+                setTaximaskNode(6);
+                break;
+            case RACE_NIGHTELF:
+                // Auberdine
+                setTaximaskNode(26);
+                // Rut'theran Village
+                setTaximaskNode(27);
+                break;
+            case RACE_UNDEAD:
+                // Undercity
+                setTaximaskNode(11);
+                break;
+            case RACE_TAUREN:
+                // Thunder Bluff
+                setTaximaskNode(22);
+                break;
+            case RACE_GNOME:
+                // Ironforge
+                setTaximaskNode(6);
+                break;
+            case RACE_TROLL:
+                // Orgrimmar
+                setTaximaskNode(23);
+                break;
+            case RACE_BLOODELF:
+                // Silvermoon City
+                if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+                    setTaximaskNode(82);
+                break;
+            case RACE_DRAENEI:
+                // Exodar
+                if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+                    setTaximaskNode(94);
+                break;
+            default:
+                break;
+        }
+
+        // Isle of Quel'Danas (TBC+)
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC) && level >= 68)
+            setTaximaskNode(213);
+    }
 
     // New continent starting masks (It will be accessible only at new map)
     switch (team)
     {
         case TEAM_ALLIANCE:
-#if VERSION_STRING >= TBC
-            // Honor Hold
-            setTaximaskNode(100);
-#if VERSION_STRING >= Cata
-            // Valiance Keep
-            setTaximaskNode(245);
-#endif
-#endif
+            if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+            {
+                // Honor Hold
+                setTaximaskNode(100);
+
+                if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+                {
+                    // Valiance Keep
+                    setTaximaskNode(245);
+                }
+            }
             break;
+
         case TEAM_HORDE:
-#if VERSION_STRING >= TBC
-            // Thrallmar
-            setTaximaskNode(99);
-#if VERSION_STRING >= Cata
-            // Warsong Hold
-            setTaximaskNode(257);
-#endif
-#endif
+            if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+            {
+                // Thrallmar
+                setTaximaskNode(99);
+
+                if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+                {
+                    // Warsong Hold
+                    setTaximaskNode(257);
+                }
+            }
             break;
+
         default:
             break;
     }
@@ -192,7 +171,8 @@ void TaxiPath::loadTaxiMask(std::string const& data)
     const auto tokens = AscEmu::Util::Strings::split(data, " ");
     auto iter = tokens.cbegin();
     uint32_t index = 0;
-    for (; index < DBC_TAXI_MASK_SIZE && iter != tokens.cend(); ++iter, ++index)
+    const size_t currentMaskSize = getTaxiMaskSize();
+    for (; index < currentMaskSize && iter != tokens.cend(); ++iter, ++index)
     {
         if (const uint32_t mask = std::stoul((*iter).c_str()))
         {
@@ -228,7 +208,7 @@ bool TaxiPath::setTaximaskNode(uint32_t nodeidx)
 std::string TaxiPath::saveTaximaskNodeToString() const
 {
     std::ostringstream ss;
-    for (uint32_t i = 0; i < DBC_TAXI_MASK_SIZE; ++i)
+    for (uint32_t i = 0; i < getTaxiMaskSize(); ++i)
         ss << uint32_t(m_taximask[i]) << " ";
     return ss.str();
 }
@@ -455,9 +435,8 @@ bool TaxiMgr::isTaxiNodeUnlockedFor(uint32_t taxiNodeId, uint8_t level) const
 
 void TaxiMgr::initialize()
 {
-#if VERSION_STRING > WotLK
-    loadTaxiNodeLevelData();
-#endif
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+        loadTaxiNodeLevelData();
 
     // Initialize global taxinodes mask
     // include existed nodes that have at least single not spell base (scripted) path
