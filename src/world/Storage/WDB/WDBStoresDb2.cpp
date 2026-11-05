@@ -62,7 +62,7 @@ namespace
 
     char* keepString(std::string_view value)
     {
-        static char empty[1] = { '\0' };
+        static char empty[1] = {'\0'};
         if (value.empty())
             return empty;
 
@@ -680,7 +680,7 @@ namespace
             entry.id = row.id();
             entry.mapId = row.parentOr(2);
             entry.difficulty = row.i16(3);
-            entry.encounterIndex = row.u8(6);   // Bit, the journal order is OrderIndex
+            entry.encounterIndex = row.u8(6); // Bit, the journal order is OrderIndex
             entry.encounterName[0] = row.text(0);
         });
 
@@ -712,7 +712,7 @@ namespace
         {
             entry.TransportID = row.parent();
             entry.TimeIndex = row.u32(2);
-            entry.Pos = { row.f32(0, 0), row.f32(0, 1), row.f32(0, 2) };
+            entry.Pos = {row.f32(0, 0), row.f32(0, 1), row.f32(0, 2)};
         });
 
         fillContainer(sTransportRotationStore, transportRotation, [](WDB::Structures::TransportRotationEntry& entry, Row const& row)
@@ -725,37 +725,37 @@ namespace
             entry.W = row.f32(0, 3);
         });
 
-        fillContainer(sTaxiNodesStore, taxiNodes, [](WDB::Structures::TaxiNodesEntry& entry, Row const& row)
+        fillStore(sTaxiNodesStore, taxiNodes, [](WDB::Structures::TaxiNodesEntry& entry, Row const& row)
         {
             entry.id = row.id();
-            entry.mapid = row.parentOr(5);      // ContinentID
+            entry.mapId = row.parentOr(5); // ContinentID
             entry.x = row.f32(1, 0);
             entry.y = row.f32(1, 1);
             entry.z = row.f32(1, 2);
-            entry.name[0] = row.text(0);
-            entry.mountCreatureID[0] = row.i32(14, 0);
-            entry.mountCreatureID[1] = row.i32(14, 1);
+            entry.name = row.text(0);
+            entry.mountCreatureId[0] = row.i32(14, 0);
+            entry.mountCreatureId[1] = row.i32(14, 1);
             entry.flags = row.i32(8);
         });
 
         fillContainer(sTaxiPathStore, taxiPath, [](WDB::Structures::TaxiPathEntry& entry, Row const& row)
         {
             entry.id = row.id();
-            entry.from = row.parentOr(1);       // FromTaxiNode
+            entry.from = row.parentOr(1); // FromTaxiNode
             entry.to = row.u16(2);
-            entry.price = row.u32(3);           // Cost
+            entry.price = row.u32(3); // Cost
         });
 
         fillContainer(sTaxiPathNodeStore, taxiPathNode, [](WDB::Structures::TaxiPathNodeEntry& entry, Row const& row)
         {
             entry.pathId = row.parentOr(2);
             entry.NodeIndex = row.i32(3);
-            entry.mapid = row.u16(4);           // ContinentID
+            entry.mapid = row.u16(4); // ContinentID
             entry.x = row.f32(0, 0);
             entry.y = row.f32(0, 1);
             entry.z = row.f32(0, 2);
             entry.flags = row.i32(5);
-            entry.waittime = row.u32(6);        // Delay
+            entry.waittime = row.u32(6); // Delay
             entry.arivalEventID = row.i32(7);
             entry.departureEventID = row.i32(8);
         });
