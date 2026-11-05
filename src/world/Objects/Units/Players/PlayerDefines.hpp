@@ -1239,3 +1239,23 @@ struct BGScore
     uint32_t HealingDone = 0;
     uint32_t MiscData[5] = {0};
 };
+
+[[nodiscard]] constexpr uint16_t getMaxPlayerSkill(WoW::Expansion expansion) noexcept
+{
+    switch (expansion)
+    {
+        case WoW::Expansion::_Classic: return 300;
+        case WoW::Expansion::_TBC:     return 375;
+        case WoW::Expansion::_WotLK:   return 450;
+        case WoW::Expansion::_Cata:    return 525;
+        case WoW::Expansion::_Mop:     return 600;
+        case WoW::Expansion::_WoD:     return 700;
+        case WoW::Expansion::_Legion:  return 800;
+        default:                       return 800; // Fallback / Limit before tier-split
+    }
+}
+
+[[nodiscard]] inline uint16_t getMaxPlayerSkill() noexcept
+{
+    return getMaxPlayerSkill(WoW::getServerExpansion());
+}

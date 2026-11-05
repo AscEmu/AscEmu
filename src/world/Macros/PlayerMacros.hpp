@@ -59,33 +59,6 @@ inline constexpr uint32_t MAX_LEVEL_CAP = 120;
 
 #define DBC_STAT_LEVEL_CAP 100
 
-//////////////////////////////////////////////////////////////////////////////////////////
-// DBC_PLAYER_SKILL_MAX
-//
-// \param skill max
-//
-// Vanilla = 300
-// The Burning Crusade = 375
-// Wrath of the Lich King = 450
-// Cataclysm = 525
-// Mists of Pandaria = 600
-// Warlords of Draenor = 700
-// Legion = 800
-//
-//////////////////////////////////////////////////////////////////////////////////////////
-
-#if VERSION_STRING == Classic
-    #define DBC_PLAYER_SKILL_MAX 300
-#elif VERSION_STRING == TBC
-    #define DBC_PLAYER_SKILL_MAX 375
-#elif VERSION_STRING == WotLK
-    #define DBC_PLAYER_SKILL_MAX 450
-#elif VERSION_STRING == Cata
-    #define DBC_PLAYER_SKILL_MAX 525
-#elif VERSION_STRING >= Mop
-    #define DBC_PLAYER_SKILL_MAX 600
-#endif
-
 // Max-Capacity for internal structures (Dragonflight to Midnight need 180)
 inline constexpr uint8_t PLAYER_ACTION_BUTTON_COUNT = 180;
 inline constexpr size_t MIN_PLAYER_ACTION_BUTTON_PACKET_SIZE = 120 * 4;

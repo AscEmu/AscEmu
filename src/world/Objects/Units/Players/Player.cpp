@@ -5035,8 +5035,9 @@ void Player::addSkillLine(uint16_t skillLine, uint16_t currentValue, uint16_t ma
         return;
 
     uint16_t skillStep = 0;
-    currentValue = currentValue > DBC_PLAYER_SKILL_MAX ? DBC_PLAYER_SKILL_MAX : currentValue;
-    maxValue = maxValue > DBC_PLAYER_SKILL_MAX ? DBC_PLAYER_SKILL_MAX : maxValue;
+    const uint16_t maxPlayerSkill = getMaxPlayerSkill();
+    currentValue = std::min(currentValue, maxPlayerSkill);
+    maxValue = std::min(maxValue, maxPlayerSkill);
 
     if (!initializeProfession)
         currentValue = currentValue < 1 ? 1U : currentValue;
@@ -5996,25 +5997,27 @@ bool Player::_removeSpell(uint32_t spellId, bool moveToDeleted, bool silently/* 
 
 void Player::_verifySkillValues(WDB::Structures::SkillLineEntry const* skillEntry, uint16_t* currentValue, uint16_t* maxValue, uint16_t* skillStep, bool* requireUpdate)
 {
-    auto level_bound_skill = skillEntry->type == SKILL_TYPE_WEAPON && skillEntry->id != SKILL_DUAL_WIELD;
-#if VERSION_STRING <= WotLK
-    level_bound_skill = level_bound_skill || skillEntry->id == SKILL_LOCKPICKING;
-#endif
-#if VERSION_STRING <= TBC
-    level_bound_skill = level_bound_skill || skillEntry->id == SKILL_POISONS;
-#endif
+    auto levelBoundSkill = skillEntry->type == SKILL_TYPE_WEAPON && skillEntry->id != SKILL_DUAL_WIELD;
+
+    // Lockpicking is a level bound skill in classic, tbc and wotlk
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata) && skillEntry->id == SKILL_LOCKPICKING)
+        levelBoundSkill = true;
+
+    // Poisons is a level bound skill in classic and tbc
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK) && skillEntry->id == SKILL_POISONS)
+        levelBoundSkill = true;
 
     uint16_t newMaximum = 0;
     auto isCurrentValueMaxed = false;
     *requireUpdate = false;
 
-    if (level_bound_skill)
+    if (levelBoundSkill)
     {
         newMaximum = static_cast<uint16_t>(5 * getLevel());
-#if VERSION_STRING >= Cata
+
         // In cata all weapon skills are always maxed
-        isCurrentValueMaxed = true;
-#endif
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+            isCurrentValueMaxed = true;
     }
     else if (skillEntry->type == SKILL_TYPE_LANGUAGE)
     {
@@ -6024,11 +6027,12 @@ void Player::_verifySkillValues(WDB::Structures::SkillLineEntry const* skillEntr
     else if (skillEntry->type == SKILL_TYPE_PROFESSION || skillEntry->type == SKILL_TYPE_SECONDARY)
     {
         newMaximum = *maxValue;
+        const uint16_t maxPlayerSkill = getMaxPlayerSkill();
 
         if (newMaximum == 0)
         {
             newMaximum = 75;
-            while (newMaximum < *currentValue && newMaximum < DBC_PLAYER_SKILL_MAX)
+            while (newMaximum < *currentValue && newMaximum < maxPlayerSkill)
             {
                 newMaximum += 75;
             }
@@ -6043,9 +6047,9 @@ void Player::_verifySkillValues(WDB::Structures::SkillLineEntry const* skillEntr
         isCurrentValueMaxed = true;
     }
 
-    // force to be within limits
-    if (newMaximum > DBC_PLAYER_SKILL_MAX)
-        newMaximum = DBC_PLAYER_SKILL_MAX;
+    // Force to be within limits
+    const uint16_t maxPlayerSkill = getMaxPlayerSkill();
+    newMaximum = std::min(newMaximum, maxPlayerSkill);
 
     if (*maxValue != newMaximum)
     {
