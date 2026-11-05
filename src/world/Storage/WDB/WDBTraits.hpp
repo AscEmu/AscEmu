@@ -490,6 +490,17 @@ namespace WDB
     {};
 
     template <>
+    struct DbcTraits<Structures::TaxiNodesEntry> :
+        DbcVersionLayouts<
+            Structures::Raw::TaxiNodesEntryClassic,
+            Structures::Raw::TaxiNodesEntryTbc,
+            Structures::Raw::TaxiNodesEntryWotlk,
+            Structures::Raw::TaxiNodesEntryCata,
+            Structures::Raw::TaxiNodesEntryMop>,
+        StandardDbcFile<"TaxiNodes">
+    {};
+
+    template <>
     struct DbcTraits<Structures::TotemCategoryEntry> :
         DbcVersionLayouts<
             UnsupportedVersion, // Classic

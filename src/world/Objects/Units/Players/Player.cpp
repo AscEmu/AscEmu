@@ -15927,7 +15927,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
             }
             else // has start node, teleport to it
             {
-                safeTeleport(nodeEntry->mapid, 0, LocationVector(nodeEntry->x, nodeEntry->y, nodeEntry->z, 0.0f));
+                safeTeleport(nodeEntry->mapId, 0, LocationVector(nodeEntry->x, nodeEntry->y, nodeEntry->z, 0.0f));
             }
             m_taxi->clearTaxiDestinations();
         }

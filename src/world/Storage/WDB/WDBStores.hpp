@@ -35,7 +35,6 @@ namespace WDB::Structures
     struct WMOAreaTableEntry;
     struct TransportAnimationEntry;
     struct TaxiPathEntry;
-    struct TaxiNodesEntry;
     struct TalentTabEntry;
     struct TalentEntry;
     struct SpellShapeshiftFormEntry;
@@ -215,7 +214,7 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellRangeEntry> sSpellRan
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellShapeshiftFormEntry> sSpellShapeshiftFormStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::TalentEntry> sTalentStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::TalentTabEntry> sTalentTabStore;
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::TaxiNodesEntry> sTaxiNodesStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::TaxiNodesEntry> sTaxiNodesStore;
 extern TaxiPathSetBySource sTaxiPathSetBySource;
 
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::TaxiPathEntry> sTaxiPathStore;

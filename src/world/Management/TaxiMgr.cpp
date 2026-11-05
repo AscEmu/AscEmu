@@ -299,7 +299,7 @@ uint32_t TaxiMgr::getNearestTaxiNode(LocationVector const& pos, uint32_t mapid, 
     for (uint32_t i = 1; i < sTaxiNodesStore.getNumRows(); ++i)
     {
         const auto node = sTaxiNodesStore.lookupEntry(i);
-        if (node == nullptr || node->mapid != mapid || (!node->mountCreatureID[team == TEAM_ALLIANCE ? 1 : 0] && node->mountCreatureID[0] != 32981)) // dk flight
+        if (node == nullptr || node->mapId != mapid || (!node->mountCreatureId[team == TEAM_ALLIANCE ? 1 : 0] && node->mountCreatureId[0] != 32981)) // dk flight
             continue;
 
         const auto field = getFieldForTaxiNode(i);
@@ -362,16 +362,16 @@ uint32_t TaxiMgr::getTaxiMountDisplayId(uint32_t id, uint32_t team, bool allowed
     {
         uint32_t mount_entry = 0;
         if (team == TEAM_ALLIANCE)
-            mount_entry = node->mountCreatureID[1];
+            mount_entry = node->mountCreatureId[1];
         else
-            mount_entry = node->mountCreatureID[0];
+            mount_entry = node->mountCreatureId[0];
 
         // Fix for Alliance not being able to use Acherus taxi
         // only one mount type for both sides
         if (mount_entry == 0 && allowed_alt_team)
         {
             // Simply reverse the selection. At least one team in theory should have a valid mount ID to choose.
-            mount_entry = team == TEAM_ALLIANCE ? node->mountCreatureID[0] : node->mountCreatureID[1];
+            mount_entry = team == TEAM_ALLIANCE ? node->mountCreatureId[0] : node->mountCreatureId[1];
         }
 
         if (const auto mount_info = sMySQLStore.getCreatureProperties(mount_entry))
@@ -499,19 +499,19 @@ void TaxiMgr::initialize()
         const auto submask = getSubmaskForTaxiNode(i);
 
         sTaxiNodesMask[field] |= submask;
-        if (node->mountCreatureID[0] && node->mountCreatureID[0] != 32981)
+        if (node->mountCreatureId[0] && node->mountCreatureId[0] != 32981)
             sHordeTaxiNodesMask[field] |= submask;
-        if (node->mountCreatureID[1] && node->mountCreatureID[1] != 32981)
+        if (node->mountCreatureId[1] && node->mountCreatureId[1] != 32981)
             sAllianceTaxiNodesMask[field] |= submask;
-        if (node->mountCreatureID[0] == 32981 || node->mountCreatureID[1] == 32981)
+        if (node->mountCreatureId[0] == 32981 || node->mountCreatureId[1] == 32981)
             sDeathKnightTaxiNodesMask[field] |= submask;
 
         // old continent node (+ nodes virtually at old continents, check explicitly to avoid loading map files for zone info)
-        if (node->mapid < 2 || i == 82 || i == 83 || i == 93 || i == 94)
+        if (node->mapId < 2 || i == 82 || i == 83 || i == 93 || i == 94)
             sOldContinentsNodesMask[field] |= submask;
 
         // fix DK node at Ebon Hold and Shadow Vault flight master
         if (i == 315 || i == 333)
-            ((WDB::Structures::TaxiNodesEntry*)node)->mountCreatureID[1] = 32981;
+            ((WDB::Structures::TaxiNodesEntry*)node)->mountCreatureId[1] = 32981;
     }
 }

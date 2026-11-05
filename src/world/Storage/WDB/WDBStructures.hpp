@@ -693,6 +693,18 @@ namespace WDB::Structures
         uint32_t price{0};
     };
 
+    struct TaxiNodesEntry
+    {
+        uint32_t id{0};
+        uint32_t mapId{0};
+        float x{0.0f};
+        float y{0.0f};
+        float z{0.0f};
+        std::string name;
+        std::array<uint32_t, 2> mountCreatureId{};
+        uint32_t flags{0};
+    };
+
     struct TotemCategoryEntry
     {
         uint32_t id{0};
@@ -1708,21 +1720,6 @@ namespace WDB::Structures
         //uint32_t unk                                              // 3
     };
 #endif
-
-    struct TaxiNodesEntry
-    {
-        uint32_t id;                                                // 0
-        uint32_t mapid;                                             // 1
-        float x;                                                    // 2
-        float y;                                                    // 3
-        float z;                                                    // 4
-        char* name[NAME_PATTERN];                                   // 5-21
-        //uint32_t nameflags;                                       // 22
-        uint32_t mountCreatureID[2];                                // 23-24
-#if VERSION_STRING >= Cata
-        uint32_t flags;                                             // 8
-#endif
-    };
 
     struct TaxiPathEntry
     {

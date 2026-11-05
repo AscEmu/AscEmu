@@ -74,7 +74,6 @@ static std::map<uint32_t, uint32_t> InspectTalentTabSize;
 #if VERSION_STRING >= Mop
 static uint32_t ClassSpecializationTabs[12][4];
 #endif
-SERVER_DECL WDB::WDBContainer<WDB::Structures::TaxiNodesEntry> sTaxiNodesStore;
 TaxiPathSetBySource sTaxiPathSetBySource;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::TaxiPathEntry> sTaxiPathStore;
 TaxiPathNodesByPath sTaxiPathNodesByPath;
@@ -1236,7 +1235,34 @@ bool loadDBCs()
     }
 #endif
 
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sTaxiNodesStore, dbc_path, "TaxiNodes.dbc");
+    WDB::loadUnifiedWDBStore<WDB::Structures::TaxiNodesEntry>(
+        bad_dbc_files, sTaxiNodesStore, dbc_path,
+        []<typename RawType>(const RawType& raw, WDB::Structures::TaxiNodesEntry& entry) {
+            entry.id = raw.id;
+            entry.mapId = raw.mapId;
+            entry.x = raw.x;
+            entry.y = raw.y;
+            entry.z = raw.z;
+
+            if constexpr (requires { { raw.name[0] } -> std::convertible_to<char const*>; })
+            {
+                uint8_t localeId = sWorld.getDbcLocaleLanguageId();
+                entry.name = (localeId < std::size(raw.name) && raw.name[localeId]) ? raw.name[localeId] : (raw.name[0] ? raw.name[0] : "");
+            }
+            else if constexpr (requires { raw.name; })
+            {
+                entry.name = raw.name ? raw.name : "";
+            }
+
+            entry.mountCreatureId[0] = raw.mountCreatureId[0];
+            entry.mountCreatureId[1] = raw.mountCreatureId[1];
+
+            if constexpr (requires { raw.flags; })
+                entry.flags = raw.flags;
+            else
+                entry.flags = 0;
+        });
+
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sTaxiPathStore, dbc_path, "TaxiPath.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sTaxiPathNodeStore, dbc_path, "TaxiPathNode.dbc");
     // note: Generate path data

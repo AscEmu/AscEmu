@@ -65,7 +65,7 @@ void WorldSession::sendTaxiMenu(Creature* unit)
 
     // The clients from 6.x on read as many mask bytes as their taxi nodes need
     if (getClientProtocol().isContentAtLeast(WoW::Expansion::_WoD))
-        maskSize = std::min<uint32_t>(maskSize, (sTaxiNodesStore.getNumRows() - 1) / 8 + 1);
+        maskSize = std::min<uint32_t>(maskSize, static_cast<uint32_t>((sTaxiNodesStore.getNumRows() - 1) / 8 + 1));
 
     SmsgShowTaxiNodes managedPacket(unit->getGuid(), nearestNode, taxiMask, unit->GetMapId(), maskSize);
     sendManagedPacket(managedPacket);
@@ -284,7 +284,7 @@ void WorldSession::handleMoveSplineDoneOpcode(WorldPacket& recvData)
         WDB::Structures::TaxiNodesEntry const* curDestNode = sTaxiNodesStore.lookupEntry(curDest);
 
         // far teleport case
-        if (curDestNode && curDestNode->mapid != GetPlayer()->GetMapId() && GetPlayer()->getMovementManager()->getCurrentMovementGeneratorType() == FLIGHT_MOTION_TYPE)
+        if (curDestNode && curDestNode->mapId != GetPlayer()->GetMapId() && GetPlayer()->getMovementManager()->getCurrentMovementGeneratorType() == FLIGHT_MOTION_TYPE)
         {
             if (FlightPathMovementGenerator* flight = dynamic_cast<FlightPathMovementGenerator*>(GetPlayer()->getMovementManager()->getCurrentMovementGenerator()))
             {
@@ -294,7 +294,7 @@ void WorldSession::handleMoveSplineDoneOpcode(WorldPacket& recvData)
                 flight->skipCurrentNode();
 
                 GetPlayer()->m_taxi->setNodeAfterTeleport(node->NodeIndex);
-                GetPlayer()->safeTeleport(curDestNode->mapid, 0, LocationVector(node->x, node->y, node->z, GetPlayer()->GetOrientation()));
+                GetPlayer()->safeTeleport(curDestNode->mapId, 0, LocationVector(node->x, node->y, node->z, GetPlayer()->GetOrientation()));
             }
         }
     }

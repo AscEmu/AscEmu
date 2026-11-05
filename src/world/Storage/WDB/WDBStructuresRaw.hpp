@@ -952,6 +952,44 @@ namespace WDB::Structures::Raw
         uint32_t price;
     };
 
+    struct TaxiNodesEntryClassic
+    {
+        uint32_t id;
+        uint32_t mapId;
+        float x;
+        float y;
+        float z;
+        char const* name[8];
+        uint32_t mountCreatureId[2];
+    };
+
+    struct TaxiNodesEntryTbc
+    {
+        uint32_t id;
+        uint32_t mapId;
+        float x;
+        float y;
+        float z;
+        char const* name[16];
+        uint32_t mountCreatureId[2];
+    };
+
+    using TaxiNodesEntryWotlk = TaxiNodesEntryTbc;
+
+    struct TaxiNodesEntryCata
+    {
+        uint32_t id;
+        uint32_t mapId;
+        float x;
+        float y;
+        float z;
+        char const* name;
+        uint32_t mountCreatureId[2];
+        uint32_t flags;
+    };
+
+    using TaxiNodesEntryMop = TaxiNodesEntryCata;
+
     struct TotemCategoryEntryTbcWotlkCataMop
     {
         uint32_t id;
