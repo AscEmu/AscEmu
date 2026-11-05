@@ -134,13 +134,6 @@ inline constexpr size_t MIN_PLAYER_ACTION_BUTTON_PACKET_SIZE = 120 * 4;
 /// -
 #define PLAYER_HONORLESS_TARGET_SPELL 2479
 
-/// -
-#if VERSION_STRING > Classic
-#define PLAYER_EXPLORED_ZONES_LENGTH 128
-#else
-#define PLAYER_EXPLORED_ZONES_LENGTH 64
-#endif
-
 // #define ACHIEVEMENT_SEND_DELAY 1000 // we have this delay of sending auras to other players so client will have time to create object first
 #define LOGIN_CIENT_SEND_DELAY 1000 // we have this delay of sending auras to other players so client will have time to create object first
 
