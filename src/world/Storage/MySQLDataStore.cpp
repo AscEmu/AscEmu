@@ -1145,7 +1145,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
             creatureProperties.attackSchool = SCHOOL_NORMAL;
         }
 
-        if (fields[28].asUint32() != 0)
+        if (fields[28].asFloat() > 0.0f)
         {
             creatureProperties.MinDamage = fields[28].asFloat();
         }
@@ -1155,7 +1155,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
             creatureProperties.MinDamage = 5;
         }
 
-        if (fields[29].asUint32() != 0 || fields[29].asFloat() > creatureProperties.MinDamage)
+        if (fields[29].asFloat() >= creatureProperties.MinDamage)
         {
             creatureProperties.MaxDamage = fields[29].asFloat();
         }

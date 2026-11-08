@@ -16253,8 +16253,6 @@ void Player::updateStats()
     int32_t attackPower = 0;
     int32_t rangedAttackPower = 0;
 #if VERSION_STRING < Legion
-    int32_t hpdelta = 128;
-    int32_t manadelta = 128;
 #endif
 
     uint32_t str = getStat(STAT_STRENGTH);
@@ -16346,21 +16344,15 @@ void Player::updateStats()
     setAttackPower(attackPower);
     setRangedAttackPower(rangedAttackPower);
 
-    const auto* levelInfo = sObjectMgr.getLevelInfo(this->getRace(), this->getClass(), lev);
-
     uint32_t hp = getBaseHealth();
-
-#if VERSION_STRING != Classic
-    int32_t stat_bonus = getPosStat(STAT_STAMINA) - getNegStat(STAT_STAMINA);
-#else
-    int32_t stat_bonus = 0;
-#endif
-    if (stat_bonus < 0)
-        stat_bonus = 0; // Avoid of having negative health
-
     uint32_t oldmaxhp = getMaxHealth();
 
 #if VERSION_STRING >= Legion
+    const auto* levelInfo = sObjectMgr.getLevelInfo(this->getRace(), this->getClass(), lev);
+    int32_t stat_bonus = getPosStat(STAT_STAMINA) - getNegStat(STAT_STAMINA);
+    if (stat_bonus < 0)
+        stat_bonus = 0; // Avoid of having negative health
+
     // The clients since 7.x have no base health of their own: the health is the stamina times the health per stamina
     // point of the level (a game table of the client). The class rows carry the class stamina times that value as base
     // health, so the stamina from items and spells (stat_bonus, the base stamina is not part of it) adds health in
@@ -16371,23 +16363,10 @@ void Player::updateStats()
         res += static_cast<uint32_t>(static_cast<uint64_t>(hp) * stat_bonus / baseStamina);
     res += m_healthFromSpell + m_healthFromItems;
 #else
-    // the base health already holds the level 1 stamina, so that part is taken out of the bonus
-    if (levelInfo != nullptr)
-    {
-        hpdelta = levelInfo->Stat[2] * 10;
-        manadelta = levelInfo->Stat[3] * 15;
-    }
-
-    levelInfo = sObjectMgr.getLevelInfo(this->getRace(), this->getClass(), 1);
-    if (levelInfo != nullptr)
-    {
-        hpdelta -= levelInfo->Stat[2] * 10;
-        manadelta -= levelInfo->Stat[3] * 15;
-    }
-
-    int32_t bonus = stat_bonus * 10 + m_healthFromSpell + m_healthFromItems;
-
-    uint32_t res = hp + bonus + hpdelta;
+    // the class base health has no stamina: the first 20 points give one health each, every further point ten
+    const int32_t stamina = static_cast<int32_t>(getStat(STAT_STAMINA));
+    const int32_t baseStamina = std::min(stamina, 20);
+    uint32_t res = hp + baseStamina + (stamina - baseStamina) * 10 + m_healthFromSpell + m_healthFromItems;
 
     if (res < hp)
         res = hp;
@@ -16429,14 +16408,10 @@ void Player::updateStats()
 #if VERSION_STRING >= Legion
         res = mana + m_manaFromSpell + m_manaFromItems;
 #else
-#if VERSION_STRING != Classic
-        stat_bonus = getPosStat(STAT_INTELLECT) - getNegStat(STAT_INTELLECT);
-#endif
-        if (stat_bonus < 0)
-            stat_bonus = 0; // Avoid of having negative mana
-        bonus = stat_bonus * 15 + m_manaFromSpell + m_manaFromItems;
-
-        res = mana + bonus + manadelta;
+        // the class base mana has no intellect: the first 20 points give one mana each, every further point fifteen
+        const int32_t intellect = static_cast<int32_t>(getStat(STAT_INTELLECT));
+        const int32_t baseIntellect = std::min(intellect, 20);
+        res = mana + baseIntellect + (intellect - baseIntellect) * 15 + m_manaFromSpell + m_manaFromItems;
 #endif
         if (res < mana)
             res = mana;

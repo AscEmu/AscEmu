@@ -1920,6 +1920,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     setVirtualItemSlotId(MELEE, creature_properties->itemslot_1);
     setVirtualItemSlotId(OFFHAND, creature_properties->itemslot_2);
     setVirtualItemSlotId(RANGED, creature_properties->itemslot_3);
+    setSheathType(SHEATH_STATE_MELEE);
 
     /*  // Dont was Used in old AIInterface left the code here if needed at other Date
     if (creature_properties->guardtype == GUARDTYPE_CITY)
