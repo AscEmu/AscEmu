@@ -247,8 +247,16 @@ namespace {
             classPowers.fill(TOTAL_PLAYER_POWER_TYPES);
         }
 
+        // the client numbers the powers of a class in the row order of the file, the store has no order of its own
+        std::vector<WDB::Structures::ChrPowerTypesEntry const*> rows;
+        rows.reserve(sChrPowerTypesStore.size());
         for (auto const& powerEntry : sChrPowerTypesStore | std::views::values)
+            rows.push_back(&powerEntry);
+        std::ranges::sort(rows, {}, &WDB::Structures::ChrPowerTypesEntry::entry);
+
+        for (auto const* row : rows)
         {
+            auto const& powerEntry = *row;
             // Boundary Checks against Out-of-Bounds access
             if (powerEntry.classId >= MAX_PLAYER_CLASSES || powerEntry.power >= TOTAL_PLAYER_POWER_TYPES)
                 continue;
