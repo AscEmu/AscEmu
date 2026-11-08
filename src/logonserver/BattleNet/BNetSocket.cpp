@@ -524,7 +524,7 @@ namespace AscEmu::Battlenet
                    command.compare(0, semanticPrefix.size(), semanticPrefix) == 0;
         }
 
-        [[nodiscard]] constexpr bool usesForever1601Transport(uint32_t build) { return build == 69893u || build == 70009u; }
+        [[nodiscard]] constexpr bool usesForever1601Transport(uint32_t build) { return build == 69893u || build == 70009u || build == 70862u; }
         // 10.x clients verify the web login certificate against the system store and drop the connection
         // after the TLS handshake with a self signed certificate; they log in over plain http
         [[nodiscard]] constexpr bool usesPlainWebAuth(uint32_t build) { return build >= 55664u && !usesForever1601Transport(build); }
@@ -544,8 +544,9 @@ namespace AscEmu::Battlenet
                 case 69795u: return { 2u, 5u, 6u };
                 case 69585u: return { 5u, 5u, 4u };
                 case 69814u: return { 12u, 1u, 0u };
-                case 69893u: return { 1u, 60u, 1u };
-                case 70009u: return { 1u, 60u, 1u };
+                case 69893u:
+                case 70009u:
+                case 70862u: return { 1u, 60u, 1u };
                 case 21742u: return { 6u, 2u, 4u };
                 case 26972u: return { 7u, 3u, 5u };
                 case 35662u: return { 8u, 3u, 7u };
@@ -555,7 +556,8 @@ namespace AscEmu::Battlenet
                 case 70391u:
                 case 70529u:
                 case 70575u:
-                case 70688u: return { 12u, 1u, 5u };
+                case 70688u:
+                case 70783u: return { 12u, 1u, 5u };
                 default:     return { 0u, 0u, 0u };
             }
         }
@@ -585,29 +587,13 @@ namespace AscEmu::Battlenet
 
         ForeverSuperDistrictProfile getForeverSuperDistrictProfile(uint32_t clientBuild)
         {
-            // Build 70009 currently exposes four Forever rulesets:
-            //
-            //   PvE
-            //   PvP
-            //   Roleplay
-            //   Hardcore
-            //
-            // The SuperDistrict DB2 relationships stored here are diagnostic metadata
-            // only. These values must not be serialized as invented Battle.net fields.
-            //
-            // The previously verified relationship was:
-            //
-            //   SuperDistrictSetCollection 1 -> SuperDistrictSet 36
-            //   AvailableSuperDistrict 2 -> PvP
-            //   AvailableSuperDistrict 3 -> PvE / Normal
-            //
-            // Roleplay, Hardcore and the ContentSet selector for build 70009 still
-            // need to be verified from the extracted 70009 DB2 data. Keep them unset
-            // rather than guessing IDs.
-            if (clientBuild == 70009u)
+            // Forever rulesets PvE, PvP, Roleplay and Hardcore; the DB2 relationship known so far:
+            // SuperDistrictSetCollection 1 -> SuperDistrictSet 36, AvailableSuperDistrict 2 = PvP, 3 = PvE
+            // Roleplay, Hardcore and the ContentSet selector are not verified yet and stay unset
+            if (clientBuild == 70009u || clientBuild == 70862u)
             {
                 return {
-                    .build = 70009u,
+                    .build = clientBuild,
                     .collectionId = 1u,
                     .superDistrictSetId = 36u,
                     .pveAvailableSuperDistrictId = 3u,
@@ -2295,21 +2281,10 @@ namespace AscEmu::Battlenet
         (void)commandName;
         std::ostringstream json;
 
-        if (m_clientBuild == 70009u)
+        if (usesForever1601Transport(m_clientBuild))
         {
-            sLogger.warning("BNet: Forever 70009 SuperDistrict mapping is not verified yet; Roleplay/Hardcore IDs must be captured before serialization.");
-            json
-            << "JSONSuperDistrictList:{\"superDistricts\":["
-                << "{\"superDistrictID\":2,\"disallowLogin\":false},"
-                << "{\"superDistrictID\":1,\"disallowLogin\":false},"
-                << "{\"superDistrictID\":5,\"disallowLogin\":false}"
-                << "]}";
-        }
-        else if (m_clientBuild == 69893u)
-        {
-            // Forever/Camelot 1.60.1.69893 sniff-based compatibility test.
-            // The play-style selector expects SuperDistrict IDs here; realm
-            // address/cfg metadata is carried later by RealmList entries.
+            // the play-style selector of Forever expects the SuperDistrict ids here, the realm data follows in the realm list
+            // the ids of the 69893 capture; Roleplay and Hardcore are not verified for the later builds
             json
                 << "JSONSuperDistrictList:{\"superDistricts\":["
                 << "{\"superDistrictID\":2,\"disallowLogin\":false},"
@@ -2473,6 +2448,8 @@ namespace AscEmu::Battlenet
             std::copy(m_realmListClientSecret.begin(), m_realmListClientSecret.end(), pending.worldAuthKeyData.begin());
             std::copy(joinSecret.begin(), joinSecret.end(), pending.worldAuthKeyData.begin() + m_realmListClientSecret.size());
             pending.joinSecret = joinSecret;
+            // the client hashes this key data followed by the auth seed of its build, the log value finds both in a memory scan
+            sLogger.debug("BNet: connection #{} RealmJoin world key data {}", m_connectionId, makeCompactHex(pending.worldAuthKeyData.data(), pending.worldAuthKeyData.size(), pending.worldAuthKeyData.size()));
 
             // the account data the session result of the classic login carries, from the account cache of the logon (keyed by upper case names)
             std::string accountKey = m_selectedGameAccountName;

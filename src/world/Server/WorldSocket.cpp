@@ -463,7 +463,7 @@ void WorldSocket::outPacket(uint32_t opcode, size_t len, const void* data)
         return;
     }
 
-#if AE_WORLD_PROFILE_WOD || AE_WORLD_PROFILE_LEGION || AE_WORLD_PROFILE_BFA || AE_WORLD_PROFILE_SHADOWLANDS || AE_WORLD_PROFILE_DRAGONFLIGHT || AE_WORLD_PROFILE_THEWARWITHIN || AE_WORLD_PROFILE_MIDNIGHT
+#if AE_WORLD_PROFILE_WOD || AE_WORLD_PROFILE_LEGION || AE_WORLD_PROFILE_BFA || AE_WORLD_PROFILE_SHADOWLANDS || AE_WORLD_PROFILE_DRAGONFLIGHT || AE_WORLD_PROFILE_THEWARWITHIN || AE_WORLD_PROFILE_MIDNIGHT || AE_WORLD_PROFILE_FOREVER
     // connections with their own framing and encryption take every packet through it
     {
         WorldPacket packet(static_cast<WorldPacket::Opcode>(opcode), len);

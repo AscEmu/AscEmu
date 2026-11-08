@@ -32,6 +32,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "version/TheWarWithin/World/WorldProfile.hpp"
 #elif AE_WORLD_PROFILE_MIDNIGHT
 #include "version/Midnight/World/WorldProfile.hpp"
+#elif AE_WORLD_PROFILE_FOREVER
+#include "version/Forever/World/WorldProfile.hpp"
 #endif
 
 #include <openssl/bio.h>
@@ -52,7 +54,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-#if AE_WORLD_PROFILE_BFA || AE_WORLD_PROFILE_SHADOWLANDS || AE_WORLD_PROFILE_DRAGONFLIGHT || AE_WORLD_PROFILE_THEWARWITHIN || AE_WORLD_PROFILE_MIDNIGHT
+#if AE_WORLD_PROFILE_BFA || AE_WORLD_PROFILE_SHADOWLANDS || AE_WORLD_PROFILE_DRAGONFLIGHT || AE_WORLD_PROFILE_THEWARWITHIN || AE_WORLD_PROFILE_MIDNIGHT || AE_WORLD_PROFILE_FOREVER
 
 namespace
 {
@@ -68,8 +70,8 @@ namespace
         constexpr uLong CompressionAdlerSeed = 0x9827D8F1;
 
         // 11.x widened the transport: 32 bit opcodes, 32 byte challenges and seeds, SHA512 for the digests and the
-        // session key, AES-256-GCM for the packets
-        constexpr bool WideTransport = Profile::Expansion == WoW::Expansion::_TheWarWithin || Profile::Expansion == WoW::Expansion::_Midnight;
+        // session key, AES-256-GCM for the packets; the Forever client runs on the 12.x engine
+        constexpr bool WideTransport = Profile::Expansion == WoW::Expansion::_TheWarWithin || Profile::Expansion == WoW::Expansion::_Midnight || Profile::Expansion == WoW::Expansion::_WoWForever;
         constexpr size_t OpcodeSize = WideTransport ? sizeof(uint32_t) : sizeof(uint16_t);
         constexpr size_t ChallengeSize = WideTransport ? 32 : 16;
         constexpr size_t EncryptKeySize = WideTransport ? AesGcmCrypt::KeySize256 : AesGcmCrypt::KeySize;
@@ -519,8 +521,10 @@ void WorldSocket::handleAesAuthSession(WorldPacket& packet)
         return;
     }
 
-    // the seed depends on the client platform, the session does not carry it
-    bool verified = false;
+    // the seed depends on the client platform, the session does not carry it; a profile without seeds skips the check
+    bool verified = Profile::AuthSeeds.empty();
+    if (verified)
+        sLogger.warning("WorldSocket::{}: no auth seed of this client is known, the session digest of game account {} is not verified", Profile::Name, pending.gameAccountId);
     for (const auto& seed : Profile::AuthSeeds)
     {
         std::array<uint8_t, 64 + 16> input{};
@@ -601,7 +605,7 @@ bool WorldSocket::sendAesEnterEncryptedMode()
     // 8.x: RSA signature, 9.x and later: Ed25519 signature with a context
     std::array<uint8_t, AesWorld::SignatureSize> signature{};
     size_t signatureSize = AesWorld::SignatureSize;
-    if constexpr (Profile::Expansion == WoW::Expansion::_Shadowlands || Profile::Expansion == WoW::Expansion::_Dragonflight || Profile::Expansion == WoW::Expansion::_TheWarWithin || Profile::Expansion == WoW::Expansion::_Midnight)
+    if constexpr (Profile::Expansion == WoW::Expansion::_Shadowlands || Profile::Expansion == WoW::Expansion::_Dragonflight || Profile::Expansion == WoW::Expansion::_TheWarWithin || Profile::Expansion == WoW::Expansion::_Midnight || Profile::Expansion == WoW::Expansion::_WoWForever)
     {
         signatureSize = Ed25519SignatureSize;
         if (!signDigestEd25519(digest.data(), digest.size(), signature.data()))
@@ -786,7 +790,7 @@ bool WorldSocket::sendConnectTo(uint64_t key, uint32_t serial)
 
     const uint16_t port = static_cast<uint16_t>(worldConfig.listen.listenPort);
 
-    if constexpr (Profile::Expansion == WoW::Expansion::_Midnight)
+    if constexpr (Profile::Expansion == WoW::Expansion::_Midnight || Profile::Expansion == WoW::Expansion::_WoWForever)
     {
         // 12.x: no signature; count, serial, connection type, key, native realm address, third key, then every
         // payload with address type, address, port and a bleep token (token, proxy id and address strings with

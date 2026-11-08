@@ -103,12 +103,13 @@
 #    ClientVersion:
 #        The expansion this world server serves. Decides which version bound
 #        data is loaded from the database at startup. Changing the value
-#        requires a restart.
+#        requires a restart. The letter F selects the WoW Forever client.
 #        Default: 2 (WotLK)
 #        0 = 5875 (Classic)     1 = 8606 (TBC)      2 = 12340 (WotLK)
 #        3 = 15595 (Cata)       4 = 18414 (Mop)     5 = 21742 (WoD)
 #        6 = 26972 (Legion)     7 = 35662 (BfA)     8 = 45745 (Shadowlands)
-#        9 = 55664 (Dragonflight)    10 = 65299 (TWW)    11 = 70688 (Midnight)
+#        9 = 55664 (Dragonflight)    10 = 65299 (TWW)    11 = 70783 (Midnight)
+#        F = 70862 (Forever)
 #
 
 <Realm1 Id            = "1"

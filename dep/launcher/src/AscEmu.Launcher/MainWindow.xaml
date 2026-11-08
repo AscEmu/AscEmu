@@ -1,0 +1,30 @@
+<Window x:Class="AscEmu.Launcher.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="AscEmu Launcher" Width="1240" Height="700" MinWidth="1040" MinHeight="620" WindowStartupLocation="CenterScreen" Background="{StaticResource BackgroundBrush}" Foreground="{StaticResource TextBrush}">
+<Grid>
+    <Grid.ColumnDefinitions><ColumnDefinition Width="228"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+    <Border Grid.Column="0" Background="#0C121C" BorderBrush="#1B2738" BorderThickness="0,0,1,0">
+        <Grid Margin="22"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+            <StackPanel><TextBlock Text="ASCEMU" FontSize="27" FontWeight="Bold"/><TextBlock Text="LAUNCHER" Foreground="{StaticResource AccentBrush}" FontWeight="SemiBold" FontSize="12"/></StackPanel>
+            <StackPanel Grid.Row="1" Margin="0,46,0,0">
+                <TextBlock Text="GAME" Foreground="{StaticResource MutedBrush}" FontSize="10" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                <Border Background="{StaticResource PanelBrush}" CornerRadius="7" Padding="13"><StackPanel><TextBlock Text="World of Warcraft" FontWeight="SemiBold"/><TextBlock x:Name="BuildText" Text="Forever" Foreground="{StaticResource MutedBrush}" FontSize="12" Margin="0,4,0,0"/></StackPanel></Border>
+                <TextBlock Text="SERVICES" Foreground="{StaticResource MutedBrush}" FontSize="10" FontWeight="SemiBold" Margin="0,28,0,8"/>
+                <TextBlock x:Name="ServerText" Text="Battle.net: checking..." Foreground="{StaticResource MutedBrush}" FontSize="12" TextWrapping="Wrap"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+    <Grid Grid.Column="1">
+        <Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="92"/></Grid.RowDefinitions>
+        <Border Grid.Row="0"><Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#172A46" Offset="0"/><GradientStop Color="#0E1724" Offset="0.58"/><GradientStop Color="#0A0E15" Offset="1"/></LinearGradientBrush></Border.Background>
+            <Grid Margin="34,28">
+                <StackPanel VerticalAlignment="Center"><TextBlock Text="WORLD OF WARCRAFT" FontSize="12" Foreground="#AFCBEE" FontWeight="SemiBold"/><TextBlock Text="Forever" FontSize="54" FontWeight="Bold" Margin="0,2,0,0"/><TextBlock Text="Powered by AscEmu" FontSize="17" Foreground="{StaticResource MutedBrush}" Margin="0,5,0,0"/><TextBlock Text="Forever client support · builds 69893–70862" FontSize="12" Foreground="{StaticResource MutedBrush}" Margin="0,24,0,0"/></StackPanel>
+            </Grid>
+        </Border>
+        <Border Grid.Row="1" Background="#0D141E" BorderBrush="#1B2738" BorderThickness="0,1,0,0">
+            <Grid Margin="34,16"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                <StackPanel VerticalAlignment="Center"><TextBlock x:Name="PatchStatusText" Text="Ready" FontWeight="SemiBold"/><TextBlock x:Name="PatchDetailsText" Text="AscEmu Forever" Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="0,4,0,0"/></StackPanel>
+                <Button Grid.Column="1" x:Name="PlayButton" Content="PLAY" Width="225" Height="58" FontSize="20" IsEnabled="False" Click="Play_Click"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Grid>
+</Window>

@@ -1,0 +1,37 @@
+-- 34 build and max_build columns: the Midnight rows carry build 70783, min_build keeps the build the row was added in
+UPDATE `creature_quest_finisher` SET `max_build` = 70783 WHERE `max_build` = 70688;
+UPDATE `creature_quest_starter` SET `max_build` = 70783 WHERE `max_build` = 70688;
+UPDATE `creature_spawns` SET `max_build` = 70783 WHERE `max_build` = 70688;
+UPDATE `gameevent_properties` SET `max_build` = 70783 WHERE `max_build` = 70688;
+UPDATE `gameobject_quest_finisher` SET `max_build` = 70783 WHERE `max_build` = 70688;
+UPDATE `gameobject_quest_starter` SET `max_build` = 70783 WHERE `max_build` = 70688;
+UPDATE `gameobject_spawns` SET `max_build` = 70783 WHERE `max_build` = 70688;
+UPDATE `recall` SET `max_build` = 70783 WHERE `max_build` = 70688;
+UPDATE `trainer_properties_spellset` SET `max_build` = 70783 WHERE `max_build` = 70688;
+UPDATE `creature_properties` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `gameobject_properties` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `item_properties` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `item_properties_spells` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `player_levelstats` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `player_xp_for_level` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `playercreateinfo` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `playercreateinfo_bars` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `playercreateinfo_skills` SET `max_build` = 70783 WHERE `max_build` = 70688;
+UPDATE `quest_properties` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `quest_properties_currencies` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `totemdisplayids` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `worldmap_info` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `creature_properties_movement` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `creature_initial_equip` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `vendors` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `npc_gossip_properties` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `npc_gossip_texts` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `player_classlevelstats` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `loot_groups` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `loot_creatures` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `loot_items` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `loot_skinning` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `item_properties_display` SET `build` = 70783 WHERE `build` = 70688;
+UPDATE `graveyards` SET `build` = 70783 WHERE `build` = 70688;
+
+INSERT INTO `world_db_version` (`id`, `LastUpdate`) VALUES ('293', '20261108-05_midnight_build_70783');

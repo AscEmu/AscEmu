@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Macros/MapsMacros.hpp"
 #include "Macros/PlayerMacros.hpp"
 
+#include <cstdlib>
 #include <utility>
 
 WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
@@ -358,8 +359,10 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     Config.MainConfig.tryGetBool("Server", "AllowPlayerCommands", &server.requireGmForCommands);
     Config.MainConfig.tryGetBool("Server", "SaveExtendedCharData", &server.saveExtendedCharData);
     Config.MainConfig.tryGetString("Server", "DataDir", &server.dataDir);
-    // the client version is part of the realm section, one world server always serves one expansion
-    Config.MainConfig.tryGetInt("Realm1", "ClientVersion", &server.clientVersion);
+    // the client version is part of the realm section, one world server always serves one expansion; F is the Forever client
+    std::string clientVersion;
+    if (Config.MainConfig.tryGetString("Realm1", "ClientVersion", &clientVersion))
+        server.clientVersion = (clientVersion == "F" || clientVersion == "f") ? static_cast<uint32_t>(WoW::Expansion::_WoWForever) : static_cast<uint32_t>(std::strtoul(clientVersion.c_str(), nullptr, 10));
     if (server.dataDir == "")
         server.dataDir = "./";
     else if (server.dataDir != "./")

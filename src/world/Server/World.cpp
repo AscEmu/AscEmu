@@ -201,23 +201,24 @@ void World::applyConfigExpansion()
 {
     const uint32_t configVersionId = settings.server.clientVersion;
     Expansion expansion = expansionFromVersionId(configVersionId);
+    const std::string configVersionText = expansion == Expansion::_WoWForever ? std::string("F") : std::to_string(configVersionId);
 
     if (expansion == Expansion::Unknown || !isValidExpansion(expansion))
     {
         sLogger.failure("world.conf ClientVersion {} is not a valid expansion id. Using the compiled expansion {} ({}).",
-                        configVersionId, static_cast<uint32_t>(COMPILED_EXPANSION), getExpansionName(COMPILED_EXPANSION));
+                        configVersionText, static_cast<uint32_t>(COMPILED_EXPANSION), getExpansionName(COMPILED_EXPANSION));
         expansion = COMPILED_EXPANSION;
     }
     else if (!isSupportedExpansion(expansion))
     {
         sLogger.failure("world.conf ClientVersion {} ({}) exceeds compiled expansion {} ({}). Falling back to compiled expansion.",
-                        configVersionId, getExpansionName(expansion), static_cast<uint32_t>(COMPILED_EXPANSION), getExpansionName(COMPILED_EXPANSION));
+                        configVersionText, getExpansionName(expansion), static_cast<uint32_t>(COMPILED_EXPANSION), getExpansionName(COMPILED_EXPANSION));
         expansion = COMPILED_EXPANSION;
     }
     else if (expansion != COMPILED_EXPANSION)
     {
         sLogger.warning("world.conf ClientVersion {} ({}) differs from the compiled expansion {} ({}). Data is loaded for the configured expansion.",
-                        configVersionId, getExpansionName(expansion), static_cast<uint32_t>(COMPILED_EXPANSION), getExpansionName(COMPILED_EXPANSION));
+                        configVersionText, getExpansionName(expansion), static_cast<uint32_t>(COMPILED_EXPANSION), getExpansionName(COMPILED_EXPANSION));
     }
 
     g_serverExpansion = expansion;

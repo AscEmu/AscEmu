@@ -37,3 +37,8 @@
 ## Folder: g3dlite
 - Web: http://g3d.cs.williams.edu
 - Version: 9 (2013/06/11)
+
+## Folder: launcher
+- Web: https://github.com/aaron02/CustomLauncher
+- Version: 3962814 (2026/10/15) with the Forever 1.60.1.70862 changes of 2026/11/08
+- Not part of the CMake build: a C# WPF launcher for the Forever client, built with the .NET 8 SDK (see its README.md)

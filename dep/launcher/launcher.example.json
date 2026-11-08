@@ -1,0 +1,5 @@
+{
+  "Portal": "127.0.0.1:1119",
+  "ClearCacheBeforeLaunch": true,
+  "PlayPatchSound": true
+}

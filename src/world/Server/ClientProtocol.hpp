@@ -33,7 +33,7 @@ namespace WoW::Build {
     inline constexpr uint32_t SHADOWLANDS_BUILD = 45745; // 9.2.7
     inline constexpr uint32_t DRAGONFLIGHT_BUILD = 55664; // 10.2.7
     inline constexpr uint32_t TWW_BUILD = 65299; // 11.2.7
-    inline constexpr uint32_t MIDNIGHT_BUILD = 70688; // 12.1.5, the build of the world data rows; the client builds 70391, 70529 and 70575 share the protocol
+    inline constexpr uint32_t MIDNIGHT_BUILD = 70783; // 12.1.5, the build of the world data rows; the client builds 70391, 70529, 70575 and 70688 share the protocol
     inline constexpr uint32_t MIDNIGHT_FIRST_BUILD = 70391; // the first 12.x client build, the character layouts of 12.x begin with it
 
     // TODO: Check versions and builds for the following expansions, they are not final and may change in the future
@@ -45,7 +45,7 @@ namespace WoW::Build {
     inline constexpr uint32_t MOP_CLASSIC_BUILD = 70579; //  5.5.4
 
     // WoW Forever (1.60) is a special case, it is a modern client with a legacy major version (1.x) and a build higher than the last MoP build (5.4.8)
-    inline constexpr uint32_t FOREVER_BUILD = 70532; // 1.60.1 (starts 2026-11-04)
+    inline constexpr uint32_t FOREVER_BUILD = 70862; // 1.60.1 (live since 2026-11-07)
 }
 
 namespace WoW {
@@ -299,6 +299,8 @@ namespace WoW {
     inline constexpr Expansion COMPILED_EXPANSION = Expansion::_TheWarWithin;
 #elif defined(AE_MIDNIGHT)
     inline constexpr Expansion COMPILED_EXPANSION = Expansion::_Midnight;
+#elif defined(AE_FOREVER)
+    inline constexpr Expansion COMPILED_EXPANSION = Expansion::_WoWForever;
 #else
     inline constexpr Expansion COMPILED_EXPANSION = Expansion::_WotLK; // Fallback
 #endif
@@ -308,13 +310,13 @@ namespace WoW {
     /// Checks whether the expansion is valid in the enum definition
     [[nodiscard]] constexpr bool isValidExpansion(Expansion const expansion) noexcept
     {
-        return expansion != Expansion::Unknown && expansion <= Expansion::_Midnight;
+        return expansion != Expansion::Unknown && (expansion <= Expansion::_Midnight || expansion == Expansion::_WoWForever);
     }
 
-    /// Checks whether THIS compiled server binary can run this expansion
+    /// Checks whether THIS compiled server binary can run this expansion: the same timeline up to the compiled one
     [[nodiscard]] constexpr bool isSupportedExpansion(Expansion const expansion) noexcept
     {
-        return expansion != Expansion::Unknown && expansion <= COMPILED_EXPANSION;
+        return expansion != Expansion::Unknown && expansion <= COMPILED_EXPANSION && (expansion >= Expansion::_Classic_Era) == (COMPILED_EXPANSION >= Expansion::_Classic_Era);
     }
 
     [[nodiscard]] constexpr bool isModernClassic(Expansion expansion) noexcept
@@ -343,16 +345,17 @@ namespace WoW {
             case Expansion::_Dragonflight:        return Build::DRAGONFLIGHT_BUILD;
             case Expansion::_TheWarWithin:        return Build::TWW_BUILD;
             case Expansion::_Midnight:            return Build::MIDNIGHT_BUILD;
+            case Expansion::_WoWForever:          return Build::FOREVER_BUILD;
             default:                  return 0;
         }
     }
 
     /// Expansion of the client data (dbc, maps) the server loads for an expansion.
-    /// WoD, Legion, BfA, Shadowlands, Dragonflight, The War Within and Midnight run on the Mop client data until their own data is available.
+    /// WoD, Legion, BfA, Shadowlands, Dragonflight, The War Within, Midnight and Forever run on the Mop client data until their own data is available.
     /// The database rows are filtered with the build of the expansion itself, see getDBDataBuildExpansion().
     [[nodiscard]] constexpr Expansion getDataExpansion(Expansion const expansion) noexcept
     {
-        if (expansion >= Expansion::_WoD && expansion <= Expansion::_Midnight)
+        if ((expansion >= Expansion::_WoD && expansion <= Expansion::_Midnight) || expansion == Expansion::_WoWForever)
             return Expansion::_Mop;
 
         return expansion;
@@ -389,7 +392,9 @@ namespace WoW {
             case Build::MIDNIGHT_BUILD:
             case 70391:
             case 70529:
-            case 70575: return Expansion::_Midnight;
+            case 70575:
+            case 70688: return Expansion::_Midnight;
+            case Build::FOREVER_BUILD: return Expansion::_WoWForever;
             default:                   return Expansion::Unknown;
         }
     }
@@ -440,7 +445,7 @@ namespace WoW {
     /// Converts world.conf integer setting (0 = Classic ... 4 = MoP) to enum
     [[nodiscard]] constexpr Expansion expansionFromVersionId(uint32_t const versionId) noexcept
     {
-        if (versionId > static_cast<uint32_t>(Expansion::_Midnight))
+        if (versionId > static_cast<uint32_t>(Expansion::_Midnight) && versionId != static_cast<uint32_t>(Expansion::_WoWForever))
             return Expansion::Unknown;
 
         return static_cast<Expansion>(versionId);
@@ -461,6 +466,10 @@ namespace WoW {
     /// Returns the array index for opcode/version tables (0 = Classic ... 11 = Midnight), or -1 if unsupported
     [[nodiscard]] constexpr int32_t getOpcodeTableIndex(Expansion const expansion) noexcept
     {
+        // the Forever client runs on the 12.x engine and takes the Midnight tables until its own are known
+        if (expansion == Expansion::_WoWForever)
+            return static_cast<int32_t>(Expansion::_Midnight);
+
         if (expansion == Expansion::Unknown || expansion > Expansion::_Midnight)
         {
             return -1;
@@ -486,6 +495,7 @@ namespace WoW {
             case Expansion::_Dragonflight: return "Dragonflight";
             case Expansion::_TheWarWithin: return "The War Within";
             case Expansion::_Midnight: return "Midnight";
+            case Expansion::_WoWForever: return "WoW Forever";
             case Expansion::Unknown:
             default: return "Unknown expansion";
         }
@@ -508,6 +518,7 @@ namespace WoW {
             case Expansion::_Dragonflight:      return "Dragonflight";
             case Expansion::_TheWarWithin:      return "TWW";
             case Expansion::_Midnight:          return "Midnight";
+            case Expansion::_WoWForever:        return "Forever";
             case Expansion::Unknown:
             default:                  return "Unknown";
         }
