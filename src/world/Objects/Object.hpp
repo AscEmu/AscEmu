@@ -527,13 +527,13 @@ public:
         WorldMap* getLifecycleMap() const { return m_lifecycleMap; }
         void setLifecycleMap(WorldMap* map) { m_lifecycleMap = map; }
 
-        Object* getWorldMapObject(const uint64_t & guid) const;
-        Pet* getWorldMapPet(const uint64_t & guid) const;
-        Unit* getWorldMapUnit(const uint64_t & guid) const;
-        Player* getWorldMapPlayer(const uint64_t & guid) const;
-        Creature* getWorldMapCreature(const uint64_t & guid) const;
-        GameObject* getWorldMapGameObject(const uint64_t & guid) const;
-        DynamicObject* getWorldMapDynamicObject(const uint64_t & guid) const;
+        Object* getWorldMapObject(const uint64_t& guid) const;
+        Pet* getWorldMapPet(const uint64_t& guid) const;
+        Unit* getWorldMapUnit(const uint64_t& guid) const;
+        Player* getWorldMapPlayer(const uint64_t& guid) const;
+        Creature* getWorldMapCreature(const uint64_t& guid) const;
+        GameObject* getWorldMapGameObject(const uint64_t& guid) const;
+        DynamicObject* getWorldMapDynamicObject(const uint64_t& guid) const;
 
         void SetMapId(uint32_t newMap) { m_mapId = newMap; obj_movement_info.mapId = newMap; }
         void setZoneId(uint32_t newZone);

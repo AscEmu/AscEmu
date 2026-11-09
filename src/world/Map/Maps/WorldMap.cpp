@@ -430,10 +430,10 @@ void WorldMap::updateAll(std::chrono::milliseconds diff)
     {
         registry_->snapshotCreatures(s_creatures);
         registry_->forEachPinned(s_creatures, [&](Creature& c)
-            {
-                if (c.IsInWorld())
-                    c.Update(static_cast<uint32_t>(m_creaturesAccum.count()));
-            });
+        {
+            if (c.IsInWorld())
+                c.Update(static_cast<uint32_t>(m_creaturesAccum.count()));
+        });
         m_creaturesAccum = 0ms;
     }
 
@@ -1159,6 +1159,20 @@ void WorldMap::onPlayerLeave(Player* plr)
 
     // Use the same cleanup path for logout and map transfers.
     sLogger.debug("WorldMap::onPlayerLeave: player {} leaves instance {}", plr->getName(), getInstanceId());
+
+    thread_local std::vector<Creature*> scratchCreatures;
+    registry_->forEachPinned<Creature>(scratchCreatures, [plr](Creature& c) {
+        c.getThreatManager().clearThreat(plr);
+
+        if (auto* ai = c.getAIInterface())
+        {
+            if (ai->getCurrentTarget() == plr)
+            {
+                ai->setCurrentTarget(nullptr);
+            }
+        }
+    });
+
     removeSession(plr->getSession());
     removePlayerFromMap(plr);
     factory_->detachFromWorld(plr);
@@ -1166,12 +1180,12 @@ void WorldMap::onPlayerLeave(Player* plr)
 
 void WorldMap::onObjectMoved(Object* obj)
 {
-    if (!obj || !visibilitySystem_) 
+    if (!obj || !visibilitySystem_)
         return;
 
     if (obj->getWorldMap() != this)
         return;
-    
+
     // Fix invalid positions before updating the spatial index.
     if (!std::isfinite(obj->GetPositionX()) || !std::isfinite(obj->GetPositionY()) ||
         obj->GetPositionX() < Terrain::MinX || obj->GetPositionX() > Terrain::MaxX ||

@@ -77,9 +77,9 @@ namespace world
         Corpse*         getCorpseByOwner(uint32_t ownerLowGuid) const;
         Object*         getAny          (const WoWGuid& g) const; // returns base if any
 
-        void   clearAll();
+        void clearAll();
 
-        size_t countAny()        const; // = m_objects.size()
+        size_t countAny() const; // = m_objects.size()
         size_t countCreatures() const;
         size_t countGameObjects() const;
         size_t countDynamics() const;
@@ -88,40 +88,41 @@ namespace world
         size_t countCorpses() const;
         size_t countTransporters() const;
 
-        size_t countAll()        const;
+        size_t countAll() const;
         Summary counts() const;
-
 
     private:
         using KeyType = std::uint64_t;
+
         static inline KeyType keyOf(const WoWGuid& guid)
         {
             return guid.getRawGuid();
         }
 
         mutable std::shared_mutex m_mutex;
-        std::unordered_map<KeyType, Object*>        m_objects;
-        std::unordered_map<KeyType, Creature*>      m_creatures;
-        std::unordered_map<KeyType, GameObject*>    m_gameObjects;
-        std::unordered_map<KeyType, Transporter*>   m_transporters;
+        std::unordered_map<KeyType, Object*> m_objects;
+        std::unordered_map<KeyType, Creature*> m_creatures;
+        std::unordered_map<KeyType, GameObject*> m_gameObjects;
+        std::unordered_map<KeyType, Transporter*> m_transporters;
         std::unordered_map<KeyType, DynamicObject*> m_dynamicObjects;
-        std::unordered_map<KeyType, Player*>        m_players;
-        std::unordered_map<KeyType, Pet*>           m_pets;
-        std::unordered_map<KeyType, Corpse*>        m_corpses;
+        std::unordered_map<KeyType, Player*> m_players;
+        std::unordered_map<KeyType, Pet*> m_pets;
+        std::unordered_map<KeyType, Corpse*> m_corpses;
     };
 
-    template<typename T, typename Fn>
+    template <typename T, typename Fn>
     inline void WorldObjectRegistry::forEachPinned(std::vector<T*>& scratch, Fn&& fn) const
     {
         for (T* obj : scratch)
         {
             if (!obj)
                 continue;
-            typename T::UpdatePin _pin(obj);   // RAII-Pin
+            typename T::UpdatePin _pin(obj); // RAII-Pin
             fn(*obj);
         }
     }
-    template<class Fn>
+
+    template <class Fn>
     inline void WorldObjectRegistry::forEachPinnedByGuids(const std::vector<WoWGuid>& guids, Fn&& fn)
     {
         for (const WoWGuid& g : guids)
@@ -139,11 +140,11 @@ namespace world
                 Object::UpdatePin _pin(obj); // RAII-Pin
                 lk.unlock();
                 fn(*obj);
-                }
+            }
         }
     }
 
-    template<class T, class Fn>
+    template <class T, class Fn>
     inline void WorldObjectRegistry::forEachPinnedByGuidsT(const std::vector<WoWGuid>& guids, Fn&& fn)
     {
         for (const WoWGuid& g : guids)
@@ -164,7 +165,7 @@ namespace world
                 typename T::UpdatePin _pin(obj); // RAII-Pin
                 lk.unlock();
                 fn(*obj);
-                }
+            }
         }
     }
 }

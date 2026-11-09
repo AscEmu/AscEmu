@@ -1460,11 +1460,16 @@ void AIInterface::attackStop()
         return;
 
     auto* const target = m_currentTarget;
+    auto const targetGuid = m_Unit->getTargetGuid();
+
     m_currentTarget = nullptr;
     m_Unit->setTargetGuid(0);
-
     m_Unit->removeUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
-    m_Unit->smsg_AttackStop(target);
+
+    if (targetGuid != 0 && m_Unit->getWorldMap() && m_Unit->getWorldMapObject(targetGuid))
+    {
+        m_Unit->smsg_AttackStop(target);
+    }
 
     if (m_Unit->isPet() && m_Unit->getPlayerOwner() != nullptr)
         m_Unit->removeUnitFlags(UNIT_FLAG_PET_IN_COMBAT);

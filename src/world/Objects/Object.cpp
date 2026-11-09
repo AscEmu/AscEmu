@@ -4964,7 +4964,7 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId,
     }
 }
 
-Object* Object::getWorldMapObject(const uint64_t & guid) const
+Object* Object::getWorldMapObject(const uint64_t& guid) const
 {
     if (!IsInWorld())
         return nullptr;

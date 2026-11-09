@@ -592,7 +592,7 @@ public:
     void eventOnTargetDied(Object* pKiller);
 
     float calcAggroRange(Unit* target);
-    
+
     void updateAgent(uint32_t p_time);
     void updateTotem(uint32_t p_time);
 

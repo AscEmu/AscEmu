@@ -7450,7 +7450,7 @@ uint32_t Unit::_handleBatchHealing(HealthBatchEvent const* batch, uint32_t* abso
 //////////////////////////////////////////////////////////////////////////////////////////
 // Death
 bool Unit::isAlive() const { return m_deathState == ALIVE; }
-bool Unit::isDead() const { return  m_deathState != ALIVE; }
+bool Unit::isDead() const { return m_deathState != ALIVE; }
 bool Unit::justDied() const { return m_deathState == JUST_DIED; }
 
 void Unit::setDeathState(DeathState state)
@@ -7463,7 +7463,7 @@ void Unit::setDeathState(DeathState state)
     {
         exitVehicle();
         removeAllNonPersistentAuras();
-        
+
         if (!isPet())
             removeUnitFlags(UNIT_FLAG_PET_IN_COMBAT);
     }

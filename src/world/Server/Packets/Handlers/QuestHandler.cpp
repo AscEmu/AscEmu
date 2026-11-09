@@ -316,6 +316,8 @@ std::unique_ptr<WorldPacket> WorldSession::buildQuestQueryResponse(QuestProperti
         *data << uint32_t(qst->required_itemcount[i]);                 // Collect item count [i]
     }
 
+    *data << uint32_t(0);                                              // 4-Byte Offset Fix (Cata Objective Header/Unk)
+
     for (uint8_t i = 0; i < 4; ++i)
         *data << (lci ? lci->objectiveText[i] : qst->objectivetexts[i]);
 
