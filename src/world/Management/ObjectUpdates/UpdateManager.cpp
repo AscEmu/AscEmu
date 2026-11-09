@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 
 UpdateManager::UpdateManager(Player* owner, size_t compressionThreshold, size_t creationBufferInitialSize, size_t updateBufferInitialSize, size_t outOfRangeIdsInitialSize)
-    : 
+    :
     m_compressionThreshold(compressionThreshold),
     m_creationBuffer(creationBufferInitialSize),
     m_creationCount(0),
@@ -82,7 +82,7 @@ void UpdateManager::pushUpdateData(ByteBuffer* data, uint32_t updateCount)
 {
     std::lock_guard update_guard(m_mutexUpdateBuffer);
     std::lock_guard packet_guard(m_mutexDelayedPackets);
-    
+
     internalPushUpdatesIfBufferIsFull(data->size());
 
     m_updateCount += updateCount;
@@ -201,7 +201,7 @@ void UpdateManager::internalProcessPendingUpdates()
 
         if (m_outOfRangeIdCount > 0)
         {
-            buffer << uint8_t(UPDATETYPE_OUT_OF_RANGE_OBJECTS);
+            buffer << getWireUpdateType(UPDATETYPE_OUT_OF_RANGE_OBJECTS);
             buffer << uint32_t(m_outOfRangeIdCount);
             buffer.append(m_outOfRangeIds);
             m_outOfRangeIds.clear();

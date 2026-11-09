@@ -116,7 +116,6 @@ enum TYPE : uint16_t
     }
 }
 
-
 // Internal unified Object Update Types.
 // Always translate via getWireUpdateType() when writing the block header to a ByteBuffer!
 enum OBJECT_UPDATE_TYPE : uint8_t
