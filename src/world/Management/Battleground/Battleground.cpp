@@ -46,6 +46,7 @@
 #include "Server/Packets/SmsgSpellGo.h"
 #include "Server/PacketBroadcast.hpp"
 #include "Storage/WorldStrings.h"
+#include <algorithm>
 #include <cstdarg>
 
 using namespace AscEmu::Packets;
@@ -823,8 +824,7 @@ void Battleground::OnClose()
 
 Creature* Battleground::spawnSpiritGuide(float x, float y, float z, float o, uint32_t horde)
 {
-    if (horde > 1)
-        horde = 1;
+    horde = std::min<uint32_t>(horde, 1);
 
     CreatureProperties const* pInfo = sMySQLStore.getCreatureProperties(13116 + horde);
     if (pInfo == nullptr)
@@ -838,16 +838,16 @@ Creature* Battleground::spawnSpiritGuide(float x, float y, float z, float o, uin
         pCreature->setMaxHealth(10000);
         pCreature->setMaxPower(POWER_TYPE_MANA, 4868);
         pCreature->setMaxPower(POWER_TYPE_FOCUS, 200);
-#if VERSION_STRING < Cata
-        pCreature->setMaxPower(POWER_TYPE_HAPPINESS, 2000000);
-#endif
 
-        pCreature->setHealth(100000);
+        if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+        {
+            pCreature->setMaxPower(POWER_TYPE_HAPPINESS, 2000000);
+            pCreature->setPower(POWER_TYPE_HAPPINESS, 2000000);
+        }
+
+        pCreature->setHealth(10000);
         pCreature->setPower(POWER_TYPE_MANA, 4868);
         pCreature->setPower(POWER_TYPE_FOCUS, 200);
-#if VERSION_STRING < Cata
-        pCreature->setPower(POWER_TYPE_HAPPINESS, 2000000);
-#endif
 
         pCreature->setLevel(60);
         pCreature->setFaction(84 - horde);
@@ -875,9 +875,9 @@ Creature* Battleground::spawnSpiritGuide(float x, float y, float z, float o, uin
 
         pCreature->setNpcFlags(UNIT_NPC_FLAG_SPIRITGUIDE);
         pCreature->setSheathType(SHEATH_STATE_MELEE);
-#if VERSION_STRING == TBC
-        pCreature->setPositiveAuraLimit(POS_AURA_LIMIT_CREATURE);
-#endif
+
+        if (WoW::getServerExpansion() == WoW::Expansion::_TBC)
+            pCreature->setPositiveAuraLimit(POS_AURA_LIMIT_CREATURE);
 
         pCreature->setAItoUse(false);
 
@@ -889,7 +889,7 @@ Creature* Battleground::spawnSpiritGuide(float x, float y, float z, float o, uin
     return nullptr;
 }
 
-Creature* Battleground::spawnSpiritGuide(LocationVector &v, uint32_t faction)
+Creature* Battleground::spawnSpiritGuide(LocationVector& v, uint32_t faction)
 {
     return spawnSpiritGuide(v.x, v.y, v.z, v.o, faction);
 }
@@ -901,7 +901,7 @@ uint32_t Battleground::getLastResurrect()
 
 void Battleground::queuePlayerForResurrect(Player* plr, Creature* spirit_healer)
 {
-    std::lock_guard lock(m_mutex);
+    std::scoped_lock lock(m_mutex);
 
     const auto itr = m_resurrectMap.find(spirit_healer);
     if (itr != m_resurrectMap.end())
@@ -911,7 +911,7 @@ void Battleground::queuePlayerForResurrect(Player* plr, Creature* spirit_healer)
 
 void Battleground::removePlayerFromResurrect(Player* plr, Creature* spirit_healer)
 {
-    std::lock_guard lock(m_mutex);
+    std::scoped_lock lock(m_mutex);
 
     const auto itr = m_resurrectMap.find(spirit_healer);
     if (itr != m_resurrectMap.end())
@@ -921,26 +921,21 @@ void Battleground::removePlayerFromResurrect(Player* plr, Creature* spirit_heale
 
 void Battleground::addSpiritGuide(Creature* pCreature)
 {
-    std::lock_guard lock(m_mutex);
+    std::scoped_lock lock(m_mutex);
 
-    const auto itr = m_resurrectMap.find(pCreature);
-    if (itr == m_resurrectMap.end())
-    {
-        std::set<WoWGuid> ti;
-        m_resurrectMap.insert(make_pair(pCreature, ti));
-    }
+    m_resurrectMap.try_emplace(pCreature);
 }
 
 void Battleground::removeSpiritGuide(Creature* pCreature)
 {
-    std::lock_guard lock(m_mutex);
+    std::scoped_lock lock(m_mutex);
 
     m_resurrectMap.erase(pCreature);
 }
 
 void Battleground::eventResurrectPlayers()
 {
-    std::lock_guard lock(m_mutex);
+    std::scoped_lock lock(m_mutex);
 
     for (auto& i : m_resurrectMap)
     {
@@ -962,27 +957,30 @@ void Battleground::eventResurrectPlayers()
 
                 plr->resurrect();
                 plr->setHealth(plr->getMaxHealth());
+                // TODO: Check for other power types like focus (hunter since cataclysm), runepower (deathknight), etc. and restore them as well
                 plr->setPower(POWER_TYPE_MANA, plr->getMaxPower(POWER_TYPE_MANA));
                 plr->setPower(POWER_TYPE_ENERGY, plr->getMaxPower(POWER_TYPE_ENERGY));
                 plr->castSpell(plr, BattlegroundDef::REVIVE_PREPARATION, true);
 
-#if VERSION_STRING >= TBC
-                // Spawn last active pet
-                if (plr->getLastBattlegroundPetId() != 0)
+                if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
                 {
-                    plr->spawnPet(plr->getLastBattlegroundPetId());
+                    // Spawn last active pet
+                    if (plr->getLastBattlegroundPetId() != 0)
+                    {
+                        plr->spawnPet(plr->getLastBattlegroundPetId());
+                    }
+                    else if (plr->getLastBattlegroundPetSpell() != 0)
+                    {
+                        // TODO: not correct, according to classic spell should not be casted
+                        // instead the pet should just spawn
+                        // Hackfixing for now
+                        plr->addUnitFlags(UNIT_FLAG_NO_REAGANT_COST);
+                        plr->castSpell(plr, plr->getLastBattlegroundPetSpell(), true);
+                        plr->removeUnitFlags(UNIT_FLAG_NO_REAGANT_COST);
+                    }
                 }
-                else if (plr->getLastBattlegroundPetSpell() != 0)
-                {
-                    // TODO: not correct, according to classic spell should not be casted
-                    // instead the pet should just spawn
-                    // Hackfixing for now
-                    plr->addUnitFlags(UNIT_FLAG_NO_REAGANT_COST);
-                    plr->castSpell(plr, plr->getLastBattlegroundPetSpell(), true);
-                    plr->removeUnitFlags(UNIT_FLAG_NO_REAGANT_COST);
-                }
-#endif
 
+                // TODO: Check if this is correct, should it be in the >= TBC block?
                 plr->setLastBattlegroundPetId(0);
                 plr->setLastBattlegroundPetSpell(0);
             }

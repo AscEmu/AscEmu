@@ -223,10 +223,11 @@ bool ArenaTeam::addMember(CachedCharacterInfo const* cachedCharInfo)
         m_members[m_memberCount++].Info = cachedCharInfo;
         saveToDB();
 
-#if VERSION_STRING != Classic
-        loggedInPlayer->setArenaTeamId(m_type, m_id);
-        loggedInPlayer->setArenaTeamMemberRank(m_type, 1);
-#endif
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+        {
+            loggedInPlayer->setArenaTeamId(m_type, m_id);
+            loggedInPlayer->setArenaTeamMemberRank(m_type, 1);
+        }
     }
 
     return true;
@@ -248,13 +249,14 @@ bool ArenaTeam::removeMember(CachedCharacterInfo const* cachedCharInfo)
             --m_memberCount;
             saveToDB();
 
-#if VERSION_STRING != Classic
-            if (Player* loggedInPlayer = sObjectMgr.getPlayer(cachedCharInfo->guid))
+            if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
             {
-                loggedInPlayer->setArenaTeamId(m_type, 0);
-                loggedInPlayer->setArenaTeam(m_type, nullptr);
+                if (Player* loggedInPlayer = sObjectMgr.getPlayer(cachedCharInfo->guid))
+                {
+                    loggedInPlayer->setArenaTeamId(m_type, 0);
+                    loggedInPlayer->setArenaTeam(m_type, nullptr);
+                }
             }
-#endif
 
             return true;
         }
@@ -267,17 +269,17 @@ uint32_t ArenaTeam::getPlayersPerTeam() const
 {
     switch (m_type)
     {
-    case ARENA_TEAM_TYPE_2V2:
-        return 2;
+        case ARENA_TEAM_TYPE_2V2:
+            return 2;
 
-    case ARENA_TEAM_TYPE_3V3:
-        return 3;
+        case ARENA_TEAM_TYPE_3V3:
+            return 3;
 
-    case ARENA_TEAM_TYPE_5V5:
-        return 5;
+        case ARENA_TEAM_TYPE_5V5:
+            return 5;
 
-    default:
-        return 2;
+        default:
+            return 2;
     }
 }
 
@@ -300,23 +302,24 @@ void ArenaTeam::setLeader(CachedCharacterInfo const* cachedCharInfo)
 
         m_leader = cachedCharInfo->guid;
 
-#if VERSION_STRING != Classic
-        const uint32_t old_leader = m_leader;
-
-        for (uint32_t i = 0; i < m_memberCount; ++i)
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
         {
-            if (m_members[i].Info)
+            const uint32_t old_leader = m_leader;
+
+            for (uint32_t i = 0; i < m_memberCount; ++i)
             {
-                if (Player* loggedInPlayer = sObjectMgr.getPlayer(m_members[i].Info->guid))
+                if (m_members[i].Info)
                 {
-                    if (m_members[i].Info == cachedCharInfo)
-                        loggedInPlayer->setArenaTeamMemberRank(m_type, 0);
-                    else if (m_members[i].Info->guid == old_leader)
-                        loggedInPlayer->setArenaTeamMemberRank(m_type, 1);
+                    if (Player* loggedInPlayer = sObjectMgr.getPlayer(m_members[i].Info->guid))
+                    {
+                        if (m_members[i].Info == cachedCharInfo)
+                            loggedInPlayer->setArenaTeamMemberRank(m_type, 0);
+                        else if (m_members[i].Info->guid == old_leader)
+                            loggedInPlayer->setArenaTeamMemberRank(m_type, 1);
+                    }
                 }
             }
         }
-#endif
     }
 }
 
