@@ -40,7 +40,7 @@ struct MovementInfo
 
     uint32_t update_time = 0;
 
-    LocationVector position { 0.f, 0.f, 0.f, 0.f };
+    LocationVector position{0.f, 0.f, 0.f, 0.f};
 
     // -1.55 looking down | 0 looking forward | +1.55 looking up
     float pitch_rate = 0.f;
@@ -67,7 +67,7 @@ struct MovementInfo
     uint32_t transport_time = 0;
     uint8_t transport_seat = static_cast<uint8_t>(-1);
     uint32_t transport_time2 = 0;
-    uint32_t transport_time3 = 0;   //vehicle_id
+    uint32_t transport_time3 = 0; //vehicle_id
 
     //misc stuff
     uint32_t counter = 0;

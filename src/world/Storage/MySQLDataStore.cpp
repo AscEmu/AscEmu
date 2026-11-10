@@ -1318,7 +1318,7 @@ void MySQLDataStore::loadCreaturePropertiesMovementTable()
         return;
     }
 
-    uint32_t row_count = 0;   
+    uint32_t row_count = 0;
     row_count = static_cast<uint32_t>(_creaturePropertiesMovementStore.size());
 
     sLogger.info("MySQLDataLoads : Table creature_properties_movement has {} columns", creature_properties_movement_result->getFieldCount());

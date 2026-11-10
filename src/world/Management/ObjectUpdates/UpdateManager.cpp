@@ -29,8 +29,7 @@ UpdateManager::UpdateManager(Player* owner, size_t compressionThreshold, size_t 
 
 void UpdateManager::clearPendingUpdates()
 {
-    std::lock_guard update_guard(m_mutexUpdateBuffer);
-    std::lock_guard packet_guard(m_mutexDelayedPackets);
+    std::scoped_lock lock(m_mutexUpdateBuffer, m_mutexDelayedPackets);
 
     m_processPending = false;
 
@@ -43,10 +42,9 @@ void UpdateManager::clearPendingUpdates()
     m_outOfRangeIds.clear();
 }
 
-void UpdateManager::pushCreationData(ByteBuffer* data, uint32_t updateCount)
+void UpdateManager::pushCreationData(const ByteBuffer* data, uint32_t updateCount)
 {
-    std::lock_guard update_guard(m_mutexUpdateBuffer);
-    std::lock_guard packet_guard(m_mutexDelayedPackets);
+    std::scoped_lock lock(m_mutexUpdateBuffer, m_mutexDelayedPackets);
 
     internalPushUpdatesIfBufferIsFull(data->size());
 
@@ -58,30 +56,34 @@ void UpdateManager::pushCreationData(ByteBuffer* data, uint32_t updateCount)
 
 void UpdateManager::pushOutOfRangeGuid(const WoWGuid& guid)
 {
-    std::lock_guard update_guard(m_mutexUpdateBuffer);
-    std::lock_guard packet_guard(m_mutexDelayedPackets);
+    std::scoped_lock lock(m_mutexUpdateBuffer, m_mutexDelayedPackets);
 
     internalPushUpdatesIfBufferIsFull(static_cast<size_t>(8));
 
-#if VERSION_STRING <= TBC
-    if (guid.isGameObject() && !guid.isTransport() && !guid.isTransporter())
-        m_owner->sendDestroyObjectPacket(guid.getRawGuid());
-#endif
+    // Classic / TBC
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
+        if (guid.isGameObject() && !guid.isTransport() && !guid.isTransporter())
+            m_owner->sendDestroyObjectPacket(guid.getRawGuid());
+    }
 
-#if VERSION_STRING >= WoD
-    m_outOfRangeIds << guid.toGuid128(worldConfig.realm.id, m_owner->GetMapId());
-#else
-    m_outOfRangeIds << guid;
-#endif
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WoD))
+    {
+        m_outOfRangeIds << guid.toGuid128(worldConfig.realm.id, m_owner->GetMapId());
+    }
+    else
+    {
+        m_outOfRangeIds << guid;
+    }
+
     ++m_outOfRangeIdCount;
 
     internalUpdateMapMgr();
 }
 
-void UpdateManager::pushUpdateData(ByteBuffer* data, uint32_t updateCount)
+void UpdateManager::pushUpdateData(const ByteBuffer* data, uint32_t updateCount)
 {
-    std::lock_guard update_guard(m_mutexUpdateBuffer);
-    std::lock_guard packet_guard(m_mutexDelayedPackets);
+    std::scoped_lock lock(m_mutexUpdateBuffer, m_mutexDelayedPackets);
 
     internalPushUpdatesIfBufferIsFull(data->size());
 
@@ -93,8 +95,7 @@ void UpdateManager::pushUpdateData(ByteBuffer* data, uint32_t updateCount)
 
 void UpdateManager::processPendingUpdates()
 {
-    std::lock_guard update_guard(m_mutexUpdateBuffer);
-    std::lock_guard packet_guard(m_mutexDelayedPackets);
+    std::scoped_lock lock(m_mutexUpdateBuffer, m_mutexDelayedPackets);
 
     internalProcessPendingUpdates();
 }
@@ -102,7 +103,7 @@ void UpdateManager::processPendingUpdates()
 void UpdateManager::queueDelayedPacket(std::unique_ptr<WorldPacket> packet)
 {
     {
-        std::lock_guard packet_guard(m_mutexDelayedPackets);
+        std::scoped_lock lock(m_mutexDelayedPackets);
         m_delayedPackets.emplace_back(std::move(packet));
     }
 
@@ -113,12 +114,12 @@ void UpdateManager::queueDelayedPacket(std::unique_ptr<WorldPacket> packet)
 
 size_t UpdateManager::calculateBufferSize() const
 {
-    const size_t base_size = 10 + (m_outOfRangeIds.size() * 9);
+    const size_t baseSize = 10 + (m_outOfRangeIds.size() * 9);
 
     if (m_creationBuffer.size() > m_updateBuffer.size())
-        return m_creationBuffer.size() + base_size;
+        return m_creationBuffer.size() + baseSize;
 
-    return m_updateBuffer.size() + base_size;
+    return m_updateBuffer.size() + baseSize;
 }
 
 bool UpdateManager::readyForUpdate() const
@@ -133,129 +134,133 @@ void UpdateManager::internalProcessPendingUpdates()
 
     ByteBuffer buffer(calculateBufferSize());
 
-#if VERSION_STRING >= WoD
-    // 6.x and 7.x: block count, map, the objects that left the range, size of the blocks, the blocks;
-    // 11.x: map, block count, a set bit, then the objects that left the range
-    const auto sendBlocks = [this, &buffer](uint32_t blockCount, ByteBuffer& blocks, bool withOutOfRange)
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WoD))
     {
-        buffer.clear();
-#if VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
-        buffer << uint16_t(m_owner->GetMapId());
-        buffer << uint32_t(blockCount);
-        buffer.writeBit(true);
-#else
-        buffer << uint32_t(blockCount);
-        buffer << uint16_t(m_owner->GetMapId());
-#endif
-
-        const bool hasOutOfRange = withOutOfRange && m_outOfRangeIdCount > 0;
-        buffer.writeBit(hasOutOfRange);
-        buffer.flushBits();
-        if (hasOutOfRange)
+        // 6.x and 7.x: block count, map, the objects that left the range, size of the blocks, the blocks;
+        // 11.x: map, block count, a set bit, then the objects that left the range
+        const auto sendBlocks = [this, &buffer](uint32_t blockCount, ByteBuffer& blocks, bool withOutOfRange)
         {
-            buffer << uint16_t(m_outOfRangeIdCount);    // removed at once, without fading out
-            buffer << uint32_t(m_outOfRangeIdCount);
-            buffer.append(m_outOfRangeIds);
-            m_outOfRangeIds.clear();
-            m_outOfRangeIdCount = 0;
-        }
+            buffer.clear();
+            if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TheWarWithin))
+            {
+                buffer << uint16_t(m_owner->GetMapId());
+                buffer << uint32_t(blockCount);
+                buffer.writeBit(true);
+            }
+            else
+            {
+                buffer << uint32_t(blockCount);
+                buffer << uint16_t(m_owner->GetMapId());
+            }
 
-        buffer << uint32_t(blocks.size());
-        buffer.append(blocks);
+            const bool hasOutOfRange = withOutOfRange && m_outOfRangeIdCount > 0;
+            buffer.writeBit(hasOutOfRange);
+            buffer.flushBits();
 
-        WorldPacket packet(SMSG_UPDATE_OBJECT, buffer.wpos());
-        packet.append(buffer.contents(), buffer.wpos());
-        m_owner->getSession()->SendPacket(&packet);
-    };
+            if (hasOutOfRange)
+            {
+                buffer << uint16_t(m_outOfRangeIdCount); // removed at once, without fading out
+                buffer << uint32_t(m_outOfRangeIdCount);
+                buffer.append(m_outOfRangeIds);
+                m_outOfRangeIds.clear();
+                m_outOfRangeIdCount = 0;
+            }
 
-    if (m_creationBuffer.size() > 0 || m_outOfRangeIdCount > 0)
-    {
-        sendBlocks(m_creationCount, m_creationBuffer, true);
-        m_creationBuffer.clear();
-        m_creationCount = 0;
-    }
+            buffer << uint32_t(blocks.size());
+            buffer.append(blocks);
 
-    if (m_updateBuffer.size() > 0)
-    {
-        sendBlocks(m_updateCount, m_updateBuffer, false);
-        m_updateBuffer.clear();
-        m_updateCount = 0;
-    }
+            WorldPacket packet(SMSG_UPDATE_OBJECT, buffer.wpos());
+            packet.append(buffer.contents(), buffer.wpos());
+            m_owner->getSession()->SendPacket(&packet);
+        };
 
-#else
-    if (m_creationBuffer.size() > 0 || m_outOfRangeIdCount > 0)
-    {
-#if VERSION_STRING >= Cata
-        buffer << uint16_t(m_owner->GetMapId());
-#endif
-
-        if (m_outOfRangeIds.size() > 0)
-            buffer << uint32_t(m_creationCount + 1);
-        else
-            buffer << uint32_t(m_creationCount);
-
-
-#if VERSION_STRING <= TBC
-        buffer << uint8_t(1);
-#endif
-
-        if (m_outOfRangeIdCount > 0)
+        if (m_creationBuffer.size() > 0 || m_outOfRangeIdCount > 0)
         {
-            buffer << getWireUpdateType(UPDATETYPE_OUT_OF_RANGE_OBJECTS);
-            buffer << uint32_t(m_outOfRangeIdCount);
-            buffer.append(m_outOfRangeIds);
-            m_outOfRangeIds.clear();
-            m_outOfRangeIdCount = 0;
-        }
-
-        if (m_creationBuffer.size() > 0)
-        {
-            buffer.append(m_creationBuffer);
+            sendBlocks(m_creationCount, m_creationBuffer, true);
             m_creationBuffer.clear();
             m_creationCount = 0;
         }
 
-        auto sent_packet = false;
-#if VERSION_STRING < Cata
-        if (buffer.wpos() > m_compressionThreshold)
-            sent_packet = m_owner->compressAndSendUpdateBuffer(uint32_t(buffer.wpos()), buffer.contents());
-#endif
-
-        if (!sent_packet)
-            m_owner->getSession()->OutPacket(SMSG_UPDATE_OBJECT, uint16_t(buffer.wpos()), buffer.contents());
-}
-
-    if (m_updateBuffer.size() > 0)
-    {
-        buffer.clear();
-
-#if VERSION_STRING >= Cata
-        buffer << uint16_t(m_owner->GetMapId());
-#endif
-
-        if (m_outOfRangeIds.size() > 0)
-            buffer << uint32_t(m_updateCount + 1);
-        else
-            buffer << uint32_t(m_updateCount);
-
-#if VERSION_STRING <= TBC
-        buffer << uint8_t(1);
-#endif
-
-        buffer.append(m_updateBuffer);
-        m_updateBuffer.clear();
-        m_updateCount = 0;
-
-        auto sent_packet = false;
-#if VERSION_STRING < Cata
-        if (buffer.wpos() > m_compressionThreshold)
-            sent_packet = m_owner->compressAndSendUpdateBuffer(uint32_t(buffer.wpos()), buffer.contents());
-#endif
-
-        if (!sent_packet)
-            m_owner->getSession()->OutPacket(SMSG_UPDATE_OBJECT, uint16_t(buffer.wpos()), buffer.contents());
+        if (m_updateBuffer.size() > 0)
+        {
+            sendBlocks(m_updateCount, m_updateBuffer, false);
+            m_updateBuffer.clear();
+            m_updateCount = 0;
+        }
     }
-#endif
+    else
+    {
+        if (m_creationBuffer.size() > 0 || m_outOfRangeIdCount > 0)
+        {
+            if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+                buffer << uint16_t(m_owner->GetMapId());
+
+            if (m_outOfRangeIds.size() > 0)
+                buffer << uint32_t(m_creationCount + 1);
+            else
+                buffer << uint32_t(m_creationCount);
+
+
+            if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+                buffer << uint8_t(1);
+
+            if (m_outOfRangeIdCount > 0)
+            {
+                buffer << getWireUpdateType(UPDATETYPE_OUT_OF_RANGE_OBJECTS);
+                buffer << uint32_t(m_outOfRangeIdCount);
+                buffer.append(m_outOfRangeIds);
+                m_outOfRangeIds.clear();
+                m_outOfRangeIdCount = 0;
+            }
+
+            if (m_creationBuffer.size() > 0)
+            {
+                buffer.append(m_creationBuffer);
+                m_creationBuffer.clear();
+                m_creationCount = 0;
+            }
+
+            auto sent_packet = false;
+            if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+            {
+                if (buffer.wpos() > m_compressionThreshold)
+                    sent_packet = m_owner->compressAndSendUpdateBuffer(uint32_t(buffer.wpos()), buffer.contents());
+            }
+
+            if (!sent_packet)
+                m_owner->getSession()->OutPacket(SMSG_UPDATE_OBJECT, uint16_t(buffer.wpos()), buffer.contents());
+        }
+
+        if (m_updateBuffer.size() > 0)
+        {
+            buffer.clear();
+
+            if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+                buffer << uint16_t(m_owner->GetMapId());
+
+            if (m_outOfRangeIds.size() > 0)
+                buffer << uint32_t(m_updateCount + 1);
+            else
+                buffer << uint32_t(m_updateCount);
+
+            if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+                buffer << uint8_t(1);
+
+            buffer.append(m_updateBuffer);
+            m_updateBuffer.clear();
+            m_updateCount = 0;
+
+            auto sent_packet = false;
+            if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+            {
+                if (buffer.wpos() > m_compressionThreshold)
+                    sent_packet = m_owner->compressAndSendUpdateBuffer(uint32_t(buffer.wpos()), buffer.contents());
+            }
+
+            if (!sent_packet)
+                m_owner->getSession()->OutPacket(SMSG_UPDATE_OBJECT, uint16_t(buffer.wpos()), buffer.contents());
+        }
+    }
 
     m_processPending = false;
     internalSendDelayedPackets();
@@ -278,8 +283,7 @@ void UpdateManager::internalPushUpdatesIfBufferIsFull(size_t additionalDataSize)
 
 void UpdateManager::internalUpdateMapMgr()
 {
-    const auto mapMgr = m_owner->getWorldMap();
-    if (mapMgr != nullptr && !m_processPending)
+    if (const auto mapMgr = m_owner->getWorldMap(); mapMgr != nullptr && !m_processPending)
     {
         m_processPending = true;
         mapMgr->pushToProcessed(m_owner);

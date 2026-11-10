@@ -966,7 +966,7 @@ enum UnitBytes_ShapeshiftForm : uint8_t
 enum UnitFieldFlags : uint32_t // UNIT_FIELD_FLAGS #46 - these are client flags
 {
     //                                                   Hex     Bit    Decimal  Comments
-    UNIT_FLAG_NONE                              = 0x00000000, //              0 
+    UNIT_FLAG_NONE                              = 0x00000000, //              0
     UNIT_FLAG_SERVER_CONTROLLED                 = 0x00000001, // 1            1
     UNIT_FLAG_NON_ATTACKABLE                    = 0x00000002, // 2            2  client won't let you attack them
     UNIT_FLAG_LOCK_PLAYER                       = 0x00000004, // 3            4  ? does nothing to client (probably wrong) - only taxi code checks this

@@ -50,9 +50,9 @@ public:
 
     void clearPendingUpdates();
 
-    void pushCreationData(ByteBuffer* data, uint32_t updateCount);
+    void pushCreationData(const ByteBuffer* data, uint32_t updateCount);
     void pushOutOfRangeGuid(const WoWGuid& guid);
-    void pushUpdateData(ByteBuffer* data, uint32_t updateCount);
+    void pushUpdateData(const ByteBuffer* data, uint32_t updateCount);
     void processPendingUpdates();
 
     void queueDelayedPacket(std::unique_ptr<WorldPacket> packet);
