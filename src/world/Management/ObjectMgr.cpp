@@ -1066,53 +1066,37 @@ Player* ObjectMgr::createPlayer(uint8_t _class)
 
 Player* ObjectMgr::createPlayerByGuid(uint8_t _class, uint32_t _guid)
 {
-    Player* player;
-
     switch (_class)
     {
         case WARRIOR:
-            player = new Warrior(_guid);
-            break;
+            return new Warrior(_guid);
         case PALADIN:
-            player = new Paladin(_guid);
-            break;
+            return new Paladin(_guid);
         case HUNTER:
-            player = new Hunter(_guid);
-            break;
+            return new Hunter(_guid);
         case ROGUE:
-            player = new Rogue(_guid);
-            break;
+            return new Rogue(_guid);
         case PRIEST:
-            player = new Priest(_guid);
-            break;
-#if VERSION_STRING > TBC
+            return new Priest(_guid);
         case DEATHKNIGHT:
-            player = new DeathKnight(_guid);
-            break;
-#endif
+            if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+                return new DeathKnight(_guid);
+            return nullptr;
         case SHAMAN:
-            player = new Shaman(_guid);
-            break;
+            return new Shaman(_guid);
         case MAGE:
-            player = new Mage(_guid);
-            break;
+            return new Mage(_guid);
         case WARLOCK:
-            player = new Warlock(_guid);
-            break;
-#if VERSION_STRING > Cata
+            return new Warlock(_guid);
         case MONK:
-            player = new Monk(_guid);
-            break;
-#endif
+            if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+                return new Monk(_guid);
+            return nullptr;
         case DRUID:
-            player = new Druid(_guid);
-            break;
+            return new Druid(_guid);
         default:
-            player = nullptr;
-            break;
+            return nullptr;
     }
-
-    return player;
 }
 
 Player* ObjectMgr::getPlayer(const char* _name, bool _caseSensitive)

@@ -54,6 +54,7 @@ struct MeetingStoneSlot
     void clear() { entry = 0; }
     bool set(uint16_t _entry, uint16_t _type) { entry = _entry; type = _type; return !empty(); }
     [[nodiscard]] bool is(uint16_t _entry, uint16_t _type) const { return entry == _entry && type == _type; }
+
     [[nodiscard]] bool isAuto() const
     {
         return entry != 0 && (type == static_cast<uint16_t>(MeetingStoneLfgType::Dungeon) || type == static_cast<uint16_t>(MeetingStoneLfgType::HeroicDungeon));
@@ -78,6 +79,7 @@ struct MeetingStonePlayerInfo
     }
 
     [[nodiscard]] bool isAutoFill() const { return more.isAuto(); }
+
     [[nodiscard]] bool isAutoJoin() const
     {
         for (auto const& slot : group)
@@ -86,6 +88,7 @@ struct MeetingStonePlayerInfo
         return false;
     }
     [[nodiscard]] bool isEmpty() const { return !isLFM() && !isLFG(); }
+
     [[nodiscard]] bool isLFG() const
     {
         for (auto const& slot : group)
@@ -93,6 +96,7 @@ struct MeetingStonePlayerInfo
                 return true;
         return false;
     }
+
     [[nodiscard]] bool isLFG(uint16_t entry, uint16_t type, bool autoOnly) const
     {
         for (auto const& slot : group)
@@ -100,6 +104,7 @@ struct MeetingStonePlayerInfo
                 return true;
         return false;
     }
+
     [[nodiscard]] bool isLFG(MeetingStonePlayerInfo const& other, bool autoOnly) const { return isLFG(other.more.entry, other.more.type, autoOnly); }
     [[nodiscard]] bool isLFM() const { return !more.empty(); }
     [[nodiscard]] bool isLFM(uint16_t entry, uint16_t type) const { return more.is(entry, type); }
