@@ -22,6 +22,7 @@
 #include "Objects/Container.hpp"
 #include "ItemProperties.hpp"
 #include "Objects/Units/Players/Player.hpp"
+#include "Macros/ItemMacros.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/Loot/LootMgr.hpp"
 #include "ObjectMgr.hpp"
@@ -45,15 +46,24 @@ using namespace AscEmu::Packets;
 // APGL End
 // MIT Start
 
+bool ItemInterface::isValidKeyringSlot(uint8_t slot)
+{
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+        return false;
+
+    return ItemSlotUtils::isKeyringSlot(slot);
+}
+
 bool ItemInterface::hasItemForTotemCategory(uint32_t totemCategory)
 {
     // If totem category is 0, the spell does not require any totems or tools
     if (totemCategory == 0)
         return true;
 
-#if VERSION_STRING == Classic
-    return false;
-#else
+    // Totem category is only used in TBC and later
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+        return false;
+
     const auto spellTotemCategory = sTotemCategoryStore.lookupEntry(totemCategory);
     if (spellTotemCategory == nullptr)
         return false;
@@ -112,7 +122,6 @@ bool ItemInterface::hasItemForTotemCategory(uint32_t totemCategory)
     }
 
     return false;
-#endif
 }
 
 bool ItemInterface::isItemInTradeWindow(Item const* item) const
@@ -193,10 +202,10 @@ void ItemInterface::updateEnchantDurations(uint32_t timePassed)
     }
 }
 
-#if VERSION_STRING >= WotLK
 void ItemInterface::updateSoulboundTradeItems()
 {
-    std::lock_guard<std::mutex> guard(m_soulboundTradeableMutex);
+    std::scoped_lock guard(m_soulboundTradeableMutex);
+
     if (m_soulboundTradeableList.empty())
         return;
 
@@ -225,16 +234,16 @@ void ItemInterface::updateSoulboundTradeItems()
 
 void ItemInterface::addTradeableItem(Item* item)
 {
-    std::lock_guard<std::mutex> guard(m_soulboundTradeableMutex);
+    std::scoped_lock guard(m_soulboundTradeableMutex);
     m_soulboundTradeableList.push_back(item);
 }
 
 void ItemInterface::removeTradeableItem(Item* item)
 {
-    std::lock_guard<std::mutex> guard(m_soulboundTradeableMutex);
+    std::scoped_lock guard(m_soulboundTradeableMutex);
     m_soulboundTradeableList.remove(item);
 }
-#endif
+
 
 void ItemInterface::buildInventoryChangeError(Item const* srcItem, Item const* dstItem, uint8_t inventoryError, uint32_t srcItemId/* = 0*/)
 {
@@ -279,32 +288,45 @@ void ItemInterface::buildInventoryChangeError(Item const* srcItem, Item const* d
 void ItemInterface::setOwnerInventoryItem(uint8_t slot, uint64_t guid)
 {
     if (slot < EQUIPMENT_SLOT_END)
+    {
         m_pOwner->setInventorySlotItemGuid(slot, guid);
-#if VERSION_STRING >= Dragonflight
-    else if (slot >= PROFESSION_SLOT_START && slot < PROFESSION_SLOT_END)
+    }
+    else if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Dragonflight) && slot >= PROFESSION_SLOT_START && slot < PROFESSION_SLOT_END)
+    {
         m_pOwner->setProfessionSlotItemGuid(slot - PROFESSION_SLOT_START, guid);
-#endif
+    }
     else if (slot < INVENTORY_SLOT_BAG_END)
-        m_pOwner->setInventorySlotItemGuid(EQUIPMENT_SLOT_END + (slot - INVENTORY_SLOT_BAG_START), guid);   // the bags follow the equipment
+    {
+        m_pOwner->setInventorySlotItemGuid(EQUIPMENT_SLOT_END + (slot - INVENTORY_SLOT_BAG_START), guid); // the bags follow the equipment
+    }
     else if (slot < INVENTORY_SLOT_ITEM_END)
+    {
         m_pOwner->setPackSlotItemGuid(slot - INVENTORY_SLOT_ITEM_START, guid);
+    }
     else if (slot < BANK_SLOT_ITEM_END)
+    {
         m_pOwner->setBankSlotItemGuid(slot - BANK_SLOT_ITEM_START, guid);
+    }
     else if (slot < BANK_SLOT_BAG_END)
+    {
         m_pOwner->setBankBagSlotItemGuid(slot - BANK_SLOT_BAG_START, guid);
+    }
     else if (slot < BUYBACK_SLOT_END)
+    {
         m_pOwner->setVendorBuybackSlot(slot - BUYBACK_SLOT_START, guid);
-#if VERSION_STRING < Cata
-    else if (slot < INVENTORY_KEYRING_END)
-        m_pOwner->setKeyRingSlotItemGuid(slot - INVENTORY_KEYRING_START, guid);
-#endif
-#if VERSION_STRING == TBC
-    else if (slot < (INVENTORY_KEYRING_END + Version::fieldCount(PlayerField::VanityPetSlot)))
-        m_pOwner->setVanityPetSlotItemGuid(slot - INVENTORY_KEYRING_END, guid);
-#elif VERSION_STRING == WotLK
-    else if (slot < CURRENCYTOKEN_SLOT_END)
-        m_pOwner->setCurrencyTokenSlotItemGuid(slot - CURRENCYTOKEN_SLOT_START, guid);
-#endif
+    }
+    else if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata) && slot < ItemSlotUtils::KEYRING_END)
+    {
+        m_pOwner->setKeyRingSlotItemGuid(slot - ItemSlotUtils::KEYRING_START, guid);
+    }
+    else if (WoW::getServerExpansion() == WoW::Expansion::_TBC && slot < (ItemSlotUtils::KEYRING_END + Version::fieldCount(PlayerField::VanityPetSlot)))
+    {
+        m_pOwner->setVanityPetSlotItemGuid(slot - ItemSlotUtils::KEYRING_END, guid);
+    }
+    else if (WoW::getServerExpansion() == WoW::Expansion::_WotLK && slot < ItemSlotUtils::CURRENCY_END)
+    {
+        m_pOwner->setCurrencyTokenSlotItemGuid(slot - ItemSlotUtils::CURRENCY_START, guid);
+    }
 }
 
 void ItemInterface::update(uint32_t timePassed)
@@ -312,10 +334,9 @@ void ItemInterface::update(uint32_t timePassed)
     // Update enchantment durations
     updateEnchantDurations(timePassed);
 
-#if VERSION_STRING >= WotLK
-    // Retradeable soulbound items
-    updateSoulboundTradeItems();
-#endif
+    // Retradeable soulbound items (since WotLK)
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        updateSoulboundTradeItems();
 
     // todo: add items with duration also here
 }
@@ -329,7 +350,6 @@ ItemInterface::ItemInterface(Player* pPlayer) : m_EquipmentSets(pPlayer->getGuid
     std::fill(m_pItems.begin(), m_pItems.end(), nullptr);
     std::fill(m_pBuyBack.begin(), m_pBuyBack.end(), nullptr);
     m_refundableitems.clear();
-
 }
 
 ItemInterface::~ItemInterface()
@@ -2269,46 +2289,45 @@ int8_t ItemInterface::CanEquipItemInSlot2(int8_t DstInvSlot, int8_t slot, Item* 
     if (int8_t ret = CanEquipItemInSlot(DstInvSlot, slot, proto, ignore_combat, skip_2h_check))
         return ret;
 
-#if VERSION_STRING > Classic
-    if ((slot < INVENTORY_SLOT_BAG_END && DstInvSlot == INVENTORY_SLOT_NOT_SET) || (slot >= BANK_SLOT_BAG_START && slot < BANK_SLOT_BAG_END && DstInvSlot == INVENTORY_SLOT_NOT_SET))
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
     {
-        for (uint8_t count = 0; count < item->getSocketSlotCount(); count++)
+        if ((slot < INVENTORY_SLOT_BAG_END && DstInvSlot == INVENTORY_SLOT_NOT_SET) || (slot >= BANK_SLOT_BAG_START && slot < BANK_SLOT_BAG_END && DstInvSlot == INVENTORY_SLOT_NOT_SET))
         {
-            const auto ei = item->getEnchantment(static_cast<EnchantmentSlot>(SOCK_ENCHANTMENT_SLOT1 + count));
-
-            if (ei && ei->Enchantment->GemEntry)       //huh ? Gem without entry ?
+            for (uint8_t count = 0; count < item->getSocketSlotCount(); count++)
             {
-                ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->GemEntry);
+                const auto ei = item->getEnchantment(static_cast<EnchantmentSlot>(SOCK_ENCHANTMENT_SLOT1 + count));
 
-                if (ip)             //maybe gem got removed from db due to update ?
+                if (ei && ei->Enchantment->GemEntry) //huh ? Gem without entry ?
                 {
-                    if (ip->Flags & ITEM_FLAG_UNIQUE_EQUIP && IsEquipped(ip->ItemId))
+                    if (ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->GemEntry)) // maybe gem got removed from db due to update ?
                     {
-                        return INV_ERR_CANT_CARRY_MORE_OF_THIS;
-                    }
-
-#if VERSION_STRING > TBC
-                    if (ip->ItemLimitCategory > 0)
-                    {
-                        uint32_t LimitId = ip->ItemLimitCategory;
-                        auto item_limit_category = sItemLimitCategoryStore.lookupEntry(LimitId);
-                        if (item_limit_category)
+                        if (ip->Flags & ITEM_FLAG_UNIQUE_EQUIP && IsEquipped(ip->ItemId))
                         {
-                            uint32_t gemCount = 0;
-                            if ((item_limit_category->equippedFlag & ILFLAG_EQUIP_ONLY  && slot < EQUIPMENT_SLOT_END) || (!(item_limit_category->equippedFlag & ILFLAG_EQUIP_ONLY) && slot > EQUIPMENT_SLOT_END))
-                                gemCount = item->countGemsWithLimitId(item_limit_category->Id);
+                            return INV_ERR_CANT_CARRY_MORE_OF_THIS;
+                        }
 
-                            uint32_t gCount = GetEquippedCountByItemLimit(item_limit_category->Id);
-                            if ((gCount + gemCount) > item_limit_category->maxAmount)
-                                return INV_ERR_CANT_CARRY_MORE_OF_THIS;
+                        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK) && ip->ItemLimitCategory > 0)
+                        {
+                            if (ip->ItemLimitCategory > 0)
+                            {
+                                uint32_t limitId = ip->ItemLimitCategory;
+                                if (auto itemLimitCategory = sItemLimitCategoryStore.lookupEntry(limitId))
+                                {
+                                    uint32_t gemCount = 0;
+                                    if ((itemLimitCategory->equippedFlag & ILFLAG_EQUIP_ONLY  && slot < EQUIPMENT_SLOT_END) || (!(itemLimitCategory->equippedFlag & ILFLAG_EQUIP_ONLY) && slot > EQUIPMENT_SLOT_END))
+                                        gemCount = item->countGemsWithLimitId(itemLimitCategory->Id);
+
+                                    uint32_t gCount = GetEquippedCountByItemLimit(itemLimitCategory->Id);
+                                    if ((gCount + gemCount) > itemLimitCategory->maxAmount)
+                                        return INV_ERR_CANT_CARRY_MORE_OF_THIS;
+                                }
+                            }
                         }
                     }
-#endif
                 }
             }
         }
     }
-#endif
 
     return 0;
 }
@@ -2345,7 +2364,7 @@ int8_t ItemInterface::CanEquipItemInSlot(int8_t DstInvSlot, int8_t slot, ItemPro
         if (proto->RequiredFaction)
         {
             Standing current_standing = getReputationRankFromStanding(m_pOwner->getFactionStanding(proto->RequiredFaction).value_or(0));
-            if (current_standing < (Standing)proto->RequiredFactionStanding)       // Not enough rep rankage..
+            if (current_standing < (Standing)proto->RequiredFactionStanding) // Not enough rep rankage.
                 return INV_ERR_ITEM_REPUTATION_NOT_ENOUGH;
         }
 
@@ -2355,23 +2374,20 @@ int8_t ItemInterface::CanEquipItemInSlot(int8_t DstInvSlot, int8_t slot, ItemPro
 
         if (proto->Class == 4)
         {
-            uint32_t bogus_subclass = 0;
-            uint32_t playerlevel = 0;
+            uint32_t bogusSubclass;
             // scaling heirloom items
             if (proto->ScalingStatsEntry != 0 && proto->ScalingStatsFlag != 0)
             {
-                playerlevel = m_pOwner->getLevel();
-
-                if (playerlevel < 40 && proto->SubClass >= 3)
-                    bogus_subclass = proto->SubClass - 1; // mail items become leather, plate items become mail below lvl40
-                else bogus_subclass = proto->SubClass;
+                if (uint32_t playerLevel = m_pOwner->getLevel(); playerLevel < 40 && proto->SubClass >= 3)
+                    bogusSubclass = proto->SubClass - 1; // mail items become leather, plate items become mail below lvl40
+                else
+                    bogusSubclass = proto->SubClass;
             }
             else
-                bogus_subclass = proto->SubClass;
+                bogusSubclass = proto->SubClass;
 
-            if (!(m_pOwner->getArmorProficiency() & (((uint32_t)(1)) << bogus_subclass)))
+            if (!(m_pOwner->getArmorProficiency() & (((uint32_t)(1)) << bogusSubclass)))
                 return INV_ERR_NO_REQUIRED_PROFICIENCY;
-
         }
         else if (proto->Class == 2)
         {
@@ -2392,108 +2408,125 @@ int8_t ItemInterface::CanEquipItemInSlot(int8_t DstInvSlot, int8_t slot, ItemPro
             return INV_ERR_YOU_ARE_DEAD;
     }
 
-    switch (uint8_t(slot))        //CURRENCYTOKEN_SLOT_ are over 128
+    if (ItemSlotUtils::isKeyringSlot(slot))
+    {
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+            return INV_ERR_ITEM_DOESNT_GO_INTO_BAG;
+
+        if (proto->BagFamily & ITEM_TYPE_KEYRING || proto->Class == ITEM_CLASS_KEY)
+            return 0;
+
+        return INV_ERR_ITEM_DOESNT_GO_INTO_BAG;
+    }
+
+    if (ItemSlotUtils::isCurrencySlot(slot))
+    {
+        if (WoW::getServerExpansion() != WoW::Expansion::_WotLK)
+            return INV_ERR_ITEM_DOESNT_GO_INTO_BAG;
+
+        if (proto->BagFamily & ITEM_TYPE_CURRENCY)
+            return 0;
+
+        return INV_ERR_ITEM_DOESNT_GO_INTO_BAG;
+    }
+
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Dragonflight) &&
+        slot >= PROFESSION_SLOT_START && slot < PROFESSION_SLOT_END)
+    {
+        if (isProfessionSlotFor(proto, slot))
+            return 0;
+
+        return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
+    }
+
+    switch (slot)
     {
         case EQUIPMENT_SLOT_HEAD:
-        {
-            if (type == INVTYPE_HEAD)
-                return 0;
-            else
+            {
+                if (type == INVTYPE_HEAD)
+                    return 0;
                 return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
-        }
+            }
         case EQUIPMENT_SLOT_NECK:
-        {
-            if (type == INVTYPE_NECK)
-                return 0;
-            else
+            {
+                if (type == INVTYPE_NECK)
+                    return 0;
                 return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
-        }
+            }
         case EQUIPMENT_SLOT_SHOULDERS:
-        {
-            if (type == INVTYPE_SHOULDERS)
-                return 0;
-            else
+            {
+                if (type == INVTYPE_SHOULDERS)
+                    return 0;
                 return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
-        }
+            }
         case EQUIPMENT_SLOT_BODY:
         {
             if (type == INVTYPE_BODY)
                 return 0;
-            else
-                return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
+            return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
         }
         case EQUIPMENT_SLOT_CHEST:
         {
             if (type == INVTYPE_CHEST || type == INVTYPE_ROBE)
                 return 0;
-            else
-                return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
+            return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
         }
         case EQUIPMENT_SLOT_WAIST:
         {
             if (type == INVTYPE_WAIST)
                 return 0;
-            else
-                return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
+            return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
         }
         case EQUIPMENT_SLOT_LEGS:
         {
             if (type == INVTYPE_LEGS)
                 return 0;
-            else
-                return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
+            return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
         }
         case EQUIPMENT_SLOT_FEET:
         {
             if (type == INVTYPE_FEET)
                 return 0;
-            else
-                return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
+            return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
         }
         case EQUIPMENT_SLOT_WRISTS:
         {
             if (type == INVTYPE_WRISTS)
                 return 0;
-            else
-                return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
+            return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
         }
         case EQUIPMENT_SLOT_HANDS:
         {
             if (type == INVTYPE_HANDS)
                 return 0;
-            else
-                return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
+            return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
         }
         case EQUIPMENT_SLOT_FINGER1:
         case EQUIPMENT_SLOT_FINGER2:
         {
             if (type == INVTYPE_FINGER)
                 return 0;
-            else
-                return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
+            return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
         }
         case EQUIPMENT_SLOT_TRINKET1:
         case EQUIPMENT_SLOT_TRINKET2:
         {
             if (type == INVTYPE_TRINKET)
                 return 0;
-            else
-                return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
+            return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
         }
         case EQUIPMENT_SLOT_BACK:
         {
             if (type == INVTYPE_CLOAK)
                 return 0;
-            else
-                return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
+            return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
         }
         case EQUIPMENT_SLOT_MAINHAND:
         {
             if (type == INVTYPE_WEAPON || type == INVTYPE_WEAPONMAINHAND ||
                 (type == INVTYPE_2HWEAPON && (!GetInventoryItem(EQUIPMENT_SLOT_OFFHAND) || skip_2h_check || m_pOwner->canDualWield2H())))
                 return 0;
-            else
-                return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
+            return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
         }
         case EQUIPMENT_SLOT_OFFHAND:
         {
@@ -2504,70 +2537,51 @@ int8_t ItemInterface::CanEquipItemInSlot(int8_t DstInvSlot, int8_t slot, ItemPro
 
             if (type == INVTYPE_WEAPON || type == INVTYPE_WEAPONOFFHAND)
             {
-                Item* mainweapon = GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                if (mainweapon)     //item exists
+                if (Item* mainWeapon = GetInventoryItem(EQUIPMENT_SLOT_MAINHAND)) // item exists
                 {
-                    if (mainweapon->getItemProperties()->InventoryType != INVTYPE_2HWEAPON)
+                    if (mainWeapon->getItemProperties()->InventoryType != INVTYPE_2HWEAPON)
                     {
                         if (m_pOwner->hasSkillLine(SKILL_DUAL_WIELD))
                             return 0;
-                        else
-                            return INV_ERR_CANT_DUAL_WIELD;
-                    }
-                    else
-                    {
-                        if (!skip_2h_check)
-                            return INV_ERR_CANT_EQUIP_WITH_TWOHANDED;
-                        else
-                            return 0;
-                    }
-                }
-                else
-                {
-                    if (m_pOwner->hasSkillLine(SKILL_DUAL_WIELD))
-                        return 0;
-                    else
                         return INV_ERR_CANT_DUAL_WIELD;
-                }
-            }
-            else if (type == INVTYPE_SHIELD || type == INVTYPE_HOLDABLE)
-            {
-                Item* mainweapon = GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                if (mainweapon)     //item exists
-                {
-                    if (mainweapon->getItemProperties()->InventoryType != INVTYPE_2HWEAPON)
-                    {
-                        return 0;
                     }
-                    else
-                    {
-                        if (!skip_2h_check)
-                            return INV_ERR_CANT_EQUIP_WITH_TWOHANDED;
-                        else
-                            return 0;
-                    }
-                }
-                else
-                {
+                    if (!skip_2h_check)
+                        return INV_ERR_CANT_EQUIP_WITH_TWOHANDED;
                     return 0;
                 }
+                if (m_pOwner->hasSkillLine(SKILL_DUAL_WIELD))
+                    return 0;
+                return INV_ERR_CANT_DUAL_WIELD;
             }
-            else
-                return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
+            if (type == INVTYPE_SHIELD || type == INVTYPE_HOLDABLE)
+            {
+                if (Item* mainWeapon = GetInventoryItem(EQUIPMENT_SLOT_MAINHAND)) // item exists
+                {
+                    if (mainWeapon->getItemProperties()->InventoryType != INVTYPE_2HWEAPON)
+                    {
+                        return 0;
+                    }
+                    if (!skip_2h_check)
+                        return INV_ERR_CANT_EQUIP_WITH_TWOHANDED;
+                    return 0;
+                }
+                return 0;
+            }
+            return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
         }
         case EQUIPMENT_SLOT_RANGED:
         {
             if (type == INVTYPE_RANGED || type == INVTYPE_THROWN || type == INVTYPE_RANGEDRIGHT || type == INVTYPE_RELIC)
                 return 0;
-            else
-                return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;  // 6;
+            return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
+            // 6;
         }
         case EQUIPMENT_SLOT_TABARD:
         {
             if (type == INVTYPE_TABARD)
                 return 0;
-            else
-                return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;  // 6;
+            return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
+            // 6;
         }
         case BANK_SLOT_BAG_1:
         case BANK_SLOT_BAG_2:
@@ -2577,7 +2591,7 @@ int8_t ItemInterface::CanEquipItemInSlot(int8_t DstInvSlot, int8_t slot, ItemPro
         case BANK_SLOT_BAG_6:
         case BANK_SLOT_BAG_7:
         {
-            if (!GetInventoryItem(INVENTORY_SLOT_NOT_SET, slot))        //check if player got that slot.
+            if (!GetInventoryItem(INVENTORY_SLOT_NOT_SET, slot)) // check if player got that slot.
             {
                 const uint8_t slots = m_pOwner->getBankSlots();
                 const uint8_t islot = GetInternalBankSlotFromPlayer(slot);
@@ -2586,54 +2600,42 @@ int8_t ItemInterface::CanEquipItemInSlot(int8_t DstInvSlot, int8_t slot, ItemPro
                     return INV_ERR_MUST_PURCHASE_THAT_BAG_SLOT;
                 }
 
-                if (type == INVTYPE_BAG)                                //in case bank slot exists, check if player can put the item there
+                if (type == INVTYPE_BAG) // in case bank slot exists, check if player can put the item there
                 {
                     return 0;
                 }
-                else
-                {
-                    return INV_ERR_NOT_A_BAG;
-                }
+                return INV_ERR_NOT_A_BAG;
             }
-            else
+            if (GetInventoryItem(INVENTORY_SLOT_NOT_SET, slot)->getItemProperties()->BagFamily)
             {
-                if (GetInventoryItem(INVENTORY_SLOT_NOT_SET, slot)->getItemProperties()->BagFamily)
+                if ((IsBagSlot(slot) && DstInvSlot == INVENTORY_SLOT_NOT_SET))
                 {
-                    if ((IsBagSlot(slot) && DstInvSlot == INVENTORY_SLOT_NOT_SET))
-                    {
-                        if (proto->InventoryType == INVTYPE_BAG)
-                        {
-                            return 0;
-                        }
-                    }
-
-                    if (proto->BagFamily & GetInventoryItem(INVENTORY_SLOT_NOT_SET, slot)->getItemProperties()->BagFamily)
+                    if (proto->InventoryType == INVTYPE_BAG)
                     {
                         return 0;
                     }
-                    else
-                    {
-                        return INV_ERR_ITEM_DOESNT_GO_INTO_BAG;
-                    }
                 }
-                else
+
+                if (proto->BagFamily & GetInventoryItem(INVENTORY_SLOT_NOT_SET, slot)->getItemProperties()->BagFamily)
                 {
                     return 0;
                 }
+                return INV_ERR_ITEM_DOESNT_GO_INTO_BAG;
             }
+            return 0;
         }
         case INVENTORY_SLOT_BAG_1:
         case INVENTORY_SLOT_BAG_2:
         case INVENTORY_SLOT_BAG_3:
         case INVENTORY_SLOT_BAG_4:
         {
-            //this chunk of code will limit you to equip only 1 Ammo Bag. Later i found out that this is not blizzlike so i will remove it when it's blizzlike
-            //we are trying to equip an Ammo Bag
+            // this chunk of code will limit you to equip only 1 Ammo Bag. Later i found out that this is not blizzlike so i will remove it when it's blizzlike
+            // we are trying to equip an Ammo Bag
             if (proto->Class == ITEM_CLASS_QUIVER)
             {
-                //check if we already have an AB equipped
+                // check if we already have an AB equipped
                 FindAmmoBag();
-                //we do have ammo bag but we are not swapping them then we send error
+                // we do have ammo bag, but we are not swapping them then we send error
                 if (m_result.Slot != ITEM_NO_SLOT_AVAILABLE && m_result.Slot != slot)
                 {
                     return INV_ERR_CAN_EQUIP_ONLY1_AMMOPOUCH;
@@ -2655,27 +2657,15 @@ int8_t ItemInterface::CanEquipItemInSlot(int8_t DstInvSlot, int8_t slot, ItemPro
                     {
                         return 0;
                     }
-                    else
-                    {
-                        return INV_ERR_ITEM_DOESNT_GO_INTO_BAG;
-                    }
+                    return INV_ERR_ITEM_DOESNT_GO_INTO_BAG;
                 }
-                else
-                {
-                    return 0;
-                }
+                return 0;
             }
-            else
+            if (type == INVTYPE_BAG)
             {
-                if (type == INVTYPE_BAG)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return INV_ERR_NOT_A_BAG;
-                }
+                return 0;
             }
+            return INV_ERR_NOT_A_BAG;
         }
         case INVENTORY_SLOT_ITEM_1:
         case INVENTORY_SLOT_ITEM_2:
@@ -2693,114 +2683,9 @@ int8_t ItemInterface::CanEquipItemInSlot(int8_t DstInvSlot, int8_t slot, ItemPro
         case INVENTORY_SLOT_ITEM_14:
         case INVENTORY_SLOT_ITEM_15:
         case INVENTORY_SLOT_ITEM_16:
-        {
-            return 0;
-        }
-#if VERSION_STRING >= Dragonflight
-        case PROFESSION_SLOT_PROFESSION1_TOOL:
-        case PROFESSION_SLOT_PROFESSION1_GEAR1:
-        case PROFESSION_SLOT_PROFESSION1_GEAR2:
-        case PROFESSION_SLOT_PROFESSION2_TOOL:
-        case PROFESSION_SLOT_PROFESSION2_GEAR1:
-        case PROFESSION_SLOT_PROFESSION2_GEAR2:
-        case PROFESSION_SLOT_COOKING_TOOL:
-        case PROFESSION_SLOT_COOKING_GEAR1:
-        case PROFESSION_SLOT_FISHING_TOOL:
-        case PROFESSION_SLOT_FISHING_GEAR1:
-        case PROFESSION_SLOT_FISHING_GEAR2:
-        {
-            if (isProfessionSlotFor(proto, slot))
-                return 0;
-            else
-                return INV_ERR_ITEM_DOESNT_GO_TO_SLOT;
-        }
-#endif
-#if VERSION_STRING < Cata
-        case INVENTORY_KEYRING_1:
-        case INVENTORY_KEYRING_2:
-        case INVENTORY_KEYRING_3:
-        case INVENTORY_KEYRING_4:
-        case INVENTORY_KEYRING_5:
-        case INVENTORY_KEYRING_6:
-        case INVENTORY_KEYRING_7:
-        case INVENTORY_KEYRING_8:
-        case INVENTORY_KEYRING_9:
-        case INVENTORY_KEYRING_10:
-        case INVENTORY_KEYRING_11:
-        case INVENTORY_KEYRING_12:
-        case INVENTORY_KEYRING_13:
-        case INVENTORY_KEYRING_14:
-        case INVENTORY_KEYRING_15:
-        case INVENTORY_KEYRING_16:
-        case INVENTORY_KEYRING_17:
-        case INVENTORY_KEYRING_18:
-        case INVENTORY_KEYRING_19:
-        case INVENTORY_KEYRING_20:
-        case INVENTORY_KEYRING_21:
-        case INVENTORY_KEYRING_22:
-        case INVENTORY_KEYRING_23:
-        case INVENTORY_KEYRING_24:
-        case INVENTORY_KEYRING_25:
-        case INVENTORY_KEYRING_26:
-        case INVENTORY_KEYRING_27:
-        case INVENTORY_KEYRING_28:
-        case INVENTORY_KEYRING_29:
-        case INVENTORY_KEYRING_30:
-        case INVENTORY_KEYRING_31:
-        case INVENTORY_KEYRING_32:
-        {
-            if (proto->BagFamily & ITEM_TYPE_KEYRING || proto->Class == ITEM_CLASS_KEY)
             {
                 return 0;
             }
-            else
-            {
-                return INV_ERR_ITEM_DOESNT_GO_INTO_BAG;
-            }
-        }
-        case CURRENCYTOKEN_SLOT_1:
-        case CURRENCYTOKEN_SLOT_2:
-        case CURRENCYTOKEN_SLOT_3:
-        case CURRENCYTOKEN_SLOT_4:
-        case CURRENCYTOKEN_SLOT_5:
-        case CURRENCYTOKEN_SLOT_6:
-        case CURRENCYTOKEN_SLOT_7:
-        case CURRENCYTOKEN_SLOT_8:
-        case CURRENCYTOKEN_SLOT_9:
-        case CURRENCYTOKEN_SLOT_10:
-        case CURRENCYTOKEN_SLOT_11:
-        case CURRENCYTOKEN_SLOT_12:
-        case CURRENCYTOKEN_SLOT_13:
-        case CURRENCYTOKEN_SLOT_14:
-        case CURRENCYTOKEN_SLOT_15:
-        case CURRENCYTOKEN_SLOT_16:
-        case CURRENCYTOKEN_SLOT_17:
-        case CURRENCYTOKEN_SLOT_18:
-        case CURRENCYTOKEN_SLOT_19:
-        case CURRENCYTOKEN_SLOT_20:
-        case CURRENCYTOKEN_SLOT_21:
-        case CURRENCYTOKEN_SLOT_22:
-        case CURRENCYTOKEN_SLOT_23:
-        case CURRENCYTOKEN_SLOT_24:
-        case CURRENCYTOKEN_SLOT_25:
-        case CURRENCYTOKEN_SLOT_26:
-        case CURRENCYTOKEN_SLOT_27:
-        case CURRENCYTOKEN_SLOT_28:
-        case CURRENCYTOKEN_SLOT_29:
-        case CURRENCYTOKEN_SLOT_30:
-        case CURRENCYTOKEN_SLOT_31:
-        case CURRENCYTOKEN_SLOT_32:
-        {
-            if (proto->BagFamily & ITEM_TYPE_CURRENCY)
-            {
-                return 0;
-            }
-            else
-            {
-                return INV_ERR_ITEM_DOESNT_GO_INTO_BAG;
-            }
-        }
-#endif
         default:
             return 0;
     }
@@ -2816,25 +2701,25 @@ int8_t ItemInterface::CanReceiveItem(ItemProperties const* item, uint32_t amount
 
     if (item->Unique)
     {
-        uint32_t count = GetItemCount(item->ItemId, true);
-        if (count == item->Unique || ((count + amount) > item->Unique))
+        if (uint32_t count = GetItemCount(item->ItemId, true); count == item->Unique || ((count + amount) > item->Unique))
         {
             return INV_ERR_CANT_CARRY_MORE_OF_THIS;
         }
     }
 
-#if VERSION_STRING > TBC
-    if (item->ItemLimitCategory > 0)
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK) && item->ItemLimitCategory > 0)
     {
-        auto item_limit_category = sItemLimitCategoryStore.lookupEntry(item->ItemLimitCategory);
-        if (item_limit_category && !(item_limit_category->equippedFlag & ILFLAG_EQUIP_ONLY))
+        if (item->ItemLimitCategory > 0)
         {
-            uint32_t count = GetItemCountByLimitId(item_limit_category->Id, false);
-            if (count >= item_limit_category->maxAmount || ((count + amount) > item_limit_category->maxAmount))
-                return INV_ERR_ITEM_MAX_LIMIT_CATEGORY_COUNT_EXCEEDED;
+            auto itemLimitCategory = sItemLimitCategoryStore.lookupEntry(item->ItemLimitCategory);
+            if (itemLimitCategory && !(itemLimitCategory->equippedFlag & ILFLAG_EQUIP_ONLY))
+            {
+                uint32_t count = GetItemCountByLimitId(itemLimitCategory->Id, false);
+                if (count >= itemLimitCategory->maxAmount || ((count + amount) > itemLimitCategory->maxAmount))
+                    return INV_ERR_ITEM_MAX_LIMIT_CATEGORY_COUNT_EXCEEDED;
+            }
         }
     }
-#endif
 
     return INV_ERR_OK;
 }
@@ -2850,6 +2735,7 @@ void ItemInterface::BuyItem(ItemProperties const* item, uint32_t total_amount, C
         else
             m_pOwner->modCoinage(-(int32_t)itemprice);
     }
+
     auto item_extended_cost = pVendor->GetItemExtendedCostByItemId(item->ItemId);
     if (item_extended_cost != nullptr)
     {
@@ -2859,21 +2745,20 @@ void ItemInterface::BuyItem(ItemProperties const* item, uint32_t total_amount, C
                 m_pOwner->getItemInterface()->RemoveItemAmt(item_extended_cost->item[i], total_amount * item_extended_cost->count[i]);
         }
 
-#if VERSION_STRING > Classic
-#if VERSION_STRING < Cata
-        if (m_pOwner->getHonorCurrency() >= (item_extended_cost->honor_points * total_amount))
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC) && !WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
         {
-            m_pOwner->modHonorCurrency(-int32_t((item_extended_cost->honor_points * total_amount)));
-            m_pOwner->removeArenaPoints(item_extended_cost->honor_points * total_amount, true);
-        }
+            if (m_pOwner->getHonorCurrency() >= (item_extended_cost->honor_points * total_amount))
+            {
+                m_pOwner->modHonorCurrency(-int32_t((item_extended_cost->honor_points * total_amount)));
+                m_pOwner->removeArenaPoints(item_extended_cost->honor_points * total_amount, true);
+            }
 
-        if (m_pOwner->getArenaCurrency() >= item_extended_cost->arena_points * total_amount)
-        {
-            m_pOwner->modArenaCurrency(-int32_t(item_extended_cost->arena_points * total_amount));
-            m_pOwner->removeArenaPoints(item_extended_cost->arena_points * total_amount, true);
+            if (m_pOwner->getArenaCurrency() >= item_extended_cost->arena_points * total_amount)
+            {
+                m_pOwner->modArenaCurrency(-int32_t(item_extended_cost->arena_points * total_amount));
+                m_pOwner->removeArenaPoints(item_extended_cost->arena_points * total_amount, true);
+            }
         }
-#endif
-#endif
     }
 }
 
@@ -2891,15 +2776,15 @@ int8_t ItemInterface::CanAffordItem(ItemProperties const* item, uint32_t amount,
             }
         }
 
-#if VERSION_STRING > Classic
-#if VERSION_STRING < Cata
-        if (m_pOwner->getHonorCurrency() < (item_extended_cost->honor_points * amount))
-            return INV_ERR_NOT_ENOUGH_HONOR_POINTS;
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC) && !WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+        {
+            if (m_pOwner->getHonorCurrency() < (item_extended_cost->honor_points * amount))
+                return INV_ERR_NOT_ENOUGH_HONOR_POINTS;
 
-        if (m_pOwner->getArenaCurrency() < item_extended_cost->arena_points * amount)
-            return INV_ERR_NOT_ENOUGH_ARENA_POINTS;
-#endif
-#endif
+            if (m_pOwner->getArenaCurrency() < item_extended_cost->arena_points * amount)
+                return INV_ERR_NOT_ENOUGH_ARENA_POINTS;
+        }
+
         if (m_pOwner->getMaxPersonalRating() < item_extended_cost->personalrating)
             return INV_ERR_PERSONAL_ARENA_RATING_TOO_LOW;
     }
@@ -2929,7 +2814,6 @@ int8_t ItemInterface::CanAffordItem(ItemProperties const* item, uint32_t amount,
 }
 
 // Gets the Item slot by item type
-#if VERSION_STRING >= Dragonflight
 // the skill of a profession item, by its subclass
 static uint16_t professionItemSkill(uint16_t subClass)
 {
@@ -3024,15 +2908,15 @@ bool ItemInterface::isProfessionSlotFor(ItemProperties const* proto, int8_t slot
     int8_t first, second;
     return getProfessionSlots(proto, first, second) && (slot == first || slot == second);
 }
-#endif
 
 // the slot of an item by its properties, the profession items by their profession
 int8_t ItemInterface::GetItemSlotByType(ItemProperties const* proto)
 {
-#if VERSION_STRING >= Dragonflight
-    if (proto->InventoryType == INVTYPE_PROFESSION_TOOL || proto->InventoryType == INVTYPE_PROFESSION_GEAR)
-        return getProfessionSlot(proto);
-#endif
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Dragonflight))
+    {
+        if (proto->InventoryType == INVTYPE_PROFESSION_TOOL || proto->InventoryType == INVTYPE_PROFESSION_GEAR)
+            return getProfessionSlot(proto);
+    }
     return GetItemSlotByType(proto->InventoryType);
 }
 
@@ -3987,20 +3871,21 @@ bool ItemInterface::IsEquipped(uint32_t itemid)
             if (it->getItemProperties()->ItemId == itemid)
                 return true;
 
-#if VERSION_STRING > Classic
-            // check gems as well
-            for (uint8_t count = 0; count < it->getSocketSlotCount(); count++)
+            if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
             {
-                const auto ei = it->getEnchantment(static_cast<EnchantmentSlot>(SOCK_ENCHANTMENT_SLOT1 + count));
-
-                if (ei && ei->Enchantment)
+                // check gems as well
+                for (uint8_t count = 0; count < it->getSocketSlotCount(); count++)
                 {
-                    ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->GemEntry);
-                    if (ip && ip->ItemId == itemid)
-                        return true;
+                    const auto ei = it->getEnchantment(static_cast<EnchantmentSlot>(SOCK_ENCHANTMENT_SLOT1 + count));
+
+                    if (ei && ei->Enchantment)
+                    {
+                        ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->GemEntry);
+                        if (ip && ip->ItemId == itemid)
+                            return true;
+                    }
                 }
             }
-#endif
         }
     }
     return false;
@@ -4034,27 +3919,29 @@ void ItemInterface::CheckAreaItems()
 uint32_t ItemInterface::GetEquippedCountByItemLimit([[maybe_unused]] uint32_t LimitId)
 {
     uint32_t count = 0;
-#if VERSION_STRING > Classic
-    for (uint32_t x = EQUIPMENT_SLOT_START; x < EQUIPMENT_SLOT_END; ++x)
+
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
     {
-        Item* it = m_pItems[x].get();
-
-        if (it != nullptr)
+        for (uint32_t x = EQUIPMENT_SLOT_START; x < EQUIPMENT_SLOT_END; ++x)
         {
-            for (uint8_t socketcount = 0; socketcount < it->getSocketSlotCount(); socketcount++)
-            {
-                const auto ei = it->getEnchantment(static_cast<EnchantmentSlot>(SOCK_ENCHANTMENT_SLOT1 + count));
+            Item* it = m_pItems[x].get();
 
-                if (ei && ei->Enchantment)
+            if (it != nullptr)
+            {
+                for (uint8_t socketCount = 0; socketCount < it->getSocketSlotCount(); socketCount++)
                 {
-                    ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->GemEntry);
-                    if (ip && ip->ItemLimitCategory == LimitId)
-                        count++;
+                    const auto ei = it->getEnchantment(static_cast<EnchantmentSlot>(SOCK_ENCHANTMENT_SLOT1 + socketCount));
+
+                    if (ei && ei->Enchantment)
+                    {
+                        ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->GemEntry);
+                        if (ip && ip->ItemLimitCategory == LimitId)
+                            count++;
+                    }
                 }
             }
         }
     }
-#endif
     return count;
 }
 

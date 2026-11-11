@@ -56,7 +56,7 @@ enum ItemEnchantmentType : uint8_t
     ITEM_ENCHANTMENT_TYPE_PRISMATIC_SOCKET  = 8
 };
 
-enum EquipmentSlots : uint8_t                                      // 19 slots
+enum EquipmentSlots : uint8_t // 19 slots
 {
     EQUIPMENT_SLOT_START        = 0,
     EQUIPMENT_SLOT_HEAD         = 0,
@@ -142,15 +142,15 @@ enum ProfessionSlots : uint8_t // 11 slots, the tool and gear slots of the profe
     PROFESSION_SLOT_MAX_COUNT         = 3
 };
 
-#if VERSION_STRING >= Dragonflight
-enum ReagentBagSlots : uint8_t                                     // 1 slot
+
+enum ReagentBagSlots : uint8_t // 1 slot >= Dragonflight, the reagent bag slot
 {
     REAGENT_BAG_SLOT_START      = 34,
     REAGENT_BAG_SLOT_END        = 35
 };
-#endif
 
-enum InventorySlots                                         // 4 slots
+
+enum InventorySlots // 4 slots
 {
     INVENTORY_SLOT_BAG_START    = INVENTORY_LAYOUT_BAG_START,
     INVENTORY_SLOT_BAG_1        = INVENTORY_LAYOUT_BAG_START,
@@ -160,7 +160,7 @@ enum InventorySlots                                         // 4 slots
     INVENTORY_SLOT_BAG_END      = INVENTORY_LAYOUT_BAG_START + 4
 };
 
-enum InventoryPackSlots                                     // 16 slots, from 9.x on 20 with the slots of a secured account
+enum InventoryPackSlots // 16 slots, from 9.x on 20 with the slots of a secured account
 {
     INVENTORY_SLOT_ITEM_START   = INVENTORY_LAYOUT_ITEM_START,
     INVENTORY_SLOT_ITEM_1       = INVENTORY_LAYOUT_ITEM_START,
@@ -260,7 +260,7 @@ enum AddItemResult
 // -1 from client enchantment slot number
 enum EnchantmentSlot : uint8_t
 {
- // identical on all versions
+    // identical on all versions
     PERM_ENCHANTMENT_SLOT          = 0,
     TEMP_ENCHANTMENT_SLOT          = 1,
     SOCK_ENCHANTMENT_SLOT1         = 2,

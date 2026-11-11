@@ -60,7 +60,6 @@ struct VoidStorageItem
     uint32_t itemSuffixFactor;
 };
 
-
 struct SlotResult
 {
     SlotResult() { ContainerSlot = -1; Slot = -1; Result = false; }
@@ -75,7 +74,6 @@ class Player;
 class UpdateData;
 class ByteBuffer;
 class EquipmentSetMgr;
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // RefundableMap
@@ -104,6 +102,7 @@ typedef std::vector<ItemEnchantmentDuration> ItemEnchantmentDurationList;
 class SERVER_DECL ItemInterface
 {
 public:
+    bool isValidKeyringSlot(uint8_t slot);
     bool hasItemForTotemCategory(uint32_t totemCategory);
     bool isItemInTradeWindow(Item const* item) const;
 
@@ -113,12 +112,10 @@ public:
     void sendEnchantDurations(Item const* forItem = nullptr);
     void updateEnchantDurations(uint32_t timePassed);
 
-#if VERSION_STRING >= WotLK
     // Soulbound Tradeable
     void updateSoulboundTradeItems();
     void addTradeableItem(Item* item);
     void removeTradeableItem(Item* item);
-#endif
 
     // Inventory error report
     void buildInventoryChangeError(Item const* srcItem, Item const* dstItem, uint8_t inventoryError, uint32_t srcItemId = 0);
@@ -131,10 +128,8 @@ private:
     ItemEnchantmentDurationList m_temporaryEnchantmentList;
     std::mutex m_temporaryEnchantmentMutex;
 
-#if VERSION_STRING >= WotLK
     ItemList m_soulboundTradeableList;
     std::mutex m_soulboundTradeableMutex;
-#endif
 
     void onItemRemoved(Item const* item);
 
@@ -176,7 +171,7 @@ private:
         Item* SafeAddItem(uint32_t ItemId, int8_t ContainerSlot, int16_t slot);
         // Returns item in tuple with result if failed to add item, nullptr on success
         std::tuple<AddItemResult, std::unique_ptr<Item>> SafeAddItem(std::unique_ptr<Item> pItem, int16_t ContainerSlot, int16_t slot);
-        std::unique_ptr<Item> SafeRemoveAndRetreiveItemFromSlot(int16_t ContainerSlot, int16_t slot, bool destroy);  // doesn't destroy item from memory
+        std::unique_ptr<Item> SafeRemoveAndRetreiveItemFromSlot(int16_t ContainerSlot, int16_t slot, bool destroy); // doesn't destroy item from memory
         std::unique_ptr<Item> SafeRemoveAndRetreiveItemByGuid(uint64_t guid, bool destroy);
         bool SafeFullRemoveItemFromSlot(int16_t ContainerSlot, int16_t slot);                        // destroys item fully
         bool SafeFullRemoveItemByGuid(uint64_t guid);                                             // destroys item fully
@@ -210,32 +205,32 @@ private:
         int16_t FindFreeCurrencySlot();
         int8_t FindSpecialBag(Item* item);
 
-
         int8_t CanEquipItemInSlot(int8_t DstInvSlot, int8_t slot, ItemProperties const* item, bool ignore_combat = false, bool skip_2h_check = false);
         int8_t CanEquipItemInSlot2(int8_t DstInvSlot, int8_t slot, Item* item, bool ignore_combat = false, bool skip_2h_check = false);
         int8_t CanReceiveItem(ItemProperties const* item, uint32_t amount);
         int8_t CanAffordItem(ItemProperties const* item, uint32_t amount, Creature* pVendor);
         int8_t GetItemSlotByType(uint32_t type);
         int8_t GetItemSlotByType(ItemProperties const* proto);
-#if VERSION_STRING >= Dragonflight
+
         bool getProfessionSlots(ItemProperties const* proto, int8_t& first, int8_t& second);
         int8_t getProfessionSlot(ItemProperties const* proto);
         bool isProfessionSlotFor(ItemProperties const* proto, int8_t slot);
-#endif
+
         Item* GetItemByGUID(uint64_t itemGuid);
 
         void SwapItemSlots(int8_t srcslot, int8_t dstslot);
 
-        uint8_t GetInternalBankSlotFromPlayer(int8_t islot);         // converts inventory slots into 0-x numbers
+        uint8_t GetInternalBankSlotFromPlayer(int8_t islot); // converts inventory slots into 0-x numbers
 
         // buyback stuff
         inline Item* GetBuyBack(int32_t slot)
         {
             if (slot >= 0 && slot < MAX_BUYBACK_SLOT)
                 return m_pBuyBack[slot].get();
-            else
-                return nullptr;
+
+            return nullptr;
         }
+
         void AddBuyBackItem(std::unique_ptr<Item> it, uint32_t price);
         std::unique_ptr<Item> RemoveBuyBackItem(uint8_t index);
         void EmptyBuyBack();
@@ -300,46 +295,46 @@ class ItemIterator
     Item* m_currentItem;
     ItemInterface* m_target;
 
-    public:
-        ItemIterator(ItemInterface* target) : m_atEnd(false), m_searchInProgress(false), m_slot(0), m_containerSlot(0), m_container(nullptr), m_currentItem(nullptr), m_target(target) {}
-        ~ItemIterator() { if (m_searchInProgress) { EndSearch(); } }
+public:
+    ItemIterator(ItemInterface* target) : m_atEnd(false), m_searchInProgress(false), m_slot(0), m_containerSlot(0), m_container(nullptr), m_currentItem(nullptr), m_target(target) {}
+    ~ItemIterator() { if (m_searchInProgress) { EndSearch(); } }
 
-        void BeginSearch()
+    void BeginSearch()
+    {
+        // iteminterface doesn't use mutexes, maybe it should :P
+        if (!m_searchInProgress)
         {
-            // iteminterface doesn't use mutexes, maybe it should :P
-            if (!m_searchInProgress)
-            {
-                m_atEnd = false;
-                m_searchInProgress = true;
-                m_container = nullptr;
-                m_currentItem = nullptr;
-                m_slot = 0;
-                Increment();
-            }
+            m_atEnd = false;
+            m_searchInProgress = true;
+            m_container = nullptr;
+            m_currentItem = nullptr;
+            m_slot = 0;
+            Increment();
         }
+    }
 
-        void EndSearch()
+    void EndSearch()
+    {
+        // nothing here either
+        if (m_searchInProgress)
         {
-            // nothing here either
-            if (m_searchInProgress)
-            {
-                m_atEnd = true;
-                m_searchInProgress = false;
-            }
+            m_atEnd = true;
+            m_searchInProgress = false;
         }
+    }
 
-        Item* operator*() const
-        {
-            return m_currentItem;
-        }
+    Item* operator*() const
+    {
+        return m_currentItem;
+    }
 
-        Item* operator->() const
-        {
-            return m_currentItem;
-        }
+    Item* operator->() const
+    {
+        return m_currentItem;
+    }
 
-        void Increment();
+    void Increment();
 
-        inline Item* Grab() { return m_currentItem; }
-        inline bool End() { return m_atEnd; }
+    inline Item* Grab() { return m_currentItem; }
+    inline bool End() { return m_atEnd; }
 };

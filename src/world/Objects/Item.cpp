@@ -813,7 +813,7 @@ bool Item::_findFreeRandomEnchantmentSlot(EnchantmentSlot* slot, RandomEnchantme
 //////////////////////////////////////////////////////////////////////////////////////////
 // Sockets / gems
 #if VERSION_STRING >= TBC
-uint8_t Item::getSocketSlotCount([[maybe_unused]]bool includePrismatic/* = true*/) const
+uint8_t Item::getSocketSlotCount([[maybe_unused]] bool includePrismatic/* = true*/) const
 {
     // Containers have no sockets
     if (isContainer())
