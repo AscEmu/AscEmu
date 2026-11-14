@@ -14,6 +14,7 @@ protected:
 
     // Authentication with the pending Battle.net session.
     void handleAesAuthSession(WorldPacket& packet);
+    void startAesEncryption();
     bool sendAesEnterEncryptedMode();
     void handleAesEnterEncryptedModeAck();
     void completeAesAuthentication();
@@ -25,6 +26,7 @@ protected:
 
 public:
     bool sendConnectTo(uint64_t key, uint32_t serial);
+    void sendAesEnterEncryptedModeDeferred();
     bool isInstanceConnection() const { return m_aesInstanceConnection; }
 
 private:

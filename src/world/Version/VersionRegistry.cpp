@@ -34,9 +34,11 @@ namespace Version
         };
 
         size_t opcodeCount = 0;
+        // the Forever client shares the Midnight slot; a Forever server fills it with the 1.60 numbering
+        const bool foreverServer = WoW::getServerExpansion() == WoW::Expansion::_WoWForever;
         for (size_t i = 0; i < kTableCount; ++i)
         {
-            m_opcodeTables[i].build(supported[i]);
+            m_opcodeTables[i].build(foreverServer && supported[i] == WoW::Expansion::_Midnight ? WoW::Expansion::_WoWForever : supported[i]);
             opcodeCount += m_opcodeTables[i].size();
         }
 

@@ -210,12 +210,13 @@ namespace WoW {
         [[nodiscard]] bool isShadowlands() const noexcept { return expansion == Expansion::_Shadowlands; }
         [[nodiscard]] bool isDragonflight() const { return expansion == Expansion::_Dragonflight; }
         [[nodiscard]] bool isTheWarWithin() const { return expansion == Expansion::_TheWarWithin; }
-        [[nodiscard]] bool isMidnight() const { return expansion == Expansion::_Midnight; }
+        // the Forever client runs on the 12.x engine and takes the Midnight packet layouts
+        [[nodiscard]] bool isMidnight() const { return expansion == Expansion::_Midnight || expansion == Expansion::_WoWForever; }
         [[nodiscard]] bool isForever() const { return expansion == Expansion::_WoWForever; }
         // the 11.2.7 layouts are the baseline of every later client, the branches of 11.x serve 12.x as well
         [[nodiscard]] bool isTheWarWithinOrLater() const
         {
-            return expansion != Expansion::Unknown && expansion >= Expansion::_TheWarWithin && expansion <= Expansion::_Midnight;
+            return expansion != Expansion::Unknown && ((expansion >= Expansion::_TheWarWithin && expansion <= Expansion::_Midnight) || expansion == Expansion::_WoWForever);
         }
 
         [[nodiscard]] bool isValid() const noexcept

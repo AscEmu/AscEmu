@@ -525,9 +525,9 @@ namespace AscEmu::Battlenet
         }
 
         [[nodiscard]] constexpr bool usesForever1601Transport(uint32_t build) { return build == 69893u || build == 70009u || build == 70862u; }
-        // 10.x clients verify the web login certificate against the system store and drop the connection
-        // after the TLS handshake with a self signed certificate; they log in over plain http
-        [[nodiscard]] constexpr bool usesPlainWebAuth(uint32_t build) { return build >= 55664u && !usesForever1601Transport(build); }
+        // 10.x clients and the Forever client verify the web login certificate against the system store and drop the
+        // connection after the TLS handshake with a self signed certificate; they log in over plain http
+        [[nodiscard]] constexpr bool usesPlainWebAuth(uint32_t build) { return build >= 55664u; }
 
         struct ClientVersionParts
         {

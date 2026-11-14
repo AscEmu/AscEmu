@@ -16,6 +16,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "world/Server/Opcodes.hpp"
 #include "world/Server/Packets/CmsgAuthSession.h"
 #include "world/Server/Packets/SmsgAuthChallenge.h"
+#include "world/Server/EventMgr.h"
+#include "world/Server/EventableObject.h"
 #include "world/Server/World.h"
 #include "world/Server/WorldConfig.h"
 #include "world/Server/WorldSession.h"
@@ -584,6 +586,49 @@ void WorldSocket::handleAesAuthSession(WorldPacket& packet)
 
     sLogger.debug("WorldSocket::{}: game account {} ('{}') authenticated from {}:{}", Profile::Name, pending.gameAccountId, pending.gameAccountName, getRemoteIp(), getRemotePort());
 
+    startAesEncryption();
+}
+
+namespace
+{
+    // the 1.60 client verifies the signature with the key its launcher writes into the key store while it logs in;
+    // sent at once the packet can arrive before that and the client leaves with reason 24
+    constexpr uint32_t EncryptionDelayMs = Profile::Expansion == WoW::Expansion::_WoWForever ? 1500 : 0;
+
+    // the key store slot the client takes the public key from, the 1.60 client uses slot 8
+    constexpr int32_t EncryptionKeySlot = Profile::Expansion == WoW::Expansion::_WoWForever ? 8 : 0;
+
+    // runs the delayed sends in the world holder
+    class EncryptionDelay : public EventableObject
+    {
+    public:
+        void fire(WorldSocket* socket) { socket->sendAesEnterEncryptedModeDeferred(); }
+    };
+
+    EncryptionDelay& encryptionDelay()
+    {
+        static auto* holder = new EncryptionDelay();
+        return *holder;
+    }
+}
+
+void WorldSocket::startAesEncryption()
+{
+    if constexpr (EncryptionDelayMs == 0)
+    {
+        sendAesEnterEncryptedModeDeferred();
+        return;
+    }
+
+    sEventMgr.AddEvent(&encryptionDelay(), &EncryptionDelay::fire, this, EVENT_WORLD_SOCKET_ENCRYPTION_DELAY, EncryptionDelayMs, 1, 0);
+}
+
+void WorldSocket::sendAesEnterEncryptedModeDeferred()
+{
+    // the socket outlives the delay: disconnected sockets are deleted fifteen seconds later
+    if (!isConnected() || m_aesWorldState != AesWorldState::AwaitAuthSession)
+        return;
+
     if (!sendAesEnterEncryptedMode())
     {
         sLogger.failure("WorldSocket::{}: cannot sign SMSG_ENTER_ENCRYPTED_MODE for game account {}", Profile::Name, m_aesGameAccountId);
@@ -623,10 +668,10 @@ bool WorldSocket::sendAesEnterEncryptedMode()
     // the client acknowledges before the encryption starts in both directions
     m_aesWorldState = AesWorldState::AwaitEncryptionAck;
 
-    // 11.x: the region group in front of the signature
+    // 11.x: the key store slot of the public key in front of the signature
     WorldPacket enterEncryptedMode(SMSG_ENABLE_ENCRYPTION, static_cast<uint32_t>(signatureSize + 5));
     if constexpr (AesWorld::WideTransport)
-        enterEncryptedMode << int32_t(0);
+        enterEncryptedMode << EncryptionKeySlot;
     enterEncryptedMode.append(signature.data(), signatureSize);
     enterEncryptedMode.writeBit(true);
     enterEncryptedMode.flushBits();
@@ -769,8 +814,7 @@ void WorldSocket::handleAesAuthContinuedSession(WorldPacket& packet)
 
     sLogger.debug("WorldSocket::{}: second connection of game account {} authenticated from {}:{}", Profile::Name, accountId, getRemoteIp(), getRemotePort());
 
-    if (!sendAesEnterEncryptedMode())
-        reject("cannot sign SMSG_ENTER_ENCRYPTED_MODE");
+    startAesEncryption();
 }
 
 bool WorldSocket::sendConnectTo(uint64_t key, uint32_t serial)

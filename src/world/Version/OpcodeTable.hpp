@@ -59,6 +59,7 @@ namespace Version
         extern const OpcodeSource dragonflightOpcodes;
         extern const OpcodeSource theWarWithinOpcodes;
         extern const OpcodeSource midnightOpcodes;
+        extern const OpcodeSource foreverOpcodes;
 
         extern const OpcodeMeta opcodeMeta[NUM_OPCODES];
     }

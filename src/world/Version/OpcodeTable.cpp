@@ -23,6 +23,7 @@ namespace Version
             case WoW::Expansion::_Dragonflight:       return &Tables::dragonflightOpcodes;
             case WoW::Expansion::_TheWarWithin:       return &Tables::theWarWithinOpcodes;
             case WoW::Expansion::_Midnight:           return &Tables::midnightOpcodes;
+            case WoW::Expansion::_WoWForever:         return &Tables::foreverOpcodes;
             default:                       return nullptr;
         }
     }
