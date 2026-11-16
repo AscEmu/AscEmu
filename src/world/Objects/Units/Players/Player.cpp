@@ -1405,14 +1405,14 @@ void Player::setMaxLevel(uint32_t level)
     setField<uint32_t>(PlayerField::FieldMaxLevel, level);
 #else
     m_classicMaxLevel = level;
-#endif 
+#endif
 }
 
 float Player::getRuneRegen(uint8_t rune) const { return getField<float>(PlayerField::RuneRegen, rune); }
 void Player::setRuneRegen(uint8_t rune, float regen) { setField<float>(PlayerField::RuneRegen, regen, rune); }
 
 uint32_t Player::getRestStateXp() const { return getField<uint32_t>(PlayerField::RestStateXp); }
-void Player::setRestStateXp(uint32_t xp)  { setField<uint32_t>(PlayerField::RestStateXp, xp); }
+void Player::setRestStateXp(uint32_t xp) { setField<uint32_t>(PlayerField::RestStateXp, xp); }
 
 // a 32 bit field before Cata, 64 bit since; the field size caps the access
 uint64_t Player::getCoinage() const { return getField<uint64_t>(PlayerField::FieldCoinage); }
@@ -1547,7 +1547,7 @@ uint32_t Player::getArenaTeamMemberRank(uint8_t teamSlot) const { return getFiel
 void Player::setArenaTeamMemberRank(uint8_t teamSlot, uint32_t rank) { setField<uint32_t>(PlayerField::FieldArenaTeamInfoMemberRank, rank, teamSlot); }
     // field_arena_team_info end
 
-#if VERSION_STRING > Classic
+
 uint32_t Player::getHonorCurrency() const { return getField<uint32_t>(PlayerField::FieldHonorCurrency); }
 void Player::setHonorCurrency(uint32_t amount) { setField<uint32_t>(PlayerField::FieldHonorCurrency, amount); }
 void Player::modHonorCurrency(int32_t value) { setArenaCurrency(getArenaCurrency() + value); }
@@ -1555,7 +1555,7 @@ void Player::modHonorCurrency(int32_t value) { setArenaCurrency(getArenaCurrency
 uint32_t Player::getArenaCurrency() const { return getField<uint32_t>(PlayerField::FieldArenaCurrency); }
 void Player::setArenaCurrency(uint32_t amount) { setField<uint32_t>(PlayerField::FieldArenaCurrency, amount); }
 void Player::modArenaCurrency(int32_t value) { setArenaCurrency(getArenaCurrency() + value); }
-#endif
+
 
 uint32_t Player::getNoReagentCost(uint8_t index) const { return getField<uint32_t>(PlayerField::NoReagentCost, index); }
 void Player::setNoReagentCost(uint8_t index, uint32_t value) { setField<uint32_t>(PlayerField::NoReagentCost, value, index); }
@@ -15884,7 +15884,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
                 if (ei && ei->Enchantment)
                 {
-                    ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->GemEntry);
+                    ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->gemEntry);
 
                     if (ip && ip->Flags & ITEM_FLAG_UNIQUE_EQUIP &&
                         itemi->IsEquipped(ip->ItemId))

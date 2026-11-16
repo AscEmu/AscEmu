@@ -143,12 +143,10 @@ void Item::modStackCount(int32_t mod)
     setStackCount(newStackCount);
 }
 
-#ifdef AE_TBC
 void Item::setTextId(const uint32_t textId)
 {
     setField<uint32_t>(ItemField::ItemTextId, textId);
 }
-#endif
 
 uint32_t Item::getDuration() const { return getField<uint32_t>(ItemField::Duration); }
 void Item::setDuration(uint32_t seconds) { setField<uint32_t>(ItemField::Duration, seconds); }
@@ -180,16 +178,17 @@ void Item::addFlags(uint32_t flags) { setFlags(getFlags() | flags); }
 void Item::removeFlags(uint32_t flags) { setFlags(getFlags() & ~flags); }
 bool Item::hasFlags(uint32_t flags) const { return (getFlags() & flags) != 0; }
 
-uint32_t Item::getEnchantmentId(uint8_t index) const { return getField<uint32_t>(ItemField::EnchantmentId, index); }
-void Item::setEnchantmentId(uint8_t index, uint32_t id) { setField<uint32_t>(ItemField::EnchantmentId, id, index); }
+uint32_t Item::getEnchantmentId(uint8_t index) const { return getField<uint32_t>(ItemField::EnchantmentId, toWireEnchantmentSlot(static_cast<EnchantmentSlot>(index))); }
+void Item::setEnchantmentId(uint8_t index, uint32_t id) { setField<uint32_t>(ItemField::EnchantmentId, id, toWireEnchantmentSlot(static_cast<EnchantmentSlot>(index))); }
 
-uint32_t Item::getEnchantmentDuration(uint8_t index) const { return getField<uint32_t>(ItemField::EnchantmentDuration, index); }
-void Item::setEnchantmentDuration(uint8_t index, uint32_t duration) { setField<uint32_t>(ItemField::EnchantmentDuration, duration, index); }
+uint32_t Item::getEnchantmentDuration(uint8_t index) const { return getField<uint32_t>(ItemField::EnchantmentDuration, toWireEnchantmentSlot(static_cast<EnchantmentSlot>(index))); }
+void Item::setEnchantmentDuration(uint8_t index, uint32_t duration) { setField<uint32_t>(ItemField::EnchantmentDuration, duration, toWireEnchantmentSlot(static_cast<EnchantmentSlot>(index))); }
 
-uint32_t Item::getEnchantmentCharges(uint8_t index) const { return getField<uint32_t>(ItemField::EnchantmentCharges, index); }
-void Item::setEnchantmentCharges(uint8_t index, uint32_t charges) { setField<uint32_t>(ItemField::EnchantmentCharges, charges, index); }
+uint32_t Item::getEnchantmentCharges(uint8_t index) const { return getField<uint32_t>(ItemField::EnchantmentCharges, toWireEnchantmentSlot(static_cast<EnchantmentSlot>(index))); }
+void Item::setEnchantmentCharges(uint8_t index, uint32_t charges) { setField<uint32_t>(ItemField::EnchantmentCharges, charges, toWireEnchantmentSlot(static_cast<EnchantmentSlot>(index))); }
 
 uint32_t Item::getPropertySeed() const { return getField<uint32_t>(ItemField::PropertySeed); }
+
 void Item::setPropertySeed(uint32_t seed)
 {
     setField<uint32_t>(ItemField::PropertySeed, seed);
@@ -197,7 +196,8 @@ void Item::setPropertySeed(uint32_t seed)
 }
 
 uint32_t Item::getRandomPropertiesId() const { return getField<uint32_t>(ItemField::RandomPropertiesId); }
-void Item:: setRandomPropertiesId(uint32_t id)
+
+void Item::setRandomPropertiesId(uint32_t id)
 {
     setField<uint32_t>(ItemField::RandomPropertiesId, id);
     m_randomProperties = id;
@@ -276,45 +276,34 @@ bool Item::addEnchantment(uint32_t enchantmentId, EnchantmentSlot slot, uint32_t
     m_isDirty = true;
 
     WDB::Structures::SpellItemEnchantmentEntry const* Enchantment = nullptr;
-#if VERSION_STRING >= Cata
     std::unique_ptr<WDB::Structures::SpellItemEnchantmentEntry> custom_enchant = nullptr;
-    switch (slot)
+
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata) &&
+        (slot == TRANSMOGRIFY_ENCHANTMENT_SLOT || slot == REFORGE_ENCHANTMENT_SLOT))
     {
-
-        case TRANSMOGRIFY_ENCHANTMENT_SLOT:
-        case REFORGE_ENCHANTMENT_SLOT:
-        {
-            custom_enchant = std::make_unique<WDB::Structures::SpellItemEnchantmentEntry>();
-            custom_enchant->Id = enchantmentId;
-
-            Enchantment = custom_enchant.get();
-        } break;
-
-        default:
-        {
-#endif
-            const auto spell_item_enchant = sSpellItemEnchantmentStore.lookupEntry(enchantmentId);
-            if (spell_item_enchant == nullptr)
-                return false;
-
-            Enchantment = spell_item_enchant;
-#if VERSION_STRING >= Cata
-        } break;
+        custom_enchant = std::make_unique<WDB::Structures::SpellItemEnchantmentEntry>();
+        custom_enchant->id = enchantmentId;
+        Enchantment = custom_enchant.get();
     }
-#endif
+    else
+    {
+        const auto spellItemEnchant = sSpellItemEnchantmentStore.lookupEntry(enchantmentId);
+        if (spellItemEnchant == nullptr)
+            return false;
+
+        Enchantment = spellItemEnchant;
+    }
 
     EnchantmentInstance enchantInstance;
     enchantInstance.BonusApplied = false;
     enchantInstance.Slot = slot;
     enchantInstance.Enchantment = Enchantment;
-#if VERSION_STRING >= Cata
     enchantInstance.customEnchantmentHolder = std::move(custom_enchant);
-#endif
     enchantInstance.RemoveAtLogout = removedAtLogout;
     enchantInstance.RandomSuffix = randomSuffix;
 
     // Set enchantment to item's wowdata fields
-    _setEnchantmentDataFields(slot, Enchantment->Id, duration, 0);
+    _setEnchantmentDataFields(slot, Enchantment->id, duration, 0);
 
     m_enchantments.try_emplace(slot, std::move(enchantInstance));
 
@@ -329,12 +318,10 @@ bool Item::addEnchantment(uint32_t enchantmentId, EnchantmentSlot slot, uint32_t
     if (!m_owner->IsInWorld())
         return true;
 
-#if VERSION_STRING >= Cata
-    if (slot == TRANSMOGRIFY_ENCHANTMENT_SLOT)
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata) && slot == TRANSMOGRIFY_ENCHANTMENT_SLOT)
         return true;
-#endif
 
-    SmsgEnchantmentLog managedPacket(m_owner->getGuid(), m_owner->getGuid(), getEntry(), Enchantment->Id);
+    SmsgEnchantmentLog managedPacket(m_owner->getGuid(), m_owner->getGuid(), getEntry(), Enchantment->id);
     managedPacket.itemGuid = getGuid();
     managedPacket.enchantSlot = static_cast<uint32_t>(slot);
     m_owner->getSession()->sendManagedPacket(managedPacket);
@@ -411,7 +398,7 @@ void Item::removeSocketBonusEnchant()
 {
     for (const auto& enchantment : m_enchantments)
     {
-        if (enchantment.second.Enchantment->Id == getItemProperties()->SocketBonus)
+        if (enchantment.second.Enchantment->id == getItemProperties()->SocketBonus)
         {
             removeEnchantment(enchantment.first);
             return;
@@ -424,7 +411,7 @@ void Item::removeRelatedEnchants(WDB::Structures::SpellItemEnchantmentEntry cons
     for (EnchantmentMap::iterator itr = m_enchantments.begin(); itr != m_enchantments.end();)
     {
         EnchantmentMap::iterator itr2 = itr++;
-        if (itr2->second.Enchantment->Id == newEnchant->Id || (itr2->second.Enchantment->EnchantGroups > 1 && newEnchant->EnchantGroups > 1))
+        if (itr2->second.Enchantment->id == newEnchant->id || (itr2->second.Enchantment->enchantGroups > 1 && newEnchant->enchantGroups > 1))
             removeEnchantment(itr2->first);
     }
 }
@@ -460,7 +447,7 @@ void Item::applyEnchantmentBonus(EnchantmentSlot slot, bool apply)
 #else
         if (slot < MAX_INSPECTED_ENCHANTMENT_SLOT)
 #endif
-            m_owner->setVisibleItemEnchantment(itemSlot, slot, (apply ? static_cast<uint16_t>(Entry->Id) : 0));
+            m_owner->setVisibleItemEnchantment(itemSlot, slot, (apply ? static_cast<uint16_t>(Entry->id) : 0));
     }
     else if (apply)
     {
@@ -617,7 +604,7 @@ void Item::applyEnchantmentBonus(EnchantmentSlot slot, bool apply)
                 }
 
                 default:
-                    sLogger.failure("Unknown enchantment type: {} ({})", Entry->type[c], Entry->Id);
+                    sLogger.failure("Unknown enchantment type: {} ({})", Entry->type[c], Entry->id);
                     break;
                 }
         }
@@ -626,7 +613,8 @@ void Item::applyEnchantmentBonus(EnchantmentSlot slot, bool apply)
 
 void Item::sendEnchantTimeUpdate(uint32_t slot, uint32_t duration)
 {
-    SmsgItemEnchantmentTimeUpdate managedPacket(getGuid(), slot, duration, m_owner->getGuid());
+    const uint8_t wireSlot = toWireEnchantmentSlot(static_cast<EnchantmentSlot>(slot));
+    SmsgItemEnchantmentTimeUpdate managedPacket(getGuid(), wireSlot, duration, m_owner->getGuid());
     m_owner->getSession()->sendManagedPacket(managedPacket);
 }
 
@@ -707,7 +695,7 @@ void Item::applyRandomProperties(bool apply)
                     if (spell_item_enchant == nullptr)
                         continue;
 
-                    auto slot = hasEnchantmentReturnSlot(spell_item_enchant->Id);
+                    auto slot = hasEnchantmentReturnSlot(spell_item_enchant->id);
                     if (slot < 0)
                     {
                         EnchantmentSlot newSlot = PROP_ENCHANTMENT_SLOT_0;
@@ -812,8 +800,7 @@ bool Item::_findFreeRandomEnchantmentSlot(EnchantmentSlot* slot, RandomEnchantme
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Sockets / gems
-#if VERSION_STRING >= TBC
-uint8_t Item::getSocketSlotCount([[maybe_unused]] bool includePrismatic/* = true*/) const
+uint8_t Item::getSocketSlotCount(bool includePrismatic/* = true*/) const
 {
     // Containers have no sockets
     if (isContainer())
@@ -826,49 +813,45 @@ uint8_t Item::getSocketSlotCount([[maybe_unused]] bool includePrismatic/* = true
             ++count;
     }
 
-#if VERSION_STRING >= WotLK
     // Prismatic socket
-    if (includePrismatic && getEnchantment(PRISMATIC_ENCHANTMENT_SLOT) != nullptr)
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK) && includePrismatic && getEnchantment(PRISMATIC_ENCHANTMENT_SLOT) != nullptr)
         ++count;
-#endif
 
     return count;
 }
 
-#endif
 
-uint32_t Item::countGemsWithLimitId([[maybe_unused]] uint32_t limitId)
+uint32_t Item::countGemsWithLimitId(uint32_t limitId)
 {
-#if VERSION_STRING > Classic
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+        return 0;
+
     uint32_t result = 0;
     for (uint8_t count = 0; count < getSocketSlotCount(); count++)
     {
         const auto ei = getEnchantment(static_cast<EnchantmentSlot>(SOCK_ENCHANTMENT_SLOT1 + count));
 
         //huh ? Gem without entry ?
-        if (ei && ei->Enchantment->GemEntry)
+        if (ei && ei->Enchantment->gemEntry)
         {
-            ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->GemEntry);
+            ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->gemEntry);
             if (ip && ip->ItemLimitCategory == limitId)
                 result++;
         }
     }
+
     return result;
-#else
-    return 0;
-#endif
 }
 
-bool Item::isGemRelated([[maybe_unused]] WDB::Structures::SpellItemEnchantmentEntry const* enchantment)
+bool Item::isGemRelated(WDB::Structures::SpellItemEnchantmentEntry const* enchantment)
 {
-#if VERSION_STRING > Classic
-    if (getItemProperties()->SocketBonus == enchantment->Id)
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+        return false;
+
+    if (getItemProperties()->SocketBonus == enchantment->id)
         return true;
 
-    return enchantment->GemEntry != 0;
-#else
-    return false;
-#endif
+    return enchantment->gemEntry != 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1101,7 +1084,7 @@ bool Item::isInBag() const
 {
     if (m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid()) > EQUIPMENT_SLOT_END)
         return true;
-    
+
     return false;
 }
 
@@ -1110,9 +1093,11 @@ bool Item::isEquipped() const
     return !isInBag() && m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid()) < EQUIPMENT_SLOT_END;
 }
 
-#if VERSION_STRING >= WotLK
 void Item::setSoulboundTradeable(LooterSet& allowedLooters)
 {
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        return;
+
     addFlags(ITEM_FLAG_BOP_TRADEABLE);
     allowedGUIDs = allowedLooters;
 
@@ -1121,6 +1106,9 @@ void Item::setSoulboundTradeable(LooterSet& allowedLooters)
 
 void Item::clearSoulboundTradeable(Player* /*currentOwner*/)
 {
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        return;
+
     removeFlags(ITEM_FLAG_BOP_TRADEABLE);
     if (allowedGUIDs.empty())
         return;
@@ -1132,6 +1120,9 @@ void Item::clearSoulboundTradeable(Player* /*currentOwner*/)
 
 bool Item::checkSoulboundTradeExpire()
 {
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        return false;
+
     uint32_t* time = getOwner()->getPlayedTime();
 
     if (getCreatePlayedTime() + 2 * HOUR < time[1])
@@ -1142,7 +1133,6 @@ bool Item::checkSoulboundTradeExpire()
 
     return false;
 }
-#endif
 
 bool Item::isTradeableWith(Player* player)
 {
@@ -1159,12 +1149,14 @@ bool Item::isTradeableWith(Player* player)
     return true;
 }
 
-#if VERSION_STRING == Cata
 int32_t Item::getReforgableStat(ItemModType statType) const
 {
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+        return 0;
+
     if (ItemProperties const* proto = getItemProperties())
         return proto->hasStat(statType);
-    
+
     int32_t randomPropId = getRandomPropertiesId();
     if (!randomPropId)
         return 0;
@@ -1180,7 +1172,7 @@ int32_t Item::getReforgableStat(ItemModType statType) const
                 for (uint8_t f = 0; f < MAX_ITEM_ENCHANTMENT_EFFECTS; ++f)
                     if (enchant->type[f] == ITEM_ENCHANTMENT_TYPE_STAT && ItemModType(enchant->spell[f]) == statType)
                         for (uint8_t k = 0; k < 5; ++k)
-                            if (randomSuffix->enchantments[k] == enchant->Id)
+                            if (randomSuffix->enchantments[k] == enchant->id)
                                 return int32_t((randomSuffix->prefixes[k] * getPropertySeed()) / 10000);
     }
     else
@@ -1194,13 +1186,12 @@ int32_t Item::getReforgableStat(ItemModType statType) const
                 for (uint8_t f = 0; f < MAX_ITEM_ENCHANTMENT_EFFECTS; ++f)
                     if (enchant->type[f] == ITEM_ENCHANTMENT_TYPE_STAT && ItemModType(enchant->spell[f]) == statType)
                         for (uint8_t k = 0; k < MAX_ITEM_ENCHANTMENT_EFFECTS; ++k)
-                            if (randomProp->spells[k] == enchant->Id)
+                            if (randomProp->spells[k] == enchant->id)
                                 return int32_t(enchant->min[k]);
     }
 
     return 0;
 }
-#endif
 
 uint8_t Item::getCharterTypeForEntry() const
 {
@@ -1269,9 +1260,8 @@ void Item::loadFromDB(Field* fields, Player* plr, bool light)
     else
         setPropertySeed(0);
 
-#ifdef AE_TBC
-    setTextId(fields[11].asUint32());
-#endif
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+        setTextId(fields[11].asUint32());
 
     setMaxDurability(m_itemProperties->MaxDurability);
     setDurability(fields[12].asUint32());
@@ -1292,8 +1282,8 @@ void Item::loadFromDB(Field* fields, Player* plr, bool light)
         {
             if (sscanf(enchant.c_str(), "%u,%u,%u", &enchant_id, &time_left, &enchslot) == 3)
             {
-                if (enchant_id)
-                    addEnchantment(enchant_id, static_cast<EnchantmentSlot>(enchslot), time_left);
+                if (enchant_id && enchslot < getMaxEnchantmentSlot())
+                    addEnchantment(enchant_id, fromWireEnchantmentSlot(static_cast<uint8_t>(enchslot)), time_left);
             }
         }
     }
@@ -1379,15 +1369,15 @@ void Item::saveToDB(int8_t containerslot, int8_t slot, bool firstsave, QueryBuff
             if (Enchantment.second.RemoveAtLogout)
                 continue;
 
-            if (getEnchantmentId(Enchantment.second.Slot) != Enchantment.second.Enchantment->Id)
+            if (getEnchantmentId(Enchantment.second.Slot) != Enchantment.second.Enchantment->id)
                 continue;
 
             const auto timeLeft = getEnchantmentDuration(Enchantment.second.Slot);
             if (Enchantment.second.Enchantment && (timeLeft > 5000 || timeLeft == 0))
             {
-                ss << Enchantment.second.Enchantment->Id << ",";
+                ss << Enchantment.second.Enchantment->id << ",";
                 ss << timeLeft << ",";
-                ss << static_cast<int>(Enchantment.second.Slot) << ";";
+                ss << static_cast<uint32_t>(toWireEnchantmentSlot(Enchantment.second.Slot)) << ";";
             }
         }
     }

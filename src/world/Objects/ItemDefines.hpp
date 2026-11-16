@@ -267,26 +267,13 @@ enum EnchantmentSlot : uint8_t
     SOCK_ENCHANTMENT_SLOT2         = 3,
     SOCK_ENCHANTMENT_SLOT3         = 4,
     BONUS_ENCHANTMENT_SLOT         = 5,
-
-#if VERSION_STRING >= WotLK
-    PRISMATIC_ENCHANTMENT_SLOT     = 6,
-#endif
-
-#if VERSION_STRING >= Cata
-    // slot 7 is not used on Cata?
-    REFORGE_ENCHANTMENT_SLOT       = 8,
-    TRANSMOGRIFY_ENCHANTMENT_SLOT  = 9,
-#endif
-
-#if VERSION_STRING <= TBC
-    MAX_INSPECTED_ENCHANTMENT_SLOT = 6,
-#elif VERSION_STRING == WotLK
-    MAX_INSPECTED_ENCHANTMENT_SLOT = 7,
-#elif VERSION_STRING >= Cata
+    PRISMATIC_ENCHANTMENT_SLOT = 6, // >= WotLK, prismatic socket enchantment slot
+    // 7 is not used on Cata?
+    REFORGE_ENCHANTMENT_SLOT = 8, // >= Cata, reforge enchantment slot
+    TRANSMOGRIFY_ENCHANTMENT_SLOT = 9, // >= Cata, transmogrify enchantment slot
     MAX_INSPECTED_ENCHANTMENT_SLOT = 10,
-#endif
 
-    // These slots begins after inspected enchantments
+    // These slots begin after inspected enchantments
     PROP_ENCHANTMENT_SLOT_0 = MAX_INSPECTED_ENCHANTMENT_SLOT,
     PROP_ENCHANTMENT_SLOT_1,
     PROP_ENCHANTMENT_SLOT_2,
@@ -294,13 +281,40 @@ enum EnchantmentSlot : uint8_t
     PROP_ENCHANTMENT_SLOT_4,
 
     MAX_ENCHANTMENT_SLOT,
-
-#if VERSION_STRING < Cata
-    // add definition to keep multiversion stuff available
-    REFORGE_ENCHANTMENT_SLOT,
-    TRANSMOGRIFY_ENCHANTMENT_SLOT,
-#endif
 };
+
+[[nodiscard]] inline uint8_t getMaxInspectedEnchantmentSlot()
+{
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+        return MAX_INSPECTED_ENCHANTMENT_SLOT; // 10
+
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        return 7;
+
+    return 6; // Classic & TBC
+}
+
+[[nodiscard]] inline uint8_t getMaxEnchantmentSlot()
+{
+    return getMaxInspectedEnchantmentSlot() + 5; // 11 (Classic/TBC), 12 (WotLK), 15 (Cata+)
+}
+
+[[nodiscard]] inline uint8_t toWireEnchantmentSlot(EnchantmentSlot slot)
+{
+    if (slot >= PROP_ENCHANTMENT_SLOT_0)
+        return getMaxInspectedEnchantmentSlot() + (slot - PROP_ENCHANTMENT_SLOT_0);
+
+    return static_cast<uint8_t>(slot);
+}
+
+[[nodiscard]] inline EnchantmentSlot fromWireEnchantmentSlot(uint8_t wireSlot)
+{
+    const uint8_t maxInspected = getMaxInspectedEnchantmentSlot();
+    if (wireSlot >= maxInspected)
+        return static_cast<EnchantmentSlot>(PROP_ENCHANTMENT_SLOT_0 + (wireSlot - maxInspected));
+
+    return static_cast<EnchantmentSlot>(wireSlot);
+}
 
 enum class RandomEnchantmentType : uint8_t
 {

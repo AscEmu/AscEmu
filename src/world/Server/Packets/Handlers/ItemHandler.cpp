@@ -2445,7 +2445,7 @@ void WorldSession::handleInsertGemOpcode([[maybe_unused]] WorldPacket& recvPacke
             if (TargetProto->Sockets[i].SocketColor)
                 FilledSlots++;
 
-            ItemProperties const* ip = sMySQLStore.getItemProperties(EI->Enchantment->GemEntry);
+            ItemProperties const* ip = sMySQLStore.getItemProperties(EI->Enchantment->gemEntry);
             if (ip == nullptr)
                 gem_properties = nullptr;
             else

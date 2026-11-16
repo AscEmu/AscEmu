@@ -60,7 +60,6 @@ SERVER_DECL std::unordered_map<uint32_t, std::vector<ClientItemEffect>> sItemEff
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellEntry> sSpellStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellCastTimesEntry> sSpellCastTimesStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellDurationEntry> sSpellDurationStore;
-SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellItemEnchantmentEntry> sSpellItemEnchantmentStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellRadiusEntry> sSpellRadiusStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellRangeEntry> sSpellRangeStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellShapeshiftFormEntry> sSpellShapeshiftFormStore;
@@ -122,8 +121,6 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::GlyphSlotEntry> sGlyphSlotStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GtBarberShopCostBaseEntry> sBarberShopCostBaseStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::HolidaysEntry> sHolidaysStore;
-
-SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemLimitCategoryEntry> sItemLimitCategoryStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::QuestXP> sQuestXPStore;
 
@@ -1162,12 +1159,65 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellStore, dbc_path, "Spell.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellCastTimesStore, dbc_path, "SpellCastTimes.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellDurationStore, dbc_path, "SpellDuration.dbc");
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellItemEnchantmentStore, dbc_path, "SpellItemEnchantment.dbc");
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::SpellItemEnchantmentEntry>(
+        bad_dbc_files, sSpellItemEnchantmentStore, dbc_path,
+        []<typename RawType>(const RawType& raw, WDB::Structures::SpellItemEnchantmentEntry& entry) {
+            entry.id = raw.id;
+
+            for (size_t i = 0; i < MAX_ITEM_ENCHANTMENT_EFFECTS; ++i)
+            {
+                entry.type[i] = raw.type[i];
+                entry.min[i] = raw.min[i];
+                entry.spell[i] = raw.spell[i];
+            }
+
+            if constexpr (requires { raw.max; })
+            {
+                for (size_t i = 0; i < MAX_ITEM_ENCHANTMENT_EFFECTS; ++i)
+                    entry.max[i] = raw.max[i];
+            }
+            else
+            {
+                entry.max = entry.min;
+            }
+
+            if constexpr (requires { { raw.name[0] } -> std::convertible_to<char const*>; })
+            {
+                uint8_t localeId = sWorld.getDbcLocaleLanguageId();
+                entry.name = (localeId < std::size(raw.name) && raw.name[localeId]) ? raw.name[localeId] : (raw.name[0] ? raw.name[0] : "");
+            }
+            else if constexpr (requires { raw.name; })
+            {
+                entry.name = raw.name ? raw.name : "";
+            }
+
+            entry.visual = raw.visual;
+            entry.enchantGroups = raw.enchantGroups;
+
+            if constexpr (requires { raw.gemEntry; })
+                entry.gemEntry = raw.gemEntry;
+
+            if constexpr (requires { raw.enchCondition; })
+                entry.enchantCondition = raw.enchCondition;
+
+            if constexpr (requires { raw.reqSkill; })
+                entry.reqSkill = raw.reqSkill;
+
+            if constexpr (requires { raw.reqSkillValue; })
+                entry.reqSkillValue = raw.reqSkillValue;
+
+            if constexpr (requires { raw.reqLevel; })
+                entry.reqLevel = raw.reqLevel;
+        }
+    );
+
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellRadiusStore, dbc_path, "SpellRadius.dbc"); // todo handle max and level radius
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellRangeStore, dbc_path, "SpellRange.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellShapeshiftFormStore, dbc_path, "SpellShapeshiftForm.dbc");
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sTalentStore, dbc_path, "Talent.dbc");
+
 #if VERSION_STRING < Mop
     // note: This is not valid for Mop
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sTalentTabStore, dbc_path, "TalentTab.dbc");
@@ -1450,8 +1500,7 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGlyphSlotStore, dbc_path, "GlyphSlot.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sBarberShopCostBaseStore, dbc_path, "gtBarberShopCostBase.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sHolidaysStore, dbc_path, "Holidays.dbc");
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemLimitCategoryStore, dbc_path, "ItemLimitCategory.dbc");
-
+    
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sQuestXPStore, dbc_path, "QuestXP.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sScalingStatDistributionStore, dbc_path, "ScalingStatDistribution.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sScalingStatValuesStore, dbc_path, "ScalingStatValues.dbc");
@@ -1464,6 +1513,15 @@ bool loadDBCs()
     #endif
 #endif
 
+    WDB::loadUnifiedWDBStore<WDB::Structures::ItemLimitCategoryEntry>(
+        bad_dbc_files, sItemLimitCategoryStore, dbc_path,
+        []<typename RawType>(const RawType& raw, WDB::Structures::ItemLimitCategoryEntry& entry) {
+            entry.id = raw.id;
+            entry.maxAmount = raw.maxAmount;
+            entry.equippedFlag = raw.equippedFlag;
+        }
+    );
+
     /////////////////////////////////////////////////////////////////////////////////////////
     // Load multi version specific dbcs available since WotLK
 
@@ -1472,7 +1530,8 @@ bool loadDBCs()
         []<typename RawType>(RawType const& raw, WDB::Structures::BannedAddOnsEntry& entry)
         {
             entry.id = raw.id;
-        });
+        }
+    );
 
 #if VERSION_STRING >= Cata
     WDB::loadUnifiedWDBStore<WDB::Structures::ChrPowerTypesEntry>(

@@ -431,7 +431,7 @@ namespace WDB
     template <>
     struct DbcTraits<Structures::ItemEntry> :
         DbcVersionLayouts<
-            Structures::Raw::ItemEntryClassic,
+            UnsupportedVersion,
             Structures::Raw::ItemEntryTbc,
             Structures::Raw::ItemEntryWotlk,
             Structures::Raw::ItemEntryCata,
@@ -444,6 +444,17 @@ namespace WDB
             return "Item.dbc";
         }
     };
+
+    template <>
+    struct DbcTraits<Structures::ItemLimitCategoryEntry> :
+        DbcVersionLayouts<
+            UnsupportedVersion,
+            UnsupportedVersion,
+            Structures::Raw::ItemLimitCategoryEntryWotlkCataMop,
+            Structures::Raw::ItemLimitCategoryEntryWotlkCataMop,
+            Structures::Raw::ItemLimitCategoryEntryWotlkCataMop>,
+        StandardDbcFile<"ItemLimitCategory">
+    {};
 
     template <>
     struct DbcTraits<Structures::ItemSetEntry> :
@@ -476,6 +487,17 @@ namespace WDB
             Structures::Raw::MapEntryCataMop,
             Structures::Raw::MapEntryCataMop>,
         StandardDbcFile<"Map">
+    {};
+
+    template <>
+    struct DbcTraits<Structures::SpellItemEnchantmentEntry> :
+        DbcVersionLayouts<
+            Structures::Raw::SpellItemEnchantmentEntryClassic,
+            Structures::Raw::SpellItemEnchantmentEntryTbc,
+            Structures::Raw::SpellItemEnchantmentEntryWotlk,
+            Structures::Raw::SpellItemEnchantmentEntryCata,
+            Structures::Raw::SpellItemEnchantmentEntryMop>,
+        StandardDbcFile<"SpellItemEnchantment">
     {};
 
     template <>

@@ -2216,9 +2216,9 @@ int8_t ItemInterface::CanEquipItemInSlot2(int8_t DstInvSlot, int8_t slot, Item* 
             {
                 const auto ei = item->getEnchantment(static_cast<EnchantmentSlot>(SOCK_ENCHANTMENT_SLOT1 + count));
 
-                if (ei && ei->Enchantment->GemEntry) //huh ? Gem without entry ?
+                if (ei && ei->Enchantment->gemEntry) //huh ? Gem without entry ?
                 {
-                    if (ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->GemEntry)) // maybe gem got removed from db due to update ?
+                    if (ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->gemEntry)) // maybe gem got removed from db due to update ?
                     {
                         if (ip->Flags & ITEM_FLAG_UNIQUE_EQUIP && IsEquipped(ip->ItemId))
                         {
@@ -2234,9 +2234,9 @@ int8_t ItemInterface::CanEquipItemInSlot2(int8_t DstInvSlot, int8_t slot, Item* 
                                 {
                                     uint32_t gemCount = 0;
                                     if ((itemLimitCategory->equippedFlag & ILFLAG_EQUIP_ONLY  && slot < EQUIPMENT_SLOT_END) || (!(itemLimitCategory->equippedFlag & ILFLAG_EQUIP_ONLY) && slot > EQUIPMENT_SLOT_END))
-                                        gemCount = item->countGemsWithLimitId(itemLimitCategory->Id);
+                                        gemCount = item->countGemsWithLimitId(itemLimitCategory->id);
 
-                                    uint32_t gCount = GetEquippedCountByItemLimit(itemLimitCategory->Id);
+                                    uint32_t gCount = GetEquippedCountByItemLimit(itemLimitCategory->id);
                                     if ((gCount + gemCount) > itemLimitCategory->maxAmount)
                                         return INV_ERR_CANT_CARRY_MORE_OF_THIS;
                                 }
@@ -2633,7 +2633,7 @@ int8_t ItemInterface::CanReceiveItem(ItemProperties const* item, uint32_t amount
             auto itemLimitCategory = sItemLimitCategoryStore.lookupEntry(item->ItemLimitCategory);
             if (itemLimitCategory && !(itemLimitCategory->equippedFlag & ILFLAG_EQUIP_ONLY))
             {
-                uint32_t count = GetItemCountByLimitId(itemLimitCategory->Id, false);
+                uint32_t count = GetItemCountByLimitId(itemLimitCategory->id, false);
                 if (count >= itemLimitCategory->maxAmount || ((count + amount) > itemLimitCategory->maxAmount))
                     return INV_ERR_ITEM_MAX_LIMIT_CATEGORY_COUNT_EXCEEDED;
             }
@@ -3799,7 +3799,7 @@ bool ItemInterface::IsEquipped(uint32_t itemid)
 
                     if (ei && ei->Enchantment)
                     {
-                        ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->GemEntry);
+                        ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->gemEntry);
                         if (ip && ip->ItemId == itemid)
                             return true;
                     }
@@ -3853,7 +3853,7 @@ uint32_t ItemInterface::GetEquippedCountByItemLimit([[maybe_unused]] uint32_t Li
 
                     if (ei && ei->Enchantment)
                     {
-                        ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->GemEntry);
+                        ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->gemEntry);
                         if (ip && ip->ItemLimitCategory == LimitId)
                             count++;
                     }

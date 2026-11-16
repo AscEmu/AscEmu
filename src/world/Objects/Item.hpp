@@ -26,9 +26,7 @@ struct EnchantmentInstance
 {
     // Durations for temporary enchantments are stored in ItemInterface and WoWItem data
     WDB::Structures::SpellItemEnchantmentEntry const* Enchantment;
-#if VERSION_STRING >= Cata
     std::unique_ptr<WDB::Structures::SpellItemEnchantmentEntry> customEnchantmentHolder;
-#endif
     bool BonusApplied;
     EnchantmentSlot Slot;
     bool RemoveAtLogout;
@@ -153,7 +151,7 @@ private:
     void _setEnchantmentDataFields(EnchantmentSlot slot, uint32_t enchantmentId, uint32_t duration, uint32_t charges);
     bool _findFreeRandomEnchantmentSlot(EnchantmentSlot* slot, RandomEnchantmentType randomType) const;
 
-    uint32_t m_onUseSpellIds[3] = { 0 };                    // Enchant type 3 spellids, like engineering gadgets appliable to items.
+    uint32_t m_onUseSpellIds[3] = {0}; // Enchant type 3 spellids, like engineering gadgets appliable to items.
 
 protected:
     EnchantmentMap m_enchantments;
@@ -163,9 +161,7 @@ protected:
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Sockets / gems
-#if VERSION_STRING >= TBC
     uint8_t getSocketSlotCount(bool includePrismatic = true) const;
-#endif
 
     uint32_t countGemsWithLimitId(uint32_t Limit);
     bool isGemRelated(WDB::Structures::SpellItemEnchantmentEntry const* enchantment);
@@ -231,9 +227,7 @@ public:
     int32_t getReforgableStat(ItemModType statType) const;
     static bool canTransmogrifyItemWithItem(Item const* transmogrified, Item const* transmogrifier);
 
-#if VERSION_STRING <= TBC
     void setTextId(uint32_t textId);
-#endif
 
     void loadFromDB(Field* fields, Player* plr, bool light);
     void saveToDB(int8_t containerslot, int8_t slot, bool firstsave, QueryBuffer* buf);
@@ -257,16 +251,14 @@ public:
     void eventRemoveItem();
     void removeFromRefundableMap();
 
-#if VERSION_STRING >= WotLK
     // Soulbound trade system
     void setSoulboundTradeable(LooterSet& allowedLooters);
     void clearSoulboundTradeable(Player* currentOwner);
     bool checkSoulboundTradeExpire();
-#endif
 
 protected:
-    uint32_t _fields[Version::kMaxItemValues] = { 0 };  // this mem is wasted in case of container... but this will be fixed in future
-    Player* m_owner = nullptr;                              // let's not bother the manager with unneeded requests
+    uint32_t _fields[Version::kMaxItemValues] = {0}; // this mem is wasted in case of container... but this will be fixed in future
+    Player* m_owner = nullptr; // let's not bother the manager with unneeded requests
 
 private:
     LooterSet allowedGUIDs;

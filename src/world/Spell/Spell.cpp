@@ -3904,7 +3904,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                 // Check item owner in cases where enchantment makes item soulbound
                 if (targetItem->getOwner() != p_caster)
                 {
-                    if (enchantEntry->EnchantGroups & 0x01) // Makes item soulbound
+                    if (enchantEntry->enchantGroups & 0x01) // Makes item soulbound
                         return SPELL_FAILED_NOT_TRADEABLE;
                 }
                 break;
@@ -3938,7 +3938,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                 // Check item owner in cases where enchantment makes item soulbound
                 if (targetItem->getOwner() != p_caster)
                 {
-                    if (enchantmentEntry->EnchantGroups & 0x01) // Makes item soulbound
+                    if (enchantmentEntry->enchantGroups & 0x01) // Makes item soulbound
                         return SPELL_FAILED_NOT_TRADEABLE;
                 }
                 break;

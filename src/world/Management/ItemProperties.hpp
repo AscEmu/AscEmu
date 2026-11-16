@@ -90,7 +90,6 @@ struct ItemProperties
     int32_t ForcedPetId;
 
     bool HasFlag(uint32_t flag) const;
-    
     bool HasFlag2(uint32_t flag) const;
 
     bool isPotion() const;

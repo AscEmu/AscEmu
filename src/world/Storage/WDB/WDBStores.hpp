@@ -39,7 +39,6 @@ namespace WDB::Structures
     struct TalentEntry;
     struct SpellShapeshiftFormEntry;
     struct SpellRangeEntry;
-    struct SpellItemEnchantmentEntry;
     struct SpellEntry;
     struct SkillLineEntry;
     struct SkillLineAbilityEntry;
@@ -76,7 +75,6 @@ namespace WDB::Structures
     struct GlyphSlotEntry;
     struct GtBarberShopCostBaseEntry;
     struct HolidaysEntry;
-    struct ItemLimitCategoryEntry;
     struct QuestXP;
     struct ScalingStatDistributionEntry;
     struct ScalingStatValuesEntry;
@@ -204,11 +202,12 @@ struct ClientItemEffect
     uint16_t category = 0;
     int32_t categoryCooldown = -1;
 };
-extern SERVER_DECL std::unordered_map<uint32_t, std::vector<ClientItemEffect>> sItemEffects;         // item -> effects, own client data only
+
+extern SERVER_DECL std::unordered_map<uint32_t, std::vector<ClientItemEffect>> sItemEffects; // item -> effects, own client data only
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellEntry> sSpellStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellCastTimesEntry> sSpellCastTimesStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellDurationEntry> sSpellDurationStore;
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellItemEnchantmentEntry> sSpellItemEnchantmentStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::SpellItemEnchantmentEntry> sSpellItemEnchantmentStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellRadiusEntry> sSpellRadiusStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellRangeEntry> sSpellRangeStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellShapeshiftFormEntry> sSpellShapeshiftFormStore;
@@ -269,13 +268,15 @@ inline SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStable
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GlyphSlotEntry> sGlyphSlotStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtBarberShopCostBaseEntry> sBarberShopCostBaseStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::HolidaysEntry> sHolidaysStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemLimitCategoryEntry> sItemLimitCategoryStore;
+    
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::QuestXP> sQuestXPStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ScalingStatDistributionEntry> sScalingStatDistributionStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ScalingStatValuesEntry> sScalingStatValuesStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellDifficultyEntry> sSpellDifficultyStore;
     extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellRuneCostEntry> sSpellRuneCostStore;
 #endif
+
+    inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemLimitCategoryEntry> sItemLimitCategoryStore;
 
     inline SERVER_DECL WDB::WDBStore<WDB::Structures::BannedAddOnsEntry> sBannedAddOnsStore;
     inline SERVER_DECL WDB::WDBStore<WDB::Structures::ChrPowerTypesEntry> sChrPowerTypesStore;

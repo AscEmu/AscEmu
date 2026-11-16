@@ -589,6 +589,13 @@ namespace WDB::Structures
         uint32_t sheath{0};
     };
 
+    struct ItemLimitCategoryEntry
+    {
+        uint32_t id{0};
+        uint32_t maxAmount{0};
+        uint32_t equippedFlag{0};
+    };
+
     struct ItemSetEntry
     {
         uint32_t id = 0;
@@ -685,6 +692,25 @@ namespace WDB::Structures
     {
         uint32_t id{0};
         std::array<int32_t, 134> values{};
+    };
+
+#define MAX_ITEM_ENCHANTMENT_EFFECTS 3
+
+    struct SpellItemEnchantmentEntry
+    {
+        uint32_t id{0};
+        std::array<uint32_t, MAX_ITEM_ENCHANTMENT_EFFECTS> type{};
+        std::array<uint32_t, MAX_ITEM_ENCHANTMENT_EFFECTS> min{};
+        std::array<uint32_t, MAX_ITEM_ENCHANTMENT_EFFECTS> max{};
+        std::array<uint32_t, MAX_ITEM_ENCHANTMENT_EFFECTS> spell{};
+        std::string name;
+        uint32_t visual{0};
+        uint32_t enchantGroups{0};
+        uint32_t gemEntry{0};
+        uint32_t enchantCondition{0};
+        uint32_t reqSkill{0};
+        uint32_t reqSkillValue{0};
+        uint32_t reqLevel{0};
     };
 
     struct StableSlotPricesEntry
@@ -962,19 +988,6 @@ namespace WDB::Structures
         //uint32_t unkunk[5];                                       // 26-30
 #endif
     };
-
-#if VERSION_STRING >= WotLK
-    struct ItemLimitCategoryEntry
-    {
-        uint32_t Id;                                                // 0
-        //char* name[16];                                           // 1-16 name langs
-        //uint32_t name_flags                                       // 17
-        uint32_t maxAmount;                                         // 18
-        uint32_t equippedFlag;                                      // 19 - equipped (bool?)
-    };
-#endif
-
-#define MAX_ITEM_ENCHANTMENT_EFFECTS 3
 
     struct ItemRandomPropertiesEntry
     {
@@ -1619,29 +1632,6 @@ namespace WDB::Structures
         //uint32_t unk2                                             // 25
         //uint32_t unk3                                             // 26
         uint32_t spells[8];                                         // 27-34
-#endif
-    };
-
-    struct SpellItemEnchantmentEntry
-    {
-        uint32_t Id;                                                // 0
-        uint32_t type[MAX_ITEM_ENCHANTMENT_EFFECTS];                // 1-3
-        uint32_t min[MAX_ITEM_ENCHANTMENT_EFFECTS];                 // 4-6 for combat, in practice min==max
-#if VERSION_STRING <= Cata
-        uint32_t max[MAX_ITEM_ENCHANTMENT_EFFECTS];                 // 7-9
-#endif
-        uint32_t spell[MAX_ITEM_ENCHANTMENT_EFFECTS];               // 10-12
-        char* Name[NAME_PATTERN];                                   // 13
-        uint32_t visual;                                            // 30 aura
-        uint32_t EnchantGroups;                                     // 31 slot
-#if VERSION_STRING >= TBC
-        uint32_t GemEntry;                                          // 32
-        uint32_t ench_condition;                                    // 33
-#endif
-#if VERSION_STRING >= WotLK
-        uint32_t req_skill;                                         // 35
-        uint32_t req_skill_value;                                   // 36
-        uint32_t req_level;                                         // 37
 #endif
     };
 

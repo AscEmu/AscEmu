@@ -622,7 +622,7 @@ namespace WDB::Structures::Raw
 
     struct CurrencyTypesEntryWotlk
     {
-        uint32_t id;                                                // the item of the currency
+        uint32_t id; // the item of the currency
         uint32_t bitIndex;
     };
 
@@ -793,14 +793,6 @@ namespace WDB::Structures::Raw
         uint32_t socketMask;
     };
 
-    struct ItemEntryClassic
-    {
-        uint32_t id;
-        uint32_t displayId;
-        uint32_t inventoryType;
-        uint32_t sheath;
-    };
-
     struct ItemEntryTbc
     {
         uint32_t id;
@@ -843,6 +835,13 @@ namespace WDB::Structures::Raw
         uint32_t displayId;
         uint32_t inventoryType;
         uint32_t sheath;
+    };
+
+    struct ItemLimitCategoryEntryWotlkCataMop
+    {
+        uint32_t id;
+        uint32_t maxAmount;
+        uint32_t equippedFlag;
     };
 
     struct ItemSetEntryClassic
@@ -944,6 +943,82 @@ namespace WDB::Structures::Raw
         uint32_t unkTime;
         uint32_t maxPlayers;
         uint32_t nextPhaseMap;
+    };
+
+    struct SpellItemEnchantmentEntryClassic
+    {
+        uint32_t id;
+        uint32_t type[3];
+        uint32_t min[3];
+        uint32_t max[3];
+        uint32_t spell[3];
+        char const* name[8];
+        uint32_t visual;
+        uint32_t enchantGroups;
+    };
+
+    struct SpellItemEnchantmentEntryTbc
+    {
+        uint32_t id;
+        uint32_t type[3];
+        uint32_t min[3];
+        uint32_t max[3];
+        uint32_t spell[3];
+        char const* name[16];
+        uint32_t visual;
+        uint32_t enchantGroups;
+        uint32_t gemEntry;
+        uint32_t enchantCondition;
+    };
+
+    struct SpellItemEnchantmentEntryWotlk
+    {
+        uint32_t id;
+        uint32_t type[3];
+        uint32_t min[3];
+        uint32_t max[3];
+        uint32_t spell[3];
+        char const* name[16];
+        uint32_t visual;
+        uint32_t enchantGroups;
+        uint32_t gemEntry;
+        uint32_t enchantCondition;
+        uint32_t reqSkill;
+        uint32_t reqSkillValue;
+        uint32_t reqLevel;
+    };
+
+    struct SpellItemEnchantmentEntryCata
+    {
+        uint32_t id;
+        uint32_t type[3];
+        uint32_t min[3];
+        uint32_t max[3];
+        uint32_t spell[3];
+        char const* name;
+        uint32_t visual;
+        uint32_t enchantGroups;
+        uint32_t gemEntry;
+        uint32_t enchantCondition;
+        uint32_t reqSkill;
+        uint32_t reqSkillValue;
+        uint32_t reqLevel;
+    };
+
+    struct SpellItemEnchantmentEntryMop
+    {
+        uint32_t id;
+        uint32_t type[3];
+        uint32_t min[3];
+        uint32_t spell[3];
+        char const* name;
+        uint32_t visual;
+        uint32_t enchantGroups;
+        uint32_t gemEntry;
+        uint32_t enchantCondition;
+        uint32_t reqSkill;
+        uint32_t reqSkillValue;
+        uint32_t reqLevel;
     };
 
     struct StableSlotPricesEntryClassicTbcWotlk
