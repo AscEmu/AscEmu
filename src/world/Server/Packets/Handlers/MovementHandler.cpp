@@ -817,16 +817,19 @@ void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)
         }
     }
 
-    if (!world->onPlayerEnter(_player))
+    world->queueMapTask([this, world, player = _player]()
     {
-        recoverFailedWorldport("Worldport attach failed");
-        return;
-    }
+        if (!world->onPlayerEnter(_player))
+        {
+            recoverFailedWorldport("Worldport attach failed");
+            return;
+        }
 
-    _player->setTransferStatus(TRANSFER_NONE);
-    _player->clearTeleportTransport();
-    _player->resetTimeSync();
-    _player->sendTimeSync();
+        _player->setTransferStatus(TRANSFER_NONE);
+        _player->clearTeleportTransport();
+        _player->resetTimeSync();
+        _player->sendTimeSync();
+    });
 }
 
 void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)
