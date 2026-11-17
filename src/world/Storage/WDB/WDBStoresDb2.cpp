@@ -11,10 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 // modern clients no longer have (the gt* tables, ScalingStat*, SpellRuneCost,
 // TalentTab, ...) stay empty; their consumers handle a missing row.
 
-#include "AEVersion.hpp"
-
-#if VERSION_STRING >= WoD
-
 #include "WDBStores.hpp"
 
 #include "WDBContainer.hpp"
@@ -106,7 +102,7 @@ namespace
 
     [[nodiscard]] auto rows(WDC5File const& file)
     {
-        return std::views::iota(uint32_t{ 0 }, file.getRecordCount())
+        return std::views::iota(uint32_t{0}, file.getRecordCount())
             | std::views::transform([&file](uint32_t index) { return Row(file, index); });
     }
 
@@ -191,7 +187,7 @@ namespace
         fillStore(sChrClassesStore, chrClasses, [](WDB::Structures::ChrClassesEntry& entry, Row const& row)
         {
             entry.classId = row.id();
-            entry.powerType = row.i8(32);              // DisplayPower
+            entry.powerType = row.i8(32); // DisplayPower
             entry.name = row.str(0);
             entry.spellClassSet = row.u8(36);
             entry.cinematicSequenceId = row.u16(27);
@@ -210,7 +206,7 @@ namespace
         // the race models come from the ChrRaceXChrModel relation, male = sex 0, female = sex 1
         std::unordered_map<uint32_t, uint32_t> displayIdByModel;
         for (Row const row : rows(chrModel))
-            displayIdByModel[row.id()] = row.parentOr(4);       // DisplayID
+            displayIdByModel[row.id()] = row.parentOr(4); // DisplayID
 
         std::unordered_map<uint32_t, std::pair<uint32_t, uint32_t>> modelsByRace;
         for (Row const row : rows(chrRaceXChrModel))
@@ -258,8 +254,8 @@ namespace
             entry.Id = row.id();
             entry.classId = row.parentOr(4);
             entry.masterySpellId = row.i32(12, 0);
-            entry.tabPage = row.i8(5);          // OrderIndex
-            entry.petTabPage = row.i8(6);       // PetTalentType
+            entry.tabPage = row.i8(5); // OrderIndex
+            entry.petTabPage = row.i8(6); // PetTalentType
         });
 
         // The four reputation relation sets are array columns, the race masks are
@@ -406,9 +402,9 @@ namespace
             entry.maxSize = row.f32(3);
             entry.maxLevel = row.i8(4);
             entry.skillLine = row.i16(9, 0);
-            entry.tameable = row.i16(9, 1);         // the second skill line, as in the dbc layout
-            entry.petDietFlags = row.i16(5);        // PetFoodMask
-            entry.talentTree = row.i8(6);           // PetTalentType
+            entry.tameable = row.i16(9, 1); // the second skill line, as in the dbc layout
+            entry.petDietFlags = row.i16(5); // PetFoodMask
+            entry.talentTree = row.i8(6); // PetTalentType
             entry.name = row.str(0);
         });
 
@@ -417,7 +413,7 @@ namespace
             entry.ID = row.id();
             entry.ControlType = row.i32(0);
             entry.FactionID = row.i32(1);
-            entry.Type = row.i32(2);       // Title
+            entry.Type = row.i32(2); // Title
             entry.Slot = row.i32(3);
             entry.Flags = row.i32(4, 0);
         });
@@ -444,7 +440,7 @@ namespace
             entry.msslTrgtImpactModel[1] = keepString({});
             entry.cameraYawOffset = row.f32(12);
             entry.uiSeatIndicatorType = row.u16(13);
-            entry.powerType = row.u16(17, 0);       // PowerDisplayID
+            entry.powerType = row.u16(17, 0); // PowerDisplayID
         });
 
         fillContainer(sVehicleSeatStore, vehicleSeat, [](WDB::Structures::VehicleSeatEntry& entry, Row const& row)
@@ -493,7 +489,7 @@ namespace
             entry.vehicleAbilityDisplay = row.i8(41);
             entry.enterUISoundID = row.u32(42);
             entry.exitUISoundID = row.u32(43);
-            entry.uiSkin = row.i32(44);             // UiSkinFileDataID
+            entry.uiSkin = row.i32(44); // UiSkinFileDataID
             entry.flagsB = row.i32(3);
         });
 
@@ -513,10 +509,10 @@ namespace
 
         // level ranges of the dungeons by content tuning id (9.x+), resolved with the level cap of the server
         std::unordered_map<uint32_t, std::pair<uint32_t, uint32_t>> tuningLevels;
-#if VERSION_STRING >= TheWarWithin
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TheWarWithin))
         {
             WDC5File contentTuning;
-            if (!loadTables(errors, dbcPath, { { contentTuning, Layout::ContentTuning } }))
+            if (!loadTables(errors, dbcPath, {{contentTuning, Layout::ContentTuning}}))
                 return false;
 
             const int32_t levelCap = static_cast<int32_t>(worldConfig.player.playerLevelCap);
@@ -535,10 +531,10 @@ namespace
             {
                 const int32_t minLevel = std::clamp(row.i32(9) + adjust(row.i32(11)), 1, levelCap);
                 const int32_t maxLevel = std::clamp(row.i32(10) + adjust(row.i32(12)), 1, levelCap);
-                tuningLevels[row.id()] = { static_cast<uint32_t>(minLevel), static_cast<uint32_t>(maxLevel) };
+                tuningLevels[row.id()] = {static_cast<uint32_t>(minLevel), static_cast<uint32_t>(maxLevel)};
             }
         }
-#endif
+
         if (!loadTables(errors, dbcPath, {
             { map, Layout::Map }, { mapDifficulty, Layout::MapDifficulty }, { uiMapAssignment, Layout::UiMapAssignment },
             { worldMapOverlay, Layout::WorldMapOverlay }, { areaTable, Layout::AreaTable }, { areaTrigger, Layout::AreaTrigger },
@@ -746,18 +742,18 @@ namespace
             entry.price = row.u32(3); // Cost
         });
 
-        fillContainer(sTaxiPathNodeStore, taxiPathNode, [](WDB::Structures::TaxiPathNodeEntry& entry, Row const& row)
+        fillStore(sTaxiPathNodeStore, taxiPathNode, [](WDB::Structures::TaxiPathNodeEntry& entry, Row const& row)
         {
             entry.pathId = row.parentOr(2);
-            entry.NodeIndex = row.i32(3);
-            entry.mapid = row.u16(4); // ContinentID
+            entry.nodeIndex = row.i32(3);
+            entry.mapId = row.u16(4); // ContinentID
             entry.x = row.f32(0, 0);
             entry.y = row.f32(0, 1);
             entry.z = row.f32(0, 2);
             entry.flags = row.i32(5);
-            entry.waittime = row.u32(6); // Delay
-            entry.arivalEventID = row.i32(7);
-            entry.departureEventID = row.i32(8);
+            entry.waitTime = row.u32(6); // Delay
+            entry.arrivalEventId = row.i32(7);
+            entry.departureEventId = row.i32(8);
         });
 
         fillContainer(sHolidaysStore, holidays, [](WDB::Structures::HolidaysEntry& entry, Row const& row)
@@ -804,8 +800,8 @@ namespace
         {
             entry.id = row.id();
             entry.faction = row.u16(1);
-            entry.fee = row.u8(2);          // DepositRate
-            entry.tax = row.u8(3);          // ConsignmentRate
+            entry.fee = row.u8(2); // DepositRate
+            entry.tax = row.u8(3); // ConsignmentRate
         });
 
         fillStore(sBankBagSlotPricesStore, bankBagSlotPrices, [](WDB::Structures::BankBagSlotPricesEntry& entry, Row const& row)
@@ -814,25 +810,24 @@ namespace
             entry.price = row.u32(0);
         });
 
-        fillContainer(sMailTemplateStore, mailTemplate, [](WDB::Structures::MailTemplateEntry& entry, Row const& row)
+        fillStore(sMailTemplateStore, mailTemplate, [](WDB::Structures::MailTemplateEntry& entry, Row const& row)
         {
-            entry.ID = row.id();
-            entry.subject = keepString({});
-            entry.content = row.text(0);    // Body
+            entry.id = row.id();
+            entry.content = row.text(0); // Body
         });
 
         fillContainer(sEmotesStore, emotes, [](WDB::Structures::EmotesEntry& entry, Row const& row)
         {
             entry.Id = row.id();
             entry.Flags = row.i32(2);
-            entry.EmoteType = row.i32(3);           // EmoteSpecProc
-            entry.UnitStandState = row.u32(4);      // EmoteSpecProcParam
+            entry.EmoteType = row.i32(3); // EmoteSpecProc
+            entry.UnitStandState = row.u32(4); // EmoteSpecProcParam
         });
 
         fillStore(sEmotesTextStore, emotesText, [](WDB::Structures::EmotesTextEntry& entry, Row const& row)
         {
             entry.id = row.id();
-            entry.textId[0] = row.u16(1);           // EmoteID
+            entry.textId[0] = row.u16(1); // EmoteID
         });
 
         fillContainer(sQuestXPStore, questXP, [](WDB::Structures::QuestXP& entry, Row const& row)
@@ -857,9 +852,9 @@ namespace
             entry.Id = row.id();
             for (uint32_t i = 0; i < LOCK_NUM_CASES; ++i)
             {
-                entry.locktype[i] = row.u8(3, i);       // Type
-                entry.lockmisc[i] = row.i32(1, i);      // Index
-                entry.minlockskill[i] = row.u16(2, i);  // Skill
+                entry.locktype[i] = row.u8(3, i); // Type
+                entry.lockmisc[i] = row.i32(1, i); // Index
+                entry.minlockskill[i] = row.u16(2, i); // Skill
             }
         });
 
@@ -886,7 +881,7 @@ namespace
         {
             entry.id = row.id();
             entry.enchantmentId = row.u16(0);
-            entry.socketMask = row.i32(1);          // Type
+            entry.socketMask = row.i32(1); // Type
         });
 
         fillContainer(sMountCapabilityStore, mountCapability, [](WDB::Structures::MountCapabilityEntry& entry, Row const& row)
@@ -895,9 +890,9 @@ namespace
             entry.flag = row.i32(0);
             entry.reqRidingSkill = row.u16(1);
             entry.reqArea = row.u16(2);
-            entry.reqAura = row.u32(3);             // ReqSpellAuraID
-            entry.reqSpell = row.i32(4);            // ReqSpellKnownID
-            entry.speedModSpell = row.i32(5);       // ModSpellAuraID
+            entry.reqAura = row.u32(3); // ReqSpellAuraID
+            entry.reqSpell = row.i32(4); // ReqSpellKnownID
+            entry.speedModSpell = row.i32(5); // ModSpellAuraID
             entry.reqMap = row.i16(6);
         });
 
@@ -905,7 +900,7 @@ namespace
         {
             std::map<uint32_t, std::vector<std::pair<uint8_t, uint32_t>>> capabilitiesByType;
             for (Row const row : rows(mountTypeXCapability))
-                capabilitiesByType[row.parentOr(0)].emplace_back(row.u8(2), row.u16(1));       // OrderIndex, MountCapabilityID
+                capabilitiesByType[row.parentOr(0)].emplace_back(row.u8(2), row.u16(1)); // OrderIndex, MountCapabilityID
 
             uint32_t const maxTypeId = capabilitiesByType.empty() ? 0 : capabilitiesByType.rbegin()->first;
             sMountTypeStore.reserveManualEntries(maxTypeId, static_cast<uint32_t>(capabilitiesByType.size()));
@@ -927,8 +922,8 @@ namespace
             entry.item_id = row.id();
             entry.Category = row.i32(2);
             entry.name = row.str(0);
-            entry.TotalCap = row.u32(6);            // MaxQty
-            entry.WeekCap = row.u32(7);             // MaxEarnablePerWeek
+            entry.TotalCap = row.u32(6); // MaxQty
+            entry.WeekCap = row.u32(7); // MaxEarnablePerWeek
             entry.Flags = row.i32(21, 0);
         });
 
@@ -941,8 +936,8 @@ namespace
         {
             entry.Entry = row.id();
             entry.SpellID = row.u32(0);
-            entry.Type = row.u8(1);                 // GlyphType
-            entry.unk = row.i32(3);                 // SpellIconFileDataID
+            entry.Type = row.u8(1); // GlyphType
+            entry.unk = row.i32(3); // SpellIconFileDataID
         });
 
         fillStore(sAchievementStore, achievement, [](WDB::Structures::AchievementEntry& entry, Row const& row)
@@ -1190,31 +1185,31 @@ namespace
         for (Row const row : rows(itemEffect))
         {
             ClientItemEffect effect;
-            effect.spellId = row.u32(6);                // SpellID
-            effect.trigger = row.u8(1);                 // TriggerType
-            effect.charges = row.i16(2);                // Charges
-            effect.cooldown = row.i32(3);               // CoolDownMSec
-            effect.category = row.u16(5);               // SpellCategoryID
-            effect.categoryCooldown = row.i32(4);       // CategoryCoolDownMSec
+            effect.spellId = row.u32(6); // SpellID
+            effect.trigger = row.u8(1); // TriggerType
+            effect.charges = row.i16(2); // Charges
+            effect.cooldown = row.i32(3); // CoolDownMSec
+            effect.category = row.u16(5); // SpellCategoryID
+            effect.categoryCooldown = row.i32(4); // CategoryCoolDownMSec
             effectById.emplace(row.id(), effect);
         }
 
         sItemEffects.clear();
         for (Row const row : rows(itemXItemEffect))
-            if (auto const effect = effectById.find(row.u32(0)); effect != effectById.end())   // ItemEffectID
-                sItemEffects[row.parent()].push_back(effect->second);                            // ItemID
+            if (auto const effect = effectById.find(row.u32(0)); effect != effectById.end()) // ItemEffectID
+                sItemEffects[row.parent()].push_back(effect->second); // ItemID
 
-        fillContainer(sItemExtendedCostStore, itemExtendedCost, [](WDB::Structures::ItemExtendedCostEntry& entry, Row const& row)
+        fillStore(sItemExtendedCostStore, itemExtendedCost, [](WDB::Structures::ItemExtendedCostEntry& entry, Row const& row)
         {
-            entry.costid = row.id();
-            entry.arena_slot = row.i8(2);               // ArenaBracket
-            entry.personalrating = row.u16(1);          // RequiredArenaRating
+            entry.id = row.id();
+            entry.arenaSlot = row.i8(2); // ArenaBracket
+            entry.personalRating = row.u16(1); // RequiredArenaRating
             for (uint32_t i = 0; i < 5; ++i)
             {
                 entry.item[i] = row.i32(7, i);
                 entry.count[i] = row.u16(8, i);
-                entry.reqcur[i] = row.u16(9, i);
-                entry.reqcurrcount[i] = row.u32(10, i);
+                entry.reqCur[i] = row.u16(9, i);
+                entry.reqCurrCount[i] = row.u32(10, i);
             }
         });
 
@@ -1254,18 +1249,18 @@ namespace
             entry.itemid = row.parentOr(0);
         });
 
-        fillContainer(sItemLimitCategoryStore, itemLimitCategory, [](WDB::Structures::ItemLimitCategoryEntry& entry, Row const& row)
+        fillStore(sItemLimitCategoryStore, itemLimitCategory, [](WDB::Structures::ItemLimitCategoryEntry& entry, Row const& row)
         {
-            entry.Id = row.id();
-            entry.maxAmount = row.u8(1);            // Quantity
-            entry.equippedFlag = row.i32(2);        // Flags
+            entry.id = row.id();
+            entry.maxAmount = row.u8(1); // Quantity
+            entry.equippedFlag = row.i32(2); // Flags
         });
 
         fillStore(sDurabilityCostsStore, durabilityCosts, [](WDB::Structures::DurabilityCostsEntry& entry, Row const& row)
         {
             entry.itemLevel = row.id();
             for (uint32_t i = 0; i < 21; ++i)
-                entry.modifier[i] = row.u16(0, i);      // WeaponSubClassCost
+                entry.modifier[i] = row.u16(0, i); // WeaponSubClassCost
             for (uint32_t i = 0; i < 8; ++i)
                 entry.modifier[21 + i] = row.u16(1, i); // ArmorSubClassCost
         });
@@ -1282,7 +1277,7 @@ namespace
         sItemRandomSuffixStore.clear();
 
         sLogger.info("DB2: item stores ready (items={}, displayIds={}, extendedCosts={}, sets={}).",
-            item.getRecordCount(), displayInfoByItem.size(), itemExtendedCost.getRecordCount(), sItemSetStore.getNumRows());
+                     item.getRecordCount(), displayInfoByItem.size(), itemExtendedCost.getRecordCount(), sItemSetStore.getNumRows());
         return true;
     }
 
@@ -1307,19 +1302,19 @@ namespace
             { spellItemEnchantment, Layout::SpellItemEnchantment }, { spellXSpellVisual, Layout::SpellXSpellVisual } }))
             return false;
 
-        fillContainer(sSkillLineStore, skillLine, [](WDB::Structures::SkillLineEntry& entry, Row const& row)
+        fillStore(sSkillLineStore, skillLine, [](WDB::Structures::SkillLineEntry& entry, Row const& row)
         {
             entry.id = row.id();
-            entry.type = row.i8(6);             // CategoryID
-            entry.Name[0] = row.text(0);
-            entry.spell_icon = row.i32(7);      // SpellIconFileID
-            entry.linkable = row.i8(8);         // CanLink
+            entry.type = row.i8(6); // CategoryID
+            entry.name[0] = row.text(0);
+            entry.spellIcon = row.i32(7); // SpellIconFileID
+            entry.linkable = row.i8(8); // CanLink
         });
 
         // the expansion lines of a profession, learned together with their parent
         sSkillLineChildren.clear();
         for (Row const row : rows(skillLine))
-            if (const auto parent = row.i32(9); parent != 0)    // ParentSkillLineID
+            if (const auto parent = row.i32(9); parent != 0) // ParentSkillLineID
                 sSkillLineChildren[static_cast<uint32_t>(parent)].push_back(row.id());
 
         fillContainer(sSkillLineAbilityStore, skillLineAbility, [](WDB::Structures::SkillLineAbilityEntry& entry, Row const& row)
@@ -1330,18 +1325,18 @@ namespace
             entry.race_mask = row.i32(16, 0);
             entry.class_mask = row.i32(6);
             entry.minSkillLineRank = row.i16(5);
-            entry.next = row.i32(7);            // SupercedesSpell
+            entry.next = row.i32(7); // SupercedesSpell
             entry.acquireMethod = row.i32(8);
-            entry.grey = row.i16(9);            // TrivialSkillLineRankHigh
-            entry.green = row.i16(10);          // TrivialSkillLineRankLow
+            entry.grey = row.i16(9); // TrivialSkillLineRankHigh
+            entry.green = row.i16(10); // TrivialSkillLineRankLow
         });
 
-        fillContainer(sTalentStore, talent, [](WDB::Structures::TalentEntry& entry, Row const& row)
+        fillStore(sTalentStore, talent, [](WDB::Structures::TalentEntry& entry, Row const& row)
         {
-            entry.TalentID = row.id();
-            entry.Row = row.u8(1);              // TierID
-            entry.Col = row.u8(3);              // ColumnIndex
-            entry.SpellId = row.u32(7);
+            entry.id = row.id();
+            entry.row = row.u8(1); // TierID
+            entry.col = row.u8(3); // ColumnIndex
+            entry.spellId = row.u32(7);
             entry.playerClass = row.i8(5);
             entry.overrideSpellId = row.u32(8);
         });
@@ -1351,12 +1346,11 @@ namespace
         // difficulty other than the base one are kept but not linked.
         std::unordered_map<uint32_t, WDB::Structures::SpellEntry*> spells;
         spells.reserve(spellName.getRecordCount());
-        fillContainer(sSpellStore, spellName, [&spells](WDB::Structures::SpellEntry& entry, Row const& row)
+        fillStore(sSpellStore, spellName, [&spells](WDB::Structures::SpellEntry& entry, Row const& row)
         {
-            entry.Id = row.id();
-            entry.Name = row.text(0);
-            entry.Rank = keepString({});
-            spells.emplace(entry.Id, &entry);
+            entry.id = row.id();
+            entry.name[0] = row.text(0);
+            spells.emplace(entry.id, &entry);
         });
 
         auto const linkSpell = [&spells](uint32_t spellId, uint32_t rowId, uint32_t WDB::Structures::SpellEntry::* member)
@@ -1371,15 +1365,15 @@ namespace
         // the split tables with a difficulty column link only their base rows
         auto const isBaseDifficulty = [](Row const& row) { return row.i16(0) == 0; };
 
-        fillContainer(sSpellAuraOptionsStore, spellAuraOptions, [&](WDB::Structures::SpellAuraOptionsEntry& entry, Row const& row)
+        fillStore(sSpellAuraOptionsStore, spellAuraOptions, [&](WDB::Structures::SpellAuraOptionsEntry& entry, Row const& row)
         {
-            entry.Id = row.id();
-            entry.MaxStackAmount = row.u16(1);      // CumulativeAura
+            entry.id = row.id();
+            entry.maxStackAmount = row.u16(1); // CumulativeAura
             entry.procChance = row.u8(3);
             entry.procCharges = row.i32(4);
-            entry.procFlags = row.i32(6, 0);        // ProcTypeMask
+            entry.procFlags = row.i32(6, 0); // ProcTypeMask
             if (isBaseDifficulty(row))
-                linkSpell(row.parent(), entry.Id, &WDB::Structures::SpellEntry::SpellAuraOptionsId);
+                linkSpell(row.parent(), entry.id, &WDB::Structures::SpellEntry::spellAuraOptionsId);
         });
 
         fillContainer(sSpellAuraRestrictionsStore, spellAuraRestrictions, [&](WDB::Structures::SpellAuraRestrictionsEntry& entry, Row const& row)
@@ -1393,42 +1387,42 @@ namespace
             entry.CasterAuraSpellNot = row.i32(7);
             entry.TargetAuraSpellNot = row.i32(8);
             if (isBaseDifficulty(row))
-                linkSpell(row.parent(), row.id(), &WDB::Structures::SpellEntry::SpellAuraRestrictionsId);
+                linkSpell(row.parent(), row.id(), &WDB::Structures::SpellEntry::spellAuraRestrictionsId);
         });
 
         fillContainer(sSpellCastTimesStore, spellCastTimes, [](WDB::Structures::SpellCastTimesEntry& entry, Row const& row)
         {
             entry.ID = row.id();
-            entry.CastTime = row.i32(0);        // Base
-            entry.MinCastTime = row.i32(1);     // Minimum
+            entry.CastTime = row.i32(0); // Base
+            entry.MinCastTime = row.i32(1); // Minimum
         });
 
         fillContainer(sSpellCastingRequirementsStore, spellCastingRequirements, [&](WDB::Structures::SpellCastingRequirementsEntry& entry, Row const& row)
         {
             entry.FacingCasterFlags = row.i32(1);
-            entry.AreaGroupId = row.u16(4);         // RequiredAreasID
+            entry.AreaGroupId = row.u16(4); // RequiredAreasID
             entry.RequiresSpellFocus = row.u16(6);
-            linkSpell(row.i32(0), row.id(), &WDB::Structures::SpellEntry::SpellCastingRequirementsId);
+            linkSpell(row.i32(0), row.id(), &WDB::Structures::SpellEntry::spellCastingRequirementsId);
         });
 
         fillContainer(sSpellCategoriesStore, spellCategories, [&](WDB::Structures::SpellCategoriesEntry& entry, Row const& row)
         {
             entry.Category = row.i16(1);
-            entry.DmgClass = row.i8(2);             // DefenseType
+            entry.DmgClass = row.i8(2); // DefenseType
             entry.DispelType = row.i8(4);
-            entry.MechanicsType = row.i8(5);        // Mechanic
+            entry.MechanicsType = row.i8(5); // Mechanic
             entry.PreventionType = row.i32(6);
             entry.StartRecoveryCategory = row.i16(7);
             if (isBaseDifficulty(row))
-                linkSpell(row.parent(), row.id(), &WDB::Structures::SpellEntry::SpellCategoriesId);
+                linkSpell(row.parent(), row.id(), &WDB::Structures::SpellEntry::spellCategoriesId);
         });
 
         fillContainer(sSpellClassOptionsStore, spellClassOptions, [&](WDB::Structures::SpellClassOptionsEntry& entry, Row const& row)
         {
             for (uint32_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                entry.SpellFamilyFlags[i] = row.i32(3, i);  // SpellClassMask
-            entry.SpellFamilyName = row.i32(2);             // SpellClassSet
-            linkSpell(row.i32(0), row.id(), &WDB::Structures::SpellEntry::SpellClassOptionsId);
+                entry.SpellFamilyFlags[i] = row.i32(3, i); // SpellClassMask
+            entry.SpellFamilyName = row.i32(2); // SpellClassSet
+            linkSpell(row.i32(0), row.id(), &WDB::Structures::SpellEntry::spellClassOptionsId);
         });
 
         fillContainer(sSpellCooldownsStore, spellCooldowns, [&](WDB::Structures::SpellCooldownsEntry& entry, Row const& row)
@@ -1437,15 +1431,15 @@ namespace
             entry.RecoveryTime = row.i32(2);
             entry.StartRecoveryTime = row.i32(3);
             if (isBaseDifficulty(row))
-                linkSpell(row.parent(), row.id(), &WDB::Structures::SpellEntry::SpellCooldownsId);
+                linkSpell(row.parent(), row.id(), &WDB::Structures::SpellEntry::spellCooldownsId);
         });
 
         fillContainer(sSpellDurationStore, spellDuration, [](WDB::Structures::SpellDurationEntry& entry, Row const& row)
         {
             entry.ID = row.id();
-            entry.Duration1 = row.i32(0);       // Duration
-            entry.Duration2 = row.i32(1);       // MaxDuration
-            entry.Duration3 = row.i32(2);       // DurationPerResource
+            entry.Duration1 = row.i32(0); // Duration
+            entry.Duration2 = row.i32(1); // MaxDuration
+            entry.Duration3 = row.i32(2); // DurationPerResource
         });
 
         // Only the effects of the base difficulty are kept: the effect map holds one
@@ -1461,18 +1455,18 @@ namespace
 
                 entry->id = row.id();
                 entry->Effect = row.u32(3);
-                entry->EffectMultipleValue = row.f32(4);            // EffectAmplitude
-                entry->EffectApplyAuraName = row.i16(0);            // EffectAura
-                entry->EffectAmplitude = row.i32(6);                // EffectAuraPeriod
+                entry->EffectMultipleValue = row.f32(4); // EffectAmplitude
+                entry->EffectApplyAuraName = row.i16(0); // EffectAura
+                entry->EffectAmplitude = row.i32(6); // EffectAuraPeriod
                 entry->EffectBasePoints = static_cast<int32_t>(row.f32(22));
-                entry->EffectSpellPowerCoefficient = row.f32(7);    // EffectBonusCoefficient
-                entry->EffectDamageMultiplier = row.f32(18);        // Coefficient
+                entry->EffectSpellPowerCoefficient = row.f32(7); // EffectBonusCoefficient
+                entry->EffectDamageMultiplier = row.f32(18); // Coefficient
                 entry->EffectChainTarget = row.i32(9);
                 entry->EffectItemType = row.i32(10);
                 entry->EffectMechanic = row.i32(11);
                 entry->EffectMiscValue = row.i32(25, 0);
                 entry->EffectMiscValueB = row.i32(25, 1);
-                entry->EffectPointsPerComboPoint = row.f32(12);     // EffectPointsPerResource
+                entry->EffectPointsPerComboPoint = row.f32(12); // EffectPointsPerResource
                 entry->EffectRadiusIndex = row.u32(26, 0);
                 entry->EffectRadiusMaxIndex = row.u32(26, 1);
                 entry->EffectRealPointsPerLevel = row.f32(14);
@@ -1489,9 +1483,9 @@ namespace
         fillContainer(sSpellEquippedItemsStore, spellEquippedItems, [&](WDB::Structures::SpellEquippedItemsEntry& entry, Row const& row)
         {
             entry.EquippedItemClass = row.i32(1);
-            entry.EquippedItemInventoryTypeMask = row.i32(2);   // EquippedItemInvTypes
-            entry.EquippedItemSubClassMask = row.i32(3);        // EquippedItemSubclass
-            linkSpell(row.i32(0), row.id(), &WDB::Structures::SpellEntry::SpellEquippedItemsId);
+            entry.EquippedItemInventoryTypeMask = row.i32(2); // EquippedItemInvTypes
+            entry.EquippedItemSubClassMask = row.i32(3); // EquippedItemSubclass
+            linkSpell(row.i32(0), row.id(), &WDB::Structures::SpellEntry::spellEquippedItemsId);
         });
 
         fillContainer(sSpellInterruptsStore, spellInterrupts, [&](WDB::Structures::SpellInterruptsEntry& entry, Row const& row)
@@ -1500,7 +1494,7 @@ namespace
             entry.ChannelInterruptFlags = row.i32(3, 0);
             entry.InterruptFlags = row.i32(1);
             if (isBaseDifficulty(row))
-                linkSpell(row.parent(), row.id(), &WDB::Structures::SpellEntry::SpellInterruptsId);
+                linkSpell(row.parent(), row.id(), &WDB::Structures::SpellEntry::spellInterruptsId);
         });
 
         fillContainer(sSpellLevelsStore, spellLevels, [&](WDB::Structures::SpellLevelsEntry& entry, Row const& row)
@@ -1509,7 +1503,7 @@ namespace
             entry.maxLevel = row.i16(1);
             entry.spellLevel = row.i32(4);
             if (isBaseDifficulty(row))
-                linkSpell(row.parent(), row.id(), &WDB::Structures::SpellEntry::SpellLevelsId);
+                linkSpell(row.parent(), row.id(), &WDB::Structures::SpellEntry::spellLevelsId);
         });
 
         // The cast visual of a spell is a SpellXSpellVisual row the client resolves
@@ -1536,70 +1530,70 @@ namespace
         visualBySpell.reserve(spellXSpellVisual.getRecordCount());
         for (Row const row : rows(spellXSpellVisual))
         {
-            if (row.i16(1) != 0)                        // DifficultyID
+            if (row.i16(1) != 0) // DifficultyID
                 continue;
 
             bool const conditional = row.u16(8) != 0 || row.u32(9) != 0 || row.u16(10) != 0 || row.u32(11) != 0;
-            SpellVisual const visual{ row.id(), row.u32(2), row.i32(5), conditional };
+            SpellVisual const visual{row.id(), row.u32(2), row.i32(5), conditional};
             auto const [itr, inserted] = visualBySpell.try_emplace(row.parent(), visual);
             if (!inserted && visual.betterThan(itr->second))
                 itr->second = visual;
         }
 
-        fillContainer(sSpellMiscStore, spellMisc, [&](WDB::Structures::SpellMiscEntry& entry, Row const& row)
+        fillStore(sSpellMiscStore, spellMisc, [&](WDB::Structures::SpellMiscEntry& entry, Row const& row)
         {
-            entry.Id = row.id();
-            entry.SpellDifficultyId = row.i16(1);
+            entry.id = row.id();
+            entry.spellDifficultyId = row.i16(1);
             if (auto const visual = visualBySpell.find(row.parent()); visual != visualBySpell.end())
             {
-                entry.SpellVisual = visual->second.rowId;
-                entry.SpellVisual1 = visual->second.spellVisualId;
+                entry.spellVisual = visual->second.rowId;
+                entry.spellVisual1 = visual->second.spellVisualId;
             }
             uint32_t* const attributes[] = {
-                &entry.Attributes, &entry.AttributesEx, &entry.AttributesExB, &entry.AttributesExC, &entry.AttributesExD,
-                &entry.AttributesExE, &entry.AttributesExF, &entry.AttributesExG, &entry.AttributesExH, &entry.AttributesExI,
-                &entry.AttributesExJ, &entry.AttributesExK, &entry.AttributesExL, &entry.AttributesExM };
+                &entry.attributes, &entry.attributesEx, &entry.attributesExB, &entry.attributesExC, &entry.attributesExD,
+                &entry.attributesExE, &entry.attributesExF, &entry.attributesExG, &entry.attributesExH, &entry.attributesExI,
+                &entry.attributesExJ, &entry.attributesExK, &entry.attributesExL, &entry.attributesExM };
             for (uint32_t i = 0; i < std::size(attributes); ++i)
                 *attributes[i] = row.i32(0, i);
-            entry.CastingTimeIndex = row.u16(2);
-            entry.DurationIndex = row.u16(3);
+            entry.castingTimeIndex = row.u16(2);
+            entry.durationIndex = row.u16(3);
             entry.rangeIndex = row.u16(5);
             entry.speed = row.f32(7);
-            entry.spellIconID = row.i32(10);        // SpellIconFileDataID
-            entry.activeIconID = row.i32(11);       // ActiveIconFileDataID
-            entry.School = row.u8(6);               // SchoolMask
+            entry.spellIconId = row.i32(10); // SpellIconFileDataID
+            entry.activeIconId = row.i32(11); // ActiveIconFileDataID
+            entry.school = row.u8(6); // SchoolMask
             if (row.i16(1) == 0)
-                linkSpell(row.parent(), entry.Id, &WDB::Structures::SpellEntry::SpellMiscId);
+                linkSpell(row.parent(), entry.id, &WDB::Structures::SpellEntry::spellMiscId);
         });
 
-        fillContainer(sSpellPowerStore, spellPower, [](WDB::Structures::SpellPowerEntry& entry, Row const& row)
+        fillStore(sSpellPowerStore, spellPower, [](WDB::Structures::SpellPowerEntry& entry, Row const& row)
         {
             entry.spellId = row.parent();
             entry.powerType = static_cast<int32_t>(row.i8(11));
             entry.manaCost = row.i32(2);
-            entry.manaCostPerlevel = row.i32(3);
+            entry.manaCostPerLevel = row.i32(3);
             entry.manaPerSecond = row.i32(4);
-            entry.ManaCostPercentageFloat = row.f32(7);         // PowerCostPct
-            entry.ChannelCostPercentageFloat = row.f32(10);     // PowerPctPerSecond
-            entry.ShapeShiftSpellId = row.i32(12);              // RequiredAuraSpellID
+            entry.manaCostPercentageFloat = row.f32(7); // PowerCostPct
+            entry.channelCostPercentageFloat = row.f32(10); // PowerPctPerSecond
+            entry.shapeShiftSpellId = row.i32(12); // RequiredAuraSpellID
         });
 
         fillContainer(sSpellRadiusStore, spellRadius, [](WDB::Structures::SpellRadiusEntry& entry, Row const& row)
         {
             entry.ID = row.id();
-            entry.radius_min = row.f32(0);          // Radius, the value the dbc column held
+            entry.radius_min = row.f32(0); // Radius, the value the dbc column held
             entry.radius_per_level = row.f32(1);
             entry.radius_max = row.f32(3);
         });
 
-        fillContainer(sSpellRangeStore, spellRange, [](WDB::Structures::SpellRangeEntry& entry, Row const& row)
+        fillStore(sSpellRangeStore, spellRange, [](WDB::Structures::SpellRangeEntry& entry, Row const& row)
         {
-            entry.ID = row.id();
+            entry.id = row.id();
             entry.minRange = row.f32(3, 0);
             entry.minRangeFriendly = row.f32(3, 1);
             entry.maxRange = row.f32(4, 0);
             entry.maxRangeFriendly = row.f32(4, 1);
-            entry.range_type = row.i32(2);          // Flags
+            entry.rangeType = row.i32(2); // Flags
         });
 
         fillContainer(sSpellReagentsStore, spellReagents, [&](WDB::Structures::SpellReagentsEntry& entry, Row const& row)
@@ -1609,44 +1603,44 @@ namespace
                 entry.Reagent[i] = row.i32(1, i);
                 entry.ReagentCount[i] = row.i16(2, i);
             }
-            linkSpell(row.i32(0), row.id(), &WDB::Structures::SpellEntry::SpellReagentsId);
+            linkSpell(row.i32(0), row.id(), &WDB::Structures::SpellEntry::spellReagentsId);
         });
 
         // the scaling coefficients moved into SpellEffect, only the level range is left
         fillContainer(sSpellScalingStore, spellScaling, [&](WDB::Structures::SpellScalingEntry& entry, Row const& row)
         {
             entry.castScalingMaxLevel = row.u32(2);
-            linkSpell(row.i32(0), row.id(), &WDB::Structures::SpellEntry::SpellScalingId);
+            linkSpell(row.i32(0), row.id(), &WDB::Structures::SpellEntry::spellScalingId);
         });
 
         fillContainer(sSpellShapeshiftStore, spellShapeshift, [&](WDB::Structures::SpellShapeshiftEntry& entry, Row const& row)
         {
             entry.ShapeshiftsExcluded = row.i32(2, 0);
             entry.Shapeshifts = row.i32(3, 0);
-            linkSpell(row.i32(0), row.id(), &WDB::Structures::SpellEntry::SpellShapeshiftId);
+            linkSpell(row.i32(0), row.id(), &WDB::Structures::SpellEntry::spellShapeshiftId);
         });
 
-        fillContainer(sSpellShapeshiftFormStore, spellShapeshiftForm, [](WDB::Structures::SpellShapeshiftFormEntry& entry, Row const& row)
+        fillStore(sSpellShapeshiftFormStore, spellShapeshiftForm, [](WDB::Structures::SpellShapeshiftFormEntry& entry, Row const& row)
         {
             entry.id = row.id();
-            entry.Flags = row.i32(3);
-            entry.unit_type = row.u8(2);            // CreatureType
-            entry.AttackSpeed = row.i16(6);         // CombatRoundTime
-            entry.modelId = row.u32(1);             // CreatureDisplayID
+            entry.flags = row.i32(3);
+            entry.unitType = row.u8(2); // CreatureType
+            entry.attackSpeed = row.i16(6); // CombatRoundTime
+            entry.modelId = row.u32(1); // CreatureDisplayID
             entry.modelId2 = entry.modelId;
             for (uint32_t i = 0; i < std::size(entry.spells); ++i)
-                entry.spells[i] = row.u32(9, i);    // PresetSpellID
+                entry.spells[i] = row.u32(9, i); // PresetSpellID
         });
 
         fillContainer(sSpellTargetRestrictionsStore, spellTargetRestrictions, [&](WDB::Structures::SpellTargetRestrictionsEntry& entry, Row const& row)
         {
             entry.Id = row.id();
-            entry.MaxAffectedTargets = row.u8(2);   // MaxTargets
+            entry.MaxAffectedTargets = row.u8(2); // MaxTargets
             entry.MaxTargetLevel = row.u32(3);
             entry.TargetCreatureType = row.i16(4);
             entry.Targets = row.i32(5);
             if (isBaseDifficulty(row))
-                linkSpell(row.parent(), entry.Id, &WDB::Structures::SpellEntry::SpellTargetRestrictionsId);
+                linkSpell(row.parent(), entry.Id, &WDB::Structures::SpellEntry::spellTargetRestrictionsId);
         });
 
         fillContainer(sSpellTotemsStore, spellTotems, [&](WDB::Structures::SpellTotemsEntry& entry, Row const& row)
@@ -1655,25 +1649,25 @@ namespace
                 entry.TotemCategory[i] = row.u16(1, i);
             for (uint32_t i = 0; i < MAX_SPELL_TOTEMS; ++i)
                 entry.Totem[i] = row.i32(2, i);
-            linkSpell(row.i32(0), row.id(), &WDB::Structures::SpellEntry::SpellTotemsId);
+            linkSpell(row.i32(0), row.id(), &WDB::Structures::SpellEntry::spellTotemsId);
         });
 
-        fillContainer(sSpellItemEnchantmentStore, spellItemEnchantment, [](WDB::Structures::SpellItemEnchantmentEntry& entry, Row const& row)
+        fillStore(sSpellItemEnchantmentStore, spellItemEnchantment, [](WDB::Structures::SpellItemEnchantmentEntry& entry, Row const& row)
         {
-            entry.Id = row.id();
+            entry.id = row.id();
             for (uint32_t i = 0; i < MAX_ITEM_ENCHANTMENT_EFFECTS; ++i)
             {
-                entry.type[i] = row.i32(4, i);      // Effect
-                entry.min[i] = row.i32(5, i);       // EffectPointsMin
-                entry.spell[i] = row.u32(6, i);     // EffectArg
+                entry.type[i] = row.i32(4, i); // Effect
+                entry.min[i] = row.i32(5, i); // EffectPointsMin
+                entry.spell[i] = row.u32(6, i); // EffectArg
             }
-            entry.Name[0] = row.text(0);
-            entry.visual = row.u16(22);             // ItemVisual
-            entry.EnchantGroups = row.i32(7);       // Flags
-            entry.ench_condition = row.i32(11);     // ConditionID
-            entry.req_skill = row.i32(12);
-            entry.req_skill_value = row.i32(13);
-            entry.req_level = row.i32(14);          // MinLevel
+            entry.name = row.str(0);
+            entry.visual = row.u16(22); // ItemVisual
+            entry.enchantGroups = row.i32(7); // Flags
+            entry.enchantCondition = row.i32(11); // ConditionID
+            entry.reqSkill = row.i32(12);
+            entry.reqSkillValue = row.i32(13);
+            entry.reqLevel = row.i32(14); // MinLevel
         });
 
         // tables of the dbc era without a modern counterpart
@@ -1687,8 +1681,8 @@ namespace
         sGlyphSlotStore.clear();
 
         sLogger.info("DB2: spell stores ready (skills={}, skillAbilities={}, talents={}, spells={}, effects={}, spellMisc={}).",
-            skillLine.getRecordCount(), skillLineAbility.getRecordCount(), talent.getRecordCount(), spellName.getRecordCount(),
-            sSpellEffectStore.getNumRows(), spellMisc.getRecordCount());
+                     skillLine.getRecordCount(), skillLineAbility.getRecordCount(), talent.getRecordCount(), spellName.getRecordCount(),
+                     sSpellEffectStore.getNumRows(), spellMisc.getRecordCount());
         return true;
     }
 }
@@ -1700,8 +1694,8 @@ namespace
     {
         WDC5File species, breedState, speciesState, breedQuality;
         if (!loadTables(errors, dbcPath, {
-            { species, Layout::BattlePetSpecies }, { breedState, Layout::BattlePetBreedState },
-            { speciesState, Layout::BattlePetSpeciesState }, { breedQuality, Layout::BattlePetBreedQuality } }))
+                            {species, Layout::BattlePetSpecies}, {breedState, Layout::BattlePetBreedState},
+                            {speciesState, Layout::BattlePetSpeciesState}, {breedQuality, Layout::BattlePetBreedQuality} }))
             return false;
 
         fillContainer(sBattlePetSpeciesStore, species, [](WDB::Structures::BattlePetSpeciesEntry& entry, Row const& row)
@@ -1737,7 +1731,7 @@ namespace
         });
 
         sLogger.info("DB2: battle pet stores ready (species={}, breedStates={}, speciesStates={}).",
-            species.getRecordCount(), breedState.getRecordCount(), speciesState.getRecordCount());
+                     species.getRecordCount(), breedState.getRecordCount(), speciesState.getRecordCount());
         return true;
     }
 }
@@ -1750,9 +1744,7 @@ bool loadDb2Stores(WDB::StoreProblemList& errors, std::string const& dbcPath)
     sLogger.info("DB2: loading the client tables from {}", dbcPath);
 
     bool ok = true;
-    for (auto const load : { &loadCharacterStores, &loadCreatureStores, &loadWorldStores, &loadMiscStores, &loadItemStores, &loadSpellStores, &loadBattlePetStores })
+    for (auto const load : {&loadCharacterStores, &loadCreatureStores, &loadWorldStores, &loadMiscStores, &loadItemStores, &loadSpellStores, &loadBattlePetStores})
         ok = load(errors, dbcPath) && ok;
     return ok;
 }
-
-#endif

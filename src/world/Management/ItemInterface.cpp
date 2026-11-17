@@ -2666,16 +2666,16 @@ void ItemInterface::BuyItem(ItemProperties const* item, uint32_t total_amount, C
 
         if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC) && !WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
         {
-            if (m_pOwner->getHonorCurrency() >= (item_extended_cost->honor_points * total_amount))
+            if (m_pOwner->getHonorCurrency() >= (item_extended_cost->honorPoints * total_amount))
             {
-                m_pOwner->modHonorCurrency(-int32_t((item_extended_cost->honor_points * total_amount)));
-                m_pOwner->removeArenaPoints(item_extended_cost->honor_points * total_amount, true);
+                m_pOwner->modHonorCurrency(-int32_t((item_extended_cost->honorPoints * total_amount)));
+                m_pOwner->removeArenaPoints(item_extended_cost->honorPoints * total_amount, true);
             }
 
-            if (m_pOwner->getArenaCurrency() >= item_extended_cost->arena_points * total_amount)
+            if (m_pOwner->getArenaCurrency() >= item_extended_cost->arenaPoints * total_amount)
             {
-                m_pOwner->modArenaCurrency(-int32_t(item_extended_cost->arena_points * total_amount));
-                m_pOwner->removeArenaPoints(item_extended_cost->arena_points * total_amount, true);
+                m_pOwner->modArenaCurrency(-int32_t(item_extended_cost->arenaPoints * total_amount));
+                m_pOwner->removeArenaPoints(item_extended_cost->arenaPoints * total_amount, true);
             }
         }
     }
@@ -2697,14 +2697,14 @@ int8_t ItemInterface::CanAffordItem(ItemProperties const* item, uint32_t amount,
 
         if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC) && !WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
         {
-            if (m_pOwner->getHonorCurrency() < (item_extended_cost->honor_points * amount))
+            if (m_pOwner->getHonorCurrency() < (item_extended_cost->honorPoints * amount))
                 return INV_ERR_NOT_ENOUGH_HONOR_POINTS;
 
-            if (m_pOwner->getArenaCurrency() < item_extended_cost->arena_points * amount)
+            if (m_pOwner->getArenaCurrency() < item_extended_cost->arenaPoints * amount)
                 return INV_ERR_NOT_ENOUGH_ARENA_POINTS;
         }
 
-        if (m_pOwner->getMaxPersonalRating() < item_extended_cost->personalrating)
+        if (m_pOwner->getMaxPersonalRating() < item_extended_cost->personalRating)
             return INV_ERR_PERSONAL_ARENA_RATING_TOO_LOW;
     }
 

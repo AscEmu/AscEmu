@@ -4328,7 +4328,7 @@ bool Player::isInDisallowedMountForm() const
         if (!shapeshift)
             return true;
 
-        if (!(shapeshift->Flags & 0x1))
+        if (!(shapeshift->flags & 0x1))
             return true;
     }
 
@@ -6111,7 +6111,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     if (talentInfo->playerClass != getClass())
         return;
 
-    if (talentInfo->Row > maxTalentRow)
+    if (talentInfo->row > maxTalentRow)
         return;
 
     // Check if player has already a spell in column
@@ -6119,12 +6119,12 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     {
         if (auto talent = sTalentStore.lookupEntry(i))
         {
-            if (talentInfo->Row == talent->Row && hasSpell(talent->SpellId))
+            if (talentInfo->row == talent->row && hasSpell(talent->spellId))
                 return;
         }
     }
 
-    uint32_t spellId = talentInfo->SpellId;
+    uint32_t spellId = talentInfo->spellId;
     if (spellId == 0)
         return;
 
@@ -6153,28 +6153,28 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     if (talentInfo == nullptr)
         return;
 
-    if (sSpellMgr.isSpellDisabled(talentInfo->RankID[talentRank]))
+    if (sSpellMgr.isSpellDisabled(talentInfo->rankId[talentRank]))
     {
         if (IsInWorld())
-            sendCastFailedPacket(talentInfo->RankID[talentRank], SPELL_FAILED_SPELL_UNAVAILABLE, 0, 0);
+            sendCastFailedPacket(talentInfo->rankId[talentRank], SPELL_FAILED_SPELL_UNAVAILABLE, 0, 0);
         return;
     }
 
     // Check if player already has the talent with same or higher rank
     for (auto i = talentRank; i <= 4; ++i)
     {
-        if (talentInfo->RankID[i] != 0 && hasSpell(talentInfo->RankID[i]))
+        if (talentInfo->rankId[i] != 0 && hasSpell(talentInfo->rankId[i]))
             return;
     }
 
     // Check if talent tree is for player's class
-    auto talentTreeInfo = sTalentTabStore.lookupEntry(talentInfo->TalentTree);
+    auto talentTreeInfo = sTalentTabStore.lookupEntry(talentInfo->talentTree);
     if (talentTreeInfo == nullptr || !(getClassMask() & talentTreeInfo->ClassMask))
         return;
 
 #if VERSION_STRING >= Cata
     // Check if enough talent points are spent in the primary talent tree before unlocking other trees
-    if (talentInfo->TalentTree != m_FirstTalentTreeLock && m_FirstTalentTreeLock != 0)
+    if (talentInfo->talentTree != m_FirstTalentTreeLock && m_FirstTalentTreeLock != 0)
     {
         auto pointsUsed = 0;
         for (const auto& rank : getActiveSpec().getTalents() | std::views::values)
@@ -6189,17 +6189,17 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
 #endif
 
     // Check if talent requires another talent
-    if (talentInfo->DependsOn > 0)
+    if (talentInfo->dependsOn > 0)
     {
-        auto dependsOnTalent = sTalentStore.lookupEntry(talentInfo->DependsOn);
+        auto dependsOnTalent = sTalentStore.lookupEntry(talentInfo->dependsOn);
         if (dependsOnTalent != nullptr)
         {
             auto hasEnoughRank = false;
             for (auto i = 0; i <= 4; ++i)
             {
-                if (dependsOnTalent->RankID[i] != 0)
+                if (dependsOnTalent->rankId[i] != 0)
                 {
-                    if (hasSpell(dependsOnTalent->RankID[i]))
+                    if (hasSpell(dependsOnTalent->rankId[i]))
                     {
                         hasEnoughRank = true;
                         break;
@@ -6211,7 +6211,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
         }
     }
 
-    auto spellId = talentInfo->RankID[talentRank];
+    auto spellId = talentInfo->rankId[talentRank];
     if (spellId == 0)
     {
         sLogger.info("Player::learnTalent: Player tried to learn talent {} (rank {}) but talent's spell id is 0.", talentId, talentRank);
@@ -6220,7 +6220,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
 
     // Check can player yet access this talent
     uint32_t spentPoints = 0;
-    if (talentInfo->Row > 0)
+    if (talentInfo->row > 0)
     {
         // Loop through player's talents
         for (const auto& [talent, rank] : getActiveSpec().getTalents())
@@ -6229,13 +6229,13 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
             if (tmpTalent == nullptr)
                 continue;
             // Skip talents from other trees
-            if (tmpTalent->TalentTree != talentInfo->TalentTree)
+            if (tmpTalent->talentTree != talentInfo->talentTree)
                 continue;
             spentPoints += rank + 1;
         }
     }
 
-    if (spentPoints < (talentInfo->Row * 5))
+    if (spentPoints < (talentInfo->row * 5))
         return;
 
     // Get current talent rank
@@ -6243,12 +6243,12 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     auto isMultiRankTalent = false;
     for (int8_t _talentRank = 4; _talentRank >= 0; --_talentRank)
     {
-        if (talentInfo->RankID[_talentRank] != 0)
+        if (talentInfo->rankId[_talentRank] != 0)
         {
             if (_talentRank > 0)
                 isMultiRankTalent = true;
 
-            if (hasSpell(talentInfo->RankID[_talentRank]))
+            if (hasSpell(talentInfo->rankId[_talentRank]))
             {
                 curTalentRank = _talentRank + 1;
                 break;
@@ -6279,7 +6279,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     // Set primary talent tree and lock others
     if (m_FirstTalentTreeLock == 0)
     {
-        m_FirstTalentTreeLock = talentInfo->TalentTree;
+        m_FirstTalentTreeLock = talentInfo->talentTree;
         // TODO: learning Mastery and spec spells
         // also need to handle them in talent reset
     }
@@ -6350,7 +6350,7 @@ void Player::resetTalents()
     for (const auto& [talentId, rank] : getActiveSpec().getTalents())
     {
         if (const auto* tmpTalent = sTalentStore.lookupEntry(talentId))
-            _removeSpell(tmpTalent->RankID[rank], false, false, true, true);
+            _removeSpell(tmpTalent->rankId[rank], false, false, true, true);
     }
 
     // Unsummon current pet or set temporarily unsummoned pet offline
@@ -6581,7 +6581,7 @@ void Player::activateTalentSpec([[maybe_unused]]uint8_t specId)
     {
         const auto talentInfo = sTalentStore.lookupEntry(talentId);
         if (talentInfo != nullptr)
-            _removeSpell(talentInfo->RankID[rank], true, false, true, true);
+            _removeSpell(talentInfo->rankId[rank], true, false, true, true);
     }
 
     m_talentActiveSpec = specId;
@@ -6605,14 +6605,14 @@ void Player::activateTalentSpec([[maybe_unused]]uint8_t specId)
         {
             for (uint8_t talentRank = 1; talentRank < 5; ++talentRank)
             {
-                if (talentInfo->RankID[talentRank] != 0)
+                if (talentInfo->rankId[talentRank] != 0)
                 {
                     isSingleRankTalent = false;
                     break;
                 }
             }
         }
-        _addSpell(talentInfo->RankID[rank], 0, !isSingleRankTalent);
+        _addSpell(talentInfo->rankId[rank], 0, !isSingleRankTalent);
     }
 
     // Set action buttons from new spec
@@ -11103,7 +11103,7 @@ bool Player::activateTaxiPathTo(uint32_t taxi_path_id, Creature* npc)
 
 void Player::cleanupAfterTaxiFlight()
 {
-    m_taxi->clearTaxiDestinations();        // not destinations, clear source node
+    m_taxi->clearTaxiDestinations(); // not destinations, clear source node
     dismount();
     removeUnitFlags(UNIT_FLAG_LOCK_PLAYER | UNIT_FLAG_MOUNTED_TAXI);
 }
@@ -11125,7 +11125,6 @@ void Player::continueTaxiFlight() const
 
     TaxiPathNodeList const& nodeList = sTaxiPathNodesByPath[path];
 
-    float distPrev;
     float distNext = getExactDistSq(nodeList[0]->x, nodeList[0]->y, nodeList[0]->z);
 
     for (uint32_t i = 1; i < nodeList.size(); ++i)
@@ -11134,10 +11133,10 @@ void Player::continueTaxiFlight() const
         WDB::Structures::TaxiPathNodeEntry const* prevNode = nodeList[i - 1];
 
         // skip nodes at another map
-        if (node->mapid != GetMapId())
+        if (node->mapId != GetMapId())
             continue;
 
-        distPrev = distNext;
+        float distPrev = distNext;
 
         distNext = getExactDistSq(node->x, node->y, node->z);
 

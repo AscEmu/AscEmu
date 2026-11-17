@@ -3436,7 +3436,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
         if (p_caster->getShapeShiftForm() != FORM_NORMAL)
         {
             const auto shapeShift = sSpellShapeshiftFormStore.lookupEntry(p_caster->getShapeShiftForm());
-            if (shapeShift != nullptr && !(shapeShift->Flags & 1))
+            if (shapeShift != nullptr && !(shapeShift->flags & 1))
             {
                 if (!(i_caster->getItemProperties()->Flags & ITEM_FLAG_SHAPESHIFT_OK))
                     return SPELL_FAILED_NO_ITEMS_WHILE_SHAPESHIFTED;
@@ -4347,7 +4347,7 @@ SpellCastResult Spell::checkRange(const bool secondCheck)
     }
 
     float_t minRange = 0.0f, maxRange = 0.0f, rangeMod = 0.0f;
-    if (rangeEntry->range_type & SPELL_RANGE_TYPE_MASK_MELEE)
+    if (rangeEntry->rangeType & SPELL_RANGE_TYPE_MASK_MELEE)
     {
         if (u_caster != nullptr)
         {
@@ -4359,7 +4359,7 @@ SpellCastResult Spell::checkRange(const bool secondCheck)
     }
     else
     {
-        if (u_caster != nullptr && rangeEntry->range_type & SPELL_RANGE_TYPE_MASK_RANGED)
+        if (u_caster != nullptr && rangeEntry->rangeType & SPELL_RANGE_TYPE_MASK_RANGED)
         {
             // Use caster's combat reach if target is not found
             const float_t combatReach = targetUnit != nullptr ? targetUnit->getCombatReach() : u_caster->getCombatReach();
@@ -4392,7 +4392,7 @@ SpellCastResult Spell::checkRange(const bool secondCheck)
         {
             const float_t combatReach = targetUnit != nullptr ? targetUnit->getCombatReach() : u_caster->getCombatReach();
             rangeMod = u_caster->getCombatReach() + combatReach;
-            if (minRange > 0.0f && !(rangeEntry->range_type & SPELL_RANGE_TYPE_MASK_RANGED))
+            if (minRange > 0.0f && !(rangeEntry->rangeType & SPELL_RANGE_TYPE_MASK_RANGED))
                 minRange += rangeMod;
         }
     }
@@ -4403,7 +4403,7 @@ SpellCastResult Spell::checkRange(const bool secondCheck)
     {
         // Leeway mechanic also depends on target - target also needs to be moving (again, walking is not accounted)
         if (targetUnit != nullptr && targetUnit->hasUnitMovementFlag(MOVEFLAG_MOVING_MASK) && !targetUnit->hasUnitMovementFlag(MOVEFLAG_WALK)
-            && (rangeEntry->range_type & SPELL_RANGE_TYPE_MASK_MELEE || targetUnit->isPlayer()))
+            && (rangeEntry->rangeType & SPELL_RANGE_TYPE_MASK_MELEE || targetUnit->isPlayer()))
             rangeMod += 8.0f / 3.0f; // 2.6666... yards
     }
 
@@ -4516,19 +4516,19 @@ SpellCastResult Spell::checkShapeshift(SpellInfo const* spellInfo, const uint32_
     const auto talentInfo = sTalentStore.lookupEntry(spellInfo->getId());
     if (talentInfo != nullptr)
     {
-#if VERSION_STRING >= Mop
-        for (uint8_t i = 0; i < 1; ++i)
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
         {
-            if (talentInfo->SpellId != 0)
-                talentRank = i + 1U;
+            if (talentInfo->spellId != 0)
+                talentRank = 1;
         }
-#else
-        for (uint8_t i = 0; i < 5; ++i)
+        else
         {
-            if (talentInfo->RankID[i] != 0)
-                talentRank = i + 1U;
+            for (uint8_t i = 0; i < 5; ++i)
+            {
+                if (talentInfo->rankId[i] != 0)
+                    talentRank = i + 1U;
+            }
         }
-#endif
     }
 
     // This is client-side only
@@ -4537,11 +4537,11 @@ SpellCastResult Spell::checkShapeshift(SpellInfo const* spellInfo, const uint32_
 
     const uint32_t stanceMask = shapeshiftForm ? 1 << (shapeshiftForm - 1U) : 0U;
 
-    // Cannot explicitly be casted in this stance/form
+    // Cannot explicitly be cast in this stance/form
     if (spellInfo->getShapeshiftExclude() > 0 && spellInfo->getShapeshiftExclude() & stanceMask)
         return SPELL_FAILED_NOT_SHAPESHIFT;
 
-    // Can explicitly be casted in this stance/form
+    // Can explicitly be cast in this stance/form
     if (spellInfo->getRequiredShapeShift() > 0 && spellInfo->getRequiredShapeShift() & stanceMask)
         return SPELL_CAST_SUCCESS;
 
@@ -4556,16 +4556,17 @@ SpellCastResult Spell::checkShapeshift(SpellInfo const* spellInfo, const uint32_
         }
 
         // Check if shapeshift acts as normal form for spells
-        actAsShifted = !(shapeShift->Flags & 1);
+        actAsShifted = !(shapeShift->flags & 1);
     }
 
     if (actAsShifted)
     {
-        // Cannot be casted while shapeshifted
+        // Cannot be cast while shapeshifted
         if (spellInfo->getAttributes() & ATTRIBUTES_NOT_SHAPESHIFT)
             return SPELL_FAILED_NOT_SHAPESHIFT;
+
         // Needs another shapeshift form
-        else if (spellInfo->getRequiredShapeShift() != 0)
+        if (spellInfo->getRequiredShapeShift() != 0)
             return SPELL_FAILED_ONLY_SHAPESHIFT;
     }
     else

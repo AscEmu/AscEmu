@@ -209,25 +209,20 @@ void MySQLDataStore::loadSkillLinesTable()
         return;
     }
 
-    sSkillLineStore.extendManualEntries(result->fetch()[0].asUint32(), result->getRowCount());
-
     uint32_t count = 0;
     do
     {
         Field* fields = result->fetch();
         const auto id = fields[0].asUint32();
 
-        if (sSkillLineStore.lookupEntry(id) == nullptr)
+        if (auto [it, inserted] = sSkillLineStore.try_emplace(id); inserted)
         {
-            auto* entry = sSkillLineStore.addManualEntry(id);
-            if (entry == nullptr)
-                continue;
+            auto& entry = it->second;
+            entry.id = id;
+            entry.type = fields[1].asUint32();
 
-            entry->id = id;
-            entry->type = fields[1].asUint32();
-
-            char* name = pooledSkillLineName(fields[3].asCString());
-            for (auto& localeName : entry->Name)
+            const std::string_view name = fields[3].asCString();
+            for (auto& localeName : entry.name)
                 localeName = name;
 
             ++count;

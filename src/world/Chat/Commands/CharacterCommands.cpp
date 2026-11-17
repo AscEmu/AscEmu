@@ -1857,7 +1857,7 @@ bool ChatCommandHandler::HandleCharListSkillsCommand(const char* /*args*/, World
 
     blueSystemMessage(m_session, "===== {} has skills =====", player_target->getName());
 
-    for (uint32_t skillId32 = 0; skillId32 <= SkillNameManager->maxskill; skillId32++)
+    for (uint32_t skillId32 = 0; skillId32 <= SkillNameManager->maxSkill; skillId32++)
     {
         const auto SkillId = static_cast<uint16_t>(skillId32);
         if (player_target->hasSkillLine(SkillId))

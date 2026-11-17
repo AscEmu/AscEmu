@@ -446,6 +446,23 @@ namespace WDB
     };
 
     template <>
+    struct DbcTraits<Structures::ItemExtendedCostEntry> :
+        DbcVersionLayouts<
+            UnsupportedVersion,
+            Structures::Raw::ItemExtendedCostEntryTbc,
+            Structures::Raw::ItemExtendedCostEntryWotlk,
+            Structures::Raw::ItemExtendedCostEntryCataMop,
+            Structures::Raw::ItemExtendedCostEntryCataMop>
+    {
+        [[nodiscard]] static constexpr std::string_view getFilename(WoW::Expansion expansion) noexcept
+        {
+            if (expansion >= WoW::Expansion::_Cata)
+                return "ItemExtendedCost.db2";
+            return "ItemExtendedCost.dbc";
+        }
+    };
+
+    template <>
     struct DbcTraits<Structures::ItemLimitCategoryEntry> :
         DbcVersionLayouts<
             UnsupportedVersion,
@@ -465,6 +482,17 @@ namespace WDB
             Structures::Raw::ItemSetEntryCata,
             Structures::Raw::ItemSetEntryMop>,
         StandardDbcFile<"ItemSet">
+    {};
+
+    template <>
+    struct DbcTraits<Structures::MailTemplateEntry> :
+        DbcVersionLayouts<
+            Structures::Raw::MailTemplateEntryClassic,
+            Structures::Raw::MailTemplateEntryTbcWotlkCataMop,
+            Structures::Raw::MailTemplateEntryTbcWotlkCataMop,
+            Structures::Raw::MailTemplateEntryTbcWotlkCataMop,
+            Structures::Raw::MailTemplateEntryTbcWotlkCataMop>,
+        StandardDbcFile<"MailTemplate">
     {};
 
     template <>
@@ -490,6 +518,39 @@ namespace WDB
     {};
 
     template <>
+    struct DbcTraits<Structures::SkillLineEntry> :
+        DbcVersionLayouts<
+            Structures::Raw::SkillLineEntryClassic,
+            Structures::Raw::SkillLineEntryTbc,
+            Structures::Raw::SkillLineEntryWotlk,
+            Structures::Raw::SkillLineEntryCataMop,
+            Structures::Raw::SkillLineEntryCataMop>,
+        StandardDbcFile<"SkillLine">
+    {};
+
+    template <>
+    struct DbcTraits<Structures::SpellEntry> :
+        DbcVersionLayouts<
+            Structures::Raw::SpellEntryClassic,
+            Structures::Raw::SpellEntryTbc,
+            Structures::Raw::SpellEntryWotlk,
+            Structures::Raw::SpellEntryCata,
+            Structures::Raw::SpellEntryMop>,
+        StandardDbcFile<"Spell">
+    {};
+
+    template <>
+    struct DbcTraits<Structures::SpellAuraOptionsEntry> :
+        DbcVersionLayouts<
+            UnsupportedVersion,
+            UnsupportedVersion,
+            UnsupportedVersion,
+            Structures::Raw::SpellAuraOptionsEntryCata,
+            Structures::Raw::SpellAuraOptionsEntryMop>,
+        StandardDbcFile<"SpellAuraOptions">
+    {};
+
+    template <>
     struct DbcTraits<Structures::SpellItemEnchantmentEntry> :
         DbcVersionLayouts<
             Structures::Raw::SpellItemEnchantmentEntryClassic,
@@ -498,6 +559,50 @@ namespace WDB
             Structures::Raw::SpellItemEnchantmentEntryCata,
             Structures::Raw::SpellItemEnchantmentEntryMop>,
         StandardDbcFile<"SpellItemEnchantment">
+    {};
+
+    template <>
+    struct DbcTraits<Structures::SpellMiscEntry> :
+        DbcVersionLayouts<
+            UnsupportedVersion,
+            UnsupportedVersion,
+            UnsupportedVersion,
+            UnsupportedVersion,
+            Structures::Raw::SpellMiscEntryMop>,
+        StandardDbcFile<"SpellMisc">
+    {};
+
+    template <>
+    struct DbcTraits<Structures::SpellPowerEntry> :
+        DbcVersionLayouts<
+            UnsupportedVersion,
+            UnsupportedVersion,
+            UnsupportedVersion,
+            Structures::Raw::SpellPowerEntryCata,
+            Structures::Raw::SpellPowerEntryMop>,
+        StandardDbcFile<"SpellPower">
+    {};
+
+    template <>
+    struct DbcTraits<Structures::SpellRangeEntry> :
+        DbcVersionLayouts<
+            Structures::Raw::SpellRangeEntryClassicTbc,
+            Structures::Raw::SpellRangeEntryClassicTbc,
+            Structures::Raw::SpellRangeEntryWotlkCataMop,
+            Structures::Raw::SpellRangeEntryWotlkCataMop,
+            Structures::Raw::SpellRangeEntryWotlkCataMop>,
+        StandardDbcFile<"SpellRange">
+    {};
+
+    template <>
+    struct DbcTraits<Structures::SpellShapeshiftFormEntry> :
+        DbcVersionLayouts<
+            Structures::Raw::SpellShapeshiftFormEntryClassic,
+            Structures::Raw::SpellShapeshiftFormEntryTbcWotlkCataMop,
+            Structures::Raw::SpellShapeshiftFormEntryTbcWotlkCataMop,
+            Structures::Raw::SpellShapeshiftFormEntryTbcWotlkCataMop,
+            Structures::Raw::SpellShapeshiftFormEntryTbcWotlkCataMop>,
+        StandardDbcFile<"SpellShapeshiftForm">
     {};
 
     template <>
@@ -512,6 +617,17 @@ namespace WDB
     {};
 
     template <>
+    struct DbcTraits<Structures::TalentEntry> :
+        DbcVersionLayouts<
+            Structures::Raw::TalentEntryClassicTbcWotlkCata,
+            Structures::Raw::TalentEntryClassicTbcWotlkCata,
+            Structures::Raw::TalentEntryClassicTbcWotlkCata,
+            Structures::Raw::TalentEntryClassicTbcWotlkCata,
+            Structures::Raw::TalentEntryMop>,
+        StandardDbcFile<"Talent">
+    {};
+
+    template <>
     struct DbcTraits<Structures::TaxiNodesEntry> :
         DbcVersionLayouts<
             Structures::Raw::TaxiNodesEntryClassic,
@@ -520,6 +636,17 @@ namespace WDB
             Structures::Raw::TaxiNodesEntryCata,
             Structures::Raw::TaxiNodesEntryMop>,
         StandardDbcFile<"TaxiNodes">
+    {};
+
+    template <>
+    struct DbcTraits<Structures::TaxiPathNodeEntry> :
+        DbcVersionLayouts<
+            Structures::Raw::TaxiPathNodeEntryClassic,
+            Structures::Raw::TaxiPathNodeEntryTbcWotlkCataMop,
+            Structures::Raw::TaxiPathNodeEntryTbcWotlkCataMop,
+            Structures::Raw::TaxiPathNodeEntryTbcWotlkCataMop,
+            Structures::Raw::TaxiPathNodeEntryTbcWotlkCataMop>,
+        StandardDbcFile<"TaxiPathNode">
     {};
 
     template <>

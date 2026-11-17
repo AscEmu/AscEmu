@@ -603,14 +603,14 @@ void WorldSession::handlePetLearnTalent([[maybe_unused]] WorldPacket& recvPacket
     if (talent == nullptr)
         return;
 
-    if (talent->DependsOn > 0)
+    if (talent->dependsOn > 0)
     {
-        const auto depends_talent = sTalentStore.lookupEntry(talent->DependsOn);
+        const auto depends_talent = sTalentStore.lookupEntry(talent->dependsOn);
         if (depends_talent == nullptr)
             return;
 
         bool req_ok = false;
-        for (unsigned int i : depends_talent->RankID)
+        for (unsigned int i : depends_talent->rankId)
         {
             if (i != 0)
             {
@@ -625,10 +625,10 @@ void WorldSession::handlePetLearnTalent([[maybe_unused]] WorldPacket& recvPacket
             return;
     }
 
-    if (pet->getSpentTalentPoints() < (talent->Row * 3))
+    if (pet->getSpentTalentPoints() < (talent->row * 3))
         return;
 
-    const auto spellInfo = sSpellMgr.getSpellInfo(talent->RankID[srlPacket.talentCol]);
+    const auto spellInfo = sSpellMgr.getSpellInfo(talent->rankId[srlPacket.talentCol]);
     if (spellInfo != nullptr)
     {
         pet->addSpell(spellInfo);
@@ -659,14 +659,14 @@ void WorldSession::handlePetLearnTalent([[maybe_unused]] WorldPacket& recvPacket
     if (talentEntry == nullptr)
         return;
 
-    if (talentEntry->DependsOn > 0)
+    if (talentEntry->dependsOn > 0)
     {
-        WDB::Structures::TalentEntry const* depends_talent = sTalentStore.lookupEntry(talentEntry->DependsOn);
+        WDB::Structures::TalentEntry const* depends_talent = sTalentStore.lookupEntry(talentEntry->dependsOn);
         if (depends_talent == nullptr)
             return;
 
         bool req_ok = false;
-        for (unsigned int i : depends_talent->RankID)
+        for (unsigned int i : depends_talent->rankId)
         {
             if (i != 0)
             {
@@ -681,10 +681,10 @@ void WorldSession::handlePetLearnTalent([[maybe_unused]] WorldPacket& recvPacket
             return;
     }
 
-    if (pet->getSpentTalentPoints() < (talentEntry->Row * 3))
+    if (pet->getSpentTalentPoints() < (talentEntry->row * 3))
         return;
 
-    const auto spellInfo = sSpellMgr.getSpellInfo(talentEntry->RankID[srlPacket.talentCol]);
+    const auto spellInfo = sSpellMgr.getSpellInfo(talentEntry->rankId[srlPacket.talentCol]);
     if (spellInfo != nullptr)
     {
         pet->addSpell(spellInfo);

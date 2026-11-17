@@ -66,6 +66,7 @@ public:
     inline void resize(unsigned int sz) { i_nodes.resize(sz); }
     inline void clear(void) { i_nodes.clear(); }
     inline PathNode* getNodes(void) { return &i_nodes[0]; }
+
     float getTotalLength(void)
     {
         float len = 0, xd, yd, zd;
@@ -79,8 +80,8 @@ public:
         return len;
     }
 
-    PathNode & operator[](const unsigned int idx) { return i_nodes[idx]; }
-    const PathNode & operator()(const unsigned int idx) const { return i_nodes[idx]; }
+    PathNode& operator[](const unsigned int idx) { return i_nodes[idx]; }
+    const PathNode& operator()(const unsigned int idx) const { return i_nodes[idx]; }
 
 protected:
     std::vector<PathNode> i_nodes;

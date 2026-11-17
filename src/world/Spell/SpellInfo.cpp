@@ -96,11 +96,9 @@ SpellInfo::SpellInfo()
         EffectPointsPerComboPoint[i] = 0.0f;
         for (uint8_t u = 0; u < MAX_SPELL_EFFECTS; ++u)
             EffectSpellClassMask[i][u] = 0;
-#if VERSION_STRING >= Cata
         EffectRadiusMaxIndex[i] = 0;
         EffectSpellId[i] = 0;
         EffectIndex[i] = 0;
-#endif
         SpellFamilyFlags[i] = 0;
         EffectDamageMultiplier[i] = 0.0f;
         EffectSpellPowerCoefficient[i] = 0.0f;
@@ -109,11 +107,9 @@ SpellInfo::SpellInfo()
     for (uint8_t i = 0; i < 2; ++i)
         SpellVisual[i] = 0;
 
-#if VERSION_STRING > Classic
     for (uint8_t i = 0; i < MAX_SPELL_TOTEM_CATEGORIES; ++i)
         TotemCategory[i] = 0;
-#endif
-    
+
     // Custom values
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
         EffectCustomFlag[i] = 0;
@@ -1713,7 +1709,6 @@ float SpellInfo::getEffectDamageMultiplier(uint8_t idx) const
     return EffectDamageMultiplier[idx];
 }
 
-#if VERSION_STRING > Classic
 uint32_t SpellInfo::getTotemCategory(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_TOTEM_CATEGORIES)
@@ -1724,7 +1719,6 @@ uint32_t SpellInfo::getTotemCategory(uint8_t idx) const
 
     return TotemCategory[idx];
 }
-#endif
 
 float SpellInfo::getEffectSpellPowerCoefficient(uint8_t idx) const
 {
@@ -2001,7 +1995,6 @@ void SpellInfo::setEffectDamageMultiplier(float dmgMultiplier, uint8_t idx)     
     EffectDamageMultiplier[idx] = dmgMultiplier;
 }
 
-#if VERSION_STRING > Classic
 void SpellInfo::setTotemCategory(uint32_t category, uint8_t idx)
 {
     if (idx >= MAX_SPELL_TOTEM_CATEGORIES)
@@ -2012,7 +2005,6 @@ void SpellInfo::setTotemCategory(uint32_t category, uint8_t idx)
 
     TotemCategory[idx] = category;
 }
-#endif
 
 void SpellInfo::setEffectSpellPowerCoefficient(float value, uint8_t idx)
 {
@@ -2025,7 +2017,6 @@ void SpellInfo::setEffectSpellPowerCoefficient(float value, uint8_t idx)
     EffectSpellPowerCoefficient[idx] = value;
 }
 
-#if VERSION_STRING >= Cata
 void SpellInfo::setEffectRadiusMaxIndex(uint32_t value, uint8_t idx)
 {
     if (idx >= MAX_SPELL_EFFECTS)
@@ -2058,4 +2049,3 @@ void SpellInfo::setEffectIndex(uint32_t value, uint8_t idx)
 
     EffectIndex[idx] = value;
 }
-#endif

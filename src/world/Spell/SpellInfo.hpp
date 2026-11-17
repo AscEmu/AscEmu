@@ -285,9 +285,7 @@ public:
 
     float getEffectDamageMultiplier(uint8_t idx) const;
 
-#if VERSION_STRING > Classic
     uint32_t getTotemCategory(uint8_t idx) const;
-#endif
 
     int32_t getRequiresAreaId() const { return AreaGroupId; }
     uint32_t getSchoolMask() const { return SchoolMask; }
@@ -406,9 +404,9 @@ private:
     void setEffectItemType(uint32_t itemEntryId, uint8_t idx);
     void setEffectMiscValue(int32_t misc, uint8_t idx); // used in HackFixes.cpp / ObjectMgr.cpp
     void setEffectMiscValueB(int32_t miscB, uint8_t idx);
-    void setEffectTriggerSpell(uint32_t spell, uint8_t idx);    // used in ObjectMgr.cpp
+    void setEffectTriggerSpell(uint32_t spell, uint8_t idx); // used in ObjectMgr.cpp
     void setEffectPointsPerComboPoint(float effectPoints, uint8_t idx); // used in HackFixes.cpp
-    void setEffectSpellClassMask(uint32_t spellClass, uint8_t idx1, uint8_t idx2);  // used in HackFixes.cpp
+    void setEffectSpellClassMask(uint32_t spellClass, uint8_t idx1, uint8_t idx2); // used in HackFixes.cpp
 
     void setSpellVisual(uint8_t visualIndex, uint32_t value) { SpellVisual[visualIndex] = value; }
     void setSpellIconID(uint32_t value) { spellIconID = value; }
@@ -430,9 +428,7 @@ private:
 
     void setEffectDamageMultiplier(float dmgMultiplier, uint8_t idx); // used in HackFixes.cpp
 
-#if VERSION_STRING > Classic
     void setTotemCategory(uint32_t category, uint8_t idx);
-#endif
 
     void setRequiresAreaId(int32_t value) { AreaGroupId = value; }
     void setSchoolMask(uint32_t value) { SchoolMask = value; } // used in HackFixes.cpp
@@ -444,13 +440,11 @@ private:
 
     void setAttackPowerCoefficient(float value) { AttackPowerCoefficient = value; }
 
-#if VERSION_STRING >= Cata
     void setEffectRadiusMaxIndex(uint32_t value, uint8_t idx);
 
     void setEffectSpellId(uint32_t value, uint8_t idx);
 
     void setEffectIndex(uint32_t value, uint8_t idx);
-#endif
 
     void setSpellRankData(SpellRankInfo rankData) { m_spellRankInfo = rankData; }
 
@@ -552,11 +546,10 @@ private:
     uint32_t EffectTriggerSpell[MAX_SPELL_EFFECTS];
     float EffectPointsPerComboPoint[MAX_SPELL_EFFECTS];
     uint32_t EffectSpellClassMask[MAX_SPELL_EFFECTS][3];
-#if VERSION_STRING >= Cata
     uint32_t EffectRadiusMaxIndex[MAX_SPELL_EFFECTS];
     uint32_t EffectSpellId[MAX_SPELL_EFFECTS];
     uint32_t EffectIndex[MAX_SPELL_EFFECTS];
-#endif
+
     // Data from Spell.dbc (in Cataclysm)
     uint32_t SpellVisual[2];
     uint32_t spellIconID = 0;
@@ -582,10 +575,8 @@ private:
     uint32_t PreventionType = 0;
     // Data from SpellEffect.dbc (in Cataclysm)
     float EffectDamageMultiplier[MAX_SPELL_EFFECTS];
-#if VERSION_STRING > Classic
     // Data from SpellTotems.dbc (in Cataclysm)
     uint32_t TotemCategory[MAX_SPELL_TOTEM_CATEGORIES];
-#endif
     // Data from SpellCastingRequirements.dbc (in Cataclysm)
     int32_t AreaGroupId = 0;
     // Data from Spell.dbc (in Cataclysm)
@@ -609,7 +600,6 @@ private:
     void* (*auraScriptLink) = nullptr;
 
 public:
-#if VERSION_STRING >= Cata
     // DBC links
     uint32_t SpellScalingId = 0;                              // SpellScaling.dbc
     uint32_t SpellAuraOptionsId = 0;                          // SpellAuraOptions.dbc
@@ -626,7 +616,7 @@ public:
     uint32_t SpellShapeshiftId = 0;                           // SpellShapeshift.dbc
     uint32_t SpellTargetRestrictionsId = 0;                   // SpellTargetRestrictions.dbc
     uint32_t SpellTotemsId = 0;                               // SpellTotems.dbc
-#endif
+
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Custom values

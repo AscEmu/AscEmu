@@ -1540,13 +1540,13 @@ void Pet::SendTalentsToOwner()
             if (talent == nullptr)
                 continue;
 
-            if (talent->TalentTree != tte_id)
+            if (talent->talentTree != tte_id)
                 continue;
 
             // check our spells
             for (uint8_t j = 0; j < 5; j++)
-                if (talent->RankID[j] > 0 && hasSpell(talent->RankID[j]))
-                    petTalents.talents.emplace_back(talent->TalentID, j);
+                if (talent->rankId[j] > 0 && hasSpell(talent->rankId[j]))
+                    petTalents.talents.emplace_back(talent->id, j);
         }
         // tab loaded, we can exit
         break;
@@ -1566,12 +1566,12 @@ void Pet::WipeTalents()
         if (talent == nullptr)
             continue;
 
-        if (talent->TalentTree < PET_TALENT_TREE_START || talent->TalentTree > PET_TALENT_TREE_END)   // 409-Tenacity, 410-Ferocity, 411-Cunning
+        if (talent->talentTree < PET_TALENT_TREE_START || talent->talentTree > PET_TALENT_TREE_END) // 409-Tenacity, 410-Ferocity, 411-Cunning
             continue;
 
         for (uint8_t j = 0; j < 5; j++)
-            if (talent->RankID[j] != 0)
-                removeSpell(talent->RankID[j]);
+            if (talent->rankId[j] != 0)
+                removeSpell(talent->rankId[j]);
     }
 
     sendSpellsToController(m_unitOwner, m_duration);

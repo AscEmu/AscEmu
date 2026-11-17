@@ -837,6 +837,40 @@ namespace WDB::Structures::Raw
         uint32_t sheath;
     };
 
+    struct ItemExtendedCostEntryTbc
+    {
+        uint32_t id;
+        uint32_t honorPoints;
+        uint32_t arenaPoints;
+        uint32_t item[5];
+        uint32_t count[5];
+        uint32_t personalRating;
+    };
+
+    struct ItemExtendedCostEntryWotlk
+    {
+        uint32_t id;
+        uint32_t honorPoints;
+        uint32_t arenaPoints;
+        uint32_t arenaSlot;
+        uint32_t item[5];
+        uint32_t count[5];
+        uint32_t personalRating;
+    };
+
+    struct ItemExtendedCostEntryCataMop
+    {
+        uint32_t id;
+        uint32_t honorPoints;
+        uint32_t arenaPoints;
+        uint32_t arenaSlot;
+        uint32_t item[5];
+        uint32_t count[5];
+        uint32_t personalRating;
+        uint32_t reqCur[5];
+        uint32_t reqCurrCount[5];
+    };
+
     struct ItemLimitCategoryEntryWotlkCataMop
     {
         uint32_t id;
@@ -880,6 +914,18 @@ namespace WDB::Structures::Raw
     };
 
     using ItemSetEntryMop = ItemSetEntryCata;
+
+    struct MailTemplateEntryClassic
+    {
+        uint32_t id;
+    };
+
+    struct MailTemplateEntryTbcWotlkCataMop
+    {
+        uint32_t id;
+        char const* subject;
+        char const* content;
+    };
 
     struct MapDifficultyEntryWotlkCataMop
     {
@@ -943,6 +989,400 @@ namespace WDB::Structures::Raw
         uint32_t unkTime;
         uint32_t maxPlayers;
         uint32_t nextPhaseMap;
+    };
+
+    struct SkillLineEntryClassic
+    {
+        uint32_t id;
+        uint32_t type;
+        char const* name[8];
+        uint32_t spellIcon;
+    };
+
+    struct SkillLineEntryTbc
+    {
+        uint32_t id;
+        uint32_t type;
+        char const* name[16];
+        uint32_t spellIcon;
+    };
+
+    struct SkillLineEntryWotlk
+    {
+        uint32_t id;
+        uint32_t type;
+        char const* name[16];
+        uint32_t spellIcon;
+        uint32_t linkable;
+    };
+
+    struct SkillLineEntryCataMop
+    {
+        uint32_t id;
+        uint32_t type;
+        char const* name;
+        uint32_t spellIcon;
+        uint32_t linkable;
+    };
+
+    struct SpellEntryClassic
+    {
+        uint32_t id;
+        uint32_t school;
+        uint32_t category;
+        uint32_t dispelType;
+        uint32_t mechanicsType;
+        uint32_t attributes;
+        uint32_t attributesEx;
+        uint32_t attributesExB;
+        uint32_t attributesExC;
+        uint32_t attributesExD;
+        uint32_t shapeshifts;
+        uint32_t shapeshiftsExcluded;
+        uint32_t targets;
+        uint32_t targetCreatureType;
+        uint32_t requiresSpellFocus;
+        uint32_t casterAuraState;
+        uint32_t targetAuraState;
+        uint32_t castingTimeIndex;
+        uint32_t recoveryTime;
+        uint32_t categoryRecoveryTime;
+        uint32_t interruptFlags;
+        uint32_t auraInterruptFlags;
+        uint32_t channelInterruptFlags;
+        uint32_t procFlags;
+        uint32_t procChance;
+        uint32_t procCharges;
+        uint32_t maxLevel;
+        uint32_t baseLevel;
+        uint32_t spellLevel;
+        uint32_t durationIndex;
+        int32_t powerType;
+        uint32_t manaCost;
+        uint32_t manaCostPerLevel;
+        uint32_t manaPerSecond;
+        uint32_t manaPerSecondPerLevel;
+        uint32_t rangeIndex;
+        float speed;
+        uint32_t maxStackAmount;
+        uint32_t totem[MAX_SPELL_TOTEMS];
+        int32_t reagent[MAX_SPELL_REAGENTS];
+        uint32_t reagentCount[MAX_SPELL_REAGENTS];
+        int32_t equippedItemClass;
+        int32_t equippedItemSubClass;
+        int32_t equippedItemInventoryTypeMask;
+        uint32_t effect[MAX_SPELL_EFFECTS];
+        int32_t effectDieSides[MAX_SPELL_EFFECTS];
+        uint32_t effectBaseDice[MAX_SPELL_EFFECTS];
+        float effectDicePerLevel[MAX_SPELL_EFFECTS];
+        float effectRealPointsPerLevel[MAX_SPELL_EFFECTS];
+        int32_t effectBasePoints[MAX_SPELL_EFFECTS];
+        uint32_t effectMechanic[MAX_SPELL_EFFECTS];
+        uint32_t effectImplicitTargetA[MAX_SPELL_EFFECTS];
+        uint32_t effectImplicitTargetB[MAX_SPELL_EFFECTS];
+        uint32_t effectRadiusIndex[MAX_SPELL_EFFECTS];
+        uint32_t effectApplyAuraName[MAX_SPELL_EFFECTS];
+        uint32_t effectAmplitude[MAX_SPELL_EFFECTS];
+        float effectMultipleValue[MAX_SPELL_EFFECTS];
+        uint32_t effectChainTarget[MAX_SPELL_EFFECTS];
+        uint32_t effectItemType[MAX_SPELL_EFFECTS];
+        int32_t effectMiscValue[MAX_SPELL_EFFECTS];
+        uint32_t effectTriggerSpell[MAX_SPELL_EFFECTS];
+        float effectPointsPerComboPoint[MAX_SPELL_EFFECTS];
+        uint32_t spellVisual;
+        uint32_t spellVisual1;
+        uint32_t spellIconId;
+        uint32_t activeIconId;
+        uint32_t spellPriority;
+        char const* name[8];
+        char const* rank[8];
+        uint32_t manaCostPercentage;
+        uint32_t startRecoveryCategory;
+        uint32_t startRecoveryTime;
+        uint32_t maxTargetLevel;
+        uint32_t spellFamilyName;
+        uint32_t spellFamilyFlags[2];
+        uint32_t maxTargets;
+        uint32_t dmgClass;
+        uint32_t preventionType;
+        float effectDamageMultiplier[MAX_SPELL_EFFECTS];
+    };
+
+    struct SpellEntryTbc
+    {
+        uint32_t id;
+        uint32_t category;
+        uint32_t dispelType;
+        uint32_t mechanicsType;
+        uint32_t attributes;
+        uint32_t attributesEx;
+        uint32_t attributesExB;
+        uint32_t attributesExC;
+        uint32_t attributesExD;
+        uint32_t attributesExE;
+        uint32_t attributesExF;
+        uint32_t shapeshifts;
+        uint32_t shapeshiftsExcluded;
+        uint32_t targets;
+        uint32_t targetCreatureType;
+        uint32_t requiresSpellFocus;
+        uint32_t facingCasterFlags;
+        uint32_t casterAuraState;
+        uint32_t targetAuraState;
+        uint32_t casterAuraStateNot;
+        uint32_t targetAuraStateNot;
+        uint32_t castingTimeIndex;
+        uint32_t recoveryTime;
+        uint32_t categoryRecoveryTime;
+        uint32_t interruptFlags;
+        uint32_t auraInterruptFlags;
+        uint32_t channelInterruptFlags;
+        uint32_t procFlags;
+        uint32_t procChance;
+        uint32_t procCharges;
+        uint32_t maxLevel;
+        uint32_t baseLevel;
+        uint32_t spellLevel;
+        uint32_t durationIndex;
+        int32_t powerType;
+        uint32_t manaCost;
+        uint32_t manaCostPerLevel;
+        uint32_t manaPerSecond;
+        uint32_t manaPerSecondPerLevel;
+        uint32_t rangeIndex;
+        float speed;
+        uint32_t maxStackAmount;
+        uint32_t totem[MAX_SPELL_TOTEMS];
+        int32_t reagent[MAX_SPELL_REAGENTS];
+        uint32_t reagentCount[MAX_SPELL_REAGENTS];
+        int32_t equippedItemClass;
+        int32_t equippedItemSubClass;
+        int32_t equippedItemInventoryTypeMask;
+        uint32_t effect[MAX_SPELL_EFFECTS];
+        int32_t effectDieSides[MAX_SPELL_EFFECTS];
+        uint32_t effectBaseDice[MAX_SPELL_EFFECTS];
+        float effectDicePerLevel[MAX_SPELL_EFFECTS];
+        float effectRealPointsPerLevel[MAX_SPELL_EFFECTS];
+        int32_t effectBasePoints[MAX_SPELL_EFFECTS];
+        uint32_t effectMechanic[MAX_SPELL_EFFECTS];
+        uint32_t effectImplicitTargetA[MAX_SPELL_EFFECTS];
+        uint32_t effectImplicitTargetB[MAX_SPELL_EFFECTS];
+        uint32_t effectRadiusIndex[MAX_SPELL_EFFECTS];
+        uint32_t effectApplyAuraName[MAX_SPELL_EFFECTS];
+        uint32_t effectAmplitude[MAX_SPELL_EFFECTS];
+        float effectMultipleValue[MAX_SPELL_EFFECTS];
+        uint32_t effectChainTarget[MAX_SPELL_EFFECTS];
+        uint32_t effectItemType[MAX_SPELL_EFFECTS];
+        int32_t effectMiscValue[MAX_SPELL_EFFECTS];
+        int32_t effectMiscValueB[MAX_SPELL_EFFECTS];
+        uint32_t effectTriggerSpell[MAX_SPELL_EFFECTS];
+        float effectPointsPerComboPoint[MAX_SPELL_EFFECTS];
+        uint32_t spellVisual;
+        uint32_t spellVisual1;
+        uint32_t spellIconId;
+        uint32_t activeIconId;
+        uint32_t spellPriority;
+        char const* name[16];
+        char const* rank[16];
+        uint32_t manaCostPercentage;
+        uint32_t startRecoveryCategory;
+        uint32_t startRecoveryTime;
+        uint32_t maxTargetLevel;
+        uint32_t spellFamilyName;
+        uint32_t spellFamilyFlags[2];
+        uint32_t maxTargets;
+        uint32_t dmgClass;
+        uint32_t preventionType;
+        float effectDamageMultiplier[MAX_SPELL_EFFECTS];
+        uint32_t totemCategory[MAX_SPELL_TOTEM_CATEGORIES];
+        int32_t areaGroupId;
+        uint32_t school;
+    };
+
+    struct SpellEntryWotlk
+    {
+        uint32_t id;
+        uint32_t category;
+        uint32_t dispelType;
+        uint32_t mechanicsType;
+        uint32_t attributes;
+        uint32_t attributesEx;
+        uint32_t attributesExB;
+        uint32_t attributesExC;
+        uint32_t attributesExD;
+        uint32_t attributesExE;
+        uint32_t attributesExF;
+        uint32_t attributesExG;
+        uint32_t shapeshifts;
+        uint32_t shapeshiftsExcluded;
+        uint32_t targets;
+        uint32_t targetCreatureType;
+        uint32_t requiresSpellFocus;
+        uint32_t facingCasterFlags;
+        uint32_t casterAuraState;
+        uint32_t targetAuraState;
+        uint32_t casterAuraStateNot;
+        uint32_t targetAuraStateNot;
+        uint32_t casterAuraSpell;
+        uint32_t targetAuraSpell;
+        uint32_t casterAuraSpellNot;
+        uint32_t targetAuraSpellNot;
+        uint32_t castingTimeIndex;
+        uint32_t recoveryTime;
+        uint32_t categoryRecoveryTime;
+        uint32_t interruptFlags;
+        uint32_t auraInterruptFlags;
+        uint32_t channelInterruptFlags;
+        uint32_t procFlags;
+        uint32_t procChance;
+        uint32_t procCharges;
+        uint32_t maxLevel;
+        uint32_t baseLevel;
+        uint32_t spellLevel;
+        uint32_t durationIndex;
+        int32_t powerType;
+        uint32_t manaCost;
+        uint32_t manaCostPerLevel;
+        uint32_t manaPerSecond;
+        uint32_t manaPerSecondPerLevel;
+        uint32_t rangeIndex;
+        float speed;
+        uint32_t maxStackAmount;
+        uint32_t totem[MAX_SPELL_TOTEMS];
+        int32_t reagent[MAX_SPELL_REAGENTS];
+        uint32_t reagentCount[MAX_SPELL_REAGENTS];
+        int32_t equippedItemClass;
+        int32_t equippedItemSubClass;
+        int32_t equippedItemInventoryTypeMask;
+        uint32_t effect[MAX_SPELL_EFFECTS];
+        int32_t effectDieSides[MAX_SPELL_EFFECTS];
+        float effectRealPointsPerLevel[MAX_SPELL_EFFECTS];
+        int32_t effectBasePoints[MAX_SPELL_EFFECTS];
+        uint32_t effectMechanic[MAX_SPELL_EFFECTS];
+        uint32_t effectImplicitTargetA[MAX_SPELL_EFFECTS];
+        uint32_t effectImplicitTargetB[MAX_SPELL_EFFECTS];
+        uint32_t effectRadiusIndex[MAX_SPELL_EFFECTS];
+        uint32_t effectApplyAuraName[MAX_SPELL_EFFECTS];
+        uint32_t effectAmplitude[MAX_SPELL_EFFECTS];
+        float effectMultipleValue[MAX_SPELL_EFFECTS];
+        uint32_t effectChainTarget[MAX_SPELL_EFFECTS];
+        uint32_t effectItemType[MAX_SPELL_EFFECTS];
+        int32_t effectMiscValue[MAX_SPELL_EFFECTS];
+        int32_t effectMiscValueB[MAX_SPELL_EFFECTS];
+        uint32_t effectTriggerSpell[MAX_SPELL_EFFECTS];
+        float effectPointsPerComboPoint[MAX_SPELL_EFFECTS];
+        uint32_t effectSpellClassMask[MAX_SPELL_EFFECTS][3];
+        uint32_t spellVisual;
+        uint32_t spellVisual1;
+        uint32_t spellIconId;
+        uint32_t activeIconId;
+        uint32_t spellPriority;
+        char const* name[16];
+        char const* rank[16];
+        uint32_t manaCostPercentage;
+        uint32_t startRecoveryCategory;
+        uint32_t startRecoveryTime;
+        uint32_t maxTargetLevel;
+        uint32_t spellFamilyName;
+        uint32_t spellFamilyFlags[MAX_SPELL_EFFECTS];
+        uint32_t maxTargets;
+        uint32_t dmgClass;
+        uint32_t preventionType;
+        float effectDamageMultiplier[MAX_SPELL_EFFECTS];
+        uint32_t totemCategory[MAX_SPELL_TOTEM_CATEGORIES];
+        int32_t areaGroupId;
+        uint32_t school;
+        uint32_t runeCostId;
+        float effectSpellPowerCoefficient[MAX_SPELL_EFFECTS];
+        uint32_t spellDifficultyId;
+    };
+
+    struct SpellEntryCata
+    {
+        uint32_t id;
+        uint32_t attributes;
+        uint32_t attributesEx;
+        uint32_t attributesExB;
+        uint32_t attributesExC;
+        uint32_t attributesExD;
+        uint32_t attributesExE;
+        uint32_t attributesExF;
+        uint32_t attributesExG;
+        uint32_t attributesExH;
+        uint32_t attributesExI;
+        uint32_t attributesExJ;
+        uint32_t castingTimeIndex;
+        uint32_t durationIndex;
+        int32_t powerType;
+        uint32_t rangeIndex;
+        float speed;
+        uint32_t spellVisual;
+        uint32_t spellVisual1;
+        uint32_t spellIconId;
+        uint32_t activeIconId;
+        char const* name;
+        char const* rank;
+        uint32_t school;
+        uint32_t runeCostId;
+        uint32_t spellDifficultyId;
+        float attackPowerCoefficient;
+        uint32_t spellScalingId;
+        uint32_t spellAuraOptionsId;
+        uint32_t spellAuraRestrictionsId;
+        uint32_t spellCastingRequirementsId;
+        uint32_t spellCategoriesId;
+        uint32_t spellClassOptionsId;
+        uint32_t spellCooldownsId;
+        uint32_t spellEquippedItemsId;
+        uint32_t spellInterruptsId;
+        uint32_t spellLevelsId;
+        uint32_t spellPowerId;
+        uint32_t spellReagentsId;
+        uint32_t spellShapeshiftId;
+        uint32_t spellTargetRestrictionsId;
+        uint32_t spellTotemsId;
+    };
+
+    struct SpellEntryMop
+    {
+        uint32_t id;
+        char const* name;
+        char const* rank;
+        uint32_t runeCostId;
+        float attackPowerCoefficient;
+        uint32_t spellScalingId;
+        uint32_t spellAuraOptionsId;
+        uint32_t spellAuraRestrictionsId;
+        uint32_t spellCastingRequirementsId;
+        uint32_t spellCategoriesId;
+        uint32_t spellClassOptionsId;
+        uint32_t spellCooldownsId;
+        uint32_t spellEquippedItemsId;
+        uint32_t spellInterruptsId;
+        uint32_t spellLevelsId;
+        uint32_t spellReagentsId;
+        uint32_t spellShapeshiftId;
+        uint32_t spellTargetRestrictionsId;
+        uint32_t spellTotemsId;
+        uint32_t researchProject;
+        uint32_t spellMiscId;
+    };
+
+    struct SpellAuraOptionsEntryCata
+    {
+        uint32_t maxStackAmount;
+        uint32_t procChance;
+        uint32_t procCharges;
+        uint32_t procFlags;
+    };
+
+    struct SpellAuraOptionsEntryMop
+    {
+        uint32_t id;
+        uint32_t maxStackAmount;
+        uint32_t procChance;
+        uint32_t procCharges;
+        uint32_t procFlags;
     };
 
     struct SpellItemEnchantmentEntryClassic
@@ -1021,10 +1461,106 @@ namespace WDB::Structures::Raw
         uint32_t reqLevel;
     };
 
+    struct SpellMiscEntryMop
+    {
+        uint32_t id;
+        uint32_t attributes[14];
+        uint32_t castingTimeIndex;
+        uint32_t durationIndex;
+        int32_t powerType;
+        uint32_t rangeIndex;
+        float speed;
+        uint32_t spellVisual;
+        uint32_t spellVisual1;
+        uint32_t spellIconId;
+        uint32_t activeIconId;
+        uint32_t school;
+    };
+
+    struct SpellPowerEntryCata
+    {
+        uint32_t manaCost;
+        uint32_t manaCostPerLevel;
+        uint32_t manaCostPercentage;
+        uint32_t manaPerSecond;
+        uint32_t manaPerSecondPerLevel;
+        float manaCostPercentageFloat;
+    };
+
+    struct SpellPowerEntryMop
+    {
+        uint32_t spellId;
+        uint32_t powerType;
+        uint32_t manaCost;
+        uint32_t manaCostPerLevel;
+        uint32_t manaPerSecond;
+        uint32_t manaPerSecondPerLevel;
+        float manaCostPercentageFloat;
+        float channelCostPercentageFloat;
+        uint32_t shapeShiftSpellId;
+    };
+
+    struct SpellRangeEntryClassicTbc
+    {
+        uint32_t id;
+        float minRange;
+        float maxRange;
+        uint32_t rangeType;
+    };
+
+    struct SpellRangeEntryWotlkCataMop
+    {
+        uint32_t id;
+        float minRange;
+        float minRangeFriendly;
+        float maxRange;
+        float maxRangeFriendly;
+        uint32_t rangeType;
+    };
+
+    struct SpellShapeshiftFormEntryClassic
+    {
+        uint32_t id;
+        uint32_t flags;
+        uint32_t unitType;
+    };
+
+    struct SpellShapeshiftFormEntryTbcWotlkCataMop
+    {
+        uint32_t id;
+        uint32_t flags;
+        uint32_t unitType;
+        uint32_t attackSpeed;
+        uint32_t modelId;
+        uint32_t modelId2;
+        uint32_t spells[8];
+    };
+
     struct StableSlotPricesEntryClassicTbcWotlk
     {
         uint32_t id;
         uint32_t price;
+    };
+
+    struct TalentEntryClassicTbcWotlkCata
+    {
+        uint32_t id;
+        uint32_t talentTree;
+        uint32_t row;
+        uint32_t col;
+        uint32_t rankId[5];
+        uint32_t dependsOn;
+        uint32_t dependsOnRank;
+    };
+
+    struct TalentEntryMop
+    {
+        uint32_t id;
+        uint32_t row;
+        uint32_t col;
+        uint32_t spellId;
+        uint32_t playerClass;
+        uint32_t overrideSpellId;
     };
 
     struct TaxiNodesEntryClassic
@@ -1064,6 +1600,32 @@ namespace WDB::Structures::Raw
     };
 
     using TaxiNodesEntryMop = TaxiNodesEntryCata;
+
+    struct TaxiPathNodeEntryClassic
+    {
+        uint32_t pathId;
+        uint32_t nodeIndex;
+        uint32_t mapId;
+        float x;
+        float y;
+        float z;
+        uint32_t flags;
+        uint32_t waitTime;
+    };
+
+    struct TaxiPathNodeEntryTbcWotlkCataMop
+    {
+        uint32_t pathId;
+        uint32_t nodeIndex;
+        uint32_t mapId;
+        float x;
+        float y;
+        float z;
+        uint32_t flags;
+        uint32_t waitTime;
+        uint32_t arrivalEventId;
+        uint32_t departureEventId;
+    };
 
     struct TotemCategoryEntryTbcWotlkCataMop
     {

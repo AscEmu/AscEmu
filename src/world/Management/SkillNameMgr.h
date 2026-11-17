@@ -17,15 +17,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SKILLNAMEMGR_H
-#define SKILLNAMEMGR_H
+#pragma once
 
+#include <algorithm>
+#include <cstring>
+#include <memory>
+#include <ranges>
+
+#include "Server/ClientProtocol.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
-
-#if VERSION_STRING < Cata
 #include "Server/World.h"
-#endif
 
 enum SpellTreeName
 {
@@ -72,39 +74,35 @@ enum SpellTreeName
 
 class SkillNameMgr
 {
-    public:
-        std::unique_ptr<std::unique_ptr<char[]>[]> SkillNames;
-        uint32_t maxskill;
+public:
+    std::unique_ptr<std::unique_ptr<char[]>[]> SkillNames;
+    uint32_t maxSkill{0};
 
-        SkillNameMgr()
+    SkillNameMgr()
+    {
+        /// This will become the size of the skill name lookup table
+        for (auto const& skillLine : sSkillLineStore | std::views::values)
+            maxSkill = std::max(maxSkill, skillLine.id);
+
+        /// SkillNames
+        SkillNames = std::make_unique<std::unique_ptr<char[]>[]>(maxSkill + 1);
+
+        const uint32_t locale = sWorld.getDbcLocaleLanguageId();
+        const bool isPreCata = !WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata);
+
+        for (auto const& skillLine : sSkillLineStore | std::views::values)
         {
-            /// This will become the size of the skill name lookup table
-            maxskill = sSkillLineStore.getNumRows();
+            const uint32_t skillId = skillLine.id;
+            std::string const& skillName = (isPreCata && locale < skillLine.name.size())
+                                               ? skillLine.name[locale]
+                                               : skillLine.name[0];
 
-            /// SkillNames = (char **) malloc(maxskill * sizeof(char *));
-            SkillNames = std::make_unique<std::unique_ptr<char[]>[]>(maxskill + 1); //(+1, arrays count from 0.. not 1.)
-            std::fill(SkillNames.get(), SkillNames.get(), nullptr);
+            SkillNames[skillId] = std::make_unique<char[]>(skillName.size() + 1);
 
-            for (uint32_t i = 0; i < sSkillLineStore.getNumRows(); ++i)
-            {
-                auto skill_line = sSkillLineStore.lookupEntry(i);
-                if (skill_line == nullptr)
-                    continue;
-
-                uint32_t SkillID = skill_line->id;
-#if VERSION_STRING < Cata
-                char* SkillName = skill_line->Name[sWorld.getDbcLocaleLanguageId()];
-#else
-                char* SkillName = skill_line->Name[0];
-#endif
-
-                SkillNames[SkillID] = std::make_unique<char[]>(strlen(SkillName) + 1);
-                //When the DBCFile gets cleaned up, so does the record data, so make a copy of it..
-                std::strcpy(SkillNames[SkillID].get(), SkillName);
-            }
+            // When the DBCFile gets cleaned up, so does the record data, so make a copy of it
+            std::memcpy(SkillNames[skillId].get(), skillName.c_str(), skillName.size() + 1);
         }
+    }
 
-        ~SkillNameMgr() = default;
+    ~SkillNameMgr() = default;
 };
-
-#endif // SKILLNAMEMGR_H

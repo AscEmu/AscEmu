@@ -486,8 +486,8 @@ void WorldSession::sendRefundInfo([[maybe_unused]] uint64_t GUID)
 
         const uint32_t refundTime = (played[1] > RefundEntry.first + 60 * 60 * 2) ? uint32_t(0) : uint32_t(RefundEntry.first);
 
-        SmsgItemrefundinfo managedPacket(GUID, uint32_t(proto->BuyPrice), uint32_t(item_extended_cost->honor_points),
-            uint32_t(item_extended_cost->arena_points), extendedCostItem, extendedCostCount, refundTime);
+        SmsgItemrefundinfo managedPacket(GUID, uint32_t(proto->BuyPrice), uint32_t(item_extended_cost->honorPoints),
+            uint32_t(item_extended_cost->arenaPoints), extendedCostItem, extendedCostCount, refundTime);
         sendManagedPacket(managedPacket);
     }
 #elif VERSION_STRING >= Cata
@@ -525,8 +525,8 @@ void WorldSession::sendRefundInfo([[maybe_unused]] uint64_t GUID)
         {
             extendedCostItem[i] = uint32_t(itemExtendedCostEntry->item[i]);
             extendedCostCount[i] = uint32_t(itemExtendedCostEntry->count[i]);
-            extendedCostReqCurrCount[i] = uint32_t(itemExtendedCostEntry->reqcurrcount[i]);
-            extendedCostReqCur[i] = uint32_t(itemExtendedCostEntry->reqcur[i]);
+            extendedCostReqCurrCount[i] = uint32_t(itemExtendedCostEntry->reqCurrCount[i]);
+            extendedCostReqCur[i] = uint32_t(itemExtendedCostEntry->reqCur[i]);
         }
 
         SmsgItemrefundinfo managedPacket(item->getGuid(), uint32_t(item_properties->BuyPrice), extendedCostItem, extendedCostCount,
@@ -791,8 +791,8 @@ void WorldSession::handleItemRefundRequestOpcode([[maybe_unused]] WorldPacket& r
                 for (uint8_t i = 0; i < 5; ++i)
                     _player->getItemInterface()->AddItemById(itemExtendedCostEntry->item[i], itemExtendedCostEntry->count[i], 0);
 
-                _player->getItemInterface()->AddItemById(43308, itemExtendedCostEntry->honor_points, 0);
-                _player->getItemInterface()->AddItemById(43307, itemExtendedCostEntry->arena_points, 0);
+                _player->getItemInterface()->AddItemById(43308, itemExtendedCostEntry->honorPoints, 0);
+                _player->getItemInterface()->AddItemById(43307, itemExtendedCostEntry->arenaPoints, 0);
                 _player->modCoinage(itemProperties->BuyPrice);
 
                 _player->getItemInterface()->RemoveItemAmtByGuid(srlPacket.itemGuid, 1);
@@ -819,13 +819,13 @@ void WorldSession::handleItemRefundRequestOpcode([[maybe_unused]] WorldPacket& r
 #if VERSION_STRING >= Cata
         for (uint8_t i = 0; i < 5; ++i)
         {
-            extendedCostReqCurrCount[i] = uint32_t(itemExtendedCostEntry->reqcurrcount[i]);
-            extendedCostReqCur[i] = uint32_t(itemExtendedCostEntry->reqcur[i]);
+            extendedCostReqCurrCount[i] = uint32_t(itemExtendedCostEntry->reqCurrCount[i]);
+            extendedCostReqCur[i] = uint32_t(itemExtendedCostEntry->reqCur[i]);
         }
 #endif
 
         SmsgItemrefundrequest managedPacket(srlPacket.itemGuid, error, uint32_t(itemProperties->BuyPrice),
-            uint32_t(itemExtendedCostEntry->honor_points), uint32_t(itemExtendedCostEntry->arena_points),
+            uint32_t(itemExtendedCostEntry->honorPoints), uint32_t(itemExtendedCostEntry->arenaPoints),
             extendedCostItem, extendedCostCount, extendedCostReqCurrCount, extendedCostReqCur);
         sendManagedPacket(managedPacket);
     }
@@ -1950,7 +1950,7 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
             {
                 if (item->isEligibleForRefund() && item_extended_cost != nullptr)
                 {
-                    item->getOwner()->getItemInterface()->AddRefundable(item->getGuid(), item_extended_cost->costid);
+                    item->getOwner()->getItemInterface()->AddRefundable(item->getGuid(), item_extended_cost->id);
                 }
                 _player->sendItemPushResultPacket(false, true, false, static_cast<uint8_t>(INVENTORY_SLOT_NOT_SET),
                     slotResult.Result, srlPacket.amount * creature_item.amount, item->getEntry(), item->getPropertySeed(),
@@ -1968,7 +1968,7 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
                 {
                     if (item->isEligibleForRefund() && item_extended_cost != nullptr)
                     {
-                        item->getOwner()->getItemInterface()->AddRefundable(item->getGuid(), item_extended_cost->costid);
+                        item->getOwner()->getItemInterface()->AddRefundable(item->getGuid(), item_extended_cost->id);
                     }
                     _player->sendItemPushResultPacket(false, true, false, slotResult.ContainerSlot,
                         slotResult.Result, 1, item->getEntry(), item->getPropertySeed(),
@@ -2095,7 +2095,7 @@ void WorldSession::sendInventoryList(Creature* unit)
         item.price = price;
         item.maxDurability = curItem->MaxDurability;
         item.buyCount = sellItem.amount;
-        item.extendedCostId = sellItem.extended_cost != nullptr ? sellItem.extended_cost->costid : 0;
+        item.extendedCostId = sellItem.extended_cost != nullptr ? sellItem.extended_cost->id : 0;
         item.slot = counter + 1; // we start from 0 but client starts from 1
 
         items.push_back(item);

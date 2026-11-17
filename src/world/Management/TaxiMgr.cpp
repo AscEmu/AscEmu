@@ -442,28 +442,28 @@ void TaxiMgr::initialize()
     // include existed nodes that have at least single not spell base (scripted) path
     std::set<uint32_t> spellPaths;
 
-#if VERSION_STRING > WotLK
-    for (uint32_t i = 0; i < sSpellEffectStore.getNumRows(); ++i)
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
     {
-        if (const auto sInfo = sSpellEffectStore.lookupEntry(i))
+        for (uint32_t i = 0; i < sSpellEffectStore.getNumRows(); ++i)
         {
-            if (sInfo->Effect == SPELL_EFFECT_START_TAXI)
-                spellPaths.insert(sInfo->EffectMiscValue);
-        }
-    }
-#else
-    for (uint32_t i = 0; i < sSpellStore.getNumRows(); ++i)
-    {
-        if (const auto sInfo = sSpellStore.lookupEntry(i))
-        {
-            for (uint8_t j = 0; j < MAX_SPELL_EFFECTS; ++j)
+            if (const auto sInfo = sSpellEffectStore.lookupEntry(i))
             {
-                if (sInfo->Effect[j] == SPELL_EFFECT_START_TAXI)
-                    spellPaths.insert(sInfo->EffectMiscValue[j]);
+                if (sInfo->Effect == SPELL_EFFECT_START_TAXI)
+                    spellPaths.insert(sInfo->EffectMiscValue);
             }
         }
     }
-#endif
+    else
+    {
+        for (auto const& sInfo : sSpellStore | std::views::values)
+        {
+            for (size_t j = 0; j < sInfo.effect.size(); ++j)
+            {
+                if (sInfo.effect[j] == SPELL_EFFECT_START_TAXI)
+                    spellPaths.insert(sInfo.effectMiscValue[j]);
+            }
+        }
+    }
 
     sTaxiNodesMask.fill(0);
     sOldContinentsNodesMask.fill(0);

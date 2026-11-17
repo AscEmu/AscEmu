@@ -26,6 +26,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstring>
 #include <iterator>
 #include <map>
+#include <ranges>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -43,40 +44,36 @@ std::vector<NameGenData> _namegenData[3];
 
 std::map<uint32_t, WDB::Structures::CharStartOutfitEntry const*> sCharStartOutfitMap;
 
+SERVER_DECL WDB::WDBStore<WDB::Structures::ItemExtendedCostEntry> sItemExtendedCostStore;
+
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemRandomPropertiesEntry> sItemRandomPropertiesStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::LFGDungeonEntry> sLFGDungeonStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::LiquidTypeEntry> sLiquidTypeStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::LockEntry> sLockStore;
-SERVER_DECL WDB::WDBContainer<WDB::Structures::MailTemplateEntry> sMailTemplateStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::NameGenEntry> sNameGenStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SkillLineAbilityEntry> sSkillLineAbilityStore;
-SERVER_DECL WDB::WDBContainer<WDB::Structures::SkillLineEntry> sSkillLineStore;
+
 SERVER_DECL std::unordered_map<uint32_t, std::vector<uint32_t>> sSkillLineChildren;
 SERVER_DECL std::unordered_map<uint32_t, std::vector<ClientItemEffect>> sItemEffects;
 
-SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellEntry> sSpellStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellCastTimesEntry> sSpellCastTimesStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellDurationEntry> sSpellDurationStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellRadiusEntry> sSpellRadiusStore;
-SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellRangeEntry> sSpellRangeStore;
-SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellShapeshiftFormEntry> sSpellShapeshiftFormStore;
 
-SERVER_DECL WDB::WDBContainer<WDB::Structures::TalentEntry> sTalentStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::TalentTabEntry> sTalentTabStore;
 static uint32_t InspectTalentTabPages[12][3];
 // bit position of the first rank of a talent inside its tab and the bit size of a tab (talent inspect before WotLK)
 static std::map<uint32_t, uint32_t> InspectTalentTabPos;
 static std::map<uint32_t, uint32_t> InspectTalentTabSize;
-#if VERSION_STRING >= Mop
-static uint32_t ClassSpecializationTabs[12][4];
-#endif
+
+static uint32_t ClassSpecializationTabs[12][4]; // >= MoP: specialization tabs for each class
+
 TaxiPathSetBySource sTaxiPathSetBySource;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::TaxiPathEntry> sTaxiPathStore;
 TaxiPathNodesByPath sTaxiPathNodesByPath;
-SERVER_DECL WDB::WDBContainer<WDB::Structures::TaxiPathNodeEntry> sTaxiPathNodeStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::TransportAnimationEntry> sTransportAnimationStore;
 
@@ -96,7 +93,6 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::SummonPropertiesEntry> sSummonPro
 SERVER_DECL WDB::WDBContainer<WDB::Structures::VehicleEntry> sVehicleStore; // todo: available for versions > WotLK
 SERVER_DECL WDB::WDBContainer<WDB::Structures::VehicleSeatEntry> sVehicleSeatStore; // todo: available for versions > WotLK
 
-SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemExtendedCostEntry> sItemExtendedCostStore; // todo: available for versions > Classic
 #if VERSION_STRING < Cata
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTRegenHPEntry> sGtOCTRegenHPStore; // todo: available for versions > Classic
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GtRegenHPPerSptEntry> sGtRegenHPPerSptStore; // todo: available for versions > Classic
@@ -111,7 +107,6 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrSpecializationEntry> sChrSpeci
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GlyphPropertiesEntry> sGlyphPropertiesStore;
 
-#if VERSION_STRING >= WotLK
 SERVER_DECL WDB::WDBContainer<WDB::Structures::DungeonEncounterEntry> sDungeonEncounterStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::TransportRotationEntry> sTransportRotationStore;
@@ -129,13 +124,12 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::ScalingStatValuesEntry> sScalingS
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellDifficultyEntry> sSpellDifficultyStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellRuneCostEntry> sSpellRuneCostStore;
-#endif
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTBaseHPByClassEntry> sGtOCTBaseHPByClassStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTBaseMPByClassEntry> sGtOCTBaseMPByClassStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GuildPerkSpellsEntry> sGuildPerkSpellsStore;
-#if VERSION_STRING >= Cata
+
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTClassCombatRatingScalarEntry> sGtOCTClassCombatRatingScalarStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::EmotesEntry> sEmotesStore;
@@ -150,7 +144,6 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::PhaseEntry> sPhaseStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::QuestSortEntry> sQuestSortStore;
 
-SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellAuraOptionsEntry> sSpellAuraOptionsStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellAuraRestrictionsEntry> sSpellAuraRestrictionsStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellCastingRequirementsEntry> sSpellCastingRequirementsStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellCategoriesEntry> sSpellCategoriesStore;
@@ -162,29 +155,26 @@ WDB::Structures::SpellEffectMap sSpellEffectMap;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellEquippedItemsEntry> sSpellEquippedItemsStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellInterruptsEntry> sSpellInterruptsStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellLevelsEntry> sSpellLevelsStore;
-SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellPowerEntry> sSpellPowerStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellScalingEntry> sSpellScalingStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellReagentsEntry> sSpellReagentsStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellShapeshiftEntry> sSpellShapeshiftStore;
+
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellTargetRestrictionsEntry> sSpellTargetRestrictionsStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellTotemsEntry> sSpellTotemsStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::TalentTreePrimarySpells> sTalentTreePrimarySpellsStore;
-#endif
 
 #ifdef AE_CATA
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemReforgeEntry> sItemReforgeStore;
 #endif
 
-#if VERSION_STRING >= Mop
-SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellMiscEntry> sSpellMiscStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetSpeciesEntry> sBattlePetSpeciesStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetBreedStateEntry> sBattlePetBreedStateStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetSpeciesStateEntry> sBattlePetSpeciesStateStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetBreedQualityEntry> sBattlePetBreedQualityStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemToBattlePetEntry> sItemToBattlePetStore;
+
 WDB::Structures::SpellPowerMap sSpellPowerMap;
-#endif
 
 namespace {
     void buildAreaMapCollection()
@@ -301,27 +291,27 @@ namespace {
 
     void buildTaxiPathData()
     {
+        uint32_t maxPathId = 0;
+
         for (uint32_t i = 1; i < sTaxiPathStore.getNumRows(); ++i)
         {
             if (WDB::Structures::TaxiPathEntry const* entry = sTaxiPathStore.lookupEntry(i))
+            {
                 sTaxiPathSetBySource[entry->from][entry->to] = TaxiPathBySourceAndDestination(entry->id, entry->price);
+                maxPathId = std::max(maxPathId, entry->id);
+            }
         }
 
-        uint32_t pathCount = sTaxiPathStore.getNumRows();
+        uint32_t const pathCount = maxPathId + 1;
 
         // Calculate path nodes count
-        std::vector<uint32_t> pathLength;
-        pathLength.resize(pathCount); // 0 and some other indexes not used
-        for (uint32_t i = 0; i < sTaxiPathNodeStore.getNumRows(); ++i)
+        std::vector<uint32_t> pathLength(pathCount, 0);
+        for (const auto& node : sTaxiPathNodeStore | std::views::values)
         {
-            if (WDB::Structures::TaxiPathNodeEntry const* entry = sTaxiPathNodeStore.lookupEntry(i))
-            {
-                if (entry->pathId >= pathCount)
-                    continue;
+            if (node.pathId >= pathCount)
+                continue;
 
-                if (pathLength[entry->pathId] < entry->NodeIndex + 1)
-                    pathLength[entry->pathId] = entry->NodeIndex + 1;
-            }
+            pathLength[node.pathId] = std::max(pathLength[node.pathId], node.nodeIndex + 1);
         }
 
         // Set path length
@@ -330,13 +320,10 @@ namespace {
             sTaxiPathNodesByPath[i].resize(pathLength[i]);
 
         // fill data
-        for (uint32_t i = 0; i < sTaxiPathNodeStore.getNumRows(); ++i)
+        for (const auto& node : sTaxiPathNodeStore | std::views::values)
         {
-            if (WDB::Structures::TaxiPathNodeEntry const* entry = sTaxiPathNodeStore.lookupEntry(i))
-            {
-                if (entry->pathId < pathCount && entry->NodeIndex < sTaxiPathNodesByPath[entry->pathId].size())
-                    sTaxiPathNodesByPath[entry->pathId][entry->NodeIndex] = entry;
-            }
+            if (node.pathId < pathCount && node.nodeIndex < sTaxiPathNodesByPath[node.pathId].size())
+                sTaxiPathNodesByPath[node.pathId][node.nodeIndex] = &node;
         }
     }
 
@@ -349,7 +336,7 @@ namespace {
         }
     }
 
-#if VERSION_STRING >= Mop
+
     void buildClassSpecializationTabs()
     {
         std::memset(ClassSpecializationTabs, 0, sizeof(ClassSpecializationTabs));
@@ -365,9 +352,7 @@ namespace {
             ClassSpecializationTabs[specialization_info->classId][specialization_info->tabPage] = specialization_info->Id;
         }
     }
-#endif
 
-#if VERSION_STRING >= Cata
     void buildSpellCategoryStore()
     {
         for (uint32_t i = 1; i < sSpellStore.getNumRows(); ++i)
@@ -391,12 +376,13 @@ namespace {
             }
         }
     }
-#endif
 
-#if VERSION_STRING >= Mop
     // note: SpellPower rows are not keyed by spell id on Mop, map them by their spellId column
     void buildSpellPowerMap()
     {
+        if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+            return;
+
         for (uint32_t i = 0; i < sSpellPowerStore.getNumRows(); ++i)
         {
             WDB::Structures::SpellPowerEntry const* spellPower = sSpellPowerStore.lookupEntry(i);
@@ -407,11 +393,10 @@ namespace {
             auto itr = sSpellPowerMap.find(spellPower->spellId);
             if (itr == sSpellPowerMap.end())
                 sSpellPowerMap[spellPower->spellId] = spellPower;
-            else if (itr->second->ShapeShiftSpellId != 0 && spellPower->ShapeShiftSpellId == 0)
+            else if (itr->second->shapeShiftSpellId != 0 && spellPower->shapeShiftSpellId == 0)
                 itr->second = spellPower;
         }
     }
-#endif
 }
 
 namespace
@@ -440,7 +425,6 @@ bool loadDBCs()
     WDB::StoreProblemList bad_dbc_files;
     std::string dbc_path = sWorld.settings.server.dataDir + "dbc/";
 
-#if VERSION_STRING >= WoD
     // A client with its own data: the stores are filled from its DB2 tables,
     // only the lookups built from the stores are shared with the dbc path.
     if (WoW::hasOwnClientData(WoW::getServerExpansion()))
@@ -464,7 +448,6 @@ bool loadDBCs()
 
         return loaded;
     }
-#endif
 
     // Load ChrClasses.dbc first to ensure the dbcLocaleId is set correctly before loading other DBC files that may depend on it
     WDB::loadUnifiedWDBStore<WDB::Structures::ChrClassesEntry>(
@@ -1069,7 +1052,18 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sLiquidTypeStore, dbc_path, "LiquidType.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sLockStore, dbc_path, "Lock.dbc");
 
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sMailTemplateStore, dbc_path, "MailTemplate.dbc");
+    WDB::loadUnifiedWDBStore<WDB::Structures::MailTemplateEntry>(
+        bad_dbc_files, sMailTemplateStore, dbc_path,
+        []<typename RawType>(const RawType& raw, WDB::Structures::MailTemplateEntry& entry) {
+            entry.id = raw.id;
+
+            if constexpr (requires { raw.subject; })
+            {
+                entry.subject = raw.subject ? raw.subject : "";
+                entry.content = raw.content ? raw.content : "";
+            }
+        }
+    );
 
     WDB::loadUnifiedWDBStore<WDB::Structures::MapDifficultyEntry>(
         bad_dbc_files, sMapDifficultyStore, dbc_path,
@@ -1155,8 +1149,240 @@ bool loadDBCs()
     buildNameGenData();
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSkillLineAbilityStore, dbc_path, "SkillLineAbility.dbc");
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSkillLineStore, dbc_path, "SkillLine.dbc");
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellStore, dbc_path, "Spell.dbc");
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::SkillLineEntry>(
+        bad_dbc_files, sSkillLineStore, dbc_path,
+        []<typename RawType>(const RawType& raw, WDB::Structures::SkillLineEntry& entry) {
+            entry.id = raw.id;
+            entry.type = raw.type;
+
+            if constexpr (std::is_array_v<decltype(raw.name)>)
+            {
+                constexpr size_t localeCount = std::extent_v<decltype(raw.name)>;
+                for (size_t i = 0; i < localeCount; ++i)
+                    entry.name[i] = raw.name[i] ? raw.name[i] : "";
+            }
+            else
+            {
+                entry.name[0] = raw.name ? raw.name : "";
+            }
+
+            entry.spellIcon = raw.spellIcon;
+
+            if constexpr (requires { raw.linkable; })
+                entry.linkable = raw.linkable;
+        }
+    );
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::SpellEntry>(
+        bad_dbc_files, sSpellStore, dbc_path,
+        []<typename RawType>(const RawType& raw, WDB::Structures::SpellEntry& entry) {
+            entry.id = raw.id;
+
+            // Localized names & ranks (Classic: 8, TBC/WotLK: 16, Cata/MoP: single string)
+            if constexpr (std::is_array_v<decltype(raw.name)>)
+            {
+                constexpr size_t localeCount = std::extent_v<decltype(raw.name)>;
+                for (size_t i = 0; i < localeCount; ++i)
+                {
+                    entry.name[i] = raw.name[i] ? raw.name[i] : "";
+                    entry.rank[i] = raw.rank[i] ? raw.rank[i] : "";
+                }
+            }
+            else
+            {
+                entry.name[0] = raw.name ? raw.name : "";
+                entry.rank[0] = raw.rank ? raw.rank : "";
+            }
+
+            if constexpr (requires { raw.school; })
+                entry.school = raw.school;
+
+            if constexpr (requires { raw.attributes; })
+            {
+                entry.attributes = raw.attributes;
+                entry.attributesEx = raw.attributesEx;
+                entry.attributesExB = raw.attributesExB;
+                entry.attributesExC = raw.attributesExC;
+                entry.attributesExD = raw.attributesExD;
+                entry.castingTimeIndex = raw.castingTimeIndex;
+                entry.durationIndex = raw.durationIndex;
+                entry.powerType = raw.powerType;
+                entry.rangeIndex = raw.rangeIndex;
+                entry.speed = raw.speed;
+                entry.spellVisual = raw.spellVisual;
+                entry.spellVisual1 = raw.spellVisual1;
+                entry.spellIconId = raw.spellIconId;
+                entry.activeIconId = raw.activeIconId;
+            }
+
+            if constexpr (requires { raw.attributesExE; })
+            {
+                entry.attributesExE = raw.attributesExE;
+                entry.attributesExF = raw.attributesExF;
+            }
+
+            if constexpr (requires { raw.attributesExG; })
+                entry.attributesExG = raw.attributesExG;
+
+            if constexpr (requires { raw.attributesExH; })
+            {
+                entry.attributesExH = raw.attributesExH;
+                entry.attributesExI = raw.attributesExI;
+                entry.attributesExJ = raw.attributesExJ;
+            }
+
+            if constexpr (requires { raw.category; })
+            {
+                entry.category = raw.category;
+                entry.dispelType = raw.dispelType;
+                entry.mechanicsType = raw.mechanicsType;
+                entry.shapeshifts = raw.shapeshifts;
+                entry.shapeshiftsExcluded = raw.shapeshiftsExcluded;
+                entry.targets = raw.targets;
+                entry.targetCreatureType = raw.targetCreatureType;
+                entry.requiresSpellFocus = raw.requiresSpellFocus;
+                entry.casterAuraState = raw.casterAuraState;
+                entry.targetAuraState = raw.targetAuraState;
+                entry.recoveryTime = raw.recoveryTime;
+                entry.categoryRecoveryTime = raw.categoryRecoveryTime;
+                entry.interruptFlags = raw.interruptFlags;
+                entry.auraInterruptFlags = raw.auraInterruptFlags;
+                entry.channelInterruptFlags = raw.channelInterruptFlags;
+                entry.procFlags = raw.procFlags;
+                entry.procChance = raw.procChance;
+                entry.procCharges = raw.procCharges;
+                entry.maxLevel = raw.maxLevel;
+                entry.baseLevel = raw.baseLevel;
+                entry.spellLevel = raw.spellLevel;
+                entry.manaCost = raw.manaCost;
+                entry.manaCostPerLevel = raw.manaCostPerLevel;
+                entry.manaPerSecond = raw.manaPerSecond;
+                entry.manaPerSecondPerLevel = raw.manaPerSecondPerLevel;
+                entry.maxStackAmount = raw.maxStackAmount;
+
+                for (size_t i = 0; i < MAX_SPELL_TOTEMS; ++i)
+                    entry.totem[i] = raw.totem[i];
+                for (size_t i = 0; i < MAX_SPELL_REAGENTS; ++i)
+                {
+                    entry.reagent[i] = raw.reagent[i];
+                    entry.reagentCount[i] = raw.reagentCount[i];
+                }
+
+                entry.equippedItemClass = raw.equippedItemClass;
+                entry.equippedItemSubClass = raw.equippedItemSubClass;
+                entry.equippedItemInventoryTypeMask = raw.equippedItemInventoryTypeMask;
+
+                for (size_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                {
+                    entry.effect[i] = raw.effect[i];
+                    entry.effectDieSides[i] = raw.effectDieSides[i];
+                    entry.effectRealPointsPerLevel[i] = raw.effectRealPointsPerLevel[i];
+                    entry.effectBasePoints[i] = raw.effectBasePoints[i];
+                    entry.effectMechanic[i] = raw.effectMechanic[i];
+                    entry.effectImplicitTargetA[i] = raw.effectImplicitTargetA[i];
+                    entry.effectImplicitTargetB[i] = raw.effectImplicitTargetB[i];
+                    entry.effectRadiusIndex[i] = raw.effectRadiusIndex[i];
+                    entry.effectApplyAuraName[i] = raw.effectApplyAuraName[i];
+                    entry.effectAmplitude[i] = raw.effectAmplitude[i];
+                    entry.effectMultipleValue[i] = raw.effectMultipleValue[i];
+                    entry.effectChainTarget[i] = raw.effectChainTarget[i];
+                    entry.effectItemType[i] = raw.effectItemType[i];
+                    entry.effectMiscValue[i] = raw.effectMiscValue[i];
+                    entry.effectTriggerSpell[i] = raw.effectTriggerSpell[i];
+                    entry.effectPointsPerComboPoint[i] = raw.effectPointsPerComboPoint[i];
+                    entry.effectDamageMultiplier[i] = raw.effectDamageMultiplier[i];
+                }
+
+                entry.spellPriority = raw.spellPriority;
+                entry.manaCostPercentage = raw.manaCostPercentage;
+                entry.startRecoveryCategory = raw.startRecoveryCategory;
+                entry.startRecoveryTime = raw.startRecoveryTime;
+                entry.maxTargetLevel = raw.maxTargetLevel;
+                entry.spellFamilyName = raw.spellFamilyName;
+                entry.maxTargets = raw.maxTargets;
+                entry.dmgClass = raw.dmgClass;
+                entry.preventionType = raw.preventionType;
+
+                constexpr size_t familyFlagCount = std::extent_v<decltype(raw.spellFamilyFlags)>;
+                for (size_t i = 0; i < familyFlagCount; ++i)
+                    entry.spellFamilyFlags[i] = raw.spellFamilyFlags[i];
+            }
+
+            if constexpr (requires { raw.effectBaseDice; })
+            {
+                for (size_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                {
+                    entry.effectBaseDice[i] = raw.effectBaseDice[i];
+                    entry.effectDicePerLevel[i] = raw.effectDicePerLevel[i];
+                }
+            }
+
+            if constexpr (requires { raw.facingCasterFlags; })
+            {
+                entry.facingCasterFlags = raw.facingCasterFlags;
+                entry.casterAuraStateNot = raw.casterAuraStateNot;
+                entry.targetAuraStateNot = raw.targetAuraStateNot;
+                entry.areaGroupId = raw.areaGroupId;
+                for (size_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                    entry.effectMiscValueB[i] = raw.effectMiscValueB[i];
+                for (size_t i = 0; i < MAX_SPELL_TOTEM_CATEGORIES; ++i)
+                    entry.totemCategory[i] = raw.totemCategory[i];
+            }
+
+            if constexpr (requires { raw.casterAuraSpell; })
+            {
+                entry.casterAuraSpell = raw.casterAuraSpell;
+                entry.targetAuraSpell = raw.targetAuraSpell;
+                entry.casterAuraSpellNot = raw.casterAuraSpellNot;
+                entry.targetAuraSpellNot = raw.targetAuraSpellNot;
+                for (size_t eff = 0; eff < MAX_SPELL_EFFECTS; ++eff)
+                {
+                    entry.effectSpellPowerCoefficient[eff] = raw.effectSpellPowerCoefficient[eff];
+                    for (size_t mask = 0; mask < 3; ++mask)
+                        entry.effectSpellClassMask[eff][mask] = raw.effectSpellClassMask[eff][mask];
+                }
+            }
+
+            if constexpr (requires { raw.runeCostId; })
+                entry.runeCostId = raw.runeCostId;
+
+            if constexpr (requires { raw.spellDifficultyId; })
+                entry.spellDifficultyId = raw.spellDifficultyId;
+
+            if constexpr (requires { raw.attackPowerCoefficient; })
+                entry.attackPowerCoefficient = raw.attackPowerCoefficient;
+
+            if constexpr (requires { raw.spellScalingId; })
+            {
+                entry.spellScalingId = raw.spellScalingId;
+                entry.spellAuraOptionsId = raw.spellAuraOptionsId;
+                entry.spellAuraRestrictionsId = raw.spellAuraRestrictionsId;
+                entry.spellCastingRequirementsId = raw.spellCastingRequirementsId;
+                entry.spellCategoriesId = raw.spellCategoriesId;
+                entry.spellClassOptionsId = raw.spellClassOptionsId;
+                entry.spellCooldownsId = raw.spellCooldownsId;
+                entry.spellEquippedItemsId = raw.spellEquippedItemsId;
+                entry.spellInterruptsId = raw.spellInterruptsId;
+                entry.spellLevelsId = raw.spellLevelsId;
+                entry.spellReagentsId = raw.spellReagentsId;
+                entry.spellShapeshiftId = raw.spellShapeshiftId;
+                entry.spellTargetRestrictionsId = raw.spellTargetRestrictionsId;
+                entry.spellTotemsId = raw.spellTotemsId;
+            }
+
+            if constexpr (requires { raw.spellPowerId; })
+                entry.spellPowerId = raw.spellPowerId;
+
+            if constexpr (requires { raw.researchProject; })
+                entry.researchProject = raw.researchProject;
+
+            if constexpr (requires { raw.spellMiscId; })
+                entry.spellMiscId = raw.spellMiscId;
+    }
+    );
+
+
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellCastTimesStore, dbc_path, "SpellCastTimes.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellDurationStore, dbc_path, "SpellDuration.dbc");
 
@@ -1213,10 +1439,65 @@ bool loadDBCs()
     );
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellRadiusStore, dbc_path, "SpellRadius.dbc"); // todo handle max and level radius
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellRangeStore, dbc_path, "SpellRange.dbc");
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellShapeshiftFormStore, dbc_path, "SpellShapeshiftForm.dbc");
 
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sTalentStore, dbc_path, "Talent.dbc");
+    WDB::loadUnifiedWDBStore<WDB::Structures::SpellRangeEntry>(
+        bad_dbc_files, sSpellRangeStore, dbc_path,
+        []<typename RawType>(const RawType& raw, WDB::Structures::SpellRangeEntry& entry) {
+            entry.id = raw.id;
+            entry.minRange = raw.minRange;
+            entry.maxRange = raw.maxRange;
+            entry.rangeType = raw.rangeType;
+
+            if constexpr (requires { raw.minRangeFriendly; })
+            {
+                entry.minRangeFriendly = raw.minRangeFriendly;
+                entry.maxRangeFriendly = raw.maxRangeFriendly;
+            }
+        }
+    );
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::SpellShapeshiftFormEntry>(
+        bad_dbc_files, sSpellShapeshiftFormStore, dbc_path,
+        []<typename RawType>(const RawType& raw, WDB::Structures::SpellShapeshiftFormEntry& entry) {
+            entry.id = raw.id;
+            entry.flags = raw.flags;
+            entry.unitType = raw.unitType;
+
+            if constexpr (requires { raw.attackSpeed; })
+            {
+                entry.attackSpeed = raw.attackSpeed;
+                entry.modelId = raw.modelId;
+                entry.modelId2 = raw.modelId2;
+                for (size_t i = 0; i < entry.spells.size(); ++i)
+                    entry.spells[i] = raw.spells[i];
+            }
+        }
+    );
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::TalentEntry>(
+        bad_dbc_files, sTalentStore, dbc_path,
+        []<typename RawType>(const RawType& raw, WDB::Structures::TalentEntry& entry) {
+            entry.id = raw.id;
+            entry.row = raw.row;
+            entry.col = raw.col;
+
+            if constexpr (requires { raw.talentTree; })
+            {
+                entry.talentTree = raw.talentTree;
+                for (size_t i = 0; i < entry.rankId.size(); ++i)
+                    entry.rankId[i] = raw.rankId[i];
+                entry.dependsOn = raw.dependsOn;
+                entry.dependsOnRank = raw.dependsOnRank;
+            }
+
+            if constexpr (requires { raw.spellId; })
+            {
+                entry.spellId = raw.spellId;
+                entry.playerClass = raw.playerClass;
+                entry.overrideSpellId = raw.overrideSpellId;
+            }
+        }
+    );
 
 #if VERSION_STRING < Mop
     // note: This is not valid for Mop
@@ -1235,25 +1516,25 @@ bool loadDBCs()
                 continue;
 
             // Don't add invalid talents or Hunter Pet talents (trees 409, 410 and 411) to the inspect table
-            if (talent_info->TalentTree == 409 || talent_info->TalentTree == 410 || talent_info->TalentTree == 411)
+            if (talent_info->talentTree == 409 || talent_info->talentTree == 410 || talent_info->talentTree == 411)
                 continue;
 
-            auto talent_tab = sTalentTabStore.lookupEntry(talent_info->TalentTree);
+            auto talent_tab = sTalentTabStore.lookupEntry(talent_info->talentTree);
             if (talent_tab == nullptr)
                 continue;
 
             talent_max_rank = 0;
             for (uint32_t j = 5; j > 0; --j)
             {
-                if (talent_info->RankID[j - 1])
+                if (talent_info->rankId[j - 1])
                 {
                     talent_max_rank = j;
                     break;
                 }
             }
 
-            InspectTalentTabBit[(talent_info->Row << 24) + (talent_info->Col << 16) + talent_info->TalentID] = talent_max_rank;
-            InspectTalentTabSize[talent_info->TalentTree] += talent_max_rank;
+            InspectTalentTabBit[(talent_info->row << 24) + (talent_info->col << 16) + talent_info->id] = talent_max_rank;
+            InspectTalentTabSize[talent_info->talentTree] += talent_max_rank;
         }
 
         for (uint32_t i = 0; i < sTalentTabStore.getNumRows(); ++i)
@@ -1283,7 +1564,7 @@ bool loadDBCs()
                 if (talent_info == nullptr)
                     continue;
 
-                if (talent_info->TalentTree != talent_tab->TalentTabID)
+                if (talent_info->talentTree != talent_tab->TalentTabID)
                     continue;
 
                 InspectTalentTabPos[talent_id] = talent_pos;
@@ -1322,7 +1603,27 @@ bool loadDBCs()
         });
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sTaxiPathStore, dbc_path, "TaxiPath.dbc");
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sTaxiPathNodeStore, dbc_path, "TaxiPathNode.dbc");
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::TaxiPathNodeEntry>(
+        bad_dbc_files, sTaxiPathNodeStore, dbc_path,
+        []<typename RawType>(const RawType& raw, WDB::Structures::TaxiPathNodeEntry& entry) {
+            entry.pathId = raw.pathId;
+            entry.nodeIndex = raw.nodeIndex;
+            entry.mapId = raw.mapId;
+            entry.x = raw.x;
+            entry.y = raw.y;
+            entry.z = raw.z;
+            entry.flags = raw.flags;
+            entry.waitTime = raw.waitTime;
+
+            if constexpr (requires { raw.arrivalEventId; })
+            {
+                entry.arrivalEventId = raw.arrivalEventId;
+                entry.departureEventId = raw.departureEventId;
+            }
+        }
+    );
+
     // note: Generate path data
     buildTaxiPathData();
 
@@ -1343,9 +1644,38 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemReforgeStore, dbc_path, "ItemReforge.dbc");
 #endif
 
-#if VERSION_STRING >= Mop
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellMiscStore, dbc_path, "SpellMisc.dbc");
+    WDB::loadUnifiedWDBStore<WDB::Structures::SpellMiscEntry>(
+        bad_dbc_files, sSpellMiscStore, dbc_path,
+        []<typename RawType>(const RawType& raw, WDB::Structures::SpellMiscEntry& entry) {
+            entry.id = raw.id;
+            entry.attributes = raw.attributes[0];
+            entry.attributesEx = raw.attributes[1];
+            entry.attributesExB = raw.attributes[2];
+            entry.attributesExC = raw.attributes[3];
+            entry.attributesExD = raw.attributes[4];
+            entry.attributesExE = raw.attributes[5];
+            entry.attributesExF = raw.attributes[6];
+            entry.attributesExG = raw.attributes[7];
+            entry.attributesExH = raw.attributes[8];
+            entry.attributesExI = raw.attributes[9];
+            entry.attributesExJ = raw.attributes[10];
+            entry.attributesExK = raw.attributes[11];
+            entry.attributesExL = raw.attributes[12];
+            entry.attributesExM = raw.attributes[13];
+            entry.castingTimeIndex = raw.castingTimeIndex;
+            entry.durationIndex = raw.durationIndex;
+            entry.powerType = raw.powerType;
+            entry.rangeIndex = raw.rangeIndex;
+            entry.speed = raw.speed;
+            entry.spellVisual = raw.spellVisual;
+            entry.spellVisual1 = raw.spellVisual1;
+            entry.spellIconId = raw.spellIconId;
+            entry.activeIconId = raw.activeIconId;
+            entry.school = raw.school;
+        }
+    );
 
+#if VERSION_STRING >= Mop
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sChrSpecializationStore, dbc_path, "ChrSpecialization.dbc");
     buildClassSpecializationTabs();
 
@@ -1454,18 +1784,43 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemRandomSuffixStore, dbc_path, "ItemRandomSuffix.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSummonPropertiesStore, dbc_path, "SummonProperties.dbc");
 
-    #if VERSION_STRING < Cata
+#if VERSION_STRING < Cata
         WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtOCTRegenHPStore, dbc_path, "gtOCTRegenHP.dbc");
         WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtRegenHPPerSptStore, dbc_path, "gtRegenHPPerSpt.dbc");
-        WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemExtendedCostStore, dbc_path, "ItemExtendedCost.dbc");
-    #else
-        WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemExtendedCostStore, dbc_path, "ItemExtendedCost.db2");
-    #endif
+#endif
 
     #if VERSION_STRING < Mop
         WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtOCTRegenMPStore, dbc_path, "gtOCTRegenMP.dbc");
     #endif
 #endif
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::ItemExtendedCostEntry>(
+        bad_dbc_files, sItemExtendedCostStore, dbc_path,
+        []<typename RawType>(const RawType& raw, WDB::Structures::ItemExtendedCostEntry& entry) {
+            entry.id = raw.id;
+            entry.honorPoints = raw.honorPoints;
+            entry.arenaPoints = raw.arenaPoints;
+            entry.personalRating = raw.personalRating;
+
+            for (size_t i = 0; i < 5; ++i)
+            {
+                entry.item[i] = raw.item[i];
+                entry.count[i] = raw.count[i];
+            }
+
+            if constexpr (requires { raw.arenaSlot; })
+                entry.arenaSlot = raw.arenaSlot;
+
+            if constexpr (requires { raw.reqCur; })
+            {
+                for (size_t i = 0; i < 5; ++i)
+                {
+                    entry.reqCur[i] = raw.reqCur[i];
+                    entry.reqCurrCount[i] = raw.reqCurrCount[i];
+                }
+            }
+        }
+    );
 
     WDB::loadUnifiedWDBStore<WDB::Structures::AreaGroupEntry>(
         bad_dbc_files, sAreaGroupStore, dbc_path,
@@ -1533,6 +1888,42 @@ bool loadDBCs()
         }
     );
 
+    WDB::loadUnifiedWDBStore<WDB::Structures::SpellPowerEntry>(
+        bad_dbc_files, sSpellPowerStore, dbc_path,
+        []<typename RawType>(const RawType& raw, WDB::Structures::SpellPowerEntry& entry) {
+            entry.manaCost = raw.manaCost;
+            entry.manaCostPerLevel = raw.manaCostPerLevel;
+            entry.manaPerSecond = raw.manaPerSecond;
+            entry.manaPerSecondPerLevel = raw.manaPerSecondPerLevel;
+            entry.manaCostPercentageFloat = raw.manaCostPercentageFloat;
+
+            if constexpr (requires { raw.manaCostPercentage; })
+                entry.manaCostPercentage = raw.manaCostPercentage;
+
+            if constexpr (requires { raw.spellId; })
+            {
+                entry.spellId = raw.spellId;
+                entry.powerType = raw.powerType;
+                entry.channelCostPercentageFloat = raw.channelCostPercentageFloat;
+                entry.shapeShiftSpellId = raw.shapeShiftSpellId;
+            }
+        }
+    );
+
+    buildSpellPowerMap();
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::SpellAuraOptionsEntry>(
+        bad_dbc_files, sSpellAuraOptionsStore, dbc_path,
+        []<typename RawType>(const RawType& raw, WDB::Structures::SpellAuraOptionsEntry& entry) {
+        if constexpr (requires { raw.id; })
+            entry.id = raw.id;
+
+        entry.maxStackAmount = raw.maxStackAmount;
+        entry.procChance = raw.procChance;
+        entry.procCharges = raw.procCharges;
+        entry.procFlags = raw.procFlags;
+    });
+
 #if VERSION_STRING >= Cata
     WDB::loadUnifiedWDBStore<WDB::Structures::ChrPowerTypesEntry>(
         bad_dbc_files, sChrPowerTypesStore, dbc_path,
@@ -1557,7 +1948,6 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sPhaseStore, dbc_path, "Phase.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sQuestSortStore, dbc_path, "QuestSort.dbc");
 
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellAuraOptionsStore, dbc_path, "SpellAuraOptions.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellAuraRestrictionsStore, dbc_path, "SpellAuraRestrictions.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellCastingRequirementsStore, dbc_path, "SpellCastingRequirements.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellCategoriesStore, dbc_path, "SpellCategories.dbc");
@@ -1573,10 +1963,7 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellEquippedItemsStore, dbc_path, "SpellEquippedItems.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellInterruptsStore, dbc_path, "SpellInterrupts.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellLevelsStore, dbc_path, "SpellLevels.dbc");
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellPowerStore, dbc_path, "SpellPower.dbc");
-    #if VERSION_STRING >= Mop
-    buildSpellPowerMap();
-    #endif
+
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellScalingStore, dbc_path, "SpellScaling.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellShapeshiftStore, dbc_path, "SpellShapeshift.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSpellTargetRestrictionsStore, dbc_path, "SpellTargetRestrictions.dbc");
@@ -1598,7 +1985,7 @@ bool loadDBCs()
     return true;
 }
 
-#if VERSION_STRING >= Cata
+
 WDB::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32_t spellId, uint8_t effect)
 {
     WDB::Structures::SpellEffectMap::const_iterator itr = sSpellEffectMap.find(spellId);
@@ -1612,9 +1999,7 @@ uint8_t getPowerIndexByClass(uint8_t playerClass, uint8_t powerType)
 {
     return powerIndexByClass[playerClass][powerType];
 }
-#endif
 
-#if VERSION_STRING >= Mop
 WDB::Structures::SpellPowerEntry const* getSpellPowerEntry(uint32_t spellId)
 {
     WDB::Structures::SpellPowerMap::const_iterator itr = sSpellPowerMap.find(spellId);
@@ -1623,7 +2008,6 @@ WDB::Structures::SpellPowerEntry const* getSpellPowerEntry(uint32_t spellId)
 
     return itr->second;
 }
-#endif
 
 #if VERSION_STRING >= WotLK
 WDB::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties& difficulty)

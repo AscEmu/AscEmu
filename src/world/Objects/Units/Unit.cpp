@@ -10976,8 +10976,8 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
 #if VERSION_STRING > Classic
                     // Get shapeshift form's attack speed
                     const auto form = sSpellShapeshiftFormStore.lookupEntry(plr->getShapeShiftForm());
-                    if (form != nullptr && form->AttackSpeed != 0)
-                        weaponSpeed = form->AttackSpeed;
+                    if (form != nullptr && form->attackSpeed != 0)
+                        weaponSpeed = form->attackSpeed;
 #endif
                 }
                 else

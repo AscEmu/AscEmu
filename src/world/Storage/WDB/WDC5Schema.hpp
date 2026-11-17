@@ -26,17 +26,17 @@ namespace WDB
     {
         char const* filename{nullptr};
         uint32_t layoutHash{0};
-        int32_t indexField{-1};         // -1: the record ids come from the section id table
+        int32_t indexField{-1}; // -1: the record ids come from the section id table
         std::vector<WDC5FieldSchema> fields;
     };
 
     inline WDC5TableSchema makeScalarSchema(char const* filename, uint32_t layoutHash, int32_t indexField, uint32_t fieldCount)
     {
-        return { filename, layoutHash, indexField, std::vector<WDC5FieldSchema>(fieldCount, WDC5FieldSchema{ 1, false }) };
+        return {filename, layoutHash, indexField, std::vector<WDC5FieldSchema>(fieldCount, WDC5FieldSchema{1, false})};
     }
 
     inline WDC5TableSchema makeSchemaWithArrays(char const* filename, uint32_t layoutHash, int32_t indexField,
-        uint32_t fieldCount, std::initializer_list<std::pair<uint32_t, uint8_t>> arrays)
+                                                uint32_t fieldCount, std::initializer_list<std::pair<uint32_t, uint8_t>> arrays)
     {
         auto schema = makeScalarSchema(filename, layoutHash, indexField, fieldCount);
         for (auto const& [field, arraySize] : arrays)
@@ -45,8 +45,8 @@ namespace WDB
     }
 
     inline WDC5TableSchema makeSparseSchema(char const* filename, uint32_t layoutHash, int32_t indexField,
-        uint32_t fieldCount, std::initializer_list<std::pair<uint32_t, uint8_t>> arrays,
-        std::initializer_list<uint32_t> stringFields)
+                                            uint32_t fieldCount, std::initializer_list<std::pair<uint32_t, uint8_t>> arrays,
+                                            std::initializer_list<uint32_t> stringFields)
     {
         auto schema = makeSchemaWithArrays(filename, layoutHash, indexField, fieldCount, arrays);
         for (uint32_t const field : stringFields)

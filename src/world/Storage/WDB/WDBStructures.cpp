@@ -7,105 +7,104 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellFamily.hpp"
 #include "WDBStores.hpp"
 
-#if VERSION_STRING >= Cata
-
 WDB::Structures::SpellAuraOptionsEntry const* WDB::Structures::SpellEntry::GetSpellAuraOptions() const
 {
-    return SpellAuraOptionsId ? sSpellAuraOptionsStore.lookupEntry(SpellAuraOptionsId) : nullptr;
+    return spellAuraOptionsId ? sSpellAuraOptionsStore.lookupEntry(spellAuraOptionsId) : nullptr;
 }
 
 WDB::Structures::SpellAuraRestrictionsEntry const* WDB::Structures::SpellEntry::GetSpellAuraRestrictions() const
 {
-    return SpellAuraRestrictionsId ? sSpellAuraRestrictionsStore.lookupEntry(SpellAuraRestrictionsId) : nullptr;
+    return spellAuraRestrictionsId ? sSpellAuraRestrictionsStore.lookupEntry(spellAuraRestrictionsId) : nullptr;
 }
 
 WDB::Structures::SpellCastingRequirementsEntry const* WDB::Structures::SpellEntry::GetSpellCastingRequirements() const
 {
-    return SpellCastingRequirementsId ? sSpellCastingRequirementsStore.lookupEntry(SpellCastingRequirementsId) : nullptr;
+    return spellCastingRequirementsId ? sSpellCastingRequirementsStore.lookupEntry(spellCastingRequirementsId) : nullptr;
 }
 
 WDB::Structures::SpellCategoriesEntry const* WDB::Structures::SpellEntry::GetSpellCategories() const
 {
-    return SpellCategoriesId ? sSpellCategoriesStore.lookupEntry(SpellCategoriesId) : nullptr;
+    return spellCategoriesId ? sSpellCategoriesStore.lookupEntry(spellCategoriesId) : nullptr;
 }
 
 WDB::Structures::SpellClassOptionsEntry const* WDB::Structures::SpellEntry::GetSpellClassOptions() const
 {
-    return SpellClassOptionsId ? sSpellClassOptionsStore.lookupEntry(SpellClassOptionsId) : nullptr;
+    return spellClassOptionsId ? sSpellClassOptionsStore.lookupEntry(spellClassOptionsId) : nullptr;
 }
 
 WDB::Structures::SpellCooldownsEntry const* WDB::Structures::SpellEntry::GetSpellCooldowns() const
 {
-    return SpellCooldownsId ? sSpellCooldownsStore.lookupEntry(SpellCooldownsId) : nullptr;
+    return spellCooldownsId ? sSpellCooldownsStore.lookupEntry(spellCooldownsId) : nullptr;
 }
 
 WDB::Structures::SpellEffectEntry const* WDB::Structures::SpellEntry::GetSpellEffect(uint8_t eff) const
 {
-    return GetSpellEffectEntry(Id, eff);
+    return GetSpellEffectEntry(id, eff);
 }
 
 WDB::Structures::SpellEquippedItemsEntry const* WDB::Structures::SpellEntry::GetSpellEquippedItems() const
 {
-    return SpellEquippedItemsId ? sSpellEquippedItemsStore.lookupEntry(SpellEquippedItemsId) : nullptr;
+    return spellEquippedItemsId ? sSpellEquippedItemsStore.lookupEntry(spellEquippedItemsId) : nullptr;
 }
 
 WDB::Structures::SpellInterruptsEntry const* WDB::Structures::SpellEntry::GetSpellInterrupts() const
 {
-    return SpellInterruptsId ? sSpellInterruptsStore.lookupEntry(SpellInterruptsId) : nullptr;
+    return spellInterruptsId ? sSpellInterruptsStore.lookupEntry(spellInterruptsId) : nullptr;
 }
 
 WDB::Structures::SpellLevelsEntry const* WDB::Structures::SpellEntry::GetSpellLevels() const
 {
-    return SpellLevelsId ? sSpellLevelsStore.lookupEntry(SpellLevelsId) : nullptr;
+    return spellLevelsId ? sSpellLevelsStore.lookupEntry(spellLevelsId) : nullptr;
 }
 
 WDB::Structures::SpellPowerEntry const* WDB::Structures::SpellEntry::GetSpellPower() const
 {
-#if VERSION_STRING == Cata
-    return SpellPowerId ? sSpellPowerStore.lookupEntry(SpellPowerId) : nullptr;
-#elif VERSION_STRING >= Mop
-    // Verified against the 5.4.8 data layout: Spell.dbc has no SpellPowerId on Mop,
-    // SpellPower.dbc rows carry the spell they belong to in their spellId column. Looking the
-    // row up by the spell id returned the power data of an unrelated spell - for login
-    // casts that turned out to be a health-cost row, so Spell::takePower()
-    // damaged the caster on every login and killed fresh low level characters.
-    return getSpellPowerEntry(Id);
-#endif
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+    {
+        // Verified against the 5.4.8 data layout: Spell.dbc has no SpellPowerId on Mop,
+        // SpellPower.dbc rows carry the spell they belong to in their spellId column. Looking the
+        // row up by the spell id returned the power data of an unrelated spell - for login
+        // casts that turned out to be a health-cost row, so Spell::takePower()
+        // damaged the caster on every login and killed fresh low level characters.
+        return getSpellPowerEntry(id);
+    }
+
+    if (WoW::getServerExpansion() == WoW::Expansion::_Cata)
+        return spellPowerId ? sSpellPowerStore.lookupEntry(spellPowerId) : nullptr;
+
+    return nullptr;
 }
 
-#if VERSION_STRING == Cata
 WDB::Structures::SpellReagentsEntry const* WDB::Structures::SpellEntry::GetSpellReagents() const
 {
-    return SpellReagentsId ? sSpellReagentsStore.lookupEntry(SpellReagentsId) : nullptr;
+    return spellReagentsId ? sSpellReagentsStore.lookupEntry(spellReagentsId) : nullptr;
 }
-#endif
+
 
 WDB::Structures::SpellScalingEntry const* WDB::Structures::SpellEntry::GetSpellScaling() const
 {
-    return SpellScalingId ? sSpellScalingStore.lookupEntry(SpellScalingId) : nullptr;
+    return spellScalingId ? sSpellScalingStore.lookupEntry(spellScalingId) : nullptr;
 }
 
 WDB::Structures::SpellShapeshiftEntry const* WDB::Structures::SpellEntry::GetSpellShapeshift() const
 {
-    return SpellShapeshiftId ? sSpellShapeshiftStore.lookupEntry(SpellShapeshiftId) : nullptr;
+    return spellShapeshiftId ? sSpellShapeshiftStore.lookupEntry(spellShapeshiftId) : nullptr;
 }
 
 WDB::Structures::SpellTargetRestrictionsEntry const* WDB::Structures::SpellEntry::GetSpellTargetRestrictions() const
 {
-    return SpellTargetRestrictionsId ? sSpellTargetRestrictionsStore.lookupEntry(SpellTargetRestrictionsId) : nullptr;
+    return spellTargetRestrictionsId ? sSpellTargetRestrictionsStore.lookupEntry(spellTargetRestrictionsId) : nullptr;
 }
 
 WDB::Structures::SpellTotemsEntry const* WDB::Structures::SpellEntry::GetSpellTotems() const
 {
-    return SpellTotemsId ? sSpellTotemsStore.lookupEntry(SpellTotemsId) : nullptr;
+    return spellTotemsId ? sSpellTotemsStore.lookupEntry(spellTotemsId) : nullptr;
 }
 
-#if VERSION_STRING >= Mop
 WDB::Structures::SpellMiscEntry const* WDB::Structures::SpellEntry::GetSpellMisc() const
 {
-    return SpellMiscId ? sSpellMiscStore.lookupEntry(SpellMiscId) : nullptr;
+    return spellMiscId ? sSpellMiscStore.lookupEntry(spellMiscId) : nullptr;
 }
-#endif
 
 uint32_t WDB::Structures::SpellEntry::GetManaCost() const
 {
@@ -194,17 +193,19 @@ uint32_t WDB::Structures::SpellEntry::GetMaxAffectedTargets() const
 uint32_t WDB::Structures::SpellEntry::GetStackAmount() const
 {
     SpellAuraOptionsEntry const* aura = GetSpellAuraOptions();
-    return aura ? aura->MaxStackAmount : 0;
+    return aura ? aura->maxStackAmount : 0;
 }
 
 uint32_t WDB::Structures::SpellEntry::GetManaCostPercentage() const
 {
     SpellPowerEntry const* power = GetSpellPower();
-#if VERSION_STRING == Cata
-    return power ? power->ManaCostPercentage : 0;
-#else
-    return power ? static_cast<uint32_t>(power->ManaCostPercentageFloat) : 0;
-#endif
+    if (!power)
+        return 0;
+
+    if (WoW::getServerExpansion() == WoW::Expansion::_Cata)
+        return power->manaCostPercentage;
+
+    return static_cast<uint32_t>(power->manaCostPercentageFloat);
 }
 
 uint32_t WDB::Structures::SpellEntry::GetProcCharges() const
@@ -245,8 +246,8 @@ uint32_t WDB::Structures::SpellEntry::GetRequiresSpellFocus() const
 
 uint32_t WDB::Structures::SpellEntry::GetSpellEffectIdByIndex(uint8_t index) const
 {
-    SpellEffectEntry const* effect = GetSpellEffect(index);
-    return effect ? effect->Effect : 0;
+    SpellEffectEntry const* spellEffect = GetSpellEffect(index);
+    return spellEffect ? spellEffect->Effect : 0;
 }
 
 uint32_t WDB::Structures::SpellEntry::GetAuraInterruptFlags() const
@@ -257,8 +258,8 @@ uint32_t WDB::Structures::SpellEntry::GetAuraInterruptFlags() const
 
 uint32_t WDB::Structures::SpellEntry::GetEffectImplicitTargetAByIndex(uint8_t index) const
 {
-    SpellEffectEntry const* effect = GetSpellEffect(index);
-    return effect ? effect->EffectImplicitTargetA : TARGET_NONE;
+    SpellEffectEntry const* spellEffect = GetSpellEffect(index);
+    return spellEffect ? spellEffect->EffectImplicitTargetA : TARGET_NONE;
 }
 
 int32_t WDB::Structures::SpellEntry::GetAreaGroupId() const
@@ -293,8 +294,8 @@ uint32_t WDB::Structures::SpellEntry::GetTargetCreatureType() const
 
 int32_t WDB::Structures::SpellEntry::GetEffectMiscValue(uint8_t index) const
 {
-    SpellEffectEntry const* effect = GetSpellEffect(index);
-    return effect ? effect->EffectMiscValue : 0;
+    SpellEffectEntry const* spellEffect = GetSpellEffect(index);
+    return spellEffect ? spellEffect->EffectMiscValue : 0;
 }
 
 uint32_t WDB::Structures::SpellEntry::GetStances() const
@@ -324,7 +325,7 @@ uint32_t WDB::Structures::SpellEntry::GetChannelInterruptFlags() const
 uint32_t WDB::Structures::SpellEntry::GetManaCostPerLevel() const
 {
     SpellPowerEntry const* power = GetSpellPower();
-    return power ? power->manaCostPerlevel : 0;
+    return power ? power->manaCostPerLevel : 0;
 }
 
 uint32_t WDB::Structures::SpellEntry::GetCasterAuraState() const
@@ -341,7 +342,6 @@ uint32_t WDB::Structures::SpellEntry::GetTargets() const
 
 uint32_t WDB::Structures::SpellEntry::GetEffectApplyAuraNameByIndex(uint8_t index) const
 {
-    SpellEffectEntry const* effect = GetSpellEffect(index);
-    return effect ? effect->EffectApplyAuraName : 0;
+    SpellEffectEntry const* spellEffect = GetSpellEffect(index);
+    return spellEffect ? spellEffect->EffectApplyAuraName : 0;
 }
-#endif

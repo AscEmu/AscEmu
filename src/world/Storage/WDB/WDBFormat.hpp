@@ -24,7 +24,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 "niiissssssssssssssssxssssssssssssssssxiiiiissssssssssssssssxii"/*WotLK*/,
                 "niiissiiiiisii"/*Cata*/,
-                "niiissiiiiisiii"/*Mop*/
+                "niiissiiiiisiii" /*Mop*/
             }
         },
         {
@@ -34,7 +34,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 ""/*Cata*/,
-                "nixx"/*Mop*/
+                "nixx" /*Mop*/
             }
         },
         {
@@ -44,7 +44,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 "niiiiiiiissssssssssssssssxiiiii"/*WotLK*/,
                 "niiiixiiiisiiiiiiiiiiiii"/*Cata*/,
-                "niiiixiiiisiiiiiiiiiiiii"/*Mop*/
+                "niiiixiiiisiiiiiiiiiiiii" /*Mop*/
             }
         },
         {
@@ -54,7 +54,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "niiiixxxxxissssssssssssssssxiiiiixx"/*BC*/,
                 "niiiixxxxxissssssssssssssssxiiiiixxx"/*WotLK*/,
                 "niiiiiiiiiisiiiiiffiiiiiii"/*Cata*/,
-                "niiiixxxxxxxisiiiiifxxxxxxxxxx"/*Mop*/
+                "niiiixxxxxxxisiiiiifxxxxxxxxxx" /*Mop*/
             }
         },
         {
@@ -64,7 +64,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 "niiiiiii"/*WotLK*/,
                 "niiiiiii"/*Cata*/,
-                "niiiiiii"/*Mop*/
+                "niiiiiii" /*Mop*/
             }
         },
         {
@@ -74,7 +74,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "niffffffff"/*BC*/,
                 "niffffffff"/*WotLK*/,
                 "nifffxxxfffff"/*Cata*/,
-                "nifffxxxfffffxxx"/*Mop*/
+                "nifffxxxfffffxxx" /*Mop*/
             }
         },
         {
@@ -84,7 +84,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "niiixxxxxxxxxxxxxxxxx"/*BC*/,
                 "niiixxxxxxxxxxxxxxxxx"/*WotLK*/,
                 "niiix"/*Cata*/,
-                "niiix"/*Mop*/
+                "niiix" /*Mop*/
             }
         },
         {
@@ -94,7 +94,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "ni"/*BC*/,
                 "ni"/*WotLK*/,
                 "ni"/*Cata*/,
-                "ni"/*Mop*/
+                "ni" /*Mop*/
             }
         },
         {
@@ -104,7 +104,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 ""/*Cata*/,
-                "nif"/*Mop - DB2*/
+                "nif" /*Mop - DB2*/
             }
         },
         {
@@ -114,7 +114,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 ""/*Cata*/,
-                "niii"/*Mop - DB2*/
+                "niii" /*Mop - DB2*/
             }
         },
         {
@@ -124,7 +124,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 ""/*Cata*/,
-                "nixiixixx"/*Mop - DB2*/
+                "nixiixixx" /*Mop - DB2*/
             }
         },
         {
@@ -134,7 +134,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 ""/*Cata*/,
-                "niii"/*Mop - DB2*/
+                "niii" /*Mop - DB2*/
             }
         },
         {
@@ -144,7 +144,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 ""/*Cata*/,
-                "ni"/*Mop - DB2*/
+                "ni" /*Mop - DB2*/
             }
         },
         {
@@ -154,7 +154,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 "nixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiii"/*WotLK*/,
                 "nixxxiii"/*Cata*/,
-                "nixxxiii"/*Mop*/
+                "nixxxiii" /*Mop*/
             }
         },
         {
@@ -164,7 +164,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "nxxxxxxxxxx"/*Cata*/,
-                "nxxxxxxxxxx"/*Mop*/
+                "nxxxxxxxxxx" /*Mop*/
             }
         },
         {
@@ -174,7 +174,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "dbbbXiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxx"/*BC*/,
                 "dbbbXiiiiiiiiiiiiiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"/*WotLK*/,
                 "dbbbXiiiiiiiiiiiiiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxii"/*Cata*/,
-                "dbbbXiiiiiiiiiiiiiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxii"/*Mop*/
+                "dbbbXiiiiiiiiiiiiiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxii" /*Mop*/
             }
         },
         {
@@ -184,7 +184,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nxssssssssssssssssxssssssssssssssssxi"/*BC*/,
                 "nxssssssssssssssssxssssssssssssssssxi"/*WotLK*/,
                 "nxsxix"/*Cata*/,
-                "nxsxix"/*Mop*/
+                "nxsxix" /*Mop*/
             }
         },
         {
@@ -194,7 +194,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nixssssssssssssssssxxxxxxxxxxxxxxxxxx"/*BC*/,
                 "nixssssssssssssssssxxxxxxxxxxxxxxxxxx"/*WotLK*/,
                 "iixsx"/*Cata*/,
-                "nixsx"/*Mop*/
+                "nixsx" /*Mop*/
             }
         },
         {
@@ -204,7 +204,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxix"/*BC*/,
                 "nxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxixii"/*WotLK*/,
                 "nixsxxxixiiiii"/*Cata*/,
-                "nixsxxxixiiiixxxxx"/*Mop*/
+                "nixsxxxixiiiixxxxx" /*Mop*/
             }
         },
         {
@@ -214,7 +214,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "niixiixixxxxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi"/*BC*/,
                 "niixiixixxxxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi"/*WotLK*/,
                 "niixiixixxxxixsxxxxxixxx"/*Cata*/,
-                "niixiixixxxxixsxxxxxxxxxxxxxxxxxixxx"/*Mop*/
+                "niixiixixxxxixsxxxxxxxxxxxxxxxxxixxx" /*Mop*/
             }
         },
         {
@@ -224,7 +224,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "nii"/*Cata*/,
-                "nii"/*Mop*/
+                "nii" /*Mop*/
             }
         },
         {
@@ -234,7 +234,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 ""/*Cata*/,
-                "nxiixiixxxxxxx"/*Mop*/
+                "nxiixiixxxxxxx" /*Mop*/
             }
         },
         {
@@ -244,7 +244,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nixifxxxxxxxxx"/*BC*/,
                 "nixifxxxxxxxxxxx"/*WotLK*/,
                 "nixifxxxxxxxxxxxx"/*Cata*/,
-                "nixifxxxxxxxxxxxxxxx"/*Mop*/
+                "nixifxxxxxxxxxxxxxxx" /*Mop*/
             }
         },
         {
@@ -254,7 +254,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "niixxxxxxxxxxxxxxxxxx"/*BC*/,
                 "niixxxxxxxxxxxxxxxxxx"/*WotLK*/,
                 "niixxxxxxxxxxxxxxxxxx"/*Cata*/,
-                "niixxxxxxxxxxxxxxxxxx"/*Mop*/
+                "niixxxxxxxxxxxxxxxxxx" /*Mop*/
             }
         },
         {
@@ -264,7 +264,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nfifiiiissssssssssssssssxx"/*BC*/,
                 "nfifiiiiixssssssssssssssssxx"/*WotLK*/,
                 "nfifiiiiixsx"/*Cata*/,
-                "nfifiiiiixsx"/*Mop*/
+                "nfifiiiiixsx" /*Mop*/
             }
         },
         {
@@ -274,7 +274,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nisxfxxxxxxxxxxffxxxxxxx"/*BC*/,
                 "nisxfxxxxxxxxxxffxxxxxxxxxxx"/*WotLK*/,
                 "nisxxxxxxxxxxxxffxxxxxxxxxxxxxx"/*Cata*/,
-                "nisxxxxxxxxxxxxffxxxxxxxxxxxxxxxxx"/*Mop*/
+                "nisxxxxxxxxxxxxffxxxxxxxxxxxxxxxxx" /*Mop*/
             }
         },
         {
@@ -284,7 +284,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "niiiiiiii"/*BC*/,
                 "niiiiiiii"/*WotLK*/,
                 "niiiiiiii"/*Cata*/,
-                "niiiiiiii"/*Mop*/
+                "niiiiiiii" /*Mop*/
             }
         },
         {
@@ -294,7 +294,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 ""/*Cata*/,
-                "niiiiiiiiiii"/*Mop*/
+                "niiiiiiiiiii" /*Mop*/
             }
         },
         {
@@ -304,7 +304,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 ""/*Cata*/,
-                "niixiiix"/*Mop*/
+                "niixiiix" /*Mop*/
             }
         },
         {
@@ -314,7 +314,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 "xnxi"/*WotLK*/,
                 "nisxxxxiiix"/*Cata*/,
-                "nisxxxxiiixx"/*Mop*/
+                "nisxxxxiiixx" /*Mop*/
             }
         },
         {
@@ -324,7 +324,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 "niixissssssssssssssssxx"/*WotLK*/,
                 "niixisxx"/*Cata*/,
-                "niixisxxx"/*Mop*/
+                "niixisxxx" /*Mop*/
             }
         },
         {
@@ -334,7 +334,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "niiiiiiiiiiiiiiiiiiiiiiiiiiiii"/*BC*/,
                 "niiiiiiiiiiiiiiiiiiiiiiiiiiiii"/*WotLK*/,
                 "niiiiiiiiiiiiiiiiiiiiiiiiiiiii"/*Cata*/,
-                "niiiiiiiiiiiiiiiiiiiiiiiiiiiii"/*Mop*/
+                "niiiiiiiiiiiiiiiiiiiiiiiiiiiii" /*Mop*/
             }
         },
         {
@@ -344,7 +344,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nf"/*BC*/,
                 "nf"/*WotLK*/,
                 "nf"/*Cata*/,
-                "nf"/*Mop*/
+                "nf" /*Mop*/
             }
         },
         {
@@ -354,7 +354,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "nxxiiixx"/*Cata*/,
-                "nxxiiixx"/*Mop*/
+                "nxxiiixx" /*Mop*/
             }
         },
         {
@@ -364,7 +364,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nxiiiixixixxxxxxxxx"/*BC*/,
                 "nxiiiixixixxxxxxxxx"/*WotLK*/,
                 "nxiiiixixixxxxxxxxx"/*Cata*/,
-                "nxiiiixixixxxxxxxxx"/*Mop*/
+                "nxiiiixixixxxxxxxxx" /*Mop*/
             }
         },
         {
@@ -374,7 +374,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "niiiiiiiiiiiiiiiiiissssssssssssssssxxxxxxxxxxxxxxxxxx"/*BC*/,
                 "niiiiiiiiiiiiiiiiiiffixssssssssssssssssxxxxxxxxxxxxxxxxxx"/*WotLK*/,
                 "niiiiiiiiiiiiiiiiiiffixsxx"/*Cata*/,
-                "niiiiiiiiiiiiiiiiiiffixsxixx"/*Mop*/
+                "niiiiiiiiiiiiiiiiiiffixsxixx" /*Mop*/
             }
         },
         {
@@ -384,7 +384,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "niiiiiiiiiiiii"/*BC*/,
                 "niiiiiiiiiiiii"/*WotLK*/,
                 "niiiiiiiiiiiii"/*Cata*/,
-                "niiiiiiiiiiiii"/*Mop*/
+                "niiiiiiiiiiiii" /*Mop*/
             }
         },
         {
@@ -394,7 +394,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nsxxxxxxxxxxffffff"/*BC*/,
                 "nsxxxxxxxxxxffffffx"/*WotLK*/,
                 "nsxxxxxxxxxxffffffxxx"/*Cata*/,
-                "nsxxxxxxxxxxffffffxxx"/*Mop*/
+                "nsxxxxxxxxxxffffffxxx" /*Mop*/
             }
         },
         {
@@ -404,7 +404,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nixxi"/*BC*/,
                 "nixxi"/*WotLK*/,
                 "nixxix"/*Cata*/,
-                "nixxix"/*Mop*/
+                "nixxix" /*Mop*/
             }
         },
         {
@@ -414,7 +414,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 "niii"/*WotLK*/,
                 "niii"/*Cata*/,
-                "niii"/*Mop*/
+                "niii" /*Mop*/
             }
         },
         {
@@ -424,7 +424,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 "nii"/*WotLK*/,
                 "nii"/*Cata*/,
-                "nii"/*Mop*/
+                "nii" /*Mop*/
             }
         },
         {
@@ -434,7 +434,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 "f"/*WotLK*/,
                 "xf"/*Cata*/,
-                "xf"/*Mop*/
+                "xf" /*Mop*/
             }
         },
         {
@@ -444,7 +444,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "f"/*BC*/,
                 "f"/*WotLK*/,
                 "xf"/*Cata*/,
-                "xf"/*Mop*/
+                "xf" /*Mop*/
             }
         },
         {
@@ -454,7 +454,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "f"/*BC*/,
                 "f"/*WotLK*/,
                 "xf"/*Cata*/,
-                "xf"/*Mop*/
+                "xf" /*Mop*/
             }
         },
         {
@@ -464,7 +464,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "f"/*BC*/,
                 "f"/*WotLK*/,
                 "xf"/*Cata*/,
-                "xf"/*Mop*/
+                "xf" /*Mop*/
             }
         },
         {
@@ -474,7 +474,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "f"/*BC*/,
                 "f"/*WotLK*/,
                 "xf"/*Cata*/,
-                "xf"/*Mop*/
+                "xf" /*Mop*/
             }
         },
         {
@@ -484,7 +484,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "f"/*BC*/,
                 "f"/*WotLK*/,
                 "xf"/*Cata*/,
-                "xf"/*Mop*/
+                "xf" /*Mop*/
             }
         },
         {
@@ -494,7 +494,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "f"/*BC*/,
                 "f"/*WotLK*/,
                 ""/*Cata*/,
-                ""/*Mop*/
+                "" /*Mop*/
             }
         },
         {
@@ -504,7 +504,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "f"/*BC*/,
                 "f"/*WotLK*/,
                 "df"/*Cata*/,
-                "df"/*Mop*/
+                "df" /*Mop*/
             }
         },
         {
@@ -514,7 +514,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "df"/*Cata*/,
-                "df"/*Mop*/
+                "df" /*Mop*/
             }
         },
         {
@@ -524,7 +524,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "df"/*Cata*/,
-                "df"/*Mop*/
+                "df" /*Mop*/
             }
         },
         {
@@ -534,7 +534,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "df"/*Cata*/,
-                "df"/*Mop*/
+                "df" /*Mop*/
             }
         },
         {
@@ -544,7 +544,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "f"/*BC*/,
                 "f"/*WotLK*/,
                 "xf"/*Cata*/,
-                "xf"/*Mop*/
+                "xf" /*Mop*/
             }
         },
         {
@@ -554,7 +554,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "f"/*BC*/,
                 "f"/*WotLK*/,
                 "xf"/*Cata*/,
-                "xf"/*Mop*/
+                "xf" /*Mop*/
             }
         },
         {
@@ -564,7 +564,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "xii"/*Cata*/,
-                "xii"/*Mop*/
+                "xii" /*Mop*/
             }
         },
         {
@@ -574,7 +574,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 "niiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiixxsiix"/*WotLK*/,
                 "niiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiixxsiix"/*Cata*/,
-                "nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"/*Mop*/
+                "nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" /*Mop*/
             }
         },
         {
@@ -584,7 +584,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "niii"/*BC*/,
                 "niiiiiii"/*WotLK*/,
                 "niiiiiii"/*Cata - DB2*/,
-                "niiiiiii"/*Mop - DB2*/
+                "niiiiiii" /*Mop - DB2*/
             }
         },
         {
@@ -594,7 +594,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "di"/*Cata - DB2*/,
-                "di"/*Mop - DB2*/
+                "di" /*Mop - DB2*/
             }
         },
         {
@@ -604,7 +604,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nxxxxxxxxxxixxxxxxxxxxxxx"/*BC*/,
                 ""/*WotLK*/,
                 ""/*Cata*/,
-                ""/*Mop*/
+                "" /*Mop*/
             }
         },
         {
@@ -614,7 +614,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "niiiiiiiiiiiii"/*BC*/,
                 "niiiiiiiiiiiiiix"/*WotLK*/,
                 "niiiiiiiiiiiiiixiiiiiiiiiixxxxx"/*Cata - DB2*/,
-                "niiiiiiiiiiiiiixiiiiiiiiiixxxxx"/*Mop - DB2*/
+                "niiiiiiiiiiiiiixiiiiiiiiiixxxxx" /*Mop - DB2*/
             }
         },
         {
@@ -624,7 +624,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 "nxxxxxxxxxxxxxxxxxii"/*WotLK*/,
                 "nxii"/*Cata*/,
-                "nxii"/*Mop*/
+                "nxii" /*Mop*/
             }
         },
         {
@@ -634,7 +634,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nxiiixxssssssssssssssssx"/*BC*/,
                 "nxiiixxssssssssssssssssx"/*WotLK*/,
                 "nxiiixxs"/*Cata*/,
-                "nxiiixxs"/*Mop*/
+                "nxiiixxs" /*Mop*/
             }
         },
         {
@@ -644,7 +644,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nssssssssssssssssxxiiiiii"/*BC*/,
                 "nssssssssssssssssxxiiixxiiixx"/*WotLK*/,
                 "nsxiiiiiiiiii"/*Cata*/,
-                "nsxiiiiiiiiii"/*Mop*/
+                "nsxiiiiiiiiii" /*Mop*/
             }
         },
         {
@@ -654,7 +654,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "nifif"/*Cata*/,
-                ""/*Mop*/
+                "" /*Mop*/
             }
         },
         {
@@ -664,7 +664,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nssssssssssssssssxiiiiiiiiiixxxxxxxiiiiiiiiiiiiiiiiii"/*BC*/,
                 "nssssssssssssssssxiiiiiiiiiixxxxxxxiiiiiiiiiiiiiiiiii"/*WotLK*/,
                 "nsxiiiiiiiiiixxxxxxiiiiiiiiiiiiiiiiii"/*Cata*/,
-                "nsxiiiiiiiiiixxxxxxiiiiiiiiiiiiiiiiii"/*Mop*/
+                "nsxiiiiiiiiiixxxxxxiiiiiiiiiiiiiiiiii" /*Mop*/
             }
         },
         {
@@ -674,7 +674,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 ""/*Cata*/,
-                "niix"/*Mop*/
+                "niix" /*Mop*/
             }
         },
         {
@@ -684,7 +684,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 ""/*Cata*/,
-                "nixx"/*Mop*/
+                "nixx" /*Mop*/
             }
         },
         {
@@ -694,7 +694,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx"/*BC*/,
                 "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx"/*WotLK*/,
                 "nsiiiiiiixiixixxxixxx"/*Cata*/,
-                "nsiiiiiiiiixxixixxxxxxxxxxxxx"/*Mop*/
+                "nsiiiiiiiiixxixixxxxxxxxxxxxx" /*Mop*/
             }
         },
         {
@@ -704,7 +704,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nxii"/*BC*/,
                 "nxxixixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"/*WotLK*/,
                 "nxxixixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"/*Cata*/,
-                "nxxixixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"/*Mop*/
+                "nxxixixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" /*Mop*/
             }
         },
         {
@@ -714,7 +714,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "niiiiiiiiiiiiiiiiiiiiiiiixxxxxxxx"/*BC*/,
                 "niiiiiiiiiiiiiiiiiiiiiiiixxxxxxxx"/*WotLK*/,
                 "niiiiiiiiiiiiiiiiiiiiiiiixxxxxxxx"/*Cata*/,
-                "niiiiiiiiiiiiiiiiiiiiiiiixxxxxxxx"/*Mop*/
+                "niiiiiiiiiiiiiiiiiiiiiiiixxxxxxxx" /*Mop*/
             }
         },
         {
@@ -724,7 +724,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxx"/*BC*/,
                 "nsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxx"/*WotLK*/,
                 "nss"/*Cata*/,
-                "nss"/*Mop*/
+                "nss" /*Mop*/
             }
         },
         {
@@ -734,7 +734,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nxixssssssssssssssssxxxxxxxixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiffiixxi"/*BC*/,
                 "nxixxssssssssssssssssxixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxixiffxiii"/*WotLK*/,
                 "nxixxxsixxixiffxiiii"/*Cata*/,
-                "nxixxsixxixiffxiiii"/*Mop*/
+                "nxixxsixxixiffxiiii" /*Mop*/
             }
         },
         {
@@ -744,7 +744,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 "diisxxxxxxxxxxxxxxxxiix"/*WotLK*/,
                 "diisiix"/*Cata*/,
-                "diisiix"/*Mop*/
+                "diisiix" /*Mop*/
             }
         },
         {
@@ -754,7 +754,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 ""/*Cata*/,
-                "niiiiii"/*Mop*/
+                "niiiiii" /*Mop*/
             }
         },
         {
@@ -764,7 +764,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "niiiiiii"/*Cata*/,
-                "niiiiiii"/*Mop*/
+                "niiiiiii" /*Mop*/
             }
         },
         {   // Missing struct
@@ -774,7 +774,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "niiiiiiiiiiiiiiiiiiiiiiii"/*Cata*/,
-                "niiiiiiiiiiiiiiiiiiiiiiii"/*Mop*/
+                "niiiiiiiiiiiiiiiiiiiiiiii" /*Mop*/
             }
         },
         {
@@ -784,7 +784,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nsii"/*BC*/,
                 "nsii"/*WotLK*/,
                 "nsii"/*Cata*/,
-                "nsii"/*Mop*/
+                "nsii" /*Mop*/
             }
         },
         {
@@ -794,7 +794,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "df"/*Cata*/,
-                "df"/*Mop*/
+                "df" /*Mop*/
             }
         },
         {
@@ -804,7 +804,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 ""/*Cata*/,
-                "niiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiixiii"/*Mop*/
+                "niiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiixiii" /*Mop*/
             }
         },
         {
@@ -814,7 +814,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "nii"/*Cata*/,
-                "nii"/*Mop*/
+                "nii" /*Mop*/
             }
         },
         {
@@ -824,7 +824,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "nx"/*Cata*/,
-                "nx"/*Mop*/
+                "nx" /*Mop*/
             }
         },
         {
@@ -834,7 +834,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 "niiiiiiiiii"/*WotLK*/,
                 "niiiiiiiiii"/*Cata*/,
-                "niiiiiiiiii"/*Mop*/
+                "niiiiiiiiii" /*Mop*/
             }
         },
         {
@@ -844,7 +844,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 "niiiiiiiiiiiiiiiiiiiii"/*WotLK*/,
                 "niiiiiiiiiiiiiiiiiiiixi"/*Cata*/,
-                "niiiiiiiiiiiiiiiiiiiixi"/*Mop*/
+                "niiiiiiiiiiiiiiiiiiiixi" /*Mop*/
             }
         },
         {
@@ -854,7 +854,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 "iniiiiiiiiiiiiiiiiiiiiii"/*WotLK*/,
                 "iniiiiiiiiiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxxx"/*Cata*/,
-                "iniiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"/*Mop*/
+                "iniiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii" /*Mop*/
             }
         },
         {
@@ -864,7 +864,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nixssssssssssssssssxxxxxxxxxxxxxxxxxxi"/*BC*/,
                 "nixssssssssssssssssxxxxxxxxxxxxxxxxxxixxxxxxxxxxxxxxxxxi"/*WotLK*/,
                 "nisxixi"/*Cata*/,
-                "nisxixixx"/*Mop*/
+                "nisxixixx" /*Mop*/
             }
         },
         {
@@ -874,7 +874,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "iiiiixxiiiiixxx"/*BC*/,
                 "niiiixxiiiiixx"/*WotLK*/,
                 "niiiixxiiiiixx"/*Cata*/,
-                "niiiiiiiiixxx"/*Mop*/
+                "niiiiiiiiixxx" /*Mop*/
             }
         },
         {
@@ -884,7 +884,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "ni"/*BC*/,
                 "ni"/*WotLK*/,
                 ""/*Cata*/,
-                ""/*Mop*/
+                "" /*Mop*/
             }
         },
         {
@@ -894,7 +894,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "diiii"/*Cata*/,
-                "nxxiiiixx"/*Mop*/
+                "nxxiiiixx" /*Mop*/
             }
         },
         {
@@ -904,7 +904,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "diiiiiiii"/*Cata*/,
-                "dxxiiiiiiii"/*Mop*/
+                "dxxiiiiiiii" /*Mop*/
             }
         },
         {
@@ -914,7 +914,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nifi"/*BC*/,
                 "nifi"/*WotLK*/,
                 "nifi"/*Cata*/,
-                "nifi"/*Mop*/
+                "nifi" /*Mop*/
             }
         },
         {
@@ -924,7 +924,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "dixxixi"/*Cata*/,
-                "dixxixi"/*Mop*/
+                "dixxixi" /*Mop*/
             }
         },
         {
@@ -934,7 +934,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "diiiiii"/*Cata*/,
-                "dxxiiiiiix"/*Mop*/
+                "dxxiiiiiix" /*Mop*/
             }
         },
         {
@@ -944,7 +944,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "dxiiiix"/*Cata*/,
-                "dxiiiix"/*Mop*/
+                "dxiiiix" /*Mop*/
             }
         },
         {
@@ -954,7 +954,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "diii"/*Cata*/,
-                "dxxiii"/*Mop*/
+                "dxxiii" /*Mop*/
             }
         },
         {
@@ -964,7 +964,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 "niiii"/*WotLK*/,
                 "niiii"/*Cata*/,
-                "niiii"/*Mop*/
+                "niiii" /*Mop*/
             }
         },
         {
@@ -974,7 +974,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "niii"/*BC*/,
                 "niii"/*WotLK*/,
                 "niii"/*Cata*/,
-                "niii"/*Mop*/
+                "niii" /*Mop*/
             }
         },
         {
@@ -984,7 +984,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nixiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiifxiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiffffffiiiiiiiiiiiiiiiiiiiiifffiiiiiiiiiiiiiiifffiiiiissssssssssssssssxssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiiiiiiiiiixfffxxxiiii"/*BC*/,
                 "niiiiiiiiiiiixixiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiifxiiiiiiiiiiiiiiiiiiiiiiiiiiiifffiiiiiiiiiiiiiiiiiiiiifffiiiiiiiiiiiiiiifffiiiiiiiiiiiiiissssssssssssssssxssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiiiiiiiiiiixfffxxxiiiiixxfffxi"/*WotLK*/,
                 "niiiiiiiiiiiiiiifiiiissxxiixxifiiiiiiixiiiiiiiix"/*Cata*/,
-                "nssxxixxfiiiiiiiiiiiiiiii"/*Mop*/
+                "nssxxixxfiiiiiiiiiiiiiiii" /*Mop*/
             }
         },
         {
@@ -994,7 +994,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "niiiiiiiiiiiissssssssssssssssxiiii"/*BC*/,
                 "nxiiiiiiiiiiiissssssssssssssssxiiiiiii"/*WotLK*/,
                 "nxiiiiiiiiiiiisiiiiiiix"/*Cata*/,
-                "nxiiiiiiiiisiiiiiiixxxxxxx"/*Mop*/
+                "nxiiiiiiiiisiiiiiiixxxxxxx" /*Mop*/
             }
         },
         {
@@ -1004,7 +1004,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nfff"/*BC*/,
                 "nfff"/*WotLK*/,
                 "nfff"/*Cata*/,
-                "nffxf"/*Mop*/
+                "nffxf" /*Mop*/
             }
         },
         {
@@ -1014,7 +1014,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nffixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"/*BC*/,
                 "nffffixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"/*WotLK*/,
                 "nffffixx"/*Cata*/,
-                "nffffixx"/*Mop*/
+                "nffffixx" /*Mop*/
             }
         },
         {
@@ -1024,7 +1024,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 "niiii"/*WotLK*/,
                 "niiii"/*Cata*/,
-                "niiiii"/*Mop*/
+                "niiiii" /*Mop*/
             }
         },
         {
@@ -1034,7 +1034,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nxxxxxxxxxxxxxxxxxxiixiiixxiiiiiiii"/*BC*/,
                 "nxxxxxxxxxxxxxxxxxxiixiiixxiiiiiiii"/*WotLK*/,
                 "nxxiixiiixxiiiiiiiixx"/*Cata*/,
-                "nxxiixiiixxiiiiiiiixx"/*Mop*/
+                "nxxiixiiixxiiiiiiiixx" /*Mop*/
             }
         },
         {
@@ -1044,7 +1044,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "nifiiiffiiiiiifiifiiiiiiiix"/*Cata*/,
-                "nxifiiiffiiiiiifiifiiiiixiiiix"/*Mop*/
+                "nxifiiiffiiiiiifiifiiiiixiiiix" /*Mop*/
             }
         },
         {
@@ -1054,7 +1054,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "diii"/*Cata*/,
-                "dxxiii"/*Mop*/
+                "dxxiii" /*Mop*/
             }
         },
         {
@@ -1064,7 +1064,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "dixixi"/*Cata*/,
-                "dxxixixi"/*Mop*/
+                "dxxixixi" /*Mop*/
             }
         },
         {
@@ -1074,7 +1074,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "diii"/*Cata*/,
-                "dxxiii"/*Mop*/
+                "dxxiii" /*Mop*/
             }
         },
         {
@@ -1084,7 +1084,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 ""/*Cata*/,
-                "nxiiiiiiiiiiiiiiiiiifiiiii"/*Mop*/
+                "nxiiiiiiiiiiiiiiiiiifiiiii" /*Mop*/
             }
         },
         {
@@ -1094,7 +1094,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "diiiiixf"/*Cata*/,
-                "dixiiiiixffix"/*Mop*/
+                "dixiiiiixffix" /*Mop*/
             }
         },
         {
@@ -1104,7 +1104,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "diiiiiiiiiiiiiiii"/*Cata*/,
-                "diiiiiiiiiiiiiiiiii"/*Mop DB2*/
+                "diiiiiiiiiiiiiiiiii" /*Mop DB2*/
             }
         },
         {
@@ -1114,7 +1114,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "diiiiffffffffffi"/*Cata*/,
-                "diiiifixx"/*Mop*/
+                "diiiifixx" /*Mop*/
             }
         },
         {
@@ -1124,7 +1124,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "dixixx"/*Cata*/,
-                "dixixx"/*Mop*/
+                "dixixx" /*Mop*/
             }
         },
         {
@@ -1134,7 +1134,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "nfiiii"/*Cata*/,
-                "nxxxfiiii"/*Mop*/
+                "nxxxfiiii" /*Mop*/
             }
         },
         {
@@ -1144,7 +1144,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "diiii"/*Cata*/,
-                "diiii"/*Mop*/
+                "diiii" /*Mop*/
             }
         },
         {
@@ -1154,7 +1154,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "niiiii"/*BC*/,
                 "niiiii"/*WotLK*/,
                 "niiiii"/*Cata*/,
-                "niiiii"/*Mop*/
+                "niiiii" /*Mop*/
             }
         },
         {
@@ -1164,7 +1164,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "niiiiiiiixxxxixxixxxx"/*BC*/,
                 "niiiiiiiixxxxixxixxxxxx"/*WotLK*/,
                 "niiiiiiiiixxixxxxxx"/*Cata*/,
-                "nxiiixxxiix"/*Mop*/
+                "nxiiixxxiix" /*Mop*/
             }
         },
         {
@@ -1174,7 +1174,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nxxxxxxxxxxxxxxxxxxxiix"/*BC*/,
                 "nxxxxxxxxxxxxxxxxxxxiiix"/*WotLK*/,
                 "nxxiiixxiii"/*Cata*/,
-                "nxxiiixxiii"/*Mop*/
+                "nxxiiixxiii" /*Mop*/
             }
         },
         {
@@ -1184,7 +1184,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 "iiix"/*Cata*/,
-                "iiix"/*Mop*/
+                "iiix" /*Mop*/
             }
         },
         {
@@ -1194,7 +1194,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nifffssssssssssssssssxii"/*BC*/,
                 "nifffssssssssssssssssxii"/*WotLK*/,
                 "nifffsiiixx"/*Cata*/,
-                "nifffsiixixx"/*Mop*/
+                "nifffsiixixx" /*Mop*/
             }
         },
         {
@@ -1204,7 +1204,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "niii"/*BC*/,
                 "niii"/*WotLK*/,
                 "niii"/*Cata*/,
-                "niii"/*Mop*/
+                "niii" /*Mop*/
             }
         },
         {
@@ -1214,7 +1214,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "diiifffiiii"/*BC*/,
                 "diiifffiiii"/*WotLK*/,
                 "diiifffiiii"/*Cata*/,
-                "diiifffiiii"/*Mop*/
+                "diiifffiiii" /*Mop*/
             }
         },
         {
@@ -1224,7 +1224,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nxxxxxxxxxxxxxxxxxii"/*BC*/,
                 "nxxxxxxxxxxxxxxxxxii"/*WotLK*/,
                 "nxii"/*Cata entry*/,
-                "nxii"/*Mop entry*/
+                "nxii" /*Mop entry*/
             }
         },
         {
@@ -1234,7 +1234,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "diifffx"/*BC*/,
                 "diifffx"/*WotLK*/,
                 "diifffx"/*Cata*/,
-                "diifffx"/*Mop*/
+                "diifffx" /*Mop*/
             }
         },
         {
@@ -1244,7 +1244,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 "diiffff"/*WotLK*/,
                 "diiffff"/*Cata*/,
-                "diiffff"/*Mop*/
+                "diiffff" /*Mop*/
             }
         },
         {
@@ -1254,7 +1254,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "niffffiiiiiiiifffffffffffffffssssfifiixx"/*BC*/,
                 "niffffiiiiiiiifffffffffffffffssssfifiixx"/*WotLK*/,
                 "niffffiiiiiiiifffffffffffffffssssfifiixx"/*Cata*/,
-                "nixffffiiiiiiiifffffffffffffffssssfifiixx"/*Mop*/
+                "nixffffiiiiiiiifffffffffffffffssssfifiixx" /*Mop*/
             }
         },
         {
@@ -1264,7 +1264,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "niiffffffffffiiiiiifffffffiiifffiiiiiiiffiiiiixxxxxxxxxxxx"/*BC*/,
                 "niiffffffffffiiiiiifffffffiiifffiiiiiiiffiiiiixxxxxxxxxxxx"/*WotLK*/,
                 "niiffffffffffiiiiiifffffffiiifffiiiiiiiffiiiiixxxxxxxxxxxxxxxxxxxx"/*Cata*/,
-                "niiffffffffffiiiiiifffffffiiifffiiiiiiiffiiiiixxxxxxxxxxxxxxxxxxxx"/*Mop*/
+                "niiffffffffffiiiiiifffffffiiifffiiiiiiiffiiiiixxxxxxxxxxxxxxxxxxxx" /*Mop*/
             }
         },
         {
@@ -1274,7 +1274,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 ""/*BC*/,
                 ""/*WotLK*/,
                 ""/*Cata*/,
-                "ns"/*Mop*/
+                "ns" /*Mop*/
             }
         },
         {
@@ -1284,7 +1284,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "niiixxxxxiixxxxxxxxxxxxxxxxx"/*BC*/,
                 "niiixxxxxiixxxxxxxxxxxxxxxxx"/*WotLK*/,
                 "niiixxxxxiixxxx"/*Cata*/,
-                "niiixxxxxiixxxx"/*Mop*/
+                "niiixxxxxiixxxx" /*Mop*/
             }
         },
         {
@@ -1294,7 +1294,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "xinxxxxxi"/*BC*/,
                 "xinxxxxxixx"/*WotLK*/,
                 "xinxxxxxixxxxx"/*Cata*/,
-                "xinxxxxxixxxxx"/*Mop*/
+                "xinxxxxxixxxxx" /*Mop*/
             }
         },
         {
@@ -1304,7 +1304,7 @@ inline const std::unordered_map<std::string_view, MultiversionFormatTable> dbcFi
                 "nxiiiixxxxxxxxxxx"/*BC*/,
                 "nxiiiixxxxxxxxxxx"/*WotLK*/,
                 "nxiiiixxxxxxxxx"/*Cata*/,
-                "nxiiiixxxxxxxxxx"/*Mop*/
+                "nxiiiixxxxxxxxxx" /*Mop*/
             }
         }
     }

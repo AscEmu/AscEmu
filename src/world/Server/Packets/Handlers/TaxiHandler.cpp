@@ -273,13 +273,12 @@ void WorldSession::handleMoveSplineDoneOpcode(WorldPacket& recvData)
     WoWGuid guid;
     recvData >> guid;
 
-    MovementInfo movementInfo;  // used only for proper packet read
+    MovementInfo movementInfo; // used only for proper packet read
     movementInfo.read(recvData, getClientProtocol());
 
-    recvData.readSkip<uint32_t>();   // spline id
+    recvData.readSkip<uint32_t>(); // spline id
 
-    uint32_t curDest = GetPlayer()->m_taxi->getTaxiDestination();
-    if (curDest)
+    if (uint32_t curDest = GetPlayer()->m_taxi->getTaxiDestination())
     {
         WDB::Structures::TaxiNodesEntry const* curDestNode = sTaxiNodesStore.lookupEntry(curDest);
 
@@ -293,7 +292,7 @@ void WorldSession::handleMoveSplineDoneOpcode(WorldPacket& recvData)
                 WDB::Structures::TaxiPathNodeEntry const* node = flight->getPath()[flight->getCurrentNode()];
                 flight->skipCurrentNode();
 
-                GetPlayer()->m_taxi->setNodeAfterTeleport(node->NodeIndex);
+                GetPlayer()->m_taxi->setNodeAfterTeleport(node->nodeIndex);
                 GetPlayer()->safeTeleport(curDestNode->mapId, 0, LocationVector(node->x, node->y, node->z, GetPlayer()->GetOrientation()));
             }
         }

@@ -171,36 +171,39 @@ void TransportHandler::removeInstancedTransport(Transporter* transport, uint32_t
         _TransportersByInstanceIdMap[instanceID].erase(transport);
 }
 
-bool FillTransporterPathVector(uint32_t PathID, TransportPath & Path)
+bool FillTransporterPathVector(uint32_t PathID, TransportPath& Path)
 {
-    // Store dbc values into current Path array
-    Path.resize(sTaxiPathNodeStore.getNumRows());
-
-    uint32_t i = 0;
-    for (uint32_t j = 0; j < sTaxiPathNodeStore.getNumRows(); ++j)
+    std::vector<WDB::Structures::TaxiPathNodeEntry const*> nodes;
+    for (auto const& pathNode : sTaxiPathNodeStore | std::views::values)
     {
-        auto pathnode = sTaxiPathNodeStore.lookupEntry(j);
-        if (pathnode == nullptr)
-            continue;
-
-        if (pathnode->pathId == PathID)
-        {
-            Path[i].mapid = pathnode->mapid;
-            Path[i].x = pathnode->x;
-            Path[i].y = pathnode->y;
-            Path[i].z = pathnode->z;
-            Path[i].flags = pathnode->flags;
-            Path[i].delay = pathnode->waittime;
-#if VERSION_STRING > Classic
-            Path[i].ArrivalEventID = pathnode->arivalEventID;
-            Path[i].DepartureEventID = pathnode->departureEventID;
-#endif
-            ++i;
-        }
+        if (pathNode.pathId == PathID)
+            nodes.push_back(&pathNode);
     }
 
-    Path.resize(i);
-    return (i > 0 ? true : false);
+    if (nodes.empty())
+    {
+        Path.clear();
+        return false;
+    }
+
+    std::ranges::sort(nodes, {}, &WDB::Structures::TaxiPathNodeEntry::nodeIndex);
+
+    const auto count = static_cast<uint32_t>(nodes.size());
+    Path.resize(count);
+    for (uint32_t i = 0; i < count; ++i)
+    {
+        auto const* pathnode = nodes[i];
+        Path[i].mapid = pathnode->mapId;
+        Path[i].x = pathnode->x;
+        Path[i].y = pathnode->y;
+        Path[i].z = pathnode->z;
+        Path[i].flags = pathnode->flags;
+        Path[i].delay = pathnode->waitTime;
+        Path[i].ArrivalEventID = pathnode->arrivalEventId;
+        Path[i].DepartureEventID = pathnode->departureEventId;
+    }
+
+    return true;
 }
 
 class SplineRawInitializer

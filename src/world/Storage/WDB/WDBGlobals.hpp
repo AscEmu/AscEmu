@@ -32,6 +32,7 @@ namespace WDB
             return (it != this->end()) ? &it->second : nullptr;
         }
 
+        [[deprecated("WDBStore is deprecated, use std::view::values instead")]]
         [[nodiscard]] std::size_t getNumRows() const noexcept
         {
             return this->size();

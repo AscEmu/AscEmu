@@ -18,7 +18,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace WDB::Structures
 {
-    struct ItemExtendedCostEntry;
     struct ItemEntry;
     struct VehicleSeatEntry;
     struct VehicleEntry;
@@ -36,25 +35,18 @@ namespace WDB::Structures
     struct TransportAnimationEntry;
     struct TaxiPathEntry;
     struct TalentTabEntry;
-    struct TalentEntry;
-    struct SpellShapeshiftFormEntry;
-    struct SpellRangeEntry;
-    struct SpellEntry;
-    struct SkillLineEntry;
     struct SkillLineAbilityEntry;
     struct NameGenEntry;
     struct MapEntry;
-    struct MailTemplateEntry;
     struct LockEntry;
     struct LiquidTypeEntry;
     struct LFGDungeonEntry;
     struct ItemRandomPropertiesEntry;
-     struct EmotesTextEntry;
+    struct EmotesTextEntry;
     struct AreaTableEntry;
     struct SpellDurationEntry;
     struct SpellCastTimesEntry;
     struct SpellRadiusEntry;
-    struct TaxiPathNodeEntry;
     struct MapDifficulty;
 
 #if VERSION_STRING < Cata
@@ -94,7 +86,6 @@ namespace WDB::Structures
     struct NumTalentsAtLevel;
     struct PhaseEntry;
     struct QuestSortEntry;
-    struct SpellAuraOptionsEntry;
     struct SpellAuraRestrictionsEntry;
     struct SpellCastingRequirementsEntry;
     struct SpellCategoriesEntry;
@@ -104,9 +95,7 @@ namespace WDB::Structures
     struct SpellEquippedItemsEntry;
     struct SpellInterruptsEntry;
     struct SpellLevelsEntry;
-    struct SpellPowerEntry;
     struct SpellScalingEntry;
-    struct SpellShapeshiftEntry;
     struct SpellTargetRestrictionsEntry;
     struct SpellTotemsEntry;
     struct TalentTreePrimarySpells;
@@ -118,7 +107,6 @@ namespace WDB::Structures
 #endif
 
 #if VERSION_STRING >= Mop
-    struct SpellMiscEntry;
     struct BattlePetSpeciesEntry;
     struct BattlePetBreedStateEntry;
     struct BattlePetSpeciesStateEntry;
@@ -179,7 +167,7 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemRandomPropertiesEntry>
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::LFGDungeonEntry> sLFGDungeonStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::LiquidTypeEntry> sLiquidTypeStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::LockEntry> sLockStore;
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::MailTemplateEntry> sMailTemplateStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::MailTemplateEntry> sMailTemplateStore;
 
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::MapEntry> sMapStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ModifierTreeEntry> sModifierTreeStore;
@@ -189,7 +177,7 @@ inline MapDifficultyMap sMapDifficultyMap;
 
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::NameGenEntry> sNameGenStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SkillLineAbilityEntry> sSkillLineAbilityStore;
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SkillLineEntry> sSkillLineStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::SkillLineEntry> sSkillLineStore;
 extern SERVER_DECL std::unordered_map<uint32_t, std::vector<uint32_t>> sSkillLineChildren; // parent skill line -> expansion lines, own client data only
 
 // an item effect of the client data: the spell an item casts by its trigger
@@ -204,14 +192,14 @@ struct ClientItemEffect
 };
 
 extern SERVER_DECL std::unordered_map<uint32_t, std::vector<ClientItemEffect>> sItemEffects; // item -> effects, own client data only
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellEntry> sSpellStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::SpellEntry> sSpellStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellCastTimesEntry> sSpellCastTimesStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellDurationEntry> sSpellDurationStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::SpellItemEnchantmentEntry> sSpellItemEnchantmentStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellRadiusEntry> sSpellRadiusStore;
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellRangeEntry> sSpellRangeStore;
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellShapeshiftFormEntry> sSpellShapeshiftFormStore;
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::TalentEntry> sTalentStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::SpellRangeEntry> sSpellRangeStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::SpellShapeshiftFormEntry> sSpellShapeshiftFormStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::TalentEntry> sTalentStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::TalentTabEntry> sTalentTabStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::TaxiNodesEntry> sTaxiNodesStore;
 extern TaxiPathSetBySource sTaxiPathSetBySource;
@@ -219,7 +207,7 @@ extern TaxiPathSetBySource sTaxiPathSetBySource;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::TaxiPathEntry> sTaxiPathStore;
 extern TaxiPathNodesByPath sTaxiPathNodesByPath;
 
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::TaxiPathNodeEntry> sTaxiPathNodeStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::TaxiPathNodeEntry> sTaxiPathNodeStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::TransportAnimationEntry> sTransportAnimationStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::WMOAreaTableEntry> sWMOAreaTableStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::WorldMapOverlayEntry> sWorldMapOverlayStore;
@@ -236,7 +224,7 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::VehicleEntry> sVehicleStor
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::VehicleSeatEntry> sVehicleSeatStore; // todo: available for versions > WotLK
 
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemEntry> sItemStore;
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemExtendedCostEntry> sItemExtendedCostStore; // todo: available for versions > Classic
+extern SERVER_DECL WDB::WDBStore<WDB::Structures::ItemExtendedCostEntry> sItemExtendedCostStore;
 
 #if VERSION_STRING < Cata
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTRegenHPEntry> sGtOCTRegenHPStore; // todo: available for versions > Classic
@@ -246,94 +234,88 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtRegenHPPerSptEntry> sGtR
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStableSlotPricesStore;
 
 #ifdef AE_TBC
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemDisplayInfo> sItemDisplayInfoStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemDisplayInfo> sItemDisplayInfoStore;
 #endif
 
-    inline SERVER_DECL WDB::WDBStore<WDB::Structures::CharTitlesEntry> sCharTitlesStore;
-    inline SERVER_DECL WDB::WDBStore<WDB::Structures::GemPropertiesEntry> sGemPropertiesStore;
-    inline SERVER_DECL WDB::WDBStore<WDB::Structures::TotemCategoryEntry> sTotemCategoryStore;
-    inline SERVER_DECL WDB::WDBStore<WDB::Structures::WorldMapAreaEntry> sWorldMapAreaStore;
-    inline SERVER_DECL WDB::WDBStore<WDB::Structures::AreaGroupEntry> sAreaGroupStore;
-    inline SERVER_DECL WDB::WDBStore<WDB::Structures::BarberShopStyleEntry> sBarberShopStyleStore;
-    inline SERVER_DECL WDB::WDBStore<WDB::Structures::MapDifficultyEntry> sMapDifficultyStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::CharTitlesEntry> sCharTitlesStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::GemPropertiesEntry> sGemPropertiesStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::TotemCategoryEntry> sTotemCategoryStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::WorldMapAreaEntry> sWorldMapAreaStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::AreaGroupEntry> sAreaGroupStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::BarberShopStyleEntry> sBarberShopStyleStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::MapDifficultyEntry> sMapDifficultyStore;
 
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrSpecializationEntry> sChrSpecializationStore;
 
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrSpecializationEntry> sChrSpecializationStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GlyphPropertiesEntry> sGlyphPropertiesStore;
 
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GlyphPropertiesEntry> sGlyphPropertiesStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::DungeonEncounterEntry> sDungeonEncounterStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::TransportRotationEntry> sTransportRotationStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GlyphSlotEntry> sGlyphSlotStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtBarberShopCostBaseEntry> sBarberShopCostBaseStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::HolidaysEntry> sHolidaysStore;
 
-#if VERSION_STRING >= WotLK
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::DungeonEncounterEntry> sDungeonEncounterStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::TransportRotationEntry> sTransportRotationStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GlyphSlotEntry> sGlyphSlotStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtBarberShopCostBaseEntry> sBarberShopCostBaseStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::HolidaysEntry> sHolidaysStore;
-    
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::QuestXP> sQuestXPStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ScalingStatDistributionEntry> sScalingStatDistributionStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ScalingStatValuesEntry> sScalingStatValuesStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellDifficultyEntry> sSpellDifficultyStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellRuneCostEntry> sSpellRuneCostStore;
-#endif
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::QuestXP> sQuestXPStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ScalingStatDistributionEntry> sScalingStatDistributionStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ScalingStatValuesEntry> sScalingStatValuesStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellDifficultyEntry> sSpellDifficultyStore;
 
-    inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemLimitCategoryEntry> sItemLimitCategoryStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellRuneCostEntry> sSpellRuneCostStore;
 
-    inline SERVER_DECL WDB::WDBStore<WDB::Structures::BannedAddOnsEntry> sBannedAddOnsStore;
-    inline SERVER_DECL WDB::WDBStore<WDB::Structures::ChrPowerTypesEntry> sChrPowerTypesStore;
-    inline std::array<std::array<uint8_t, TOTAL_PLAYER_POWER_TYPES>, MAX_PLAYER_CLASSES> powerIndexByClass;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemLimitCategoryEntry> sItemLimitCategoryStore;
 
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTBaseHPByClassEntry> sGtOCTBaseHPByClassStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTBaseMPByClassEntry> sGtOCTBaseMPByClassStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::BannedAddOnsEntry> sBannedAddOnsStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ChrPowerTypesEntry> sChrPowerTypesStore;
+inline std::array<std::array<uint8_t, TOTAL_PLAYER_POWER_TYPES>, MAX_PLAYER_CLASSES> powerIndexByClass;
 
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GuildPerkSpellsEntry> sGuildPerkSpellsStore;
-#if VERSION_STRING >= Cata
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTClassCombatRatingScalarEntry> sGtOCTClassCombatRatingScalarStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::EmotesEntry> sEmotesStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemCurrencyCostEntry> sItemCurrencyCostStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::MountCapabilityEntry> sMountCapabilityStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::MountTypeEntry> sMountTypeStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::NumTalentsAtLevel> sNumTalentsAtLevel;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::PhaseEntry> sPhaseStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::QuestSortEntry> sQuestSortStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellAuraOptionsEntry> sSpellAuraOptionsStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellAuraRestrictionsEntry> sSpellAuraRestrictionsStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellCastingRequirementsEntry> sSpellCastingRequirementsStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellCategoriesEntry> sSpellCategoriesStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellClassOptionsEntry> sSpellClassOptionsStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellCooldownsEntry> sSpellCooldownsStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellEffectEntry> sSpellEffectStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellEquippedItemsEntry> sSpellEquippedItemsStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellInterruptsEntry> sSpellInterruptsStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellLevelsEntry> sSpellLevelsStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellPowerEntry> sSpellPowerStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellScalingEntry> sSpellScalingStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellShapeshiftEntry> sSpellShapeshiftStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellTargetRestrictionsEntry> sSpellTargetRestrictionsStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellTotemsEntry> sSpellTotemsStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::TalentTreePrimarySpells> sTalentTreePrimarySpellsStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellReagentsEntry> sSpellReagentsStore;
-#endif
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTBaseHPByClassEntry> sGtOCTBaseHPByClassStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTBaseMPByClassEntry> sGtOCTBaseMPByClassStore;
+
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GuildPerkSpellsEntry> sGuildPerkSpellsStore;
+
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::SpellPowerEntry> sSpellPowerStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::SpellAuraOptionsEntry> sSpellAuraOptionsStore;
+
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTClassCombatRatingScalarEntry> sGtOCTClassCombatRatingScalarStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::EmotesEntry> sEmotesStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemCurrencyCostEntry> sItemCurrencyCostStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::MountCapabilityEntry> sMountCapabilityStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::MountTypeEntry> sMountTypeStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::NumTalentsAtLevel> sNumTalentsAtLevel;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::PhaseEntry> sPhaseStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::QuestSortEntry> sQuestSortStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellAuraRestrictionsEntry> sSpellAuraRestrictionsStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellCastingRequirementsEntry> sSpellCastingRequirementsStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellCategoriesEntry> sSpellCategoriesStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellClassOptionsEntry> sSpellClassOptionsStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellCooldownsEntry> sSpellCooldownsStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellEffectEntry> sSpellEffectStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellEquippedItemsEntry> sSpellEquippedItemsStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellInterruptsEntry> sSpellInterruptsStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellLevelsEntry> sSpellLevelsStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellScalingEntry> sSpellScalingStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellShapeshiftEntry> sSpellShapeshiftStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellTargetRestrictionsEntry> sSpellTargetRestrictionsStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellTotemsEntry> sSpellTotemsStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::TalentTreePrimarySpells> sTalentTreePrimarySpellsStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellReagentsEntry> sSpellReagentsStore;
 
 #ifdef AE_CATA
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemReforgeEntry> sItemReforgeStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemReforgeEntry> sItemReforgeStore;
 #endif
 
-#if VERSION_STRING >= Mop
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellMiscEntry> sSpellMiscStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetSpeciesEntry> sBattlePetSpeciesStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetBreedStateEntry> sBattlePetBreedStateStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetSpeciesStateEntry> sBattlePetSpeciesStateStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetBreedQualityEntry> sBattlePetBreedQualityStore;
-    extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemToBattlePetEntry> sItemToBattlePetStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::SpellMiscEntry> sSpellMiscStore;
 
-    WDB::Structures::SpellPowerEntry const* getSpellPowerEntry(uint32_t spellId);
-#endif
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetSpeciesEntry> sBattlePetSpeciesStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetBreedStateEntry> sBattlePetBreedStateStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetSpeciesStateEntry> sBattlePetSpeciesStateStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetBreedQualityEntry> sBattlePetBreedQualityStore;
+extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemToBattlePetEntry> sItemToBattlePetStore;
 
+WDB::Structures::SpellPowerEntry const* getSpellPowerEntry(uint32_t spellId);
 
-#if VERSION_STRING >= Cata
-    WDB::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32_t spellId, uint8_t effect);
-    uint8_t getPowerIndexByClass(uint8_t playerClass, uint8_t powerIndex);
-#endif
+WDB::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32_t spellId, uint8_t effect);
+uint8_t getPowerIndexByClass(uint8_t playerClass, uint8_t powerIndex);
 
 WDB::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties& difficulty);
 WDB::Structures::MapDifficulty const* getMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties difficulty);
@@ -356,8 +338,6 @@ uint32_t getLiquidFlags(uint32_t liquidId);
 
 bool loadDBCs();
 
-#if VERSION_STRING >= WoD
 // Fills the stores from the DB2 tables of a client with its own data (WoW::hasOwnClientData),
 // the counterpart of the dbc loading in loadDBCs(). Defined in WDBStoresDb2.cpp.
 bool loadDb2Stores(WDB::StoreProblemList& errors, std::string const& dbcPath);
-#endif

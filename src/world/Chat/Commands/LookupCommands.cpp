@@ -647,19 +647,19 @@ bool ChatCommandHandler::HandleLookupSkillCommand(const char* args, WorldSession
     greenSystemMessage(m_session, "Starting search of skill `{}`...", x);
     auto startTime = Util::TimeNow();
     uint32_t count = 0;
-    for (uint32_t index = 0; index < sSkillLineStore.getNumRows(); ++index)
-    {
-        auto skill_line = sSkillLineStore.lookupEntry(index);
-        if (skill_line == nullptr)
-            continue;
 
-        // the skill names carry locales up to WotLK
-        const auto nameIndex = WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata) ? 0 : sWorld.getDbcLocaleLanguageId();
-        std::string y = std::string(skill_line->Name[nameIndex]);
+    // Skill names carry locales up to WotLK
+    const uint32_t nameIndex = WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata) ? 0 : sWorld.getDbcLocaleLanguageId();
+
+    for (auto const& skillLine : sSkillLineStore | std::views::values)
+    {
+        std::string const& fullName = (nameIndex < skillLine.name.size()) ? skillLine.name[nameIndex] : skillLine.name[0];
+        std::string y = fullName;
+
         AscEmu::Util::Strings::toLowerCase(y);
         if (AscEmu::Util::Strings::contains(x, y))
         {
-            SendHighlightedName(m_session, "Skill", skill_line->Name[nameIndex], y, x, skill_line->id);
+            SendHighlightedName(m_session, "Skill", fullName.c_str(), y, x, skillLine.id);
             ++count;
             if (count == 25)
             {

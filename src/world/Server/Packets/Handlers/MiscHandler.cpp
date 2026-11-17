@@ -1827,13 +1827,13 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
             for (uint32_t j = 0; j < sTalentStore.getNumRows(); ++j)
             {
                 const auto talentInfo = sTalentStore.lookupEntry(j);
-                if (talentInfo == nullptr || talentInfo->TalentTree != talentTabIds[i])
+                if (talentInfo == nullptr || talentInfo->talentTree != talentTabIds[i])
                     continue;
 
                 int32_t talentMaxRank = -1;
                 for (int32_t k = 4; k > -1; --k)
                 {
-                    if (talentInfo->RankID[k] != 0 && inspectedPlayer->hasSpell(talentInfo->RankID[k]))
+                    if (talentInfo->rankId[k] != 0 && inspectedPlayer->hasSpell(talentInfo->rankId[k]))
                     {
                         talentMaxRank = k;
                         break;
@@ -1843,7 +1843,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
                 if (talentMaxRank < 0)
                     continue;
 
-                entry.talents.emplace_back(talentInfo->TalentID, static_cast<uint8_t>(talentMaxRank));
+                entry.talents.emplace_back(talentInfo->id, static_cast<uint8_t>(talentMaxRank));
             }
         }
 
@@ -1865,13 +1865,13 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
             for (uint32_t j = 0; j < sTalentStore.getNumRows(); ++j)
             {
                 const auto talentInfo = sTalentStore.lookupEntry(j);
-                if (talentInfo == nullptr || talentInfo->TalentTree != talentTabIds[i])
+                if (talentInfo == nullptr || talentInfo->talentTree != talentTabIds[i])
                     continue;
 
                 uint32_t talentMaxRank = 0;
                 for (uint32_t k = 5; k > 0; --k)
                 {
-                    if (talentInfo->RankID[k - 1] != 0 && inspectedPlayer->hasSpell(talentInfo->RankID[k - 1]))
+                    if (talentInfo->rankId[k - 1] != 0 && inspectedPlayer->hasSpell(talentInfo->rankId[k - 1]))
                     {
                         talentMaxRank = k;
                         break;
@@ -1882,7 +1882,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
                     continue;
 
                 // bit index of the learned rank, stored in groups of 7 bits with the high bit of every byte unused
-                const uint32_t rankIndex = talentTabPos + getTalentInspectBitPosInTab(talentInfo->TalentID) + talentMaxRank - 1;
+                const uint32_t rankIndex = talentTabPos + getTalentInspectBitPosInTab(talentInfo->id) + talentMaxRank - 1;
                 const uint32_t rankIndex8 = (rankIndex / 7) * 8 + (rankIndex % 7);
                 const uint32_t slot = rankIndex8 / 8;
                 if (slot < managedPacket.legacyTalentBits.size())
@@ -1902,8 +1902,8 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
         if (talentInfo == nullptr || talentInfo->playerClass != inspectedPlayer->getClass())
             continue;
 
-        if (inspectedPlayer->hasSpell(talentInfo->SpellId))
-            talentIds.push_back(talentInfo->TalentID);
+        if (inspectedPlayer->hasSpell(talentInfo->spellId))
+            talentIds.push_back(talentInfo->id);
     }
 
     const auto& activeSpec = inspectedPlayer->m_specs[inspectedPlayer->m_talentActiveSpec];

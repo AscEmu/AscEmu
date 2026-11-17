@@ -20,9 +20,9 @@ uint32_t FlightPathMovementGenerator::getPathAtMapEnd() const
     if (_currentNode >= _path.size())
         return static_cast<uint32_t>(_path.size());
 
-    uint32_t curMapId = _path[_currentNode]->mapid;
+    uint32_t curMapId = _path[_currentNode]->mapId;
     for (uint32_t i = _currentNode; i < _path.size(); ++i)
-        if (_path[i]->mapid != curMapId)
+        if (_path[i]->mapId != curMapId)
             return i;
 
     return static_cast<uint32_t>(_path.size());
@@ -30,7 +30,7 @@ uint32_t FlightPathMovementGenerator::getPathAtMapEnd() const
 
 static bool isNodeIncludedInShortenedPath(WDB::Structures::TaxiPathNodeEntry const* path1, WDB::Structures::TaxiPathNodeEntry const* path2)
 {
-    return path1->mapid != path2->mapid || std::pow(path1->x - path2->x, 2) + std::pow(path1->y - path2->y, 2) > (40.0f * 40.0f);
+    return path1->mapId != path2->mapId || std::pow(path1->x - path2->x, 2) + std::pow(path1->y - path2->y, 2) > (40.0f * 40.0f);
 }
 
 void FlightPathMovementGenerator::loadPath(Player* player)
@@ -113,7 +113,7 @@ void FlightPathMovementGenerator::doFinalize(Player* player, bool active, bool /
         player->stopMoving();
         float mapHeight = player->getWorldMap()->getHeight(player->GetPhase(), LocationVector(_path[getCurrentNode()]->x, _path[getCurrentNode()]->y, _path[getCurrentNode()]->z));
         // When the player reaches the last flight point, teleport to destination
-        player->safeTeleport(_path[getCurrentNode()]->mapid, 0, LocationVector(_path[getCurrentNode()]->x, _path[getCurrentNode()]->y, mapHeight, player->GetOrientation()));
+        player->safeTeleport(_path[getCurrentNode()]->mapId, 0, LocationVector(_path[getCurrentNode()]->x, _path[getCurrentNode()]->y, mapHeight, player->GetOrientation()));
     }
 
 #if VERSION_STRING >= TBC
@@ -187,10 +187,10 @@ void FlightPathMovementGenerator::setCurrentNodeAfterTeleport()
     if (_path.empty() || _currentNode >= _path.size())
         return;
 
-    uint32_t map0 = _path[_currentNode]->mapid;
+    uint32_t map0 = _path[_currentNode]->mapId;
     for (uint32_t i = _currentNode + 1; i < _path.size(); ++i)
     {
-        if (_path[i]->mapid != map0)
+        if (_path[i]->mapId != map0)
         {
             _currentNode = i;
             return;
@@ -198,14 +198,15 @@ void FlightPathMovementGenerator::setCurrentNodeAfterTeleport()
     }
 }
 
-void FlightPathMovementGenerator::doEventIfAny([[maybe_unused]] Player* player, [[maybe_unused]] WDB::Structures::TaxiPathNodeEntry const* node, [[maybe_unused]] bool departure)
+void FlightPathMovementGenerator::doEventIfAny(Player* player, WDB::Structures::TaxiPathNodeEntry const* node, bool departure)
 {
-#if VERSION_STRING >= TBC
-    if (uint32_t eventid = departure ? node->departureEventID : node->arivalEventID)
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+        return;
+
+    if (uint32_t eventid = departure ? node->departureEventId : node->arrivalEventId)
     {
-        sLogger.debug("FlightPathMovementGenerator:: Taxi {} event {} of node {} of path {} for player {}", departure ? "departure" : "arrival", eventid, node->NodeIndex, node->pathId, player->getName());
+        sLogger.debug("FlightPathMovementGenerator:: Taxi {} event {} of node {} of path {} for player {}", departure ? "departure" : "arrival", eventid, node->nodeIndex, node->pathId, player->getName());
     }
-#endif
 }
 
 bool FlightPathMovementGenerator::getResetPos(Player*, float& x, float& y, float& z)
@@ -226,7 +227,7 @@ void FlightPathMovementGenerator::initEndGridInfo()
     const auto nodeCount = static_cast<uint32_t>(_path.size());
     // MapId of last node
     const uint32_t endNode = nodeCount - 1;
-    _endMapId = _path[endNode]->mapid;
+    _endMapId = _path[endNode]->mapId;
     // Node where Destination Cell gets Loaded
     _preloadTargetNode = nodeCount - 3;
     // EndCell Position
