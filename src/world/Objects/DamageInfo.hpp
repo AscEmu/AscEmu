@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include <cstdint>
+#include <optional>
 
 enum SchoolMask : uint8_t;
 enum WeaponDamageType : uint8_t;
@@ -27,6 +28,9 @@ struct DamageInfo
     bool isHeal = false;
     bool isCritical = false;
     bool isPeriodic = false;
+
+    // todo: consider making it int
+    std::optional<float> critChance = std::nullopt;
 
     uint32_t attackerProcFlags;
     uint32_t victimProcFlags;

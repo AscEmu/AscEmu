@@ -98,7 +98,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraModStalked,                                             //  68 SPELL_AURA_MOD_STALKED
     &Aura::spellAuraEffectSchoolAbsorb,                                     //  69 SPELL_AURA_SCHOOL_ABSORB
     &Aura::spellAuraEffectNotImplemented,                                   //  70 SPELL_AURA_70
-    &Aura::SpellAuraModSpellCritChanceSchool,                               //  71 SPELL_AURA_MOD_SPELL_CRIT_CHANCE_SCHOOL
+    &Aura::spellAuraEffectModSpellCritChanceSchool,                         //  71 SPELL_AURA_MOD_SPELL_CRIT_CHANCE_SCHOOL
     &Aura::SpellAuraModPowerCost,                                           //  72 SPELL_AURA_MOD_POWER_COST
     &Aura::SpellAuraModPowerCostSchool,                                     //  73 SPELL_AURA_MOD_POWER_COST_SCHOOL
     &Aura::SpellAuraReflectSpellsSchool,                                    //  74 SPELL_AURA_REFLECT_SPELLS_SCHOOL
@@ -206,16 +206,16 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraSpiritOfRedemption,                                     // 176 SPELL_AURA_SPIRIT_OF_REDEMPTION
     &Aura::spellAuraEffectNotImplemented,                                   // 177 SPELL_AURA_177
     &Aura::spellAuraEffectNotImplemented,                                   // 178 SPELL_AURA_178
-    &Aura::SpellAuraIncreaseAttackerSpellCrit,                              // 179 SPELL_AURA_INCREASE_ATTACKER_SPELL_CRIT
+    &Aura::spellAuraEffectNotUsed,                                          // 179 SPELL_AURA_INCREASE_ATTACKER_SPELL_CRIT // implemented in Unit::getSpellCriticalChanceTaken
     &Aura::spellAuraEffectNotImplemented,                                   // 180 SPELL_AURA_180
     &Aura::spellAuraEffectNotImplemented,                                   // 181 SPELL_AURA_181
     &Aura::SpellAuraIncreaseArmorByPctInt,                                  // 182 SPELL_AURA_INCREASE_ARMOR_BY_PCT_INT
     &Aura::spellAuraEffectNotImplemented,                                   // 183 SPELL_AURA_183
-    &Aura::SpellAuraReduceAttackerMHitChance,                               // 184 SPELL_AURA_REDUCE_ATTACKER_M_HIT_CHANCE
-    &Aura::SpellAuraReduceAttackerRHitChance,                               // 185 SPELL_AURA_REDUCE_ATTACKER_R_HIT_CHANCE
-    &Aura::SpellAuraReduceAttackerSHitChance,                               // 186 SPELL_AURA_REDUCE_ATTACKER_S_HIT_CHANCE
-    &Aura::SpellAuraReduceEnemyMCritChance,                                 // 187 SPELL_AURA_REDUCE_ENEMY_M_CRIT_CHANCE
-    &Aura::SpellAuraReduceEnemyRCritChance,                                 // 188 SPELL_AURA_REDUCE_ENEMY_R_CRIT_CHANCE
+    &Aura::SpellAuraReduceAttackerMHitChance,                               // 184 SPELL_AURA_DECREASE_ATTACKER_CHANCE_TO_HIT_MELEE
+    &Aura::SpellAuraReduceAttackerRHitChance,                               // 185 SPELL_AURA_DECREASE_ATTACKER_CHANGE_TO_HIT_RANGED
+    &Aura::SpellAuraReduceAttackerSHitChance,                               // 186 SPELL_AURA_DECREASE_ATTACKER_CHANGE_TO_HIT_SPELLS
+    &Aura::spellAuraEffectNotUsed,                                          // 187 SPELL_AURA_DECREASE_ATTACKER_CHANGE_TO_CRIT_MELEE // implemented in Unit::getSpellCriticalChanceTaken
+    &Aura::spellAuraEffectNotUsed,                                          // 188 SPELL_AURA_DECREASE_ATTACKER_CHANGE_TO_CRIT_RANGED // implemented in Unit::getSpellCriticalChanceTaken
     &Aura::SpellAuraIncreaseRating,                                         // 189 SPELL_AURA_INCREASE_RATING
     &Aura::SpellAuraIncreaseRepGainPct,                                     // 190 SPELL_AURA_INCREASE_REP_GAIN_PCT
     &Aura::SpellAuraLimitSpeed,                                             // 191 SPELL_AURA_LIMIT_SPEED
@@ -224,7 +224,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::spellAuraEffectNotImplemented,                                   // 194 SPELL_AURA_194
     &Aura::spellAuraEffectNotImplemented,                                   // 195 SPELL_AURA_195
     &Aura::spellAuraEffectNotImplemented,                                   // 196 SPELL_AURA_196
-    &Aura::SpellAuraModAttackerCritChance,                                  // 197 SPELL_AURA_MOD_ATTACKER_CRIT_CHANCE
+    &Aura::spellAuraEffectNotUsed,                                          // 197 SPELL_AURA_REDUCE_ATTACKER_CRICTICAL_HIT_CHANCE_PCT // implemented in Unit::getSpellCriticalChanceTaken
     &Aura::SpellAuraIncreaseAllWeaponSkill,                                 // 198 SPELL_AURA_INCREASE_ALL_WEAPON_SKILL
     &Aura::SpellAuraIncreaseHitRate,                                        // 199 SPELL_AURA_INCREASE_HIT_RATE
     &Aura::spellAuraEffectNotImplemented,                                   // 200 SPELL_AURA_200
@@ -653,11 +653,11 @@ const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
     "SPELL_AURA_181",                                                       // 181 missing
     "SPELL_AURA_INCREASE_ARMOR_BY_PCT_INT",                                 // 182 missing // Apply Aura: Increase Armor by % of Intellect // https://classic.wowhead.com/spell=28574
     "SPELL_AURA_183",                                                       // 183 // used // Apply Aura: Decrease Critical Threat by % (Spells) // https://classic.wowhead.com/spell=28746/ (SPELL_AURA_MOD_CRITICAL_THREAT)
-    "SPELL_AURA_REDUCE_ATTACKER_M_HIT_CHANCE",                              // 184 // Apply Aura: Reduces Attacker Chance to Hit with Melee // http://www.thottbot.com/s31678
-    "SPELL_AURA_REDUCE_ATTACKER_R_HIT_CHANCE",                              // 185 // Apply Aura: Reduces Attacker Chance to Hit with Ranged // https://classic.wowhead.com/spell=30895
-    "SPELL_AURA_REDUCE_ATTACKER_S_HIT_CHANCE",                              // 186 // Apply Aura: Reduces Attacker Chance to Hit with Spells (Spells) // https://classic.wowhead.com/spell=30895
-    "SPELL_AURA_REDUCE_ENEMY_M_CRIT_CHANCE",                                // 187 missing // used // Apply Aura: Reduces Attacker Chance to Crit with Melee (Ranged?)
-    "SPELL_AURA_REDUCE_ENEMY_R_CRIT_CHANCE",                                // 188 missing // used // Apply Aura: Reduces Attacker Chance to Crit with Ranged (Melee?)
+    "SPELL_AURA_DECREASE_ATTACKER_CHANCE_TO_HIT_MELEE",                     // 184 // Apply Aura: Reduces Attacker Chance to Hit with Melee // http://www.thottbot.com/s31678
+    "SPELL_AURA_DECREASE_ATTACKER_CHANGE_TO_HIT_RANGED",                    // 185 // Apply Aura: Reduces Attacker Chance to Hit with Ranged // https://classic.wowhead.com/spell=30895
+    "SPELL_AURA_DECREASE_ATTACKER_CHANGE_TO_HIT_SPELLS",                    // 186 // Apply Aura: Reduces Attacker Chance to Hit with Spells (Spells) // https://classic.wowhead.com/spell=30895
+    "SPELL_AURA_DECREASE_ATTACKER_CHANGE_TO_CRIT_MELEE",                    // 187 missing // used // Apply Aura: Reduces Attacker Chance to Crit with Melee (Ranged?)
+    "SPELL_AURA_DECREASE_ATTACKER_CHANGE_TO_CRIT_RANGED",                   // 188 missing // used // Apply Aura: Reduces Attacker Chance to Crit with Ranged (Melee?)
     "SPELL_AURA_INCREASE_RATING",                                           // 189 missing // Apply Aura: Increases Rating
     "SPELL_AURA_INCREASE_REP_GAIN_PCT",                                     // 190 // used // Apply Aura: Increases Reputation Gained by % // https://classic.wowhead.com/spell=30754/ (SPELL_AURA_MOD_FACTION_REPUTATION_GAIN)
     "SPELL_AURA_LIMIT_SPEED",                                               // 191 speed limit // https://classic.wowhead.com/spell=29894/
@@ -666,7 +666,7 @@ const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
     "SPELL_AURA_194",                                                       // 194 NOT USED ANYMORE - 174 used instead // Apply Aura: Increase Spell Damage by % of Intellect (All)
     "SPELL_AURA_195",                                                       // 195 NOT USED ANYMORE - 175 used instead // Apply Aura: Increase Healing by % of Intellect
     "SPELL_AURA_196",                                                       // 196 Apply Aura: Mod All Weapon Skills (6)
-    "SPELL_AURA_MOD_ATTACKER_CRIT_CHANCE",                                  // 197 Apply Aura: Reduce Attacker Critical Hit Chance by %
+    "SPELL_AURA_REDUCE_ATTACKER_CRICTICAL_HIT_CHANCE_PCT",                  // 197 Apply Aura: Reduce Attacker Critical Hit Chance by %
     "SPELL_AURA_INCREASE_ALL_WEAPON_SKILL",                                 // 198
     "SPELL_AURA_INCREASE_HIT_RATE",                                         // 199 Apply Aura: Increases Spell % To Hit (Fire, Nature, Frost)
     "SPELL_AURA_200",                                                       // 200 Increases experience earned by $s1%. Lasts $d.
@@ -1749,6 +1749,14 @@ void Aura::spellAuraEffectSchoolAbsorb(AuraEffectModifier* aurEff, bool apply)
     auto* const unitCaster = getUnitCaster();
     if (unitCaster != nullptr && !aurEff->isEffectDamageStatic())
         aurEff->setEffectDamage(unitCaster->applySpellDamageBonusDone(unitCaster, m_target, m_spellInfo, aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff));
+}
+
+void Aura::spellAuraEffectModSpellCritChanceSchool(AuraEffectModifier* /*aurEff*/, bool /*apply*/)
+{
+    // Implemented in Unit::getSpellCriticalChanceDone
+    // Update only client data here
+    if (p_target != nullptr)
+        p_target->updateChanceFields();
 }
 
 void Aura::spellAuraEffectModPowerRegen(AuraEffectModifier* aurEff, bool /*apply*/)

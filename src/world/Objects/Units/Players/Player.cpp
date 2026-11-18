@@ -16056,10 +16056,16 @@ void Player::updateChances()
 
 void Player::updateChanceFields()
 {
-#if VERSION_STRING != Classic
-    for (uint8_t school = 0; school < 7; ++school)
-        setSpellCritPercentage(school, m_spellCritChanceSchool[school] + m_spellCritPercentage);
-#endif
+    // Field does not exist in classic
+    if (WoW::isServerExpansion(WoW::Expansion::_Classic))
+        return;
+
+    for (uint8_t school = SCHOOL_NORMAL; school < TOTAL_SPELL_SCHOOLS; ++school)
+    {
+        const uint8_t schoolMask = 1 << school;
+        const auto spellCritSchool = getTotalFloatDamageForAuraEffectByMiscValueSchoolMask(SPELL_AURA_MOD_SPELL_CRIT_CHANCE_SCHOOL, schoolMask);
+        setSpellCritPercentage(school, m_spellCritPercentage + spellCritSchool);
+    }
 }
 
 void Player::updateAttackSpeed()

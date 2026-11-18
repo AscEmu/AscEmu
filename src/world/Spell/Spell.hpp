@@ -263,6 +263,7 @@ public:
     // Some spells inherit base points from the mother spell
     std::shared_ptr<SpellForcedBasePoints> forced_basepoints;
 
+    void setTriggeredByAura(Aura* aur);
     Aura* getTriggeredByAura() const;
 
     // Returns how many combo points this spell used
@@ -349,7 +350,6 @@ private:
     std::map<uint64_t, MissSpellEffect> m_missEffects;
     std::vector<uint64_t> m_critTargets;
 
-    bool m_isForcedCrit = false;
     bool m_isEffectDamageStatic[MAX_SPELL_EFFECTS];
     float_t m_effectPctModifier[MAX_SPELL_EFFECTS];
 

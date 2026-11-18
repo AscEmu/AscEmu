@@ -577,10 +577,10 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
-private:
+public:
+    // Public for now, will be removed later -Appled
     int32_t m_rootCounter = 0;
 
-public:
     void setInFront(Object const* target);
     void setFacingTo(float const ori, bool force = true);
     void setFacingToObject(Object* object, bool force = true);
@@ -774,12 +774,10 @@ public:
     // TBC and WotLK: lower ranks of a spell lose spell power above their level
     float_t getSpellDownrankingPenalty(uint32_t spellMaxLevel) const;
 
-    float_t getCriticalChanceForDamageSpell(Spell* spell, Aura* aura, Unit* target);
-    float_t getCriticalChanceForHealSpell(Spell* spell, Aura* aura, Unit* target);
+    float_t getSpellCriticalChanceDone(SpellInfo const* spellInfo, Spell* spell, Aura* aura);
+    float_t getSpellCriticalChanceTaken(SpellInfo const* spellInfo, Unit const* caster, float_t critChance = 0.0f);
     float m_spellCritPercentage = 0.0f;
 
-    bool isCriticalDamageForSpell(Object* target, Spell* spell);
-    bool isCriticalHealForSpell(Object* target, Spell* spell);
     float_t getCriticalDamageBonusForSpell(float_t damage, Unit* target, Spell* spell, Aura* aura);
     float_t getCriticalHealBonusForSpell(float_t heal, Spell* spell, Aura* aura);
 
@@ -829,6 +827,7 @@ public:
     int32_t getTotalIntDamageForAuraEffectByMiscValue(AuraEffect aura_effect, int32_t miscValue) const;
     float_t getTotalFloatDamageForAuraEffect(AuraEffect aura_effect) const;
     float_t getTotalFloatDamageForAuraEffectByMiscValue(AuraEffect aura_effect, int32_t miscValue) const;
+    float_t getTotalFloatDamageForAuraEffectByMiscValueSchoolMask(AuraEffect aura_effect, uint32_t schoolMask) const;
     // Returns 1.0f if there are no provided aura effects
     float_t getTotalPctMultiplierForAuraEffect(AuraEffect aura_effect) const;
     // Returns 1.0f if there are no provided aura effects
@@ -1475,11 +1474,9 @@ public:
     float m_healTakenPctMod[TOTAL_SPELL_SCHOOLS] = {0};
 
     uint32_t m_schoolImmunityList[TOTAL_SPELL_SCHOOLS] = {0};
-    float m_spellCritChanceSchool[TOTAL_SPELL_SCHOOLS] = {0};
 
     float m_powerCostPctMod[TOTAL_SPELL_SCHOOLS] = {0};        // armor penetration & spell penetration
 
-    int32_t m_attackerCritChanceMod[TOTAL_SPELL_SCHOOLS] = {0};
     uint32_t m_spellDelayResist[TOTAL_SPELL_SCHOOLS] = {0};
 
     int32_t m_creatureAttackPowerMod[12] = {0};

@@ -2236,34 +2236,6 @@ void Aura::SpellAuraModStalked(AuraEffectModifier* /*aurEff*/, bool apply)
     }
 }
 
-void Aura::SpellAuraModSpellCritChanceSchool(AuraEffectModifier* aurEff, bool apply)
-{
-    if (apply)
-    {
-        for (uint8_t x = 0; x < TOTAL_SPELL_SCHOOLS; x++)
-            if (aurEff->getEffectMiscValue() & (((uint32_t)1) << x))
-                m_target->m_spellCritChanceSchool[x] += aurEff->getEffectDamage();
-        if (aurEff->getEffectDamage() < 0)
-            mPositive = false;
-        else
-            mPositive = true;
-    }
-    else
-    {
-        for (uint32_t x = 0; x < 7; x++)
-        {
-            if (aurEff->getEffectMiscValue() & (((uint32_t)1) << x))
-            {
-                m_target->m_spellCritChanceSchool[x] -= aurEff->getEffectDamage();
-                /*if (m_target->m_spellCritChanceSchool[x] < 0)
-                    m_target->m_spellCritChanceSchool[x] = 0;*/
-            }
-        }
-    }
-    if (p_target != nullptr)
-        p_target->updateChanceFields();
-}
-
 void Aura::SpellAuraModPowerCost(AuraEffectModifier* aurEff, bool apply)
 {
     int32_t val = (apply) ? aurEff->getEffectDamage() : -aurEff->getEffectDamage();
@@ -4337,36 +4309,6 @@ void Aura::SpellAuraReduceAttackerSHitChance(AuraEffectModifier* aurEff, bool ap
     }
 }
 
-void Aura::SpellAuraReduceEnemyMCritChance(AuraEffectModifier* aurEff, bool apply)
-{
-    if (!m_target->isPlayer())
-        return;
-
-    if (const auto targetPlayer = dynamic_cast<Player*>(m_target))
-    {
-        //value is negative percent
-        if (apply)
-            targetPlayer->setResistMCrit(targetPlayer->getResistMCrit() + static_cast<float>(aurEff->getEffectDamage()));
-        else
-            targetPlayer->setResistMCrit(targetPlayer->getResistMCrit() - static_cast<float>(aurEff->getEffectDamage()));
-    }
-}
-
-void Aura::SpellAuraReduceEnemyRCritChance(AuraEffectModifier* aurEff, bool apply)
-{
-    if (!m_target->isPlayer())
-        return;
-
-    if (const auto targetPlayer = dynamic_cast<Player*>(m_target))
-    {
-        //value is negative percent
-        if (apply)
-            targetPlayer->setResistRCrit(targetPlayer->getResistRCrit() + static_cast<float>(aurEff->getEffectDamage()));
-        else
-            targetPlayer->setResistRCrit(targetPlayer->getResistRCrit() - static_cast<float>(aurEff->getEffectDamage()));
-    }
-}
-
 void Aura::SpellAuraLimitSpeed(AuraEffectModifier* aurEff, bool apply)
 {
     int32_t amount = (apply) ? aurEff->getEffectDamage() : -aurEff->getEffectDamage();
@@ -4457,11 +4399,6 @@ TO< Player* >(m_target)->SpellHealDoneByInt[x]+=val;
 }
 }
 */
-void Aura::SpellAuraModAttackerCritChance(AuraEffectModifier* aurEff, bool apply)
-{
-    int32_t val = (apply) ? aurEff->getEffectDamage() : -aurEff->getEffectDamage();
-    m_target->m_attackerCritChanceMod[0] += val;
-}
 
 void Aura::SpellAuraIncreaseAllWeaponSkill(AuraEffectModifier* aurEff, bool apply)
 {
@@ -4776,27 +4713,6 @@ void Aura::SpellAuraSpiritOfRedemption(AuraEffectModifier* /*aurEff*/, bool appl
         m_target->setScale(1);
         m_target->removeAllAurasById(27792);
         m_target->setHealth(0);
-    }
-}
-
-void Aura::SpellAuraIncreaseAttackerSpellCrit(AuraEffectModifier* aurEff, bool apply)
-{
-    int32_t val = aurEff->getEffectDamage();
-
-    if (apply)
-    {
-        if (aurEff->getEffectDamage() > 0)
-            mPositive = false;
-        else
-            mPositive = true;
-    }
-    else
-        val = -val;
-
-    for (uint32_t x = 0; x < 7; x++)
-    {
-        if (aurEff->getEffectMiscValue() & (((uint32_t)1) << x))
-            m_target->m_attackerCritChanceMod[x] += val;
     }
 }
 

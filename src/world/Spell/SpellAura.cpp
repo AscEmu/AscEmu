@@ -671,14 +671,13 @@ float_t Aura::getCritChance() const
     return m_critChance;
 }
 
+void Aura::setCritChance(float_t critChance)
+{
+    m_critChance = critChance;
+}
+
 void Aura::calculateCritChance()
 {
-    if (!canPeriodicEffectCrit())
-    {
-        m_critChance = 0.0f;
-        return;
-    }
-
     const auto casterUnit = getUnitCaster();
     if (casterUnit == nullptr)
     {
@@ -686,32 +685,35 @@ void Aura::calculateCritChance()
         return;
     }
 
-    auto usesHealing = false;
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (getAuraEffect(i)->getAuraEffectType() == SPELL_AURA_NONE)
             continue;
 
-        switch (getAuraEffect(i)->getAuraEffectType())
+        if (m_auraEffects[i].isPeriodicEffect())
         {
-            case SPELL_AURA_PERIODIC_HEAL:
-            case SPELL_AURA_PERIODIC_HEAL_PCT:
-            case SPELL_AURA_PERIODIC_HEALTH_FUNNEL:
-                usesHealing = true;
-                break;
-            default:
-                break;
+            switch (m_auraEffects[i].getAuraEffectType())
+            {
+                case SPELL_AURA_PERIODIC_TRIGGER_SPELL:
+                case SPELL_AURA_PERIODIC_TRIGGER_DUMMY:
+                case SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE:
+                {
+                    // Calculate crit for these effects
+                } break;
+                default:
+                {
+                    if (!canPeriodicEffectCrit())
+                    {
+                        m_critChance = 0.0f;
+                        return;
+                    }
+                } break;
+            }
         }
-
-        if (usesHealing)
-            break;
     }
 
     // Get snapshot of caster's current crit chance
-    if (usesHealing)
-        m_critChance = casterUnit->getCriticalChanceForHealSpell(nullptr, this, getOwner());
-    else
-        m_critChance = casterUnit->getCriticalChanceForDamageSpell(nullptr, this, getOwner());
+    m_critChance = casterUnit->getSpellCriticalChanceDone(m_spellInfo, nullptr, this);
 }
 
 int32_t Aura::getSpellPowerBonus() const
