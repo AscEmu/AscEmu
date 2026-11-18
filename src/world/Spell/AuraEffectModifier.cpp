@@ -251,6 +251,7 @@ void AuraEffectModifier::updateAreaAuraEffectTargets(bool periodicTickForAreaAur
         }
 
         // Create new aura for target
+        // No need to check for duel state, area aura target update will handle it
         auto tmpAura = sSpellMgr.newAura(aurSpellInfo, mAura.getOriginalDuration(), aurOwner, targetUnit, true);
         tmpAura->setIsAreaAura(true);
         tmpAura->setTimeLeft(mAura.getTimeLeft());

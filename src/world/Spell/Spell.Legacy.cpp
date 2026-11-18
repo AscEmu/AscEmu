@@ -2848,16 +2848,6 @@ uint32_t Spell::getState() const
     return m_spellState;
 }
 
-bool Spell::DuelSpellNoMoreValid() const
-{
-    if (duelSpell && (
-        (p_caster != nullptr && p_caster->getDuelState() != DUEL_STATE_STARTED) ||
-        (u_caster != nullptr && u_caster->isPet() && static_cast<Pet*>(u_caster)->getPlayerOwner() && static_cast<Pet*>(u_caster)->getPlayerOwner()->getDuelState() != DUEL_STATE_STARTED)))
-        return true;
-    else
-        return false;
-}
-
 bool Spell::GetSpellFailed() const
 {
     return m_Spell_Failed;
