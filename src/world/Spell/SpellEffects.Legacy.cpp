@@ -1846,6 +1846,27 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
         auraHolder->setTriggeredBySpellId(pSpellId); //this is required for triggered spells
         auraHolder->setCastedItemId(castedItemId);
 
+        // Mark aura casted in duel only if target was the duel opponent
+        if (m_castedInDuel)
+        {
+            // Duel state was just checked before effect processing
+            if (const auto* plrOwner = getAffectingPlayerCaster())
+            {
+                const auto* duelTarget = m_unitTarget->getPlayerOwnerOrSelf();
+                if (duelTarget == nullptr)
+                {
+                    // Try by unit owner
+                    if (const auto* targetUnitOwner = m_unitTarget->getUnitOwner())
+                        duelTarget = targetUnitOwner->getPlayerOwnerOrSelf();
+                }
+
+                // Set only if target was the duel target
+                // AoE spells can hit other targets and player can cast spells on other targets
+                if (duelTarget != nullptr && duelTarget->getGuid() == m_duelTargetGuid)
+                    auraHolder->setCastedInDuel(true);
+            }
+        }
+
         const auto [emplaceItr, isInserted] = m_pendingAuras.try_emplace(m_unitTarget->getGuid(), 0, std::move(auraHolder));
         pAura = emplaceItr->second.aur.get();
     }

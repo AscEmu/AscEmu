@@ -136,6 +136,30 @@ void DynamicObject::considerTarget(Unit* target)
         }
     }
 
+    // Mark aura casted in duel only if target was the duel opponent
+    const auto* affectingPlrCaster = m_unitCaster->getPlayerOwnerOrSelf();
+    if (affectingPlrCaster == nullptr)
+    {
+        // Try by unit owner
+        if (const auto* unitOwner = m_unitCaster->getUnitOwner())
+            affectingPlrCaster = unitOwner->getPlayerOwnerOrSelf();
+    }
+
+    if (affectingPlrCaster != nullptr && affectingPlrCaster->getDuelState() == DUEL_STATE_STARTED)
+    {
+        const auto* duelTarget = target->getPlayerOwnerOrSelf();
+        if (duelTarget == nullptr)
+        {
+            // Try by unit owner
+            if (const auto* targetUnitOwner = target->getUnitOwner())
+                duelTarget = targetUnitOwner->getPlayerOwnerOrSelf();
+        }
+
+        if (duelTarget != nullptr && affectingPlrCaster->getDuelPlayer() != nullptr &&
+            duelTarget->getGuid() == affectingPlrCaster->getDuelPlayer()->getGuid())
+            aura->setCastedInDuel(true);
+    }
+
     target->addAura(std::move(aura));
     m_targets.insert(targetGuid);
     target->addDynamicObjectTarget(getGuid());

@@ -154,18 +154,21 @@ public:
 
     void setItemCaster(Item* itemCaster);
 
+    // Returns player owner for summon, gameobject and item casters
+    Player* getAffectingPlayerCaster() const;
+
     Unit* getOriginalCaster() const;
     void setOriginalCasterGuid(uint64_t guid);
 
+    void setCastedInDuel(bool set);
     bool wasCastedinDuel() const;
+    bool isDuelSpellValidForTarget(bool checkEffectTarget) const;
 
 protected:
     float_t m_castPositionX = 0.0f;
     float_t m_castPositionY = 0.0f;
     float_t m_castPositionZ = 0.0f;
     float_t m_castPositionO = 0.0f;
-
-    bool duelSpell = false;
 
     Object* m_caster = nullptr;
     Unit* u_caster = nullptr;
@@ -176,6 +179,10 @@ protected:
     // Some spells are casted via another caster
     Unit* m_originalCaster = nullptr;
     uint64_t m_originalCasterGuid = 0;
+
+    bool m_castedInDuel = false;
+    // Save duel target guid in case duel ends before effects are handled
+    uint64_t m_duelTargetGuid = 0;
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -690,15 +697,6 @@ public:
     uint32_t castedItemId;
     uint8_t extra_cast_number;
     uint32_t m_glyphslot;
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    ///bool DuelSpellNoMoreValid()
-    /// Tells if the Spell was being casted while dueling but now the duel is over
-    ///
-    /// \return true if Spell is now invalid because the duel is over false if Spell is valid.
-    ///
-    //////////////////////////////////////////////////////////////////////////////////////////
-    bool DuelSpellNoMoreValid() const;
 
     /// Spell state's
     /// Spell failed

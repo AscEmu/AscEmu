@@ -140,24 +140,15 @@ Spell::Spell(Object* _caster, SpellInfo const* _spellInfo, bool _triggered, Aura
     _updateCasterPointers(_caster);
 
     // Check if spell is casted in a duel
-    switch (_caster->getObjectTypeId())
+    if (const auto* plrOwner = getAffectingPlayerCaster())
     {
-    case TYPEID_PLAYER:
-    case TYPEID_UNIT:
-        if (u_caster && u_caster->getPlayerOwnerOrSelf() != nullptr && u_caster->getPlayerOwnerOrSelf()->getDuelState() == DUEL_STATE_STARTED)
-            duelSpell = true;
-        break;
-    case TYPEID_ITEM:
-    case TYPEID_CONTAINER:
-        if (i_caster->getOwner() != nullptr && i_caster->getOwner()->getDuelState() == DUEL_STATE_STARTED)
-            duelSpell = true;
-        break;
-    case TYPEID_GAMEOBJECT:
-        if (g_caster->getPlayerOwner() != nullptr && g_caster->getPlayerOwner()->getDuelState() == DUEL_STATE_STARTED)
-            duelSpell = true;
-        break;
-    default:
-        break;
+        if (plrOwner->getDuelState() == DUEL_STATE_STARTED)
+        {
+            m_castedInDuel = true;
+            m_duelTargetGuid = plrOwner->getDuelPlayer() != nullptr ?
+                plrOwner->getDuelPlayer()->getGuid() :
+                0;
+        }
     }
 
     if (u_caster && getSpellInfo()->getAttributesExF() & ATTRIBUTESEXF_CAST_BY_CHARMER)
@@ -436,7 +427,7 @@ void Spell::castMe(const bool doReCheck)
 {
     m_spellState = SPELL_STATE_CASTED;
 
-    if (DuelSpellNoMoreValid())
+    if (!isDuelSpellValidForTarget(false))
     {
         sendCastResult(m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_INTERRUPTED);
         SendInterrupted(0);
@@ -876,14 +867,14 @@ void Spell::handleHittedTarget(const uint64_t targetGuid, uint8_t effIndex)
 
 void Spell::handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, int32_t effDamage, bool reCheckTarget/* = false*/)
 {
-    // If duel has ended before spell cast was finished, do not handle this target and effect
-    // but do not cancel entire spell
-    // i.e AoE spells can still hit other targets
-    if (DuelSpellNoMoreValid())
-        return;
-
     if (reCheckTarget)
         _updateTargetPointers(targetGuid);
+
+    // If duel has ended before spell cast was finished, do not handle this target and effect
+    // but do not cancel entire spell
+    // e.g. AoE spells can still hit other targets
+    if (!isDuelSpellValidForTarget(true))
+        return;
 
     // TODO: in the future, consider having two damage variables; one for integer and one for float
     damage = effDamage;
@@ -5172,6 +5163,32 @@ void Spell::setItemCaster(Item* itemCaster)
     i_caster = itemCaster;
 }
 
+Player* Spell::getAffectingPlayerCaster() const
+{
+    if (g_caster != nullptr)
+    {
+        return g_caster->getPlayerOwner();
+    }
+    else if (i_caster != nullptr)
+    {
+        return i_caster->getOwner();
+    }
+    else if (u_caster != nullptr)
+    {
+        auto* plrOwner = u_caster->getPlayerOwnerOrSelf();
+        if (plrOwner == nullptr)
+        {
+            // Try by unit owner
+            if (auto* const unitOwner = u_caster->getUnitOwner())
+                return unitOwner->getPlayerOwnerOrSelf();
+        }
+
+        return plrOwner;
+    }
+
+    return nullptr;
+}
+
 Unit* Spell::getOriginalCaster() const
 {
     return m_originalCaster;
@@ -5182,9 +5199,51 @@ void Spell::setOriginalCasterGuid(uint64_t guid)
     m_originalCasterGuid = guid;
 }
 
+void Spell::setCastedInDuel(bool set)
+{
+    m_castedInDuel = set;
+}
+
 bool Spell::wasCastedinDuel() const
 {
-    return duelSpell;
+    return m_castedInDuel;
+}
+
+bool Spell::isDuelSpellValidForTarget(bool checkEffectTarget) const
+{
+    // Not a duel spell
+    if (!m_castedInDuel || m_duelTargetGuid == 0)
+        return true;
+
+    const auto* plrOwner = getAffectingPlayerCaster();
+    if (plrOwner == nullptr || plrOwner->getDuelState() != DUEL_STATE_FINISHED)
+        return true;
+
+    // Duel has ended during spell cast but spell target map is not yet known
+    // Without accurate target further checks cannot be made
+    if (!checkEffectTarget)
+        return false;
+
+    // Allow casts on non unit targets
+    if (m_unitTarget == nullptr)
+        return true;
+
+    // Duel has ended while spell projectile was mid air
+    // but AoE spells can still hit other targets
+    // Also spells can be casted during duel to other than the duel target
+    const auto* duelTarget = m_unitTarget->getPlayerOwnerOrSelf();
+    if (duelTarget == nullptr)
+    {
+        // Try by unit owner
+        if (const auto* targetUnitOwner = m_unitTarget->getUnitOwner())
+            duelTarget = targetUnitOwner->getPlayerOwnerOrSelf();
+    }
+
+    // Target was not the dueling opponent
+    if (duelTarget == nullptr || duelTarget->getGuid() != m_duelTargetGuid)
+        return true;
+
+    return false;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -5753,8 +5812,8 @@ void Spell::_updateTargetPointers(const uint64_t targetGuid)
                     m_unitTarget = getCaster()->getWorldMapPet(wowGuid.getRawGuid());
                     break;
                 case HighGuid::Player:
-                    m_unitTarget = getCaster()->getWorldMapPlayer(wowGuid.getRawGuid());
-                    m_playerTarget = dynamic_cast<Player*>(m_unitTarget);
+                    m_playerTarget = getCaster()->getWorldMapPlayer(wowGuid.getRawGuid());
+                    m_unitTarget = m_playerTarget;
                     break;
                 case HighGuid::Item:
                     if (getPlayerCaster() != nullptr)

@@ -119,6 +119,9 @@ public:
 
     void update(unsigned long diff, bool skipDurationCheck = false);
 
+    bool wasCastedInDuel() const;
+    void setCastedInDuel(bool set);
+
     bool isTriggeredBySpellId() const;
     uint32_t getTriggeredBySpellId() const;
     void setTriggeredBySpellId(uint32_t spellId);
@@ -393,7 +396,7 @@ private:
     uint32_t m_castedItemId = 0;
     uint64_t m_itemCasterGuid = 0;
 
-    bool m_castInDuel = false;
+    bool m_castedInDuel = false;
 
     // Spell id of the spell that triggered this aura
     uint32_t m_triggeredBySpellId = 0;
@@ -595,8 +598,6 @@ public:
     void UpdateAuraModDecreaseSpeed(AuraEffectModifier* aurEff);
 
     void SendDummyModifierLog(std::map<SpellInfo*, uint32_t> * m, SpellInfo* spellInfo, uint32_t i, bool apply, bool pct = false);
-
-    bool WasCastInDuel() { return m_castInDuel; }
 
 protected:
     uint32_t m_flags;

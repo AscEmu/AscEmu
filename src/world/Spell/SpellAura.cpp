@@ -44,17 +44,6 @@ Aura::Aura(SpellInfo const* proto, int32_t duration, Object* caster, Unit* targe
     // TODO: remove variable when not used anymore, kept for legacy code -Appled
     m_flags = 0;
 
-    if (caster->isCreatureOrPlayer())
-    {
-        if (p_target && caster->isPlayer())
-        {
-            if (p_target->getDuelPlayer() == static_cast<Player*>(caster))
-            {
-                m_castInDuel = true;
-            }
-        }
-    }
-
     // Initialize aura charges
     auto charges = m_spellInfo->getProcCharges();
     if (caster->isCreatureOrPlayer())
@@ -1088,6 +1077,16 @@ void Aura::update(unsigned long diff, bool skipDurationCheck/* = false*/)
             removeAura(AURA_REMOVE_ON_EXPIRE);
         }
     }
+}
+
+bool Aura::wasCastedInDuel() const
+{
+    return m_castedInDuel;
+}
+
+void Aura::setCastedInDuel(bool set)
+{
+    m_castedInDuel = set;
 }
 
 bool Aura::isTriggeredBySpellId() const
