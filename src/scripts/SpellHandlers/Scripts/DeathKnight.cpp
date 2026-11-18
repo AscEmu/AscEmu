@@ -15,49 +15,49 @@ This file is released under the MIT license. See README-MIT for more information
 
 enum DeathknightSpells
 {
-    SPELL_ANTIMAGIC_SHELL                   = 48707,
-    SPELL_ANTIMAGIC_SHELL_RUNIC_POWER       = 49088,
-    SPELL_BLOOD_PRESENCE_WOTLK              = 48266,
-    SPELL_BLOOD_PRESENCE_CATA               = 48263,
-    SPELL_BLOOD_PRESENCE_HEAL               = 50475,
-    SPELL_BUTCHERY_ENERGIZE                 = 50163,
-    SPELL_BUTCHERY_R1                       = 48979,
-    SPELL_DEATH_AND_DECAY_DAMAGE            = 52212,
-    SPELL_DEATH_AND_DECAY_R1                = 43265,
-    SPELL_DEATH_RUNE_MASTERY_BLOOD          = 50806,
-    SPELL_DEATH_RUNE_MASTERY_R1             = 49467,
-    SPELL_FROST_PRESENCE_WOTLK              = 48263,
-    SPELL_FROST_PRESENCE_CATA               = 48266,
-    SPELL_IMPROVED_BLOOD_PRESENCE_DUMMY_WOTLK = 63611,
-    SPELL_IMPROVED_BLOOD_PRESENCE_DUMMY_CATA = 61261,
-    SPELL_IMPROVED_BLOOD_PRESENCE_R1        = 50365,
-    SPELL_IMPROVED_BLOOD_PRESENCE_R2        = 50371,
-    SPELL_IMPROVED_FROST_PRESENCE_DUMMY_WOTLK = 61261,
-    SPELL_IMPROVED_FROST_PRESENCE_DUMMY_CATA = 63621,
-    SPELL_IMPROVED_FROST_PRESENCE_R1        = 50384,
-    SPELL_IMPROVED_FROST_PRESENCE_R2        = 50385,
-    SPELL_IMPROVED_UNHOLY_PRESENCE_DUMMY    = 63622,
-    SPELL_IMPROVED_UNHOLY_PRESENCE_R1       = 50391,
-    SPELL_IMPROVED_UNHOLY_PRESENCE_R2       = 50392,
-    SPELL_MAGIC_SUPPRESSION_R1              = 49224,
-    SPELL_MARK_OF_BLOOD_DUMMY               = 49005,
-    SPELL_MARK_OF_BLOOD_HEAL                = 61607,
-    SPELL_RUNE_TAP                          = 48982,
-    SPELL_SPELL_DEFLECTION_R1               = 49145,
-    SPELL_UNHOLY_PRESENCE                   = 48265,
-    SPELL_UNHOLY_PRESENCE_MOVE_SPEED        = 49772,
-    SPELL_WILL_OF_THE_NECROPOLIS_DUMMY_R1   = 49189,
-    SPELL_WILL_OF_THE_NECROPOLIS_ABSORB_R1  = 52284,
-    SPELL_WILL_OF_THE_NECROPOLIS_PROC       = 81162,
-    SPELL_WILL_OF_THE_NECROPOLIS_RUNETAP    = 96171,
+    SPELL_ANTIMAGIC_SHELL                       = 48707,
+    SPELL_ANTIMAGIC_SHELL_RUNIC_POWER           = 49088,
+    SPELL_BLOOD_PRESENCE_WOTLK                  = 48266,
+    SPELL_BLOOD_PRESENCE_CATA                   = 48263,
+    SPELL_BLOOD_PRESENCE_HEAL                   = 50475,
+    SPELL_BUTCHERY_ENERGIZE                     = 50163,
+    SPELL_BUTCHERY_R1                           = 48979,
+    SPELL_DEATH_AND_DECAY_DAMAGE                = 52212,
+    SPELL_DEATH_AND_DECAY_R1                    = 43265,
+    SPELL_DEATH_RUNE_MASTERY_BLOOD              = 50806,
+    SPELL_DEATH_RUNE_MASTERY_R1                 = 49467,
+    SPELL_FROST_PRESENCE_WOTLK                  = 48263,
+    SPELL_FROST_PRESENCE_CATA                   = 48266,
+    SPELL_IMPROVED_BLOOD_PRESENCE_DUMMY_WOTLK   = 63611,
+    SPELL_IMPROVED_BLOOD_PRESENCE_DUMMY_CATA    = 61261,
+    SPELL_IMPROVED_BLOOD_PRESENCE_R1            = 50365,
+    SPELL_IMPROVED_BLOOD_PRESENCE_R2            = 50371,
+    SPELL_IMPROVED_FROST_PRESENCE_DUMMY_WOTLK   = 61261,
+    SPELL_IMPROVED_FROST_PRESENCE_DUMMY_CATA    = 63621,
+    SPELL_IMPROVED_FROST_PRESENCE_R1            = 50384,
+    SPELL_IMPROVED_FROST_PRESENCE_R2            = 50385,
+    SPELL_IMPROVED_UNHOLY_PRESENCE_DUMMY        = 63622,
+    SPELL_IMPROVED_UNHOLY_PRESENCE_R1           = 50391,
+    SPELL_IMPROVED_UNHOLY_PRESENCE_R2           = 50392,
+    SPELL_MAGIC_SUPPRESSION_R1                  = 49224,
+    SPELL_MARK_OF_BLOOD_DUMMY                   = 49005,
+    SPELL_MARK_OF_BLOOD_HEAL                    = 61607,
+    SPELL_RUNE_TAP                              = 48982,
+    SPELL_SPELL_DEFLECTION_R1                   = 49145,
+    SPELL_UNHOLY_PRESENCE                       = 48265,
+    SPELL_UNHOLY_PRESENCE_MOVE_SPEED            = 49772,
+    SPELL_WILL_OF_THE_NECROPOLIS_DUMMY_R1       = 49189,
+    SPELL_WILL_OF_THE_NECROPOLIS_ABSORB_R1      = 52284,
+    SPELL_WILL_OF_THE_NECROPOLIS_PROC           = 81162,
+    SPELL_WILL_OF_THE_NECROPOLIS_RUNETAP        = 96171,
 };
 
 // the presence ids and the improved presence dummies swapped with Cata
-static bool wotlkSpells() { return WoW::isServerExpansion(WoW::Expansion::_WotLK); }
-static uint32_t bloodPresenceId() { return wotlkSpells() ? SPELL_BLOOD_PRESENCE_WOTLK : SPELL_BLOOD_PRESENCE_CATA; }
-static uint32_t frostPresenceId() { return wotlkSpells() ? SPELL_FROST_PRESENCE_WOTLK : SPELL_FROST_PRESENCE_CATA; }
-static uint32_t improvedBloodPresenceDummyId() { return wotlkSpells() ? SPELL_IMPROVED_BLOOD_PRESENCE_DUMMY_WOTLK : SPELL_IMPROVED_BLOOD_PRESENCE_DUMMY_CATA; }
-static uint32_t improvedFrostPresenceDummyId() { return wotlkSpells() ? SPELL_IMPROVED_FROST_PRESENCE_DUMMY_WOTLK : SPELL_IMPROVED_FROST_PRESENCE_DUMMY_CATA; }
+static bool isWotlkExpansion() { return WoW::isServerExpansion(WoW::Expansion::_WotLK); }
+static uint32_t bloodPresenceId() { return isWotlkExpansion() ? SPELL_BLOOD_PRESENCE_WOTLK : SPELL_BLOOD_PRESENCE_CATA; }
+static uint32_t frostPresenceId() { return isWotlkExpansion() ? SPELL_FROST_PRESENCE_WOTLK : SPELL_FROST_PRESENCE_CATA; }
+static uint32_t improvedBloodPresenceDummyId() { return isWotlkExpansion() ? SPELL_IMPROVED_BLOOD_PRESENCE_DUMMY_WOTLK : SPELL_IMPROVED_BLOOD_PRESENCE_DUMMY_CATA; }
+static uint32_t improvedFrostPresenceDummyId() { return isWotlkExpansion() ? SPELL_IMPROVED_FROST_PRESENCE_DUMMY_WOTLK : SPELL_IMPROVED_FROST_PRESENCE_DUMMY_CATA; }
 
 // This is a common script to handle Death Knight Presences
 class Presences : public SpellScript
@@ -114,7 +114,7 @@ public:
 
         if (improvedUnholyPresence != nullptr)
         {
-            if (wotlkSpells())
+            if (isWotlkExpansion())
             {
                 // Cast Unholy Presence speed aura in Blood and Frost presences
                 if (!isUnholyPresence())
@@ -165,13 +165,13 @@ public:
 class AntiMagicShell : public SpellScript
 {
 public:
-    SpellScriptExecuteState beforeAuraEffect([[maybe_unused]]Aura* aur, AuraEffectModifier* aurEff, bool apply) override
+    SpellScriptExecuteState beforeAuraEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
         if (!apply || aurEff->getEffectIndex() != EFF_INDEX_0)
             return SpellScriptExecuteState::EXECUTE_OK;
 
         // Add the refund pct into effect
-        if (wotlkSpells())
+        if (isWotlkExpansion())
         {
             // 2% of absorbed damage is turned into Runic Power
             aurEff->setEffectExtra2Field(20);
@@ -186,7 +186,7 @@ public:
                 aurEff->setEffectExtra2Field(13);
             }
         }
-        else
+        else // Mop+
         {
             // Assume same as cata
             aurEff->setEffectExtra2Field(13);
@@ -317,7 +317,7 @@ public:
     {
         Presences::onAuraApply(aur);
 
-        if (wotlkSpells())
+        if (isWotlkExpansion())
         {
             aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(improvedFrostPresenceDummyId()), true);
         }
@@ -390,7 +390,7 @@ public:
     {
         Presences::onAuraApply(aur);
 
-        if (wotlkSpells())
+        if (isWotlkExpansion())
         {
             aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_UNHOLY_PRESENCE_MOVE_SPEED), true);
         }
@@ -446,6 +446,7 @@ public:
         return SpellScriptCheckDummy::DUMMY_OK;
     }
 };
+
 class WillOfTheNecropolisProc : public SpellScript
 {
 public:
@@ -492,7 +493,6 @@ void setupDeathKnightSpells(ScriptMgr* mgr)
     mgr->register_spell_script(SPELL_ANTIMAGIC_SHELL, new AntiMagicShell);
     mgr->register_spell_script(SPELL_DEATH_AND_DECAY_R1, new DeathAndDecay);
 
-    // the presences and their talents exist up to Cata
     if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
     {
         mgr->register_spell_script(bloodPresenceId(), new BloodPresence);
@@ -501,7 +501,7 @@ void setupDeathKnightSpells(ScriptMgr* mgr)
         mgr->register_spell_script(SPELL_UNHOLY_PRESENCE, new UnholyPresence);
     }
 
-    if (wotlkSpells())
+    if (isWotlkExpansion())
     {
         mgr->register_spell_script(SPELL_BLOOD_PRESENCE_HEAL, new BloodPresenceHeal);
         mgr->register_spell_script(SPELL_DEATH_RUNE_MASTERY_R1, new DeathRuneMastery);

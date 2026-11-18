@@ -2080,7 +2080,9 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
         if (!chaindamage)
         {
             chaindamage = heal;
-            m_targetDamageInfo = affectingCaster->doSpellHealing(m_unitTarget, getSpellInfo()->getId(), static_cast<float_t>(chaindamage), m_triggeredSpell, false, false, m_isForcedCrit, this);
+            auto floatHeal = static_cast<float_t>(chaindamage);
+            floatHeal = m_unitTarget->applySpellHealingBonusTaken(m_spellInfo, floatHeal);
+            m_targetDamageInfo = affectingCaster->doSpellHealing(m_unitTarget, getSpellInfo()->getId(), floatHeal, m_triggeredSpell, false, false, m_isForcedCrit, this);
             isTargetDamageInfoSet = true;
         }
         else
@@ -2091,7 +2093,9 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                 affectingUnitCaster->applySpellModifiers(SPELLMOD_JUMP_REDUCE, &reduce, getSpellInfo(), this);
             }
             chaindamage -= (reduce * chaindamage) / 100;
-            m_targetDamageInfo = affectingCaster->doSpellHealing(m_unitTarget, getSpellInfo()->getId(), static_cast<float_t>(chaindamage), m_triggeredSpell, false, false, m_isForcedCrit, this);
+            auto floatHeal = static_cast<float_t>(chaindamage);
+            floatHeal = m_unitTarget->applySpellHealingBonusTaken(m_spellInfo, floatHeal);
+            m_targetDamageInfo = affectingCaster->doSpellHealing(m_unitTarget, getSpellInfo()->getId(), floatHeal, m_triggeredSpell, false, false, m_isForcedCrit, this);
             isTargetDamageInfoSet = true;
         }
     }
@@ -2119,7 +2123,8 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                         else
                             value = basePoints + Util::getRandomUInt(randomPoints);
                         //the value is in percent. Until now it's a fixed 10%
-                        const auto amt = m_unitTarget->getMaxHealth()*value / 100.0f;
+                        auto amt = m_unitTarget->getMaxHealth()*value / 100.0f;
+                        amt = m_unitTarget->applySpellHealingBonusTaken(spellInfo, amt);
                         m_targetDamageInfo = affectingCaster->doSpellHealing(m_unitTarget, getSpellInfo()->getId(), amt, m_triggeredSpell, false, false, m_isForcedCrit, this);
                         isTargetDamageInfoSet = true;
                     }
@@ -2131,7 +2136,9 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
             {
                 if (m_unitTarget)
                 {
-                    m_targetDamageInfo = affectingCaster->doSpellHealing(m_unitTarget, getSpellInfo()->getId(), m_unitTarget->getMaxHealth() / 100.0f, m_triggeredSpell, false, false, m_isForcedCrit, this);
+                    auto floatDmg = m_unitTarget->getMaxHealth() / 100.0f;
+                    floatDmg = m_unitTarget->applySpellHealingBonusTaken(m_spellInfo, floatDmg);
+                    m_targetDamageInfo = affectingCaster->doSpellHealing(m_unitTarget, getSpellInfo()->getId(), floatDmg, m_triggeredSpell, false, false, m_isForcedCrit, this);
                     isTargetDamageInfoSet = true;
                 }
             }
@@ -2334,6 +2341,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                         const auto spellInfo = sSpellMgr.getSpellInfo(18562);
                         Spell* spell = sSpellMgr.newSpell(m_unitTarget, spellInfo, true, nullptr);
                         spell->setUnitTarget(m_unitTarget);
+                        new_dmg = m_unitTarget->applySpellHealingBonusTaken(spellInfo, new_dmg);
                         m_targetDamageInfo = affectingCaster->doSpellHealing(m_unitTarget, spellInfo->getId(), new_dmg, m_triggeredSpell, false, false, m_isForcedCrit, this);
                         isTargetDamageInfoSet = true;
                         delete spell;
@@ -3256,8 +3264,11 @@ void Spell::SpellEffectWeaponDmgPerc(uint8_t effectIndex) // Weapon Percent dama
         auto dmg = CalculateDamage(u_caster, m_unitTarget, MELEE, getSpellInfo()) * damage / 100.0f;
 
         // Get bonus damage from spell power and attack power
+        // TODO: should be calculated on spell launch
         if (!m_isEffectDamageStatic[effectIndex])
-            dmg = getUnitCaster()->applySpellDamageBonus(m_originalCaster, getSpellInfo(), effectIndex, static_cast<int32_t>(dmg), false, this);
+            dmg = getUnitCaster()->applySpellDamageBonusDone(m_originalCaster, m_unitTarget, getSpellInfo(), effectIndex, static_cast<int32_t>(dmg), false, this);
+
+        dmg = m_unitTarget->applySpellDamageBonusTaken(m_spellInfo, dmg);
 
 #if VERSION_STRING < WotLK
         auto* const affectingCaster = m_caster;
@@ -4386,7 +4397,9 @@ void Spell::SpellEffectPowerBurn(uint8_t effectIndex) // power burn
 
     m_unitTarget->modPower(POWER_TYPE_MANA, -mana);
 
-    m_targetDamageInfo = affectingCaster->doSpellDamage(m_unitTarget, getSpellInfo()->getId(), mana * getSpellInfo()->getEffectMultipleValue(effectIndex), effectIndex, m_triggeredSpell, false, false, m_isForcedCrit, this);
+    auto burnedDamage = mana * getSpellInfo()->getEffectMultipleValue(effectIndex);
+    burnedDamage = m_unitTarget->applySpellDamageBonusTaken(m_spellInfo, burnedDamage);
+    m_targetDamageInfo = affectingCaster->doSpellDamage(m_unitTarget, getSpellInfo()->getId(), burnedDamage, effectIndex, m_triggeredSpell, false, false, m_isForcedCrit, this);
     isTargetDamageInfoSet = true;
 }
 

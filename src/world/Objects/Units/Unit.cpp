@@ -3399,12 +3399,12 @@ void Unit::clearProcCooldowns()
     }
 }
 
-float_t Unit::applySpellHealingBonus(Unit* originalCaster, SpellInfo const* spellInfo, uint8_t effectIndex, int32_t baseHeal, bool multiplyBaseDmg/* = false*/, Spell* castingSpell/* = nullptr*/, AuraEffectModifier const* aurEff/* = nullptr*/)
+float_t Unit::applySpellHealingBonusDone(Unit* originalCaster, SpellInfo const* spellInfo, uint8_t effectIndex, int32_t baseHeal, bool multiplyBaseDmg/* = false*/, Spell* castingSpell/* = nullptr*/, AuraEffectModifier const* aurEff/* = nullptr*/)
 {
-    return applySpellHealingBonus(originalCaster, spellInfo, effectIndex, static_cast<float_t>(baseHeal), multiplyBaseDmg, castingSpell, aurEff);
+    return applySpellHealingBonusDone(originalCaster, spellInfo, effectIndex, static_cast<float_t>(baseHeal), multiplyBaseDmg, castingSpell, aurEff);
 }
 
-float_t Unit::applySpellHealingBonus(Unit* originalCaster, SpellInfo const* spellInfo, uint8_t effectIndex, float_t floatHeal, bool multiplyBaseDmg/* = false*/, Spell* castingSpell/* = nullptr*/, AuraEffectModifier const* aurEff/* = nullptr*/)
+float_t Unit::applySpellHealingBonusDone(Unit* originalCaster, SpellInfo const* spellInfo, uint8_t effectIndex, float_t floatHeal, bool multiplyBaseDmg/* = false*/, Spell* castingSpell/* = nullptr*/, AuraEffectModifier const* aurEff/* = nullptr*/)
 {
     if (spellInfo->getAttributesExC() & ATTRIBUTESEXC_NO_HEALING_BONUS)
         return floatHeal;
@@ -3431,43 +3431,51 @@ float_t Unit::applySpellHealingBonus(Unit* originalCaster, SpellInfo const* spel
         }
     }
 
-    float_t bonusHeal = 0.0f, bonusAp = 0.0f;
+    float_t bonusHeal = 0.0f, bonusPctHeal = 0.0f;
+    // int32_t bonusFlatHeal = 0;
     const auto school = spellInfo->getFirstSchoolFromSchoolMask();
     const auto effectPctModifier = aurEff != nullptr ? aurEff->getEffectPercentModifier() : 1.0f;
 
-    if (aurEff != nullptr)
-    {
-        bonusHeal = static_cast<float_t>(aurEff->getAura()->getHealPowerBonus());
-        bonusAp = static_cast<float_t>(aurEff->getAura()->getAttackPowerBonus());
-    }
-    else
-    {
-        bonusHeal = static_cast<float_t>(realCaster->m_healDoneMod[school]);
-        bonusAp = static_cast<float_t>(realCaster->getCalculatedAttackPower());
-    }
+    const auto healPower = aurEff != nullptr ?
+        static_cast<float_t>(aurEff->getAura()->getHealPowerBonus()) :
+        static_cast<float_t>(realCaster->m_healDoneMod[school]);
 
     // Get spell coefficient value
-    if (bonusHeal > 0.0f)
-    {
-        bonusHeal *= spellInfo->getEffectSpellPowerCoefficient(effectIndex) * effectPctModifier;
+    auto healCoeff = spellInfo->getEffectSpellPowerCoefficient(effectIndex) * effectPctModifier;
+    realCaster->applySpellModifiers(SPELLMOD_PENALTY, &healCoeff, spellInfo, castingSpell, aurEff != nullptr ? aurEff->getAura() : nullptr);
 
-        // Apply general downranking penalty
-        // Level 20 penalty is already applied in DBC files for WotLK+
-        // and calculated for Classic and TBC in SpellMgr::setSpellCoefficient
-        // General downranking penalty only existed in late TBC and WotLK, in Cata spells lost their ranks
-#if VERSION_STRING == TBC || VERSION_STRING == WotLK
-        if (bonusHeal > 0.0f && realCaster->isPlayer())
-            bonusHeal *= realCaster->getSpellDownrankingPenalty(spellInfo->getMaxLevel());
-#endif
+    // Apply general downranking penalty
+    // Level 20 penalty is already applied in DBC files for WotLK+
+    // and calculated for Classic and TBC in SpellMgr::setSpellCoefficient
+    // General downranking penalty only existed in late TBC and WotLK, in Cata spells lost their ranks
+    auto penalty = 1.0f;
+    if (WoW::isServerExpansionBetween(WoW::Expansion::_TBC, WoW::Expansion::_WotLK))
+    {
+        if (realCaster->isPlayer())
+            penalty = realCaster->getSpellDownrankingPenalty(spellInfo->getMaxLevel());
     }
 
+    bonusHeal += healPower * healCoeff * penalty;
+
     // Get attack power bonus
-    if (bonusAp > 0.0f)
-        bonusAp *= spellInfo->getAttackPowerCoefficient() * effectPctModifier;
+    if (const auto apCoeff = spellInfo->getAttackPowerCoefficient())
+    {
+        const auto attackPower = aurEff != nullptr ?
+            static_cast<float_t>(aurEff->getAura()->getAttackPowerBonus()) :
+            static_cast<float_t>(realCaster->getCalculatedAttackPower());
 
-    realCaster->applySpellModifiers(SPELLMOD_PENALTY, &bonusHeal, spellInfo, castingSpell, aurEff != nullptr ? aurEff->getAura() : nullptr);
-    bonusHeal += bonusAp;
+        bonusHeal += attackPower * (apCoeff * effectPctModifier);
+    }
 
+    // Apply pct healing modifiers from caster
+    // but not necessarily from original caster
+    // e.g. Earth Shield in TBC does not gain bonus from Purification if casted on someone else
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        bonusPctHeal += 1.0f + m_healDonePctMod[school];
+    else
+        bonusPctHeal += 1.0f + realCaster->m_healDonePctMod[school];
+
+    // bonusHeal += bonusFlatHeal;
     if (aurEff != nullptr && aurEff->isPeriodicEffect())
         bonusHeal *= aurEff->getAura()->getStackCount();
 
@@ -3475,29 +3483,22 @@ float_t Unit::applySpellHealingBonus(Unit* originalCaster, SpellInfo const* spel
         floatHeal * std::max(0.0f, bonusHeal) :
         floatHeal + std::max(0.0f, bonusHeal);
 
+    heal *= bonusPctHeal;
+
     if (aurEff != nullptr && aurEff->isPeriodicEffect())
         realCaster->applySpellModifiers(SPELLMOD_PERIODIC_DAMAGE, &heal, spellInfo, nullptr, aurEff->getAura());
     else if (castingSpell != nullptr)
         realCaster->applySpellModifiers(SPELLMOD_DAMAGE_DONE, &heal, spellInfo, castingSpell, nullptr);
 
-    // Apply pct healing modifiers from caster
-#if VERSION_STRING < WotLK
-    // but not necessarily from original caster
-    // e.g. Earth Shield in TBC does not gain bonus from Purification if casted on someone else
-    heal += heal * m_healDonePctMod[school];
-#else // Wotlk+
-    heal += heal * realCaster->m_healDonePctMod[school];
-#endif
-
     return heal;
 }
 
-float_t Unit::applySpellDamageBonus(Unit* originalCaster, SpellInfo const* spellInfo, uint8_t effectIndex, int32_t baseDmg, bool multiplyBaseDmg/* = false*/, Spell* castingSpell/* = nullptr*/, AuraEffectModifier const* aurEff/* = nullptr*/)
+float_t Unit::applySpellDamageBonusDone(Unit* originalCaster, Unit const* target, SpellInfo const* spellInfo, uint8_t effectIndex, int32_t baseDmg, bool multiplyBaseDmg/* = false*/, Spell* castingSpell/* = nullptr*/, AuraEffectModifier const* aurEff/* = nullptr*/)
 {
-    return applySpellDamageBonus(originalCaster, spellInfo, effectIndex, static_cast<float_t>(baseDmg), multiplyBaseDmg, castingSpell, aurEff);
+    return applySpellDamageBonusDone(originalCaster, target, spellInfo, effectIndex, static_cast<float_t>(baseDmg), multiplyBaseDmg, castingSpell, aurEff);
 }
 
-float_t Unit::applySpellDamageBonus(Unit* originalCaster, SpellInfo const* spellInfo, uint8_t effectIndex, float_t floatDmg, bool multiplyBaseDmg/* = false*/, Spell* castingSpell/* = nullptr*/, AuraEffectModifier const* aurEff/* = nullptr*/)
+float_t Unit::applySpellDamageBonusDone(Unit* originalCaster, Unit const* target, SpellInfo const* spellInfo, uint8_t effectIndex, float_t floatDmg, bool multiplyBaseDmg/* = false*/, Spell* castingSpell/* = nullptr*/, AuraEffectModifier const* aurEff/* = nullptr*/)
 {
     if (spellInfo->getAttributesExC() & ATTRIBUTESEXC_NO_DONE_BONUS)
         return floatDmg;
@@ -3529,46 +3530,70 @@ float_t Unit::applySpellDamageBonus(Unit* originalCaster, SpellInfo const* spell
         }
     }
 
-    float_t bonusDmg = 0.0f, bonusAp = 0.0f;
+    float_t bonusDmg = 0.0f, bonusPctDmg = 0.0f;
+    int32_t bonusFlatDmg = 0;
     const auto school = spellInfo->getFirstSchoolFromSchoolMask();
     const auto effectPctModifier = aurEff != nullptr ? aurEff->getEffectPercentModifier() : 1.0f;
 
-    if (canBenefitFromSpellPower)
+    // Add creature type bonuses
+    if (const auto* victimCreature = target != nullptr ? target->ToCreature() : nullptr)
     {
-        if (aurEff != nullptr)
-            bonusDmg = static_cast<float_t>(aurEff->getAura()->getSpellPowerBonus());
-        else
-            bonusDmg = static_cast<float_t>(realCaster->GetDamageDoneMod(school));
-
-        // Get spell coefficient value
-        if (bonusDmg > 0.0f)
+        if (const auto* playerCaster = realCaster->ToPlayer())
         {
-            bonusDmg *= spellInfo->getEffectSpellPowerCoefficient(effectIndex) * effectPctModifier;
-
-            // Apply general downranking penalty
-            // Level 20 penalty is already applied in DBC files for WotLK+
-            // and calculated for Classic and TBC in SpellMgr::setSpellCoefficient
-            // General downranking penalty only existed in late TBC and WotLK, in Cata spells lost their ranks
-#if VERSION_STRING == TBC || VERSION_STRING == WotLK
-            if (bonusDmg > 0.0f && realCaster->isPlayer())
-                bonusDmg *= realCaster->getSpellDownrankingPenalty(spellInfo->getMaxLevel());
-#endif
+            const auto creatureType = victimCreature->GetCreatureProperties()->Type;
+            // Increase pct damage by creature type
+            bonusPctDmg += playerCaster->m_increaseDamageByTypePct[creatureType];
+            // Increase flat damage by creature type
+            if (aurEff != nullptr && aurEff->isPeriodicEffect())
+                bonusFlatDmg += playerCaster->m_increaseDamageByType[creatureType] / aurEff->getAura()->getPeriodicTickCountForEffect(aurEff->getEffectIndex());
+            else
+                bonusFlatDmg += playerCaster->m_increaseDamageByType[creatureType];
         }
-
-        realCaster->applySpellModifiers(SPELLMOD_PENALTY, &bonusDmg, spellInfo, castingSpell, aurEff != nullptr ? aurEff->getAura() : nullptr);
     }
 
-    if (aurEff != nullptr)
-        bonusAp = static_cast<float_t>(aurEff->getAura()->getAttackPowerBonus());
-    else
-        bonusAp = static_cast<float_t>(realCaster->getCalculatedAttackPower());
+    if (canBenefitFromSpellPower)
+    {
+        // Spell power
+        const auto spellPower = aurEff != nullptr ?
+            static_cast<float_t>(aurEff->getAura()->getSpellPowerBonus()) :
+            static_cast<float_t>(realCaster->GetDamageDoneMod(school));
+
+        // Get spell coefficient value
+        auto spCoeff = spellInfo->getEffectSpellPowerCoefficient(effectIndex) * effectPctModifier;
+        realCaster->applySpellModifiers(SPELLMOD_PENALTY, &spCoeff, spellInfo, castingSpell, aurEff != nullptr ? aurEff->getAura() : nullptr);
+
+        // Apply general downranking penalty
+        // Level 20 penalty is already applied in DBC files for WotLK+
+        // and calculated for Classic and TBC in SpellMgr::setSpellCoefficient
+        // General downranking penalty only existed in late TBC and WotLK, in Cata spells lost their ranks
+        auto penalty = 1.0f;
+        if (WoW::isServerExpansionBetween(WoW::Expansion::_TBC, WoW::Expansion::_WotLK))
+        {
+            if (realCaster->isPlayer())
+                penalty = realCaster->getSpellDownrankingPenalty(spellInfo->getMaxLevel());
+        }
+
+        bonusDmg += spellPower * spCoeff * penalty;
+    }
 
     // Get attack power bonus
-    if (bonusAp > 0.0f)
-        bonusAp *= spellInfo->getAttackPowerCoefficient() * effectPctModifier;
+    if (const auto apCoeff = spellInfo->getAttackPowerCoefficient())
+    {
+        const auto attackPower = aurEff != nullptr ?
+            static_cast<float_t>(aurEff->getAura()->getAttackPowerBonus()) :
+            static_cast<float_t>(realCaster->getCalculatedAttackPower());
 
-    bonusDmg += bonusAp;
+        bonusDmg += attackPower * (apCoeff * effectPctModifier);
+    }
 
+    // Apply pct damage modifiers from caster
+    // but not necessarily from original caster
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        bonusPctDmg += GetDamageDonePctMod(school);
+    else
+        bonusPctDmg += realCaster->GetDamageDonePctMod(school);
+
+    bonusDmg += bonusFlatDmg;
     if (aurEff != nullptr && aurEff->isPeriodicEffect())
         bonusDmg *= aurEff->getAura()->getStackCount();
 
@@ -3576,20 +3601,67 @@ float_t Unit::applySpellDamageBonus(Unit* originalCaster, SpellInfo const* spell
         floatDmg * std::max(0.0f, bonusDmg) :
         floatDmg + std::max(0.0f, bonusDmg);
 
+    dmg *= bonusPctDmg;
+
     if (aurEff != nullptr && aurEff->isPeriodicEffect())
         realCaster->applySpellModifiers(SPELLMOD_PERIODIC_DAMAGE, &dmg, spellInfo, nullptr, aurEff->getAura());
     else if (castingSpell != nullptr)
         realCaster->applySpellModifiers(SPELLMOD_DAMAGE_DONE, &dmg, spellInfo, castingSpell, nullptr);
 
-    // Apply pct damage modifiers from caster
-#if VERSION_STRING < WotLK
-    // but not necessarily from original caster
-    dmg *= GetDamageDonePctMod(school);
-#else // Wotlk+
-    dmg *= realCaster->GetDamageDonePctMod(school);
-#endif
-
     return dmg;
+}
+
+float_t Unit::applySpellHealingBonusTaken(SpellInfo const* spellInfo, int32_t heal, AuraEffectModifier const* aurEff/* = nullptr*/) const
+{
+    return applySpellHealingBonusTaken(spellInfo, static_cast<float_t>(heal), aurEff);
+}
+
+float_t Unit::applySpellHealingBonusTaken(SpellInfo const* spellInfo, float_t heal, AuraEffectModifier const* aurEff/* = nullptr*/) const
+{
+    if (spellInfo == nullptr)
+        return heal;
+
+    const auto school = spellInfo->getFirstSchoolFromSchoolMask();
+
+    // Calculate healing reduction
+    float_t flatHealingTaken = 0.0f;
+    if (aurEff != nullptr && aurEff->isPeriodicEffect())
+        flatHealingTaken = static_cast<float_t>(m_healTakenMod[school] / aurEff->getAura()->getPeriodicTickCountForEffect(aurEff->getEffectIndex()));
+    else
+        flatHealingTaken += static_cast<float_t>(m_healTakenMod[school]);
+
+    float_t pctHealingTaken = 1.0f;
+    pctHealingTaken += m_healTakenPctMod[school];
+
+    heal = (heal + flatHealingTaken) * pctHealingTaken;
+    return std::max(0.0f, heal);
+}
+
+float_t Unit::applySpellDamageBonusTaken(SpellInfo const* spellInfo, int32_t damage, AuraEffectModifier const* aurEff/* = nullptr*/) const
+{
+    return applySpellDamageBonusTaken(spellInfo, static_cast<float_t>(damage), aurEff);
+}
+
+float_t Unit::applySpellDamageBonusTaken(SpellInfo const* spellInfo, float_t damage, AuraEffectModifier const* aurEff/* = nullptr*/) const
+{
+    if (spellInfo == nullptr)
+        return damage;
+
+    const auto school = spellInfo->getFirstSchoolFromSchoolMask();
+
+    // Calculate damage reduction
+    float_t flatDamageTaken = 0.0f;
+    if (aurEff != nullptr && aurEff->isPeriodicEffect())
+        flatDamageTaken += static_cast<float_t>(m_damageTakenMod[school] / aurEff->getAura()->getPeriodicTickCountForEffect(aurEff->getEffectIndex()));
+    else
+        flatDamageTaken += static_cast<float_t>(m_damageTakenMod[school]);
+
+    float_t pctDamageTaken = 1.0f;
+    pctDamageTaken += m_damageTakenPctMod[school];
+    pctDamageTaken += m_modDamageTakenByMechPct[spellInfo->getMechanicsType()];
+
+    damage = (damage + flatDamageTaken) * pctDamageTaken;
+    return std::max(0.0f, damage);
 }
 
 float_t Unit::getSpellDownrankingPenalty(uint32_t spellMaxLevel) const
@@ -7407,7 +7479,9 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
             healAmount = damage;
         }
 
-        attacker->doSpellHealing(attacker, spellId, healAmount * batch->leechMultipleValue, false, batch->isPeriodic, true, false);
+        auto floatHeal = healAmount * batch->leechMultipleValue;
+        floatHeal = attacker->applySpellHealingBonusTaken(batch->spellInfo, floatHeal);
+        attacker->doSpellHealing(attacker, spellId, floatHeal, false, batch->isPeriodic, true, false);
     }
 
     setStandState(STANDSTATE_STAND);
@@ -12578,8 +12652,10 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
                 const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
                 Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, NULL);
                 spell->setUnitTarget(this);
+                auto floatHeal = amount * (ospinfo->calculateEffectValue(0)) / 100.0f;
+                floatHeal = applySpellHealingBonusTaken(spellInfo, floatHeal);
                 if (ospinfo)
-                    doSpellHealing(this, spellId, amount * (ospinfo->calculateEffectValue(0)) / 100.0f, true);
+                    doSpellHealing(this, spellId, floatHeal, true);
                 delete spell;
                 spell = NULL;
                 continue;
@@ -14093,6 +14169,7 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
                 if (ospinfo)
                 {
                     auto tdmg = damageInfo.absorbedDamage * (ospinfo->calculateEffectValue(0)) / 100.0f;
+                    tdmg = victim->applySpellDamageBonusTaken(sSpellMgr.getSpellInfo(power_word_id), tdmg);
                     //somehow we should make this not caused any threat (to be done)
                     doSpellDamage(victim, power_word_id, tdmg, 0, true);
                 }

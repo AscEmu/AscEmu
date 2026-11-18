@@ -41,7 +41,7 @@ public:
 
         // Calculate healing done here so correct percent modifiers are applied
         // Casted by the unit who owns the aura
-        *dmg = Util::float2int32(spell->getUnitTarget()->applySpellHealingBonus(spell->getUnitCaster(), spell->getSpellInfo(), effIndex, *dmg, false, spell));
+        *dmg = Util::float2int32(spell->getUnitTarget()->applySpellHealingBonusDone(spell->getUnitCaster(), spell->getSpellInfo(), effIndex, *dmg, false, spell));
         return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }
 
@@ -70,6 +70,7 @@ public:
         // Spell is actually casted by unit who owns the aura but heal effect is done by shaman
         if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
             spellProc->setOriginalCasterGuidForProcSpell(spellProc->getCasterGuid());
+
         spellProc->setCastedOnProcOwner(true);
 
         ElementalShield::onCreateSpellProc(spellProc, obj);
@@ -82,7 +83,7 @@ public:
             return false;
 
         // should not proc on absorb
-        if (damageInfo.realDamage <= 0)
+        if (damageInfo.realDamage == 0)
             return false;
 
         return true;
@@ -130,7 +131,7 @@ public:
     bool canProc(SpellProc* /*spellProc*/, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, DamageInfo damageInfo) override
     {
         // should not proc on absorb
-        if (damageInfo.realDamage <= 0)
+        if (damageInfo.realDamage == 0)
             return false;
 
         return true;

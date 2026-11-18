@@ -3458,7 +3458,8 @@ int LuaUnit::SpellNonMeleeDamageLog(lua_State* L, Unit* ptr)
     const bool isTriggered = CHECK_BOOL(L, 5);
     if (pVictim && spellid && damage)
     {
-        ptr->doSpellDamage(pVictim, spellid, static_cast<float_t>(damage), effIndex, isTriggered);
+        auto floatDmg = pVictim->applySpellDamageBonusTaken(sSpellMgr.getSpellInfo(spellid), static_cast<float_t>(damage));
+        ptr->doSpellDamage(pVictim, spellid, floatDmg, effIndex, isTriggered);
     }
     return 0;
 }

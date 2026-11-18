@@ -75,13 +75,9 @@ class BodyAndSoulDummy : public SpellScript
         else
         {
             if (WoW::isServerExpansion(WoW::Expansion::_Cata))
-            {
                 aur->getOwner()->removeProcTriggerSpell(SPELL_BODY_AND_SOUL_POISON_SINGLE, aur->getCasterGuid());
-            }
             else if (WoW::isServerExpansion(WoW::Expansion::_WotLK))
-            {
                 aur->getOwner()->removeProcTriggerSpell(SPELL_BODY_AND_SOUL_POISON, aur->getCasterGuid());
-            }
         }
 
         return SpellScriptCheckDummy::DUMMY_OK;
@@ -93,7 +89,7 @@ class BodyAndSoulSpeed : public SpellScript
 public:
     void onCreateSpellProc(SpellProc* spellProc, Object* /*obj*/) override
     {
-        // Should proc only on Power Word: Shield
+        // Should proc only on Power Word: Shield in Wotlk
         spellProc->setProcClassMask(0, 0x1);
         spellProc->setProcClassMask(1, 0);
         spellProc->setProcClassMask(2, 0x400);
@@ -112,7 +108,6 @@ class BodyAndSoulPoison : public SpellScript
         return true;
     }
 };
-
 
 class DivineAegisDummy : public SpellScript
 {
@@ -192,7 +187,7 @@ public:
         spellProc->setProcClassMask(EFF_INDEX_1, 0x4);
         if (WoW::isServerExpansion(WoW::Expansion::_WotLK))
         {
-            // or on critical Empowered Renew
+            // or on critical Empowered Renew in Wotlk
             spellProc->setProcClassMask(EFF_INDEX_2, 0x1000);
         }
         spellProc->setExtraProcFlags(EXTRA_PROC_ON_CRIT_ONLY);
@@ -270,12 +265,12 @@ public:
         spellProc->setCastedOnProcOwner(true);
     }
 
-    bool canProc(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, DamageInfo damageInfo) override
+    bool canProc(SpellProc* /*spellProc*/, Unit* /*victim*/, SpellInfo const* castingSpell, DamageInfo damageInfo) override
     {
         if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
-            return SpellScript::canProc(spellProc, victim, castingSpell, damageInfo);
+            return true;
 
-        // Should proc from critical spells only
+        // Should proc from critical spells only in TBC and Wotlk
         if (castingSpell == nullptr || damageInfo.weaponType == RANGED)
             return false;
 
@@ -318,7 +313,7 @@ public:
 class VampiricEmbraceDummy : public SpellScript
 {
 public:
-    SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, [[maybe_unused]] AuraEffectModifier* aurEff, bool apply) override
+    SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
         if (apply)
         {
@@ -357,14 +352,14 @@ public:
         }
     }
 
-    bool canProc([[maybe_unused]]SpellProc* spellProc, [[maybe_unused]]Unit* victim, SpellInfo const* castingSpell, DamageInfo damageInfo) override
+    bool canProc(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, DamageInfo damageInfo) override
     {
         if (castingSpell == nullptr)
             return false;
 
         if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
         {
-            // Should proc only for the priest who casted Vampiric Embrace
+            // Should proc only for the priest who casted Vampiric Embrace in Classic and TBC
             if (victim == nullptr || victim->getGuid() != spellProc->getCasterGuid())
                 return false;
         }
@@ -469,7 +464,7 @@ public:
                 uint32_t procMask[3] = { spellFamilyMask[0], spellFamilyMask[1], spellFamilyMask[2] };
                 aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_VAMPIRIC_TOUCH_MANA), aur, aur->getCasterGuid(), procMask);
             }
-            else
+            else // Wotlk - Cata
             {
                 // Should proc only on Mind Blast
                 uint32_t procMask[3] = { 0x2000, 0, 0 };
@@ -487,7 +482,7 @@ public:
     void onAuraRemove(Aura* aur, AuraRemoveMode mode) override
     {
         if (!WoW::isServerExpansion(WoW::Expansion::_WotLK))
-            return SpellScript::onAuraRemove(aur, mode);
+            return;
 
         if (mode != AURA_REMOVE_ON_DISPEL)
             return;
@@ -523,7 +518,7 @@ public:
         return true;
     }
 
-    SpellScriptExecuteState onDoProcEffect([[maybe_unused]] SpellProc* spellProc, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, [[maybe_unused]]DamageInfo damageInfo) override
+    SpellScriptExecuteState onDoProcEffect(SpellProc* spellProc, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, DamageInfo damageInfo) override
     {
         if (WoW::isServerExpansion(WoW::Expansion::_TBC))
         {
@@ -545,10 +540,10 @@ public:
         }
     }
 
-    SpellScriptExecuteState onCastProcSpell(SpellProc* spellProc, Unit* caster, Unit* victim, Spell* spell) override
+    SpellScriptExecuteState onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* spell) override
     {
         if (!WoW::isServerExpansion(WoW::Expansion::_TBC))
-            return SpellScript::onCastProcSpell(spellProc, caster, victim, spell);
+            return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
 
         spell->forced_basepoints->set(EFF_INDEX_0, manaReturn);
         manaReturn = 0;
@@ -580,7 +575,7 @@ void setupPriestSpells(ScriptMgr* mgr)
 
     }
 
-    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK) && !WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+    if (WoW::isServerExpansionBetween(WoW::Expansion::_WotLK, WoW::Expansion::_Cata))
     {
         mgr->register_spell_script(SPELL_DIVINE_AEGIS_R1, new DivineAegisDummy);
         mgr->register_spell_script(SPELL_DIVINE_AEGIS, new DivineAegis);
@@ -591,17 +586,17 @@ void setupPriestSpells(ScriptMgr* mgr)
         mgr->register_spell_script(SPELL_EMPOWERED_RENEW_R1, new EmpoweredRenewDummy);
     }
 
-    if (WoW::isServerExpansion(WoW::Expansion::_TBC) || WoW::isServerExpansion(WoW::Expansion::_WotLK))
+    if (WoW::isServerExpansionBetween(WoW::Expansion::_TBC, WoW::Expansion::_WotLK))
     {
         mgr->register_spell_script(SPELL_HOLY_CONCENTRATION_R1, new HolyConcentration);
     }
 
-    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop) && WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    if (WoW::isServerExpansionBetween(WoW::Expansion::_WotLK, WoW::Expansion::_Cata))
     {
         mgr->register_spell_script(SPELL_IMPROVED_DEVOURING_PLAGUE_R1, new ImprovedDevouringPlagueDummy);
     }
 
-    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop) && WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    if (WoW::isServerExpansionBetween(WoW::Expansion::_WotLK, WoW::Expansion::_Cata))
     {
         mgr->register_spell_script(SPELL_IMPROVED_MIND_BLAST_R1, new ImprovedMindBlastDummy);
         mgr->register_spell_script(SPELL_MIND_TRAUMA, new MindTrauma);
@@ -612,7 +607,7 @@ void setupPriestSpells(ScriptMgr* mgr)
         mgr->register_spell_script(SPELL_IMPROVED_SPIRIT_TAP_R1, new ImprovedSpiritTap);
     }
 
-    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop) && WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))
+    if (WoW::isServerExpansionBetween(WoW::Expansion::_TBC, WoW::Expansion::_Cata))
     {
         mgr->register_spell_script(WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata) ? SPELL_SURGE_OF_LIGHT_PROC_CATA : SPELL_SURGE_OF_LIGHT_PROC, new SurgeOfLight);
     }

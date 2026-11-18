@@ -1008,7 +1008,7 @@ void Aura::spellAuraEffectPeriodicDamage(AuraEffectModifier* aurEff, bool apply)
 
         // Get bonus damage from spell power and attack power
         if (casterUnit != nullptr && !aurEff->isEffectDamageStatic())
-            damage = casterUnit->applySpellDamageBonus(casterUnit, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff);
+            damage = casterUnit->applySpellDamageBonusDone(casterUnit, m_target, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff);
 
         if (damage <= 0.0f)
             return;
@@ -1066,7 +1066,7 @@ void Aura::spellAuraEffectPeriodicHeal(AuraEffectModifier* aurEff, bool apply)
         {
             // Get bonus healing from spell power and attack power
             if (!aurEff->isEffectDamageStatic())
-                heal = casterUnit->applySpellHealingBonus(casterUnit, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff);
+                heal = casterUnit->applySpellHealingBonusDone(casterUnit, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff);
         }
 
         if (heal <= 0)
@@ -1558,7 +1558,7 @@ void Aura::spellAuraEffectPeriodicLeech(AuraEffectModifier* aurEff, bool apply)
 
         // Get bonus damage from spell power and attack power
         if (casterUnit != nullptr && !aurEff->isEffectDamageStatic())
-            damage = casterUnit->applySpellDamageBonus(casterUnit, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff);
+            damage = casterUnit->applySpellDamageBonusDone(casterUnit, m_target, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff);
 
         if (casterUnit != nullptr)
         {
@@ -1708,7 +1708,7 @@ void Aura::spellAuraEffectPeriodicHealthFunnel(AuraEffectModifier* aurEff, bool 
         // Get bonus damage from spell power and attack power
         const auto casterUnit = getUnitCaster();
         if (casterUnit != nullptr && !aurEff->isEffectDamageStatic())
-            aurEff->setEffectDamage(casterUnit->applySpellDamageBonus(casterUnit, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff));
+            aurEff->setEffectDamage(casterUnit->applySpellDamageBonusDone(casterUnit, m_target, getSpellInfo(), aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff));
 
         // Set periodic timer only if timer was resetted
         if (aurEff->getEffectPeriodicTimer() == 0)
@@ -1748,7 +1748,7 @@ void Aura::spellAuraEffectSchoolAbsorb(AuraEffectModifier* aurEff, bool apply)
     // Apply spell power coefficient
     auto* const unitCaster = getUnitCaster();
     if (unitCaster != nullptr && !aurEff->isEffectDamageStatic())
-        aurEff->setEffectDamage(unitCaster->applySpellDamageBonus(unitCaster, m_spellInfo, aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff));
+        aurEff->setEffectDamage(unitCaster->applySpellDamageBonusDone(unitCaster, m_target, m_spellInfo, aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff));
 }
 
 void Aura::spellAuraEffectModPowerRegen(AuraEffectModifier* aurEff, bool /*apply*/)
@@ -1814,7 +1814,7 @@ void Aura::spellAuraEffectManaShield(AuraEffectModifier* aurEff, bool apply)
 
     // Apply spell power coefficient
     if (unitCaster != nullptr && !aurEff->isEffectDamageStatic())
-        aurEff->setEffectDamage(Util::float2int32(unitCaster->applySpellDamageBonus(unitCaster, m_spellInfo, aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff)));
+        aurEff->setEffectDamage(unitCaster->applySpellDamageBonusDone(unitCaster, m_target, m_spellInfo, aurEff->getEffectIndex(), aurEff->getEffectFloatDamage(), false, nullptr, aurEff));
 
     // Set mana drain amount to effect
     auto manaDrain = m_spellInfo->getEffectMultipleValue(aurEff->getEffectIndex());

@@ -148,6 +148,28 @@ public:
     }
 };
 
+class Impact : public SpellScript
+{
+public:
+    void onCreateSpellProc(SpellProc* proc, Object* /*obj*/) override
+    {
+        // TODO: classic and tbc masks
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        {
+            // Should proc only from Fire Blast
+            proc->setProcClassMask(EFF_INDEX_0, 0x2);
+        }
+    }
+
+    bool canProc(SpellProc* /*spellProc*/, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, DamageInfo damageInfo) override
+    {
+        if (damageInfo.weaponType == RANGED)
+            return false;
+
+        return damageInfo.fullDamage > 0;
+    }
+};
+
 class IncastersAbsorption : public SpellScript
 {
 public:
@@ -169,31 +191,6 @@ public:
         const auto remainingDur = (incasterEff->getAura()->getTimeLeft() + 500) / 1000;
         *damage += incasterEff->getEffectDamage() * remainingDur / 10;
         return SpellScriptEffectDamage::DAMAGE_DEFAULT;
-    }
-};
-
-class Impact : public SpellScript
-{
-public:
-    void onCreateSpellProc([[maybe_unused]] SpellProc* proc, Object* /*obj*/) override
-    {
-        // TODO: classic and tbc masks
-        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
-        {
-            // Should proc only from Fire Blast
-            proc->setProcClassMask(EFF_INDEX_0, 0x2);
-        }
-    }
-
-    bool canProc(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, DamageInfo damageInfo) override
-    {
-        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
-            return SpellScript::canProc(spellProc, victim, castingSpell, damageInfo);
-
-        if (damageInfo.weaponType == RANGED)
-            return false;
-
-        return damageInfo.fullDamage > 0;
     }
 };
 
@@ -224,29 +221,6 @@ public:
             return;
 
         aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_INVISIBILITY_REAL), true);
-    }
-};
-
-class MasterOfElementsDummy : public SpellScript
-{
-public:
-    SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
-    {
-        if (apply)
-        {
-            auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_MASTER_OF_ELEMENTS), aur, aur->getCasterGuid());
-            if (spellProc != nullptr)
-            {
-                spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
-                spellProc->setExtraProcFlags(EXTRA_PROC_ON_CRIT_ONLY);
-            }
-        }
-        else
-        {
-            aur->getOwner()->removeProcTriggerSpell(SPELL_MASTER_OF_ELEMENTS, aur->getCasterGuid());
-        }
-
-        return SpellScriptCheckDummy::DUMMY_OK;
     }
 };
 
@@ -291,6 +265,29 @@ public:
     }
 };
 
+class MasterOfElementsDummy : public SpellScript
+{
+public:
+    SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
+    {
+        if (apply)
+        {
+            auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_MASTER_OF_ELEMENTS), aur, aur->getCasterGuid());
+            if (spellProc != nullptr)
+            {
+                spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
+                spellProc->setExtraProcFlags(EXTRA_PROC_ON_CRIT_ONLY);
+            }
+        }
+        else
+        {
+            aur->getOwner()->removeProcTriggerSpell(SPELL_MASTER_OF_ELEMENTS, aur->getCasterGuid());
+        }
+
+        return SpellScriptCheckDummy::DUMMY_OK;
+    }
+};
+
 class MasterOfElements : public SpellScript
 {
 public:
@@ -305,7 +302,7 @@ public:
             return false;
         if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
         {
-            // Can proc only from fire or frost school
+            // Can proc only from fire or frost school in Classic - TBC
             if (castingSpell->getSchoolMask() & SCHOOL_MASK_FIRE || castingSpell->getSchoolMask() & SCHOOL_MASK_FROST)
                 return true;
             return false;
@@ -420,19 +417,19 @@ void setupMageSpells(ScriptMgr* mgr)
     // Call legacy script setup
     SetupLegacyMageSpells(mgr);
 
-    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata) && !WoW::isServerExpansionAtLeast(WoW::Expansion::_BfA))
+    if (WoW::isServerExpansionBetween(WoW::Expansion::_Cata, WoW::Expansion::_Legion))
     {
         mgr->register_spell_script(SPELL_ARCANE_MISSILES_PROC, new ArcaneMissilesProc);
     }
 
-    if (WoW::isServerExpansion(WoW::Expansion::_WotLK) || WoW::isServerExpansion(WoW::Expansion::_Cata))
+    if (WoW::isServerExpansionBetween(WoW::Expansion::_WotLK, WoW::Expansion::_Cata))
     {
         mgr->register_spell_script(SPELL_DEEP_FREEZE_DAMAGE, new DeepFreezeDamage);
         mgr->register_spell_script(SPELL_HOT_STREAK_R1, new HotStreakDummy);
         mgr->register_spell_script(SPELL_HOT_STREAK_BUFF, new HotStreak);
     }
 
-    if (WoW::isServerExpansion(WoW::Expansion::_WotLK) || WoW::isServerExpansion(WoW::Expansion::_Cata))
+    if (WoW::isServerExpansionBetween(WoW::Expansion::_WotLK, WoW::Expansion::_Cata))
     {
         mgr->register_spell_script(SPELL_INCASTERS_ABSORPTION, new IncastersAbsorption);
     }

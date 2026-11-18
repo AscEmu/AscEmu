@@ -761,10 +761,15 @@ public:
     void removeProcTriggerSpell(uint32_t spellId, uint64_t casterGuid = 0, uint64_t misc = 0);
     void clearProcCooldowns();
 
-    float_t applySpellDamageBonus(Unit* originalCaster, SpellInfo const* spellInfo, uint8_t effectIndex, int32_t baseDmg, bool multiplyBaseDmg = false, Spell* castingSpell = nullptr, AuraEffectModifier const* aurEff = nullptr);
-    float_t applySpellDamageBonus(Unit* originalCaster, SpellInfo const* spellInfo, uint8_t effectIndex, float_t baseDmg, bool multiplyBaseDmg = false, Spell* castingSpell = nullptr, AuraEffectModifier const* aurEff = nullptr);
-    float_t applySpellHealingBonus(Unit* originalCaster, SpellInfo const* spellInfo, uint8_t effectIndex, int32_t baseHeal, bool multiplyBaseDmg = false, Spell* castingSpell = nullptr, AuraEffectModifier const* aurEff = nullptr);
-    float_t applySpellHealingBonus(Unit* originalCaster, SpellInfo const* spellInfo, uint8_t effectIndex, float_t baseHeal, bool multiplyBaseDmg = false, Spell* castingSpell = nullptr, AuraEffectModifier const* aurEff = nullptr);
+    float_t applySpellHealingBonusDone(Unit* originalCaster, SpellInfo const* spellInfo, uint8_t effectIndex, int32_t baseHeal, bool multiplyBaseDmg = false, Spell* castingSpell = nullptr, AuraEffectModifier const* aurEff = nullptr);
+    float_t applySpellHealingBonusDone(Unit* originalCaster, SpellInfo const* spellInfo, uint8_t effectIndex, float_t baseHeal, bool multiplyBaseDmg = false, Spell* castingSpell = nullptr, AuraEffectModifier const* aurEff = nullptr);
+    float_t applySpellDamageBonusDone(Unit* originalCaster, Unit const* target, SpellInfo const* spellInfo, uint8_t effectIndex, int32_t baseDmg, bool multiplyBaseDmg = false, Spell* castingSpell = nullptr, AuraEffectModifier const* aurEff = nullptr);
+    float_t applySpellDamageBonusDone(Unit* originalCaster, Unit const* target, SpellInfo const* spellInfo, uint8_t effectIndex, float_t baseDmg, bool multiplyBaseDmg = false, Spell* castingSpell = nullptr, AuraEffectModifier const* aurEff = nullptr);
+
+    float_t applySpellHealingBonusTaken(SpellInfo const* spellInfo, int32_t heal, AuraEffectModifier const* aurEff = nullptr) const;
+    float_t applySpellHealingBonusTaken(SpellInfo const* spellInfo, float_t heal, AuraEffectModifier const* aurEff = nullptr) const;
+    float_t applySpellDamageBonusTaken(SpellInfo const* spellInfo, int32_t damage, AuraEffectModifier const* aurEff = nullptr) const;
+    float_t applySpellDamageBonusTaken(SpellInfo const* spellInfo, float_t damage, AuraEffectModifier const* aurEff = nullptr) const;
 
     // TBC and WotLK: lower ranks of a spell lose spell power above their level
     float_t getSpellDownrankingPenalty(uint32_t spellMaxLevel) const;
