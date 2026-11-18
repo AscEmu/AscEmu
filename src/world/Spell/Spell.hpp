@@ -63,7 +63,7 @@ public:
     // Casts the spell
     void castMe(const bool doReCheck);
     void handleHittedTarget(const uint64_t targetGuid, uint8_t effIndex);
-    void handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, int32_t effDamage, bool reCheckTarget = false);
+    void handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, DamageInfo const& damageInfo, bool reCheckTarget = false);
     // Handles missed targets and effects
     void handleMissedTarget(SpellTargetMod const missedTarget);
     void handleMissedEffect(SpellTargetMod const missedTarget, bool reCheckTarget = false);
@@ -287,7 +287,7 @@ private:
     {
         uint32_t travelTime = 0;
         uint8_t effIndex = 0;
-        int32_t damage = 0;
+        DamageInfo damageInfo;
     };
 
     struct HitAuraEffect

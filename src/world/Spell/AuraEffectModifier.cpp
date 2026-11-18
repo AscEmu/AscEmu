@@ -348,6 +348,8 @@ void AuraEffectModifier::_periodicTick()
             if (scriptResult == SpellScriptExecuteState::EXECUTE_PREVENT)
                 return;
 
+            effectFloatValue = aurOwner->applySpellDamageBonusTaken(mAura.getSpellInfo(), effectFloatValue, this);
+
             auto* const casterUnit = mAura.getUnitCaster();
             if (casterUnit != nullptr)
                 casterUnit->doSpellDamage(aurOwner, aurSpellId, effectFloatValue, effIndex, mAura.isTriggeredBySpellId(), true, false, false, nullptr, &mAura, this);
@@ -360,6 +362,8 @@ void AuraEffectModifier::_periodicTick()
             // If script prevents default action, do not continue
             if (scriptResult == SpellScriptExecuteState::EXECUTE_PREVENT)
                 return;
+
+            effectFloatValue = aurOwner->applySpellHealingBonusTaken(mAura.getSpellInfo(), effectFloatValue, this);
 
             auto* const casterUnit = mAura.getUnitCaster();
             if (casterUnit != nullptr)
@@ -394,6 +398,8 @@ void AuraEffectModifier::_periodicTick()
             // If script prevents default action, do not continue
             if (scriptResult == SpellScriptExecuteState::EXECUTE_PREVENT)
                 return;
+
+            effectFloatValue = aurOwner->applySpellHealingBonusTaken(mAura.getSpellInfo(), effectFloatValue, this);
 
             auto* const casterUnit = mAura.getUnitCaster();
             if (casterUnit != nullptr)
@@ -535,6 +541,7 @@ void AuraEffectModifier::_periodicTick()
                 return;
 
             // Deal damage (heal part is called in doSpellDamage)
+            effectFloatValue = aurOwner->applySpellDamageBonusTaken(mAura.getSpellInfo(), effectFloatValue, this);
             auto* const casterUnit = mAura.getUnitCaster();
             if (casterUnit != nullptr)
                 casterUnit->doSpellDamage(aurOwner, aurSpellId, effectFloatValue, effIndex, mAura.isTriggeredBySpellId(), true, true, false, nullptr, &mAura, this);
@@ -592,6 +599,8 @@ void AuraEffectModifier::_periodicTick()
             if (scriptResult == SpellScriptExecuteState::EXECUTE_PREVENT)
                 return;
 
+            effectFloatValue = aurOwner->applySpellDamageBonusTaken(mAura.getSpellInfo(), effectFloatValue, this);
+
             auto* const casterUnit = mAura.getUnitCaster();
             if (casterUnit != nullptr)
                 casterUnit->doSpellDamage(aurOwner, aurSpellId, effectFloatValue, effIndex, mAura.isTriggeredBySpellId(), true, false, false, nullptr, &mAura, this);
@@ -624,6 +633,7 @@ void AuraEffectModifier::_periodicTick()
             aurOwner->modPower(powerType, -powerAmount);
 
             auto damage = powerAmount * mAura.getSpellInfo()->getEffectMultipleValue(effIndex);
+            damage = aurOwner->applySpellDamageBonusTaken(mAura.getSpellInfo(), damage, this);
             // Should do at least 1 damage (see Chromaggus and Brood Affliction: Blue)
             ///\ todo: verify this
             damage = std::max(1.0f, damage);

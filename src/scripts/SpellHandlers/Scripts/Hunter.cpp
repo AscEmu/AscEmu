@@ -29,24 +29,25 @@ class FerociousInspirationDummy : public SpellScript
     void onAuraApply(Aura* aur) override
     {
         if (!WoW::isServerExpansion(WoW::Expansion::_TBC))
-            return SpellScript::onAuraApply(aur);
+            return;
 
         if (auto* const plrOwner = aur->getPlayerOwner())
             plrOwner->addPetAuraSpell(SPELL_FEROCIOUS_INSPIRATION_DUMMY_PROC, true);
     }
 
-    void onAuraRemove(Aura* aur, AuraRemoveMode mode) override
+    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
     {
         if (!WoW::isServerExpansion(WoW::Expansion::_TBC))
-            return SpellScript::onAuraRemove(aur, mode);
+            return;
 
         if (auto* const plrOwner = aur->getPlayerOwner())
             plrOwner->removePetAuraSpell(SPELL_FEROCIOUS_INSPIRATION_DUMMY_PROC);
     }
+
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
         if (WoW::isServerExpansion(WoW::Expansion::_TBC))
-            return SpellScript::onAuraDummyEffect(aur, aurEff, apply);
+            return SpellScriptCheckDummy::DUMMY_OK;
 
         if (aurEff->getEffectIndex() != EFF_INDEX_0)
             return SpellScriptCheckDummy::DUMMY_OK;
@@ -68,7 +69,7 @@ class FerociousInspirationDummy : public SpellScript
     }
 };
 
-class FerociousInspirationProc : public SpellScript
+class FerociousInspirationProcTbc : public SpellScript
 {
     void onCreateSpellProc(SpellProc* spellProc, Object* /*obj*/) override
     {
@@ -150,16 +151,16 @@ void setupHunterSpells(ScriptMgr* mgr)
     // Call legacy script setup
     SetupLegacyHunterSpells(mgr);
 
-    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC) && !WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+    if (WoW::isServerExpansionBetween(WoW::Expansion::_TBC, WoW::Expansion::_Cata))
     {
         mgr->register_spell_script(SPELL_FEROCIOUS_INSPIRATION_DUMMY_R3, new FerociousInspirationDummy);
         if (WoW::isServerExpansion(WoW::Expansion::_TBC))
         {
-            mgr->register_spell_script(SPELL_FEROCIOUS_INSPIRATION_PROC_TBC, new FerociousInspirationProc);
+            mgr->register_spell_script(SPELL_FEROCIOUS_INSPIRATION_PROC_TBC, new FerociousInspirationProcTbc);
         }
     }
 
-    if (WoW::isServerExpansion(WoW::Expansion::_TBC) || WoW::isServerExpansion(WoW::Expansion::_WotLK))
+    if (WoW::isServerExpansionBetween(WoW::Expansion::_TBC, WoW::Expansion::_WotLK))
     {
         mgr->register_spell_script(SPELL_FOCUSED_FIRE_DUMMY_R1, new FocusedFireDummy);
     }

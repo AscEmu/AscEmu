@@ -44,12 +44,14 @@ public:
             const uint32_t energyProcMask[3] = { 0x8000000, 0, 0 };
             if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
             {
+                // Classic - TBC X% chance to gain 40 energy
                 aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_FUROR_ENERGY), aur->getSpellInfo(), aur->getCasterGuid(), procChance, PROC_ON_DONE_POSITIVE_SPELL_DAMAGE_CLASS_NONE, energyProcMask, aur);
             }
             else
             {
-                auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_FUROR_ENERGY), aur->getSpellInfo(), aur->getCasterGuid(), 100, PROC_ON_DONE_POSITIVE_SPELL_DAMAGE_CLASS_NONE, energyProcMask, aur);
+                // Wotlk+ X% chance to gain X% energy
                 // Energy amount equals proc chance
+                auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_FUROR_ENERGY), aur->getSpellInfo(), aur->getCasterGuid(), procChance, PROC_ON_DONE_POSITIVE_SPELL_DAMAGE_CLASS_NONE, energyProcMask, aur);
                 if (spellProc != nullptr)
                     spellProc->setOverrideEffectDamage(EFF_INDEX_0, procChance);
             }
@@ -79,18 +81,20 @@ class ImprovedLeaderOfThePackDummy : public SpellScript
 public:
     void onAuraApply(Aura* aur) override
     {
+        // Mana effect only in wotlk
         if (!WoW::isServerExpansion(WoW::Expansion::_WotLK))
-            return SpellScript::onAuraApply(aur);
+            return;
 
         auto spellProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_LEADER_OF_THE_PACK_MANA), sSpellMgr.getSpellInfo(SPELL_LEADER_OF_THE_PACK_AURA), aur->getCasterGuid(), 100, PROC_ON_TAKEN_POSITIVE_SPELL_DAMAGE_CLASS_NONE, nullptr, aur);
         if (spellProc != nullptr)
             spellProc->setOverrideEffectDamage(EFF_INDEX_0, aur->getSpellInfo()->calculateEffectValue(EFF_INDEX_1));
     }
 
-    void onAuraRemove(Aura* aur, AuraRemoveMode mode) override
+    void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
     {
+        // Mana effect only in wotlk
         if (!WoW::isServerExpansion(WoW::Expansion::_WotLK))
-            return SpellScript::onAuraRemove(aur, mode);
+            return;
 
         aur->getOwner()->removeProcTriggerSpell(SPELL_LEADER_OF_THE_PACK_MANA, aur->getCasterGuid());
     }
@@ -208,10 +212,12 @@ class Lifebloom : public SpellScript
             return;
 
         // In TBC bloom is unaffected by stack count
-        const auto dummyAurEffValue = WoW::isServerExpansion(WoW::Expansion::_TBC) ? dummyAurEff->getEffectFloatDamage() / aur->getStackCount() : dummyAurEff->getEffectFloatDamage();
+        const auto dummyAurEffValue = WoW::isServerExpansion(WoW::Expansion::_TBC) ?
+            dummyAurEff->getEffectFloatDamage() / aur->getStackCount() :
+            dummyAurEff->getEffectFloatDamage();
 
         auto* const unitCaster = aur->getUnitCaster();
-        const auto bloomValue = Util::float2int32(aur->getOwner()->applySpellHealingBonus(unitCaster,
+        const auto bloomValue = Util::float2int32(aur->getOwner()->applySpellHealingBonusDone(unitCaster,
             aur->getSpellInfo(), EFF_INDEX_1, dummyAurEffValue, false, nullptr, dummyAurEff));
 
         // Little bit ugly but need to set original caster before casting
@@ -263,7 +269,7 @@ void setupDruidSpells(ScriptMgr* mgr)
         mgr->register_spell_script(SPELL_FUROR_ENERGY, new Furor);
     }
 
-    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+    if (WoW::isServerExpansionBetween(WoW::Expansion::_TBC, WoW::Expansion::_WotLK))
     {
         mgr->register_spell_script(SPELL_IMPROVED_LEADER_OF_THE_PACK_R1, new ImprovedLeaderOfThePackDummy);
     }
@@ -273,10 +279,11 @@ void setupDruidSpells(ScriptMgr* mgr)
         mgr->register_spell_script(SPELL_LEADER_OF_THE_PACK_DUMMY, new LeaderOfThePackDummy);
         mgr->register_spell_script(SPELL_LEADER_OF_THE_PACK_AURA, new LeaderOfThePack);
         mgr->register_spell_script(SPELL_LEADER_OF_THE_PACK_HEAL, new LeaderOfThePackHeal);
-    }
-    if (WoW::isServerExpansion(WoW::Expansion::_WotLK))
-    {
-        mgr->register_spell_script(SPELL_LEADER_OF_THE_PACK_MANA, new LeaderOfThePackMana);
+
+        if (WoW::isServerExpansion(WoW::Expansion::_WotLK))
+        {
+            mgr->register_spell_script(SPELL_LEADER_OF_THE_PACK_MANA, new LeaderOfThePackMana);
+        }
     }
 
     if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC))

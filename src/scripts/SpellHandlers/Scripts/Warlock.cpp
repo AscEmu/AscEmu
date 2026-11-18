@@ -231,6 +231,7 @@ class MasterDemonologistDummy : public SpellScript
                 scriptedSpell = scriptedSpellR4;
             }
         }
+
         if (scriptedSpell == nullptr)
             return SpellScriptCheckDummy::DUMMY_OK;
 
@@ -310,7 +311,6 @@ class MasterDemonologist : public SpellScript
             if (const auto* rankInfo = effectInfo->getRankInfo())
                 effectInfo = rankInfo->getSpellWithRank(spellRank);
 
-            warlock->castSpell(warlock, effectInfo, true);
             // Add as temporary pet aura spell to remove correctly on unsummon
             warlock->addPetAuraSpell(effectInfo->getId(), false, true);
         }
@@ -427,12 +427,12 @@ void setupWarlockSpells(ScriptMgr* mgr)
     // Call legacy script setup
     SetupLegacyWarlockSpells(mgr);
 
-    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC) && !WoW::isServerExpansionAtLeast(WoW::Expansion::_Legion))
+    if (WoW::isServerExpansionBetween(WoW::Expansion::_TBC, WoW::Expansion::_WoD))
     {
         mgr->register_spell_script(SPELL_BACKLASH_PROC, new Backlash);
     }
 
-    if (WoW::isServerExpansion(WoW::Expansion::_TBC) || WoW::isServerExpansion(WoW::Expansion::_WotLK))
+    if (WoW::isServerExpansionBetween(WoW::Expansion::_TBC, WoW::Expansion::_WotLK))
     {
         mgr->register_spell_script(SPELL_DEMONIC_KNOWLEDGE_DUMMY_R1, new DemonicKnowledgeDummy);
         mgr->register_spell_script(SPELL_DEMONIC_KNOWLEDGE, new DemonicKnowledge);
@@ -447,7 +447,7 @@ void setupWarlockSpells(ScriptMgr* mgr)
             SPELL_DEMONIC_SACRIFICE_IMP,
             SPELL_DEMONIC_SACRIFICE_SUCCUBUS,
             SPELL_DEMONIC_SACRIFICE_VOIDWALKER,
-            WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC) ? static_cast<uint32_t>(SPELL_DEMONIC_SACRIFICE_FELGUARD) : 0u,
+            WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC) ? SPELL_DEMONIC_SACRIFICE_FELGUARD : 0u,
             0
         };
         mgr->register_spell_script(demonicSacrificeAuras, new DemonicSacrificeEffect);
@@ -462,7 +462,7 @@ void setupWarlockSpells(ScriptMgr* mgr)
             uint32_t masterDemonologistResistanceAuras[] =
             {
                 SPELL_MASTER_DEMONOLOGIST_FELHUNTER_R1,
-                WoW::isServerExpansion(WoW::Expansion::_TBC) ? static_cast<uint32_t>(SPELL_MASTER_DEMONOLOGIST_FELGUARD_R1) : 0u,
+                WoW::isServerExpansion(WoW::Expansion::_TBC) ? SPELL_MASTER_DEMONOLOGIST_FELGUARD_R1 : 0u,
                 0
             };
             mgr->register_spell_script(masterDemonologistResistanceAuras, new MasterDemonologistResistance);

@@ -902,25 +902,6 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
         damage = damage * (1.0f + (pct / 100.0f));
     }
 
-    // Add creature type bonuses
-    if (isPlayer() && victim->isCreature())
-    {
-        const auto plr = static_cast<Player*>(this);
-        const auto cre = static_cast<Creature*>(victim);
-        const auto type = cre->GetCreatureProperties()->Type;
-
-        damage += damage * plr->m_increaseDamageByTypePct[type];
-        if (isPeriodic)
-        {
-            if (aur != nullptr && aurEff != nullptr)
-                damage += static_cast<float_t>(plr->m_increaseDamageByType[type] / aur->getPeriodicTickCountForEffect(aurEff->getEffectIndex()));
-        }
-        else
-        {
-            damage += static_cast<float_t>(plr->m_increaseDamageByType[type]);
-        }
-    }
-
     // Check if spell can crit
     if (damage > 0.0f && isCreatureOrPlayer())
     {
@@ -942,19 +923,6 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
         // Get critical spell damage bonus
         if (dmgInfo.isCritical)
             damage = static_cast<Unit*>(this)->getCriticalDamageBonusForSpell(damage, victim, spell, aur);
-    }
-
-    // Calculate damage reduction
-    damage += damage * victim->m_damageTakenPctMod[school];
-    damage += damage * victim->m_modDamageTakenByMechPct[spellInfo->getMechanicsType()];
-    if (isPeriodic)
-    {
-        if (aur != nullptr && aurEff != nullptr)
-            damage += static_cast<float_t>(victim->m_damageTakenMod[school] / aur->getPeriodicTickCountForEffect(aurEff->getEffectIndex()));
-    }
-    else
-    {
-        damage += static_cast<float_t>(victim->m_damageTakenMod[school]);
     }
 
     // Resilience
@@ -1333,18 +1301,6 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
         // Get critical spell heal bonus
         if (dmgInfo.isCritical)
             heal = static_cast<Unit*>(this)->getCriticalHealBonusForSpell(heal, spell, aur);
-    }
-
-    // Get target's heal taken mod
-    heal += heal * victim->m_healTakenPctMod[school];
-    if (isPeriodic)
-    {
-        if (aur != nullptr && aurEff != nullptr)
-            heal += static_cast<float_t>(victim->m_healTakenMod[school] / aur->getPeriodicTickCountForEffect(aurEff->getEffectIndex()));
-    }
-    else
-    {
-        heal += static_cast<float_t>(victim->m_healTakenMod[school]);
     }
 
     if (heal < 0.0f)

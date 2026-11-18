@@ -34,7 +34,7 @@ enum PaladinSpells
     SPELL_JUDGEMENT_OF_JUSTICE_DUMMY        = 53407,
     SPELL_JUDGEMENT_OF_JUSTICE_DEBUFF       = 20184,
     SPELL_JUDGEMENT_OF_LIGHT_DUMMY          = 20271, // WotLK
-    SPELL_JUDGEMENT_DUMMY                   = 20271, // Cata and later
+    SPELL_JUDGEMENT_DUMMY                   = 20271, // Classic - TBC and Cata+
     SPELL_JUDGEMENT_OF_LIGHT_DEBUFF         = 20185,
     SPELL_JUDGEMENT_OF_LIGHT_HEAL           = 20267,
     SPELL_JUDGEMENT_OF_THE_MARTYR_DAMAGE    = 53726,
@@ -219,26 +219,23 @@ public:
 
             if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
             {
-                // Remove seal
+                // In Classic and TBC seal is removed when judged
                 aurEff->getAura()->removeAura();
             }
+
             // Cast judgement effect
             unitCaster->castSpell(unitTarget, judgementId, true);
             return true;
         }
 
         if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
-        {
             return false;
-        }
-        else
-        {
-            // Since wotlk some seals no longer have judgement in spell effects
-            // Because player was able to cast this spell it means they have a valid seal
-            // Use generic judgement spell
-            unitCaster->castSpell(unitTarget, SPELL_JUDGEMENT_DAMAGE_GENERIC, true);
-            return true;
-        }
+
+        // Since wotlk some seals no longer have judgement in spell effects
+        // Because player was able to cast this spell it means they have a valid seal
+        // Use generic judgement spell
+        unitCaster->castSpell(unitTarget, SPELL_JUDGEMENT_DAMAGE_GENERIC, true);
+        return true;
     }
 
     SpellScriptCheckDummy onDummyOrScriptedEffect(Spell* spell, uint8_t /*effIndex*/) override
@@ -339,10 +336,10 @@ public:
 class JudgementOfLightDummy : public SpellScript
 {
 public:
-    SpellScriptExecuteState beforeAuraEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
+    SpellScriptExecuteState beforeAuraEffect(Aura* aur, AuraEffectModifier* /*aurEff*/, bool apply) override
     {
         if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
-            return SpellScript::beforeAuraEffect(aur, aurEff, apply);
+            return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
 
         // Classic has the proc spell in dbc but in tbc it is a serverside spell
         // Since we do not support serverside spells yet, overwrite default effect here
@@ -357,10 +354,11 @@ public:
 
         return SpellScriptExecuteState::EXECUTE_PREVENT;
     }
+
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
         if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
-            return SpellScript::onAuraDummyEffect(aur, aurEff, apply);
+            return SpellScriptCheckDummy::DUMMY_NOT_HANDLED;
 
         if (apply)
         {
@@ -394,7 +392,7 @@ public:
     uint32_t calcProcChance(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell) override
     {
         if (!WoW::isServerExpansion(WoW::Expansion::_WotLK))
-            return SpellScript::calcProcChance(spellProc, victim, castingSpell);
+            return spellProc->calcProcChance(victim, castingSpell);
 
         // TODO: this is a hackfix but almost the correct value
         // should have 15 PPM, but (atm) PPM system works only with melee attacks, and this should proc on spell attacks as well
@@ -402,10 +400,10 @@ public:
         return 50;
     }
 
-    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* damage) override
+    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t /*effIndex*/, int32_t* damage) override
     {
         if (!WoW::isServerExpansion(WoW::Expansion::_WotLK))
-            return SpellScript::doCalculateEffect(spell, effIndex, damage);
+            return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
         if (spell->getUnitTarget() == nullptr)
             return SpellScriptEffectDamage::DAMAGE_DEFAULT;
@@ -418,7 +416,7 @@ public:
 class JudgementOfVengeanceCorruptionTruthDamage : public SpellScript
 {
 public:
-    SpellScriptEffectDamage doCalculateEffect(Spell* spell, [[maybe_unused]]uint8_t effIndex, int32_t* damage) override
+    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* damage) override
     {
         const auto dotSpell = spell->getSpellInfo()->getId() == SPELL_JUDGEMENT_OF_CORRUPTION ?
             SPELL_BLOOD_CORRUPTION :
@@ -443,13 +441,13 @@ public:
         else
         {
             // Calculate bonuses here to increase damage properly
-            *damage = Util::float2int32(spell->getUnitCaster()->applySpellDamageBonus(spell->getUnitCaster(), spell->getSpellInfo(), effIndex, *damage, false, spell));
+            *damage = Util::float2int32(spell->getUnitCaster()->applySpellDamageBonusDone(spell->getUnitCaster(), spell->getUnitTarget(), spell->getSpellInfo(), effIndex, *damage, false, spell));
             if (WoW::isServerExpansion(WoW::Expansion::_WotLK))
             {
                 // One stack increases damage by 10%
                 *damage = *damage * (100 + (10 * auraCount)) / 100;
             }
-            else
+            else // Cata+
             {
                 // One stack increases damage by 20%
                 *damage = *damage * (100 + (20 * auraCount)) / 100;
@@ -462,10 +460,10 @@ public:
 class JudgementOfWisdomDummy : public SpellScript
 {
 public:
-    SpellScriptExecuteState beforeAuraEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
+    SpellScriptExecuteState beforeAuraEffect(Aura* aur, AuraEffectModifier* /*aurEff*/, bool apply) override
     {
         if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
-            return SpellScript::beforeAuraEffect(aur, aurEff, apply);
+            return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
 
         // Classic has the proc spell in dbc but in tbc it is a serverside spell
         // Since we do not support serverside spells yet, overwrite default effect here
@@ -480,10 +478,11 @@ public:
 
         return SpellScriptExecuteState::EXECUTE_PREVENT;
     }
-    SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
+
+    SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* /*aurEff*/, bool apply) override
     {
         if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
-            return SpellScript::onAuraDummyEffect(aur, aurEff, apply);
+            return SpellScriptCheckDummy::DUMMY_NOT_HANDLED;
 
         if (apply)
             aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_JUDGEMENT_OF_WISDOM_MANA), aur, aur->getCasterGuid());
@@ -519,7 +518,7 @@ public:
     uint32_t calcProcChance(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell) override
     {
         if (!WoW::isServerExpansion(WoW::Expansion::_WotLK))
-            return SpellScript::calcProcChance(spellProc, victim, castingSpell);
+            return spellProc->calcProcChance(victim, castingSpell);
 
         // TODO: this is a hackfix but almost the correct value
         // should have 15 PPM, but PPM system works only with melee attacks, and this should proc on spell attacks as well
@@ -527,10 +526,10 @@ public:
         return 50;
     }
 
-    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* damage) override
+    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t /*effIndex*/, int32_t* damage) override
     {
         if (!WoW::isServerExpansion(WoW::Expansion::_WotLK))
-            return SpellScript::doCalculateEffect(spell, effIndex, damage);
+            return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
         if (spell->getUnitTarget() == nullptr)
             return SpellScriptEffectDamage::DAMAGE_DEFAULT;
@@ -635,12 +634,12 @@ public:
     {
         if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
         {
-            // 7 PPM
+            // 7 PPM in Classic and TBC
             spellProc->setProcsPerMinute(7.f);
         }
         else
         {
-            // Procs only from Seal of Righteousness, Seal of Truth and Seal of Justice
+            // Cata: Procs only from Seal of Righteousness, Seal of Truth and Seal of Justice
             spellProc->setProcClassMask(EFF_INDEX_0, 0x20000200);
             spellProc->setProcClassMask(EFF_INDEX_1, 0x20000800);
             spellProc->setProcClassMask(EFF_INDEX_2, 0x10000);
@@ -668,12 +667,12 @@ public:
 class SealOfJusticeEffect : public SpellScript
 {
 public:
-    void onCreateSpellProc(SpellProc* spellProc, Object* obj) override
+    void onCreateSpellProc(SpellProc* spellProc, Object* /*obj*/) override
     {
         if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
-            return SpellScript::onCreateSpellProc(spellProc, obj);
+            return;
 
-        // 5 PPM
+        // 5 PPM in Classic - Wotlk
         spellProc->setProcsPerMinute(5.f);
     }
 
@@ -681,7 +680,7 @@ public:
     SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* damage) override
     {
         if (!WoW::isServerExpansion(WoW::Expansion::_Cata))
-            return SpellScript::doCalculateEffect(spell, effIndex, damage);
+            return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
         auto* const unitCaster = spell->getUnitCaster();
         if (unitCaster == nullptr)
@@ -694,7 +693,7 @@ public:
                 speed = mainhandWeapon->getItemProperties()->Delay / 1000.0f;
         }
         // Weapon speed * (0.005 * AP + 0.01 * SPH)
-        *damage = Util::float2int32(unitCaster->applySpellDamageBonus(spell->getOriginalCaster(), spell->getSpellInfo(), effIndex, speed, true, spell));
+        *damage = Util::float2int32(unitCaster->applySpellDamageBonusDone(spell->getOriginalCaster(), spell->getUnitTarget(), spell->getSpellInfo(), effIndex, speed, true, spell));
         return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }
 };
@@ -706,7 +705,7 @@ public:
     {
         if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
         {
-            // 15 PPM
+            // 15 PPM in Classic - Wotlk
             spellProc->setProcsPerMinute(15.f);
         }
         else
@@ -714,6 +713,7 @@ public:
             // 8.5 PPM according to wowhead comment from patch 4.2.2
             spellProc->setProcsPerMinute(8.5f);
         }
+
         spellProc->setCastedOnProcOwner(true);
     }
 };
@@ -733,6 +733,7 @@ public:
             if (aur->getOwner()->hasAurasWithId(SPELL_SEALS_OF_COMMAND_DUMMY))
                 damageSpell = sSpellMgr.getSpellInfo(SPELL_SEAL_OF_RIGHTEOUSNESS_DAMAGE_AOE);
         }
+
         if (damageSpell == nullptr)
             return SpellScriptCheckDummy::DUMMY_OK;
 
@@ -775,7 +776,7 @@ public:
         if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
         {
             // Due to somewhat complex damage calculation need to apply spell damage manually
-            // This is essentially applySpellDamageBonus dumbed down
+            // This is essentially applySpellDamageBonusDone dumbed down
             float_t baseDamage = 0.0f;
             auto spellCoeff = spell->getSpellInfo()->getEffectSpellPowerCoefficient(effIndex);
             if (mainHandWeapon != nullptr && mainHandWeapon->getItemProperties()->InventoryType == INVTYPE_2HWEAPON)
@@ -790,24 +791,44 @@ public:
                 spellCoeff *= 0.852f;
             }
 
-            auto bonusDmg = static_cast<float_t>(unitCaster->GetDamageDoneMod(SCHOOL_HOLY));
-            if (bonusDmg > 0.0f)
-            {
-                bonusDmg *= spellCoeff;
+            float_t bonusDmg = 0.0f, bonusPctDmg = 0.0f;
+            int32_t bonusFlatDmg = 0;
 
-                if (WoW::isServerExpansion(WoW::Expansion::_TBC))
+            // Add creature type bonuses
+            if (const auto* victimCreature = spell->getUnitTarget() != nullptr ?
+                spell->getUnitTarget()->ToCreature() : nullptr)
+            {
+                if (const auto* playerCaster = unitCaster->ToPlayer())
                 {
-                    // Apply general downranking penalty
-                    if (bonusDmg > 0.0f && unitCaster->isPlayer())
-                        bonusDmg *= unitCaster->getSpellDownrankingPenalty(spell->getSpellInfo()->getMaxLevel());
+                    const auto creatureType = victimCreature->GetCreatureProperties()->Type;
+                    // Increase pct damage by creature type
+                    bonusPctDmg += playerCaster->m_increaseDamageByTypePct[creatureType];
+                    // Increase flat damage by creature type
+                    bonusFlatDmg += playerCaster->m_increaseDamageByType[creatureType];
                 }
             }
 
-            unitCaster->applySpellModifiers(SPELLMOD_PENALTY, &bonusDmg, spell->getSpellInfo(), spell);
+            // Spell power
+            const auto spellPower = static_cast<float_t>(unitCaster->GetDamageDoneMod(SCHOOL_HOLY));
 
+            // Get spell coefficient value
+            unitCaster->applySpellModifiers(SPELLMOD_PENALTY, &spellCoeff, spell->getSpellInfo(), spell);
+
+            // Apply general downranking penalty
+            auto penalty = 1.0f;
+            if (WoW::isServerExpansion(WoW::Expansion::_TBC))
+            {
+                if (unitCaster->isPlayer())
+                    penalty = unitCaster->getSpellDownrankingPenalty(spell->getSpellInfo()->getMaxLevel());
+            }
+
+            bonusDmg += spellPower * spellCoeff * penalty;
+            bonusPctDmg += unitCaster->GetDamageDonePctMod(SCHOOL_HOLY);
+
+            bonusDmg += bonusFlatDmg;
             float_t fullDmg = baseDamage + std::max(0.0f, bonusDmg);
+            fullDmg *= bonusPctDmg;
             unitCaster->applySpellModifiers(SPELLMOD_DAMAGE_DONE, &fullDmg, spell->getSpellInfo(), spell);
-            fullDmg *= unitCaster->GetDamageDonePctMod(SCHOOL_HOLY);
 
             *damage = Util::float2int32(fullDmg);
         }
@@ -815,7 +836,7 @@ public:
         {
             // Wotlk: Weapon speed * (0.022 * AP + 0.044 * SPH)
             // Cata: Weapon speed * (0.011 * AP + 0.022 * SPH)
-            *damage = Util::float2int32(unitCaster->applySpellDamageBonus(spell->getOriginalCaster(), spell->getSpellInfo(), effIndex, speed, true, spell));
+            *damage = Util::float2int32(unitCaster->applySpellDamageBonusDone(spell->getOriginalCaster(), spell->getUnitTarget(), spell->getSpellInfo(), effIndex, speed, true, spell));
         }
         return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }
@@ -880,10 +901,10 @@ public:
         return true;
     }
 
-    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* damage) override
+    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t /*effIndex*/, int32_t* damage) override
     {
         if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
-            return SpellScript::doCalculateEffect(spell, effIndex, damage);
+            return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
         if (spell->getUnitTarget() == nullptr)
             return SpellScriptEffectDamage::DAMAGE_DEFAULT;
@@ -892,7 +913,10 @@ public:
         if (spell->getSpellInfo()->getId() == SPELL_SEAL_OF_CORRUPTION_DIRECT)
             auraId = SPELL_BLOOD_CORRUPTION;
 
-        // Weapon damage per debuff stack, up to five stacks: 6.6% in WotLK (from 3.2.0 every attack can proc this), 3% in Cata, 2.4% from Mop on
+        // Weapon damage per debuff stack (from 3.2.0 every attack can proc this):
+        // - 6.6% in WotLK, up to 33% if target has five stacks of debuff
+        // - 3% in Cata, up to 15% if target has five stacks of debuff
+        // - 2.4% Mop+, up to 12% if target has five stacks of debuff
         float_t dmgPercent = 2.4f;
         if (WoW::isServerExpansion(WoW::Expansion::_WotLK))
             dmgPercent = 6.6f;
@@ -910,19 +934,19 @@ public:
 class SealOfVengeanceAndCorruptionAndTruthDot : public SpellScript
 {
 public:
-    void onCreateSpellProc(SpellProc* proc, Object* obj) override
+    void onCreateSpellProc(SpellProc* proc, Object* /*obj*/) override
     {
         if (!WoW::isServerExpansion(WoW::Expansion::_TBC))
-            return SpellScript::onCreateSpellProc(proc, obj);
+            return;
 
-        // 20 PPM
+        // 20 PPM in TBC
         proc->setProcsPerMinute(20.f);
     }
 
-    bool canProc(SpellProc* spellProc, Unit* victim, SpellInfo const* castingSpell, DamageInfo damageInfo) override
+    bool canProc(SpellProc* /*spellProc*/, Unit* /*victim*/, SpellInfo const* castingSpell, DamageInfo /*damageInfo*/) override
     {
         if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
-            return SpellScript::canProc(spellProc, victim, castingSpell, damageInfo);
+            return true;
 
         if (castingSpell != nullptr)
         {
@@ -936,7 +960,7 @@ public:
 
                 return false;
             }
-            else
+            else // Cata+
             {
                 // Procs only from melee attacks and single target spells
                 const auto targetMask = castingSpell->getRequiredTargetMask(true);
@@ -1037,12 +1061,12 @@ void setupPaladinSpells(ScriptMgr* mgr)
         mgr->register_spell_script(SPELL_JUDGEMENT_DUMMY, new JudgementDummy);
     }
 
-    if (WoW::isServerExpansion(WoW::Expansion::_TBC) || WoW::isServerExpansion(WoW::Expansion::_WotLK))
+    if (WoW::isServerExpansionBetween(WoW::Expansion::_TBC, WoW::Expansion::_WotLK))
     {
         uint32_t judgementOfBloodMartyrDamage[] =
         {
             SPELL_JUDGEMENT_OF_BLOOD_DAMAGE,
-            WoW::isServerExpansion(WoW::Expansion::_WotLK) ? static_cast<uint32_t>(SPELL_JUDGEMENT_OF_THE_MARTYR_DAMAGE) : 0u,
+            WoW::isServerExpansion(WoW::Expansion::_WotLK) ? SPELL_JUDGEMENT_OF_THE_MARTYR_DAMAGE : 0u,
             0
         };
         mgr->register_spell_script(judgementOfBloodMartyrDamage, new JudgementOfBloodMartyrDamage);
@@ -1052,9 +1076,7 @@ void setupPaladinSpells(ScriptMgr* mgr)
     {
         mgr->register_spell_script(SPELL_JUDGEMENT_OF_COMMAND_DUMMY_R1, new JudgementOfCommandDummy);
         if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
-        {
             mgr->register_spell_script(SPELL_JUDGEMENT_OF_COMMAND_DAMAGE_R1, new JudgementOfCommandDamage);
-        }
     }
 
     if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
@@ -1063,12 +1085,12 @@ void setupPaladinSpells(ScriptMgr* mgr)
         mgr->register_spell_script(SPELL_JUDGEMENT_OF_LIGHT_HEAL, new JudgementOfLightHeal);
     }
 
-    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC) && !WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+    if (WoW::isServerExpansionBetween(WoW::Expansion::_TBC, WoW::Expansion::_Cata))
     {
         uint32_t judgementOfVengeanceCorruptionTruth[] =
         {
             SPELL_JUDGEMENT_OF_VENGEANCE,
-            WoW::isServerExpansion(WoW::Expansion::_WotLK) ? static_cast<uint32_t>(SPELL_JUDGEMENT_OF_CORRUPTION) : 0u,
+            WoW::isServerExpansion(WoW::Expansion::_WotLK) ? SPELL_JUDGEMENT_OF_CORRUPTION : 0u,
             0
         };
         mgr->register_spell_script(judgementOfVengeanceCorruptionTruth, new JudgementOfVengeanceCorruptionTruthDamage);
@@ -1080,25 +1102,25 @@ void setupPaladinSpells(ScriptMgr* mgr)
         mgr->register_spell_script(SPELL_JUDGEMENT_OF_WISDOM_MANA, new JudgementOfWisdomMana);
     }
 
-    if (WoW::isServerExpansion(WoW::Expansion::_TBC) || WoW::isServerExpansion(WoW::Expansion::_WotLK))
+    if (WoW::isServerExpansionBetween(WoW::Expansion::_TBC, WoW::Expansion::_WotLK))
     {
         uint32_t sealOfBloodMartyrDummy[] =
         {
             SPELL_SEAL_OF_BLOOD_DUMMY,
-            WoW::isServerExpansion(WoW::Expansion::_WotLK) ? static_cast<uint32_t>(SPELL_SEAL_OF_THE_MARTYR_DUMMY) : 0u,
+            WoW::isServerExpansion(WoW::Expansion::_WotLK) ? SPELL_SEAL_OF_THE_MARTYR_DUMMY : 0u,
             0
         };
         mgr->register_spell_script(sealOfBloodMartyrDummy, new SealOfBloodAndMartyrDummy);
         uint32_t sealOfBloodMartyrBackfire[] =
         {
             SPELL_SEAL_OF_BLOOD_BACKFIRE,
-            WoW::isServerExpansion(WoW::Expansion::_WotLK) ? static_cast<uint32_t>(SPELL_SEAL_OF_THE_MARTYR_BACKFIRE) : 0u,
+            WoW::isServerExpansion(WoW::Expansion::_WotLK) ? SPELL_SEAL_OF_THE_MARTYR_BACKFIRE : 0u,
             0
         };
         mgr->register_spell_script(sealOfBloodMartyrBackfire, new SealOfBloodAndMartyrBackfire);
     }
 
-    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop) && !WoW::isServerExpansionAtLeast(WoW::Expansion::_Legion))
+    if (WoW::isServerExpansionBetween(WoW::Expansion::_Mop, WoW::Expansion::_WoD))
     {
         mgr->register_spell_script(sealOfCommandDummyId(), new SealOfCommandDummy);
     }
@@ -1130,7 +1152,7 @@ void setupPaladinSpells(ScriptMgr* mgr)
         uint32_t sealOfRighteousnessDamage[] =
         {
             sealOfRighteousnessDamageId(),
-            WoW::isServerExpansion(WoW::Expansion::_Cata) ? static_cast<uint32_t>(SPELL_SEAL_OF_RIGHTEOUSNESS_DAMAGE_AOE) : 0u,
+            WoW::isServerExpansion(WoW::Expansion::_Cata) ? SPELL_SEAL_OF_RIGHTEOUSNESS_DAMAGE_AOE : 0u,
             0
         };
         mgr->register_spell_script(sealOfRighteousnessDamage, new SealOfRighteousnessDamage);
@@ -1141,26 +1163,26 @@ void setupPaladinSpells(ScriptMgr* mgr)
         mgr->register_spell_script(SPELL_SEAL_OF_THE_CRUSADER_R1, new SealOfTheCrusader);
     }
 
-    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC) && !WoW::isServerExpansionAtLeast(WoW::Expansion::_Legion))
+    if (WoW::isServerExpansionBetween(WoW::Expansion::_TBC, WoW::Expansion::_WoD))
     {
         uint32_t sealOfVengeanceCorruptionTruthDirect[] =
         {
             SPELL_SEAL_OF_VENGEANCE_DIRECT,
-            WoW::isServerExpansion(WoW::Expansion::_WotLK) ? static_cast<uint32_t>(SPELL_SEAL_OF_CORRUPTION_DIRECT) : 0u,
+            WoW::isServerExpansion(WoW::Expansion::_WotLK) ? SPELL_SEAL_OF_CORRUPTION_DIRECT : 0u,
             0
         };
         mgr->register_spell_script(sealOfVengeanceCorruptionTruthDirect, new SealOfVengeanceAndCorruptionAndTruthDirect);
         uint32_t sealOfVengeanceCorruptionTruthDummy[] =
         {
             SPELL_SEAL_OF_VENGEANCE_DUMMY,
-            WoW::isServerExpansion(WoW::Expansion::_WotLK) ? static_cast<uint32_t>(SPELL_SEAL_OF_CORRUPTION_DUMMY) : 0u,
+            WoW::isServerExpansion(WoW::Expansion::_WotLK) ? SPELL_SEAL_OF_CORRUPTION_DUMMY : 0u,
             0
         };
         mgr->register_spell_script(sealOfVengeanceCorruptionTruthDummy, new SealOfVengeanceAndCorruptionAndTruthDummy);
         uint32_t sealOfVengeanceCorruptionTruthDot[] =
         {
             SPELL_HOLY_VENGEANCE,
-            WoW::isServerExpansion(WoW::Expansion::_WotLK) ? static_cast<uint32_t>(SPELL_BLOOD_CORRUPTION) : 0u,
+            WoW::isServerExpansion(WoW::Expansion::_WotLK) ? SPELL_BLOOD_CORRUPTION : 0u,
             0
         };
         mgr->register_spell_script(sealOfVengeanceCorruptionTruthDot, new SealOfVengeanceAndCorruptionAndTruthDot);

@@ -837,10 +837,32 @@ void Spell::handleHittedTarget(const uint64_t targetGuid, uint8_t effIndex)
             getUnitCaster()->getCombatHandler().onHostileAction(getUnitTarget(), getFullCastTime() > 0);
     }
 
+    auto damageInfo = DamageInfo();
+    damageInfo.schoolMask = static_cast<SchoolMask>(m_spellInfo->getSchoolMask());
+    damageInfo.fullDamage = effDamage;
+
+    // Calculate spell and attack power bonus taken (must be calculated on launch, not on spell hit!)
+    if (m_unitTarget != nullptr)
+    {
+        switch (m_spellInfo->getEffect(effIndex))
+        {
+            case SPELL_EFFECT_SCHOOL_DAMAGE:
+            case SPELL_EFFECT_HEALTH_LEECH:
+                damageInfo.fullDamage = Util::float2int32(m_unitTarget->applySpellDamageBonusTaken(m_spellInfo, damageInfo.fullDamage));
+                break;
+            case SPELL_EFFECT_HEAL:
+            case SPELL_EFFECT_HEAL_MECHANICAL:
+                damageInfo.fullDamage = Util::float2int32(m_unitTarget->applySpellHealingBonusTaken(m_spellInfo, damageInfo.fullDamage));
+                break;
+            default:
+                break;
+        }
+    }
+
     // If effect applies an aura, create it instantly but add it later to target
     if (getSpellInfo()->doesEffectApplyAura(effIndex))
     {
-        handleHittedEffect(targetGuid, effIndex, effDamage);
+        handleHittedEffect(targetGuid, effIndex, damageInfo);
 
         // Add travel time to aura
         auto itr = m_pendingAuras.find(targetGuid);
@@ -852,12 +874,12 @@ void Spell::handleHittedTarget(const uint64_t targetGuid, uint8_t effIndex)
 
     if (travelTime == 0.0f)
     {
-        handleHittedEffect(targetGuid, effIndex, effDamage);
+        handleHittedEffect(targetGuid, effIndex, damageInfo);
     }
     else
     {
         HitSpellEffect hitEffect;
-        hitEffect.damage = effDamage;
+        hitEffect.damageInfo = std::move(damageInfo);
         hitEffect.effIndex = effIndex;
         hitEffect.travelTime = Util::float2int32(travelTime);
 
@@ -865,7 +887,7 @@ void Spell::handleHittedTarget(const uint64_t targetGuid, uint8_t effIndex)
     }
 }
 
-void Spell::handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, int32_t effDamage, bool reCheckTarget/* = false*/)
+void Spell::handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, DamageInfo const& damageInfo, bool reCheckTarget/* = false*/)
 {
     if (reCheckTarget)
         _updateTargetPointers(targetGuid);
@@ -877,7 +899,7 @@ void Spell::handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, int3
         return;
 
     // TODO: in the future, consider having two damage variables; one for integer and one for float
-    damage = effDamage;
+    damage = damageInfo.fullDamage;
 
     // Skip auras here
     // TODO: confirm if instant kill spells should skip combat (atm needed for .kill command)
@@ -901,8 +923,7 @@ void Spell::handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, int3
     }
 
     // Clear DamageInfo before effect
-    m_targetDamageInfo = DamageInfo();
-    m_targetDamageInfo.schoolMask = SchoolMask(getSpellInfo()->getSchoolMask());
+    m_targetDamageInfo = damageInfo;
     isTargetDamageInfoSet = false;
     m_isForcedCrit = false;
 
@@ -995,6 +1016,7 @@ void Spell::handleMissedTarget(SpellTargetMod const missedTarget)
     }
 
     // If there is no distance between caster and target, handle effect instantly
+    const auto schoolMask = static_cast<SchoolMask>(m_spellInfo->getSchoolMask());
     if (travelTime == 0.0f)
     {
         if (didReflect)
@@ -1006,7 +1028,12 @@ void Spell::handleMissedTarget(SpellTargetMod const missedTarget)
             for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
             {
                 if (getSpellInfo()->getEffect(i) != 0)
-                    handleHittedEffect(guid, i, calculateEffect(i));
+                {
+                    auto damageInfo = DamageInfo();
+                    damageInfo.fullDamage = calculateEffect(i);
+                    damageInfo.schoolMask = schoolMask;
+                    handleHittedEffect(guid, i, damageInfo);
+                }
             }
         }
         else
@@ -1031,7 +1058,9 @@ void Spell::handleMissedTarget(SpellTargetMod const missedTarget)
                 if (getSpellInfo()->getEffect(i) != 0)
                 {
                     HitSpellEffect hitEffect;
-                    hitEffect.damage = calculateEffect(i);
+                    hitEffect.damageInfo = DamageInfo();
+                    hitEffect.damageInfo.fullDamage = calculateEffect(i);
+                    hitEffect.damageInfo.schoolMask = schoolMask;
                     hitEffect.effIndex = i;
                     hitEffect.travelTime = Util::float2int32(travelTime);
 
@@ -1366,7 +1395,7 @@ void Spell::update(unsigned long timePassed)
                     continue;
                 }
 
-                handleHittedEffect(hitEff.first, hitEff.second.effIndex, hitEff.second.damage, true);
+                handleHittedEffect(hitEff.first, hitEff.second.effIndex, hitEff.second.damageInfo, true);
                 hitItr = m_hitEffects.erase(hitItr);
             }
 
@@ -1513,17 +1542,18 @@ int32_t Spell::calculateEffect(uint8_t effIndex)
 
     if (getUnitCaster() != nullptr)
     {
-        // Calculate spell and attack power bonus (must be calculated on launch, not on spell hit!)
+        // Calculate spell and attack power bonus done (must be calculated on launch, not on spell hit!)
         if (!m_isEffectDamageStatic[effIndex])
         {
             switch (getSpellInfo()->getEffect(effIndex))
             {
                 case SPELL_EFFECT_SCHOOL_DAMAGE:
-                    value = Util::float2int32(getUnitCaster()->applySpellDamageBonus(m_originalCaster, getSpellInfo(), effIndex, value, false, this));
+                case SPELL_EFFECT_HEALTH_LEECH:
+                    value = Util::float2int32(getUnitCaster()->applySpellDamageBonusDone(m_originalCaster, m_unitTarget, getSpellInfo(), effIndex, value, false, this));
                     break;
                 case SPELL_EFFECT_HEAL:
                 case SPELL_EFFECT_HEAL_MECHANICAL:
-                    value = Util::float2int32(getUnitCaster()->applySpellHealingBonus(m_originalCaster, getSpellInfo(), effIndex, value, false, this));
+                    value = Util::float2int32(getUnitCaster()->applySpellHealingBonusDone(m_originalCaster, getSpellInfo(), effIndex, value, false, this));
                     break;
                 default:
                     break;

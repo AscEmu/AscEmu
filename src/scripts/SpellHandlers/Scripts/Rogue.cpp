@@ -103,6 +103,7 @@ class CheatDeathDummy : public SpellScript
 {
     // 60 seconds, 90 from Cata on
     static int32_t cooldown() { return WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata) ? 90000 : 60000; }
+
 public:
     SpellScriptCheckDummy onDummyOrScriptedEffect(Spell* spell, uint8_t effIndex) override
     {
@@ -128,6 +129,7 @@ public:
             // No longer modified by resilience
             plrCaster->castSpell(plrCaster, SPELL_CHEATING_DEATH, true);
         }
+
         if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
         {
             // Cast new debuff
@@ -277,7 +279,7 @@ void setupRogueSpells(ScriptMgr* mgr)
         }
     }
 
-    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK) && !WoW::isServerExpansionAtLeast(WoW::Expansion::_Mop))
+    if (WoW::isServerExpansionBetween(WoW::Expansion::_WotLK, WoW::Expansion::_Cata))
     {
         mgr->register_spell_script(SPELL_CUT_TO_THE_CHASE_R1, new CutToTheChase);
         mgr->register_spell_script(SPELL_DEADLY_BREW_R1, new DeadlyBrew);
