@@ -83,7 +83,9 @@ public:
     bool isPassive() const;
 
     // Set on aura apply
+    // Caster's crit chance (not including target's crit)
     float_t getCritChance() const;
+    void setCritChance(float_t critChance);
     void calculateCritChance();
     int32_t getSpellPowerBonus() const;
     int32_t getHealPowerBonus() const;
@@ -201,7 +203,7 @@ public:
     //void spellAuraEffectModDisarm(AuraEffectModifier* aurEff, bool apply);
     //void spellAuraEffectModStalked(AuraEffectModifier* aurEff, bool apply);
     void spellAuraEffectSchoolAbsorb(AuraEffectModifier* aurEff, bool apply);
-    //void spellAuraEffectModSpellCritChanceSchool(AuraEffectModifier* aurEff, bool apply);
+    void spellAuraEffectModSpellCritChanceSchool(AuraEffectModifier* aurEff, bool apply);
     //void spellAuraEffectModPowerCost(AuraEffectModifier* aurEff, bool apply);
     //void spellAuraEffectModPowerCostSchool(AuraEffectModifier* aurEff, bool apply);
     //void spellAuraEffectReflectSpellsSchool(AuraEffectModifier* aurEff, bool apply);
@@ -290,12 +292,9 @@ public:
     //void spellAuraEffectReduceAttackerMHitChance(AuraEffectModifier* aurEff, bool apply);
     //void spellAuraEffectReduceAttackerRHitChance(AuraEffectModifier* aurEff, bool apply);
     //void spellAuraEffectReduceAttackerSHitChance(AuraEffectModifier* aurEff, bool apply);
-    //void spellAuraEffectReduceEnemyMCritChance(AuraEffectModifier* aurEff, bool apply);
-    //void spellAuraEffectReduceEnemyRCritChance(AuraEffectModifier* aurEff, bool apply);
     //void spellAuraEffectLimitSpeed(AuraEffectModifier* aurEff, bool apply);
     //void spellAuraEffectIncreaseTimeBetweenAttacksPCT(AuraEffectModifier* aurEff, bool apply);
     //void spellAuraEffectIncreaseAllWeaponSkill(AuraEffectModifier* aurEff, bool apply);
-    //void spellAuraEffectModAttackerCritChance(AuraEffectModifier* aurEff, bool apply);
     //void spellAuraEffectIncreaseHitRate(AuraEffectModifier* aurEff, bool apply);
     //void spellAuraEffectReduceCritMeleeAttackDmg(AuraEffectModifier* aurEff, bool apply);
     //void spellAuraEffectReduceCritRangedAttackDmg(AuraEffectModifier* aurEff, bool apply);
@@ -311,7 +310,6 @@ public:
     //void spellAuraEffectReduceAOEDamageTaken(AuraEffectModifier* aurEff, bool apply);
     //void spellAuraEffectIncreaseMaxHealth(AuraEffectModifier* aurEff, bool apply);
     //void spellAuraEffectSpiritOfRedemption(AuraEffectModifier* aurEff, bool apply);
-    //void spellAuraEffectIncreaseAttackerSpellCrit(AuraEffectModifier* aurEff, bool apply);
     //void spellAuraEffectIncreaseRepGainPct(AuraEffectModifier* aurEff, bool apply);
     //void spellAuraEffectIncreaseRAPbyStatPct(AuraEffectModifier* aurEff, bool apply);
     //void spellAuraEffectModBlockValue(AuraEffectModifier* aurEff, bool apply);
@@ -458,7 +456,6 @@ public:
     void SpellAuraFeignDeath(AuraEffectModifier* aurEff, bool apply);
     void SpellAuraModDisarm(AuraEffectModifier* aurEff, bool apply);
     void SpellAuraModStalked(AuraEffectModifier* aurEff, bool apply);
-    void SpellAuraModSpellCritChanceSchool(AuraEffectModifier* aurEff, bool apply);
     void SpellAuraModPowerCost(AuraEffectModifier* aurEff, bool apply);
     void SpellAuraModPowerCostSchool(AuraEffectModifier* aurEff, bool apply);
     void SpellAuraReflectSpellsSchool(AuraEffectModifier* aurEff, bool apply);
@@ -541,12 +538,9 @@ public:
     void SpellAuraReduceAttackerMHitChance(AuraEffectModifier* aurEff, bool apply);
     void SpellAuraReduceAttackerRHitChance(AuraEffectModifier* aurEff, bool apply);
     void SpellAuraReduceAttackerSHitChance(AuraEffectModifier* aurEff, bool apply);
-    void SpellAuraReduceEnemyMCritChance(AuraEffectModifier* aurEff, bool apply);
-    void SpellAuraReduceEnemyRCritChance(AuraEffectModifier* aurEff, bool apply);
     void SpellAuraLimitSpeed(AuraEffectModifier* aurEff, bool apply);
     void SpellAuraIncreaseTimeBetweenAttacksPCT(AuraEffectModifier* aurEff, bool apply);
     void SpellAuraIncreaseAllWeaponSkill(AuraEffectModifier* aurEff, bool apply);
-    void SpellAuraModAttackerCritChance(AuraEffectModifier* aurEff, bool apply);
     void SpellAuraIncreaseHitRate(AuraEffectModifier* aurEff, bool apply);
     void SpellAuraReduceCritMeleeAttackDmg(AuraEffectModifier* aurEff, bool apply);
     void SpellAuraReduceCritRangedAttackDmg(AuraEffectModifier* aurEff, bool apply);
@@ -561,7 +555,6 @@ public:
     void SpellAuraReduceAOEDamageTaken(AuraEffectModifier* aurEff, bool apply);
     void SpellAuraIncreaseMaxHealth(AuraEffectModifier* aurEff, bool apply);
     void SpellAuraSpiritOfRedemption(AuraEffectModifier* aurEff, bool apply);
-    void SpellAuraIncreaseAttackerSpellCrit(AuraEffectModifier* aurEff, bool apply);
     void SpellAuraIncreaseRepGainPct(AuraEffectModifier* aurEff, bool apply);
     void SpellAuraIncreaseRAPbyStatPct(AuraEffectModifier* aurEff, bool apply);
     void SpellAuraModBlockValue(AuraEffectModifier* aurEff, bool apply);

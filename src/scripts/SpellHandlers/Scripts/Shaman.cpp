@@ -39,10 +39,37 @@ public:
         if (effIndex != EFF_INDEX_0 || spell->getUnitCaster() == nullptr || spell->getUnitTarget() == nullptr)
             return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
+        // No longer snapshotted in WoD
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WoD))
+            return SpellScriptEffectDamage::DAMAGE_DEFAULT;
+
         // Calculate healing done here so correct percent modifiers are applied
         // Casted by the unit who owns the aura
         *dmg = Util::float2int32(spell->getUnitTarget()->applySpellHealingBonusDone(spell->getUnitCaster(), spell->getSpellInfo(), effIndex, *dmg, false, spell));
         return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
+    }
+
+    void onAuraCreate(Aura* aur) override
+    {
+        // No longer snapshotted in WoD
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WoD))
+            return;
+
+        // Calculate crit chance by proc spell
+        // e.g. Tidal Mastery does not affect dummy spell
+        // TBC calculates crit by target, wotlk+ by caster
+        const auto procSpellInfo = sSpellMgr.getSpellInfo(SPELL_EARTH_SHIELD_HEAL);
+        if (WoW::isServerExpansion(WoW::Expansion::_TBC))
+        {
+            aur->setCritChance(aur->getOwner()->getSpellCriticalChanceDone(procSpellInfo, nullptr, aur));
+        }
+        else if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        {
+            if (auto* const caster = aur->getUnitCaster())
+                aur->setCritChance(caster->getSpellCriticalChanceDone(procSpellInfo, nullptr, aur));
+            else
+                aur->setCritChance(aur->getOwner()->getSpellCriticalChanceDone(procSpellInfo, nullptr, aur));
+        }
     }
 
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
@@ -89,10 +116,26 @@ public:
         return true;
     }
 
+    SpellScriptExecuteState onCastProcSpell(SpellProc* spellProc, Unit* /*caster*/, Unit* /*victim*/, Spell* spellToProc) override
+    {
+        // No longer snapshotted in WoD
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WoD))
+            return SpellScriptExecuteState::EXECUTE_OK;
+
+        // Set proc spell to use snapshotted crit
+        if (auto* const mainAura = spellProc->getCreatedByAura())
+            spellToProc->setTriggeredByAura(mainAura);
+
+        return SpellScriptExecuteState::EXECUTE_OK;
+    }
+
     SpellScriptEffectDamage doCalculateEffect(Spell* /*spell*/, uint8_t /*effIndex*/, int32_t* /*dmg*/) override
     {
-        // Fully calculated in main aura
-        return SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
+        // Fully calculated in main aura TBC - Mop
+        // No longer snapshotted in WoD
+        return WoW::isServerExpansionAtLeast(WoW::Expansion::_WoD) ?
+            SpellScriptEffectDamage::DAMAGE_DEFAULT :
+            SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
     }
 };
 

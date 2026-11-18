@@ -885,13 +885,6 @@ public:
     void setManaFromSpell(uint32_t value) { m_manaFromSpell = value; }
 
     void calcResistance(uint8_t type);
-    float getResistMCrit() { return m_resistCritical[0]; }
-    void setResistMCrit(float newvalue) { m_resistCritical[0] = newvalue; }
-
-    float getResistRCrit() { return m_resistCritical[1]; }
-    void setResistRCrit(float newvalue) { m_resistCritical[1] = newvalue; }
-
-    float m_resistCritical[2] = { 0 }; // when we are a victim we can have talents to decrease chance for critical hit. This is a negative value and it's added to critchances
 
     // Cooldowns
     bool hasSpellOnCooldown(SpellInfo const* spellInfo);

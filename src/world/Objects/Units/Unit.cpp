@@ -3686,132 +3686,138 @@ float_t Unit::getSpellDownrankingPenalty(uint32_t spellMaxLevel) const
     return penalty;
 }
 
-float_t Unit::getCriticalChanceForDamageSpell(Spell* spell, Aura* aura, Unit* target)
+float_t Unit::getSpellCriticalChanceDone(SpellInfo const* spellInfo, Spell* spell, Aura* aura)
 {
-    if (spell == nullptr && aura == nullptr)
+    if (spellInfo == nullptr || (spell == nullptr && aura == nullptr))
         return 0.0f;
 
-    SpellInfo const* spellInfo = nullptr;
-    if (spell != nullptr)
-        spellInfo = spell->getSpellInfo();
-    else
-        spellInfo = aura->getSpellInfo();
+    // Pure creatures cannot crit with any spell
+    if (!hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
+        return 0.0f;
 
-    ///\ todo: this is mostly copied from legacy method, needs rewrite later
     float_t critChance = 0.0f;
-    const auto school = spellInfo->getFirstSchoolFromSchoolMask();
-    PlayerCombatRating resilienceType = CR_WEAPON_SKILL;
 
-    if (spellInfo->getDmgClass() == SPELL_DMG_TYPE_RANGED)
+    if (spellInfo->getDmgClass() == SPELL_DMG_TYPE_RANGED ||
+        spellInfo->getAttributesExC() & ATTRIBUTESEXC_PLAYER_RANGED_SPELLS)
     {
-        if (isPlayer())
-        {
-            critChance = dynamic_cast<Player const*>(this)->getRangedCritPercentage();
-            if (target->isPlayer())
-                critChance += dynamic_cast<Player*>(target)->getResistRCrit();
-
-            critChance += static_cast<float_t>(target->m_attackerCritChanceMod[school]);
-        }
+        // TODO: pet/summon crit chance
+        // use static value for now
+        if (const auto* thisPlayer = ToPlayer())
+            critChance = thisPlayer->getRangedCritPercentage();
         else
-        {
-            // static value for mobs.. not blizzlike, but an unfinished formula is not fatal :)
             critChance = 5.0f;
-        }
-
-        if (target->isPlayer())
-#if VERSION_STRING >= Cata
-            resilienceType = CR_RESILIENCE_PLAYER_DAMAGE_TAKEN;
-#else
-            resilienceType = CR_CRIT_TAKEN_RANGED;
-#endif
     }
     else if (spellInfo->getDmgClass() == SPELL_DMG_TYPE_MELEE)
     {
-        // Same shit with the melee spells, such as Judgment/Seal of Command
-        if (isPlayer())
-            critChance = dynamic_cast<Player const*>(this)->getMeleeCritPercentage();
-
-        if (target->isPlayer())
-        {
-            //this could be ability but in that case we overwrite the value
-            critChance += dynamic_cast<Player*>(target)->getResistMCrit();
-#if VERSION_STRING >= Cata
-            resilienceType = CR_RESILIENCE_CRIT_TAKEN;
-#else
-            resilienceType = CR_CRIT_TAKEN_MELEE;
-#endif
-        }
-
-        // Victim's (!) crit chance mod for physical attacks?
-        critChance += static_cast<float_t>(target->m_attackerCritChanceMod[0]);
+        // TODO: pet/summon crit chance
+        // use static value for now
+        if (const auto* thisPlayer = ToPlayer())
+            critChance = thisPlayer->getMeleeCritPercentage();
+        else
+            critChance = 5.0f;
     }
     else
     {
-        critChance = m_spellCritPercentage + m_spellCritChanceSchool[school];
+        critChance = m_spellCritPercentage;
 
-        critChance += static_cast<float_t>(target->m_attackerCritChanceMod[school]);
-
-        //\todo Zyres: is tis relly the way this should work?
-        if (isPlayer() && (target->m_rootCounter - target->m_stunned))
-            critChance += static_cast<float_t>(dynamic_cast<Player const*>(this)->m_rootedCritChanceBonus);
-
-        if (target->isPlayer())
-            resilienceType = CR_CRIT_TAKEN_SPELL;
+        if (hasAuraWithAuraEffect(SPELL_AURA_MOD_SPELL_CRIT_CHANCE_SCHOOL))
+        {
+            // Get highest crit chance for given spell school mask
+            // e.g. Frostfire Bolt uses either fire or frost crit chance
+            // Based on which one is higher
+            std::optional<float_t> schoolCritChance = std::nullopt;
+            for (uint8_t school = SCHOOL_NORMAL; school < TOTAL_SPELL_SCHOOLS; ++school)
+            {
+                const uint8_t schoolMask = 1 << school;
+                if (spellInfo->getSchoolMask() & schoolMask)
+                {
+                    const auto tmpCritChance = getTotalFloatDamageForAuraEffectByMiscValueSchoolMask(SPELL_AURA_MOD_SPELL_CRIT_CHANCE_SCHOOL, schoolMask);
+                    if (!schoolCritChance.has_value() || tmpCritChance > schoolCritChance.value_or(0.0f))
+                        schoolCritChance = tmpCritChance;
+                }
+            }
+            critChance += schoolCritChance.value_or(0.0f);
+        }
     }
 
     applySpellModifiers(SPELLMOD_CRITICAL, &critChance, spellInfo, spell, aura);
 
-    if (resilienceType != CR_WEAPON_SKILL)
-        critChance -= dynamic_cast<Player*>(target)->calcRating(resilienceType);
-
-    if (critChance < 0.0f)
-        critChance = 0.0f;
-    if (critChance > 95.0f)
-        critChance = 95.0f;
+    // Verify limits
+    critChance = std::max(critChance, 0.0f);
+    critChance = std::min(critChance, 95.0f);
 
     return critChance;
 }
 
-float_t Unit::getCriticalChanceForHealSpell(Spell* spell, Aura* aura, Unit* /*target*/)
+float_t Unit::getSpellCriticalChanceTaken(SpellInfo const* spellInfo, Unit const* caster, float_t critChance/* = 0.0f*/)
 {
-    if (spell == nullptr && aura == nullptr)
-        return 0.0f;
+    if (spellInfo == nullptr || caster == nullptr)
+        return critChance;
 
-    SpellInfo const* spellInfo = nullptr;
-    if (spell != nullptr)
-        spellInfo = spell->getSpellInfo();
+    auto* const thisPlayer = ToPlayer();
+    std::optional<PlayerCombatRating> resilienceType = std::nullopt;
+    uint32_t critSchoolMask = SCHOOL_MASK_NORMAL;
+
+    if (spellInfo->getDmgClass() == SPELL_DMG_TYPE_RANGED ||
+        spellInfo->getAttributesExC() & ATTRIBUTESEXC_PLAYER_RANGED_SPELLS)
+    {
+        critChance += getTotalFloatDamageForAuraEffect(SPELL_AURA_DECREASE_ATTACKER_CHANGE_TO_CRIT_RANGED);
+        resilienceType = CR_CRIT_TAKEN_RANGED;
+        critSchoolMask = spellInfo->getSchoolMask();
+    }
+    else if (spellInfo->getDmgClass() == SPELL_DMG_TYPE_MELEE)
+    {
+        critChance += getTotalFloatDamageForAuraEffect(SPELL_AURA_DECREASE_ATTACKER_CHANGE_TO_CRIT_MELEE);
+        resilienceType = CR_CRIT_TAKEN_MELEE;
+        critSchoolMask = SCHOOL_MASK_NORMAL;
+    }
     else
-        spellInfo = aura->getSpellInfo();
+    {
+        // Mage - Shatter crit calculated at spell launch
+        // Patch 7.0: "Due to the importance of Shatter, Frost Mage damage will be calculated on impact, rather than on finishing the cast"
+        if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Legion))
+        {
+            if (const auto* casterPlayer = caster->ToPlayer(); casterPlayer != nullptr && (m_rootCounter - m_stunned))
+                critChance += static_cast<float_t>(casterPlayer->m_rootedCritChanceBonus);
+        }
 
-    const auto school = spellInfo->getFirstSchoolFromSchoolMask();
+        resilienceType = CR_CRIT_TAKEN_SPELL;
+        critSchoolMask = spellInfo->getSchoolMask();
+    }
 
-    float_t critChance = m_spellCritPercentage + m_spellCritChanceSchool[school];
-    applySpellModifiers(SPELLMOD_CRITICAL, &critChance, spellInfo, spell, aura);
+    critChance += getTotalFloatDamageForAuraEffect(SPELL_AURA_REDUCE_ATTACKER_CRICTICAL_HIT_CHANCE_PCT);
 
-    if (critChance < 0.0f)
-        critChance = 0.0f;
-    if (critChance > 95.0f)
-        critChance = 95.0f;
+    if (hasAuraWithAuraEffect(SPELL_AURA_INCREASE_ATTACKER_SPELL_CRIT))
+    {
+        // Get highest crit chance for given spell school mask
+        // e.g. Frostfire Bolt uses either fire or frost crit chance
+        // Based on which one is higher
+        std::optional<float_t> schoolCritChance = std::nullopt;
+        for (uint8_t school = SCHOOL_NORMAL; school < TOTAL_SPELL_SCHOOLS; ++school)
+        {
+            const uint8_t schoolMask = 1 << school;
+            if (critSchoolMask & schoolMask)
+            {
+                const auto tmpCritChance = getTotalFloatDamageForAuraEffectByMiscValueSchoolMask(SPELL_AURA_INCREASE_ATTACKER_SPELL_CRIT, schoolMask);
+                if (!schoolCritChance.has_value() || tmpCritChance > schoolCritChance.value_or(0.0f))
+                    schoolCritChance = tmpCritChance;
+            }
+        }
+        critChance += schoolCritChance.value_or(0.0f);
+    }
+
+    // Resilience reduces chance to be critically hit in TBC - Wotlk
+    if (WoW::isServerExpansionBetween(WoW::Expansion::_TBC, WoW::Expansion::_WotLK))
+    {
+        if (resilienceType.has_value() && thisPlayer != nullptr)
+            critChance -= thisPlayer->calcRating(resilienceType.value());
+    }
+
+    // Verify limits
+    critChance = std::max(critChance, 0.0f);
+    critChance = std::min(critChance, 95.0f);
 
     return critChance;
-}
-
-bool Unit::isCriticalDamageForSpell(Object* target, Spell* spell)
-{
-    // Spell cannot crit against gameobjects or items
-    if (!target->isCreatureOrPlayer())
-        return false;
-
-    return Util::checkChance(getCriticalChanceForDamageSpell(spell, nullptr, dynamic_cast<Unit*>(target)));
-}
-
-bool Unit::isCriticalHealForSpell(Object* target, Spell* spell)
-{
-    // Spell cannot crit against gameobjects or items
-    if (!target->isCreatureOrPlayer())
-        return false;
-
-    return Util::checkChance(getCriticalChanceForHealSpell(spell, nullptr, dynamic_cast<Unit*>(target)));
 }
 
 float_t Unit::getCriticalDamageBonusForSpell(float_t damage, Unit* target, Spell* spell, Aura* aura)
@@ -4531,6 +4537,18 @@ float_t Unit::getTotalFloatDamageForAuraEffectByMiscValue(AuraEffect aura_effect
     for (const auto& aurEff : m_auraEffectList[aura_effect])
     {
         if (aurEff->getEffectMiscValue() == miscValue)
+            totalDamage += aurEff->getEffectFloatDamage();
+    }
+
+    return totalDamage;
+}
+
+float_t Unit::getTotalFloatDamageForAuraEffectByMiscValueSchoolMask(AuraEffect aura_effect, uint32_t schoolMask) const
+{
+    float_t totalDamage = 0.0f;
+    for (const auto& aurEff : m_auraEffectList[aura_effect])
+    {
+        if (aurEff->getEffectMiscValue() & schoolMask)
             totalDamage += aurEff->getEffectFloatDamage();
     }
 
@@ -7481,7 +7499,7 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
 
         auto floatHeal = healAmount * batch->leechMultipleValue;
         floatHeal = attacker->applySpellHealingBonusTaken(batch->spellInfo, floatHeal);
-        attacker->doSpellHealing(attacker, spellId, floatHeal, false, batch->isPeriodic, true, false);
+        attacker->doSpellHealing(attacker, spellId, floatHeal, false, batch->isPeriodic, true, 0.0f);
     }
 
     setStandState(STANDSTATE_STAND);
@@ -9955,16 +9973,16 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     {
         if (dmg.weaponType != RANGED)
         {
-            crit += static_cast<Player*>(pVictim)->getResistMCrit();
+            crit += pVictim->getTotalFloatDamageForAuraEffect(SPELL_AURA_DECREASE_ATTACKER_CHANGE_TO_CRIT_MELEE);
             hitmodifier += static_cast<Player*>(pVictim)->m_resistHit[MOD_MELEE];
         }
         else
         {
-            crit += static_cast<Player*>(pVictim)->getResistRCrit();                 //this could be ability but in that case we overwrite the value
+            crit += getTotalFloatDamageForAuraEffect(SPELL_AURA_DECREASE_ATTACKER_CHANGE_TO_CRIT_RANGED);                 //this could be ability but in that case we overwrite the value
             hitmodifier += static_cast<Player*>(pVictim)->m_resistHit[MOD_RANGED];
         }
     }
-    crit += static_cast<float>(pVictim->m_attackerCritChanceMod[0]);
+    crit += pVictim->getTotalFloatDamageForAuraEffect(SPELL_AURA_REDUCE_ATTACKER_CRICTICAL_HIT_CHANCE_PCT);
 
     // by skill difference
     float vsk = static_cast<float>(self_skill - victim_skill);

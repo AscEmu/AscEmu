@@ -360,7 +360,7 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
         // Also need to send SMSG_SPELL_FAILED_OTHER, otherwise spell button gets stuck
         SendInterrupted(0);
 
-        if (m_triggeredByAura != nullptr)
+        if (m_triggeredByAura != nullptr && m_triggeredByAura->getSpellInfo()->isChanneled())
         {
             sendChannelUpdate(0);
             m_triggeredByAura->removeAura();
@@ -840,6 +840,14 @@ void Spell::handleHittedTarget(const uint64_t targetGuid, uint8_t effIndex)
     auto damageInfo = DamageInfo();
     damageInfo.schoolMask = static_cast<SchoolMask>(m_spellInfo->getSchoolMask());
     damageInfo.fullDamage = effDamage;
+    // Patch 6.0.2: "Periodic damage and healing effects now dynamically recalculate
+    // their damage, healing, critical chance and multipliers on every tick."
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WoD))
+    {
+        // Use crit chance from triggering aura
+        if (m_triggeredByAura != nullptr)
+            damageInfo.critChance = m_triggeredByAura->getCritChance();
+    }
 
     // Calculate spell and attack power bonus taken (must be calculated on launch, not on spell hit!)
     if (m_unitTarget != nullptr)
@@ -849,10 +857,32 @@ void Spell::handleHittedTarget(const uint64_t targetGuid, uint8_t effIndex)
             case SPELL_EFFECT_SCHOOL_DAMAGE:
             case SPELL_EFFECT_HEALTH_LEECH:
                 damageInfo.fullDamage = Util::float2int32(m_unitTarget->applySpellDamageBonusTaken(m_spellInfo, damageInfo.fullDamage));
+                // Calculate crit chance at launch as well
+                // If its not already calculated from triggered aura
+                if (!damageInfo.critChance.has_value())
+                {
+                    if (u_caster != nullptr && !(m_spellInfo->getAttributesExB() & ATTRIBUTESEXB_CANT_CRIT))
+                        damageInfo.critChance = u_caster->getSpellCriticalChanceDone(m_spellInfo, this, nullptr);
+                    else
+                        damageInfo.critChance = 0.0f;
+                }
+
+                // Add target's crit reduction talents etc
+                if (damageInfo.critChance > 0.0f)
+                    damageInfo.critChance = m_unitTarget->getSpellCriticalChanceTaken(m_spellInfo, u_caster, damageInfo.critChance.value());
                 break;
             case SPELL_EFFECT_HEAL:
             case SPELL_EFFECT_HEAL_MECHANICAL:
                 damageInfo.fullDamage = Util::float2int32(m_unitTarget->applySpellHealingBonusTaken(m_spellInfo, damageInfo.fullDamage));
+                // Calculate crit chance at launch as well
+                // If its not already calculated from triggered aura
+                if (!damageInfo.critChance.has_value())
+                {
+                    if (u_caster != nullptr && !(m_spellInfo->getAttributesExB() & ATTRIBUTESEXB_CANT_CRIT))
+                        damageInfo.critChance = u_caster->getSpellCriticalChanceDone(m_spellInfo, this, nullptr);
+                    else
+                        damageInfo.critChance = 0.0f;
+                }
                 break;
             default:
                 break;
@@ -925,7 +955,6 @@ void Spell::handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, Dama
     // Clear DamageInfo before effect
     m_targetDamageInfo = damageInfo;
     isTargetDamageInfoSet = false;
-    m_isForcedCrit = false;
 
     const auto effectId = getSpellInfo()->getEffect(effIndex);
     if (effectId >= TOTAL_SPELL_EFFECTS)
@@ -943,7 +972,16 @@ void Spell::handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, Dama
     {
         if (critGuid == targetGuid)
         {
-            m_isForcedCrit = true;
+            if (m_targetDamageInfo.critChance.has_value())
+            {
+                // Cannot force crit if pre calculated chance is at 0
+                if (m_targetDamageInfo.critChance.value() > 0.0f)
+                    m_targetDamageInfo.critChance = 100.0f;
+            }
+            else
+            {
+                m_targetDamageInfo.critChance = 100.0f;
+            }
             break;
         }
     }
@@ -5477,6 +5515,11 @@ void Spell::resetSpellInfoOverride()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Misc
+void Spell::setTriggeredByAura(Aura* aur)
+{
+    m_triggeredByAura = aur;
+}
+
 Aura* Spell::getTriggeredByAura() const
 {
     return m_triggeredByAura;

@@ -827,7 +827,7 @@ Spell* Object::findCurrentCastedSpellBySpellId(uint32_t spellId)
     return nullptr;
 }
 
-DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, uint8_t effIndex, bool isTriggered/* = false*/, bool isPeriodic/* = false*/, bool isLeech/* = false*/, bool forceCrit/* = false*/, Spell* spell/* = nullptr*/, Aura* aur/* = nullptr*/, AuraEffectModifier* aurEff/* = nullptr*/)
+DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, uint8_t effIndex, bool isTriggered/* = false*/, bool isPeriodic/* = false*/, bool isLeech/* = false*/, std::optional<float> critChance/* = std::nullopt*/, Spell* spell/* = nullptr*/, Aura* aur/* = nullptr*/, AuraEffectModifier* aurEff/* = nullptr*/)
 {
     if (victim == nullptr || !victim->isAlive())
         return DamageInfo();
@@ -842,7 +842,6 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     // Create damage info
     DamageInfo dmgInfo;
     dmgInfo.schoolMask = SchoolMask(spellInfo->getSchoolMask());
-    dmgInfo.isCritical = forceCrit;
     dmgInfo.isPeriodic = isPeriodic;
 
     // Check if victim is immune to this school
@@ -903,26 +902,45 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     }
 
     // Check if spell can crit
-    if (damage > 0.0f && isCreatureOrPlayer())
+    if (auto* const thisUnit = ToUnit(); thisUnit != nullptr && damage > 0.0f)
     {
-        // If the damage is forced to be crit, do not alter it
-        if (!dmgInfo.isCritical && !(spellInfo->getAttributesExB() & ATTRIBUTESEXB_CANT_CRIT))
+        // If the crit chance is pre calculated, do not alter it pre-WoD
+        // Patch 6.0.2: "Periodic damage and healing effects now dynamically recalculate
+        // their damage, healing, critical chance and multipliers on every tick."
+        if ((!critChance.has_value() || WoW::isServerExpansionAtLeast(WoW::Expansion::_WoD)) &&
+            !(spellInfo->getAttributesExB() & ATTRIBUTESEXB_CANT_CRIT))
         {
             if (isPeriodic)
             {
                 // For periodic effects use aura's own crit chance
                 if (aur != nullptr)
-                    dmgInfo.isCritical = Util::checkChance(aur->getCritChance());
+                    critChance = aur->getCritChance();
             }
             else if (spell != nullptr)
             {
-                dmgInfo.isCritical = static_cast<Unit*>(this)->isCriticalDamageForSpell(victim, spell);
+                critChance = thisUnit->getSpellCriticalChanceDone(spellInfo, spell, nullptr);
+            }
+
+            critChance = victim->getSpellCriticalChanceTaken(spellInfo, thisUnit, critChance.value_or(0.0f));
+        }
+
+        // Mage - Shatter crit calculated at spell hit
+        // Patch 7.0: "Due to the importance of Shatter, Frost Mage damage will be calculated on impact, rather than on finishing the cast"
+        if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Legion))
+        {
+            if (critChance.has_value() && critChance.value_or(0.0f) > 0.0f)
+            {
+                if (const auto* thisPlayer = ToPlayer(); thisPlayer != nullptr && (victim->m_rootCounter - victim->m_stunned))
+                    *critChance += static_cast<float_t>(thisPlayer->m_rootedCritChanceBonus);
             }
         }
 
+        dmgInfo.isCritical = Util::checkChance(critChance.value_or(0.0f));
+        dmgInfo.critChance = critChance;
+
         // Get critical spell damage bonus
         if (dmgInfo.isCritical)
-            damage = static_cast<Unit*>(this)->getCriticalDamageBonusForSpell(damage, victim, spell, aur);
+            damage = thisUnit->getCriticalDamageBonusForSpell(damage, victim, spell, aur);
     }
 
     // Resilience
@@ -1114,7 +1132,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     return dmgInfo;
 }
 
-DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, bool isTriggered/* = false*/, bool isPeriodic/* = false*/, bool isLeech/* = false*/, bool forceCrit/* = false*/, Spell* spell/* = nullptr*/, Aura* aur/* = nullptr*/, AuraEffectModifier* aurEff/* = nullptr*/)
+DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, bool isTriggered/* = false*/, bool isPeriodic/* = false*/, bool isLeech/* = false*/, std::optional<float> critChance/* = std::nullopt*/, Spell* spell/* = nullptr*/, Aura* aur/* = nullptr*/, AuraEffectModifier* aurEff/* = nullptr*/)
 {
     if (victim == nullptr || !victim->isAlive())
         return DamageInfo();
@@ -1130,7 +1148,6 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
     DamageInfo dmgInfo;
     dmgInfo.schoolMask = SchoolMask(spellInfo->getSchoolMask());
     dmgInfo.isHeal = true;
-    dmgInfo.isCritical = forceCrit;
     dmgInfo.isPeriodic = isPeriodic;
 
     // Setup proc flags
@@ -1281,26 +1298,32 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
     }
 
     // Check if heal can crit
-    if (heal > 0.0f && isCreatureOrPlayer())
+    if (auto* const thisUnit = ToUnit(); thisUnit != nullptr && heal > 0.0f)
     {
-        // If the heal is forced to be crit, do not alter it
-        if (!dmgInfo.isCritical && !(spellInfo->getAttributesExB() & ATTRIBUTESEXB_CANT_CRIT))
+        // If the crit chance is pre calculated, do not alter it pre-WoD
+        // Patch 6.0.2: "Periodic damage and healing effects now dynamically recalculate
+        // their damage, healing, critical chance and multipliers on every tick."
+        if ((!critChance.has_value() || WoW::isServerExpansionAtLeast(WoW::Expansion::_WoD)) &&
+            !(spellInfo->getAttributesExB() & ATTRIBUTESEXB_CANT_CRIT))
         {
             if (isPeriodic)
             {
                 // For periodic effects use aura's own crit chance
                 if (aur != nullptr)
-                    dmgInfo.isCritical = Util::checkChance(aur->getCritChance());
+                    critChance = aur->getCritChance();
             }
             else if (spell != nullptr)
             {
-                dmgInfo.isCritical = static_cast<Unit*>(this)->isCriticalHealForSpell(victim, spell);
+                critChance = thisUnit->getSpellCriticalChanceDone(spellInfo, spell, nullptr);
             }
         }
 
+        dmgInfo.isCritical = Util::checkChance(critChance.value_or(0.0f));
+        dmgInfo.critChance = critChance;
+
         // Get critical spell heal bonus
         if (dmgInfo.isCritical)
-            heal = static_cast<Unit*>(this)->getCriticalHealBonusForSpell(heal, spell, aur);
+            heal = thisUnit->getCriticalHealBonusForSpell(heal, spell, aur);
     }
 
     if (heal < 0.0f)

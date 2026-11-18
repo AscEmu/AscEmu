@@ -336,6 +336,7 @@ Aura* AuraEffectModifier::getAura() const { return &mAura; }
 void AuraEffectModifier::_periodicTick()
 {
     auto effectFloatValue = mRealDamage;
+    auto critChance = mAura.getCritChance();
 
     auto* const aurOwner = mAura.getOwner();
     const auto aurSpellId = mAura.getSpellId();
@@ -351,10 +352,15 @@ void AuraEffectModifier::_periodicTick()
             effectFloatValue = aurOwner->applySpellDamageBonusTaken(mAura.getSpellInfo(), effectFloatValue, this);
 
             auto* const casterUnit = mAura.getUnitCaster();
+            // Aura crit chance includes only caster's chance to crit
+            // Add target's crit reduction talents etc on tick
+            if (critChance > 0.0f)
+                critChance = aurOwner->getSpellCriticalChanceTaken(mAura.getSpellInfo(), casterUnit, critChance);
+
             if (casterUnit != nullptr)
-                casterUnit->doSpellDamage(aurOwner, aurSpellId, effectFloatValue, effIndex, mAura.isTriggeredBySpellId(), true, false, false, nullptr, &mAura, this);
+                casterUnit->doSpellDamage(aurOwner, aurSpellId, effectFloatValue, effIndex, mAura.isTriggeredBySpellId(), true, false, critChance, nullptr, &mAura, this);
             else
-                aurOwner->doSpellDamage(aurOwner, aurSpellId, effectFloatValue, effIndex, mAura.isTriggeredBySpellId(), true, false, false, nullptr, &mAura, this);
+                aurOwner->doSpellDamage(aurOwner, aurSpellId, effectFloatValue, effIndex, mAura.isTriggeredBySpellId(), true, false, critChance, nullptr, &mAura, this);
         } break;
         case SPELL_AURA_PERIODIC_HEAL:
         {
@@ -367,9 +373,9 @@ void AuraEffectModifier::_periodicTick()
 
             auto* const casterUnit = mAura.getUnitCaster();
             if (casterUnit != nullptr)
-                casterUnit->doSpellHealing(aurOwner, aurSpellId, effectFloatValue, mAura.isTriggeredBySpellId(), true, false, false, nullptr, &mAura, this);
+                casterUnit->doSpellHealing(aurOwner, aurSpellId, effectFloatValue, mAura.isTriggeredBySpellId(), true, false, critChance, nullptr, &mAura, this);
             else
-                aurOwner->doSpellHealing(aurOwner, aurSpellId, effectFloatValue, mAura.isTriggeredBySpellId(), true, false, false, nullptr, &mAura, this);
+                aurOwner->doSpellHealing(aurOwner, aurSpellId, effectFloatValue, mAura.isTriggeredBySpellId(), true, false, critChance, nullptr, &mAura, this);
 
             // Hackfixes from legacy method
             if (casterUnit != nullptr)
@@ -403,9 +409,9 @@ void AuraEffectModifier::_periodicTick()
 
             auto* const casterUnit = mAura.getUnitCaster();
             if (casterUnit != nullptr)
-                casterUnit->doSpellHealing(aurOwner, aurSpellId, effectFloatValue, mAura.isTriggeredBySpellId(), true, false, false, nullptr, &mAura, this);
+                casterUnit->doSpellHealing(aurOwner, aurSpellId, effectFloatValue, mAura.isTriggeredBySpellId(), true, false, critChance, nullptr, &mAura, this);
             else
-                aurOwner->doSpellHealing(aurOwner, aurSpellId, effectFloatValue, mAura.isTriggeredBySpellId(), true, false, false, nullptr, &mAura, this);
+                aurOwner->doSpellHealing(aurOwner, aurSpellId, effectFloatValue, mAura.isTriggeredBySpellId(), true, false, critChance, nullptr, &mAura, this);
         } break;
         case SPELL_AURA_PERIODIC_POWER_PCT:
         {
@@ -542,11 +548,17 @@ void AuraEffectModifier::_periodicTick()
 
             // Deal damage (heal part is called in doSpellDamage)
             effectFloatValue = aurOwner->applySpellDamageBonusTaken(mAura.getSpellInfo(), effectFloatValue, this);
+
             auto* const casterUnit = mAura.getUnitCaster();
+            // Aura crit chance includes only caster's chance to crit
+            // Add target's crit reduction talents etc on tick
+            if (critChance > 0.0f)
+                critChance = aurOwner->getSpellCriticalChanceTaken(mAura.getSpellInfo(), casterUnit, critChance);
+
             if (casterUnit != nullptr)
-                casterUnit->doSpellDamage(aurOwner, aurSpellId, effectFloatValue, effIndex, mAura.isTriggeredBySpellId(), true, true, false, nullptr, &mAura, this);
+                casterUnit->doSpellDamage(aurOwner, aurSpellId, effectFloatValue, effIndex, mAura.isTriggeredBySpellId(), true, true, critChance, nullptr, &mAura, this);
             else
-                aurOwner->doSpellDamage(aurOwner, aurSpellId, effectFloatValue, effIndex, mAura.isTriggeredBySpellId(), true, true, false, nullptr, &mAura, this);
+                aurOwner->doSpellDamage(aurOwner, aurSpellId, effectFloatValue, effIndex, mAura.isTriggeredBySpellId(), true, true, critChance, nullptr, &mAura, this);
         } break;
         case SPELL_AURA_PERIODIC_MANA_LEECH:
         {
@@ -602,10 +614,15 @@ void AuraEffectModifier::_periodicTick()
             effectFloatValue = aurOwner->applySpellDamageBonusTaken(mAura.getSpellInfo(), effectFloatValue, this);
 
             auto* const casterUnit = mAura.getUnitCaster();
+            // Aura crit chance includes only caster's chance to crit
+            // Add target's crit reduction talents etc on tick
+            if (critChance > 0.0f)
+                critChance = aurOwner->getSpellCriticalChanceTaken(mAura.getSpellInfo(), casterUnit, critChance);
+
             if (casterUnit != nullptr)
-                casterUnit->doSpellDamage(aurOwner, aurSpellId, effectFloatValue, effIndex, mAura.isTriggeredBySpellId(), true, false, false, nullptr, &mAura, this);
+                casterUnit->doSpellDamage(aurOwner, aurSpellId, effectFloatValue, effIndex, mAura.isTriggeredBySpellId(), true, false, critChance, nullptr, &mAura, this);
             else
-                aurOwner->doSpellDamage(aurOwner, aurSpellId, effectFloatValue, effIndex, mAura.isTriggeredBySpellId(), true, false, false, nullptr, &mAura, this);
+                aurOwner->doSpellDamage(aurOwner, aurSpellId, effectFloatValue, effIndex, mAura.isTriggeredBySpellId(), true, false, critChance, nullptr, &mAura, this);
         } break;
         case SPELL_AURA_PERIODIC_POWER_BURN:
         {
@@ -638,10 +655,15 @@ void AuraEffectModifier::_periodicTick()
             ///\ todo: verify this
             damage = std::max(1.0f, damage);
 
+            // Aura crit chance includes only caster's chance to crit
+            // Add target's crit reduction talents etc on tick
+            if (critChance > 0.0f)
+                critChance = aurOwner->getSpellCriticalChanceTaken(mAura.getSpellInfo(), casterUnit, critChance);
+
             if (casterUnit != nullptr)
-                casterUnit->doSpellDamage(aurOwner, aurSpellId, damage, effIndex, mAura.isTriggeredBySpellId(), true, false, false, nullptr, &mAura, this);
+                casterUnit->doSpellDamage(aurOwner, aurSpellId, damage, effIndex, mAura.isTriggeredBySpellId(), true, false, critChance, nullptr, &mAura, this);
             else
-                aurOwner->doSpellDamage(aurOwner, aurSpellId, damage, effIndex, mAura.isTriggeredBySpellId(), true, false, false, nullptr, &mAura, this);
+                aurOwner->doSpellDamage(aurOwner, aurSpellId, damage, effIndex, mAura.isTriggeredBySpellId(), true, false, critChance, nullptr, &mAura, this);
         } break;
 #if VERSION_STRING >= TBC
         case SPELL_AURA_PERIODIC_TRIGGER_DUMMY:

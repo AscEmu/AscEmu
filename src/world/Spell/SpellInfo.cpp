@@ -553,6 +553,7 @@ bool SpellInfo::isNegativeAura() const
             case SPELL_AURA_MOD_SPELL_CRIT_CHANCE:
             case SPELL_AURA_MOD_PACIFY_SILENCE:
             case SPELL_AURA_MOD_CASTING_SPEED:
+            case SPELL_AURA_MOD_SPELL_CRIT_CHANCE_SCHOOL:
             case SPELL_AURA_MOD_DAMAGE_PERCENT_DONE:
             case SPELL_AURA_MOD_PERCENT_STAT:
             case SPELL_AURA_MOD_ATTACK_POWER:
@@ -580,7 +581,9 @@ bool SpellInfo::isNegativeAura() const
             case SPELL_AURA_MOD_DAMAGE_TAKEN:
             case SPELL_AURA_MOD_POWER_COST:
             case SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN:
+            case SPELL_AURA_INCREASE_ATTACKER_SPELL_CRIT:
 #if VERSION_STRING >= TBC
+            case SPELL_AURA_REDUCE_ATTACKER_CRICTICAL_HIT_CHANCE_PCT:
             case SPELL_AURA_MOD_MECHANIC_DAMAGE_TAKEN_PERCENT:
 #endif
 #if VERSION_STRING >= WotLK
