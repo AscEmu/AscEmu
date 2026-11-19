@@ -63,7 +63,7 @@ build\publish\ascemu_launcher\
 Or manually:
 
 ```bat
-cmake -S . -B build -G "Visual Studio 17 2022" -A x64
+cmake -S . -B build -G "Visual Studio 18 2026" -A x64
 cmake --build build --config Release --target ascemu_launcher_publish
 ```
 
