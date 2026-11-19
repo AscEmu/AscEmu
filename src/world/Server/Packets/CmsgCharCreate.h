@@ -10,7 +10,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <algorithm>
 #include <cstdint>
-#include <cstring>
 #include <utility>
 #include <vector>
 
@@ -72,41 +71,67 @@ namespace AscEmu::Packets
         }
 
     private:
-        static uint32_t readUInt32LE(const uint8_t* data)
-        {
-            uint32_t value = 0;
-            std::memcpy(&value, data, sizeof(value));
-            return value;
-        }
-
         bool deserialiseForever(WorldPacket& packet)
         {
-            constexpr size_t FixedPrefix = 18U;
-            const uint8_t* payload = packet.contents();
-            const size_t payloadSize = packet.size();
-
-            if (payload == nullptr || payloadSize < FixedPrefix)
+            // Forever 1.60.1 current character-create layout.
+            // The first 18 bits contain string lengths / flags, followed by the
+            // byte-aligned character data, strings, optional template set and
+            // customization choices.
+            if (packet.size() < 18U)
                 return false;
 
-            createStruct._race = payload[3];
-            createStruct._class = payload[4];
-            createStruct.gender = payload[5];
-            const uint32_t customizationCount = readUInt32LE(payload + 6);
-            timerunningSeasonId = readUInt32LE(payload + 10);
-            templateSet = readUInt32LE(payload + 14);
+            const uint32_t nameLength = packet.readBits(6);
+            const bool hasTemplateSet = packet.readBit();
+            packet.readBit(); // IsTrialBoost
+            packet.readBit(); // UseNPE
+            packet.readBit(); // HardcoreSelfFound
+            packet.readBits(2); // Unknown
+            const uint32_t surnameLength = packet.readBits(6);
+
+            if (nameLength == 0U || nameLength > 63U || surnameLength > 63U)
+                return false;
+
+            // 18 bits consume exactly three bytes. Primitive reads continue at
+            // the next byte because ByteBuffer::readBit() already advanced rpos().
+            if (packet.remaining() < 15U)
+                return false;
+
+            packet >> createStruct._race;
+            packet >> createStruct._class;
+            packet >> createStruct.gender;
+
+            uint32_t customizationCount = 0;
+            packet >> customizationCount;
+
+            int32_t unknown = 0;
+            packet >> unknown;
+            (void)unknown;
+
+            packet >> timerunningSeasonId;
 
             if (customizationCount > 250U)
                 return false;
 
-            const size_t customizationBytes = static_cast<size_t>(customizationCount) * 8U;
-            if (payloadSize < FixedPrefix + customizationBytes)
+            const size_t requiredTail =
+                static_cast<size_t>(nameLength) +
+                static_cast<size_t>(surnameLength) +
+                (hasTemplateSet ? sizeof(uint32_t) : 0U) +
+                static_cast<size_t>(customizationCount) * 8U;
+
+            if (packet.remaining() < requiredTail)
                 return false;
 
-            const size_t nameLength = payloadSize - FixedPrefix - customizationBytes;
-            if (nameLength == 0U || nameLength > 63U)
-                return false;
+            createStruct.name = packet.readString(nameLength);
 
-            createStruct.name.assign(reinterpret_cast<const char*>(payload + FixedPrefix), nameLength);
+            // AscEmu does not persist character surnames yet, but the bytes must
+            // still be consumed to keep the remainder of the request aligned.
+            if (surnameLength != 0U)
+                packet.readString(surnameLength);
+
+            templateSet = 0U;
+            if (hasTemplateSet)
+                packet >> templateSet;
+
             createStruct.skin = 0;
             createStruct.face = 0;
             createStruct.hairStyle = 0;
@@ -117,18 +142,22 @@ namespace AscEmu::Packets
             customizations.clear();
             customizations.reserve(customizationCount);
 
-            const uint8_t* customizationData = payload + FixedPrefix + nameLength;
             for (uint32_t i = 0; i < customizationCount; ++i)
             {
                 CharacterCustomizationChoice customization;
-                customization.optionId = readUInt32LE(customizationData + static_cast<size_t>(i) * 8U);
-                customization.choiceId = readUInt32LE(customizationData + static_cast<size_t>(i) * 8U + 4U);
+                packet >> customization.optionId;
+                packet >> customization.choiceId;
                 customizations.emplace_back(customization);
             }
 
-            std::sort(customizations.begin(), customizations.end(), [](const CharacterCustomizationChoice& left, const CharacterCustomizationChoice& right) { return left.optionId < right.optionId; });
-            packet.rfinish();
-            return true;
+            std::sort(customizations.begin(), customizations.end(),
+                [](const CharacterCustomizationChoice& left, const CharacterCustomizationChoice& right)
+                {
+                    return left.optionId < right.optionId;
+                });
+
+            return !packet.hadReadFailure();
         }
+
     };
 }
