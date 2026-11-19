@@ -714,7 +714,7 @@ void WorldSession::handleReforgeItemOpcode([[maybe_unused]] WorldPacket& recvDat
         return;
     }
 
-    if (!item->getReforgableStat(ItemModType(stats->SourceStat)) || item->getReforgableStat(ItemModType(stats->FinalStat))) // Cheating, you cant reforge to a stat that the item already has, nor reforge from a stat that the item does not have
+    if (!item->getReforgableStat(ItemModType(stats->sourceStat)) || item->getReforgableStat(ItemModType(stats->finalStat))) // Cheating, you cant reforge to a stat that the item already has, nor reforge from a stat that the item does not have
     {
         sendReforgeResult(false);
         return;

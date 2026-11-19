@@ -507,6 +507,17 @@ namespace WDB
     {};
 
     template <>
+    struct DbcTraits<Structures::ItemReforgeEntry> :
+        DbcVersionLayouts<
+            UnsupportedVersion,
+            UnsupportedVersion,
+            UnsupportedVersion,
+            Structures::Raw::ItemReforgeEntryCata,
+            UnsupportedVersion>,
+        StandardDbcFile<"ItemReforge">
+    {};
+
+    template <>
     struct DbcTraits<Structures::ItemSetEntry> :
         DbcVersionLayouts<
             Structures::Raw::ItemSetEntryClassic,

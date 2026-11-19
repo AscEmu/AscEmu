@@ -640,6 +640,15 @@ namespace WDB::Structures
         std::array<uint32_t, 5> prefixes{};
     };
 
+    struct ItemReforgeEntry
+    {
+        uint32_t id{0};
+        uint32_t sourceStat{0};
+        float sourceMultiplier{0.0f};
+        uint32_t finalStat{0};
+        float finalMultiplier{0.0f};
+    };
+
     struct ItemSetEntry
     {
         uint32_t id = 0;
@@ -1520,17 +1529,6 @@ namespace WDB::Structures
         char* name_suffix[NAME_PATTERN];                            // 7-22
         //uint32_t name_suffix_flags;                               // 23
     };
-
-#if VERSION_STRING == Cata
-    struct ItemReforgeEntry
-    {
-        uint32_t Id;
-        uint32_t SourceStat;
-        float SourceMultiplier;
-        uint32_t FinalStat;
-        float FinalMultiplier;
-    };
-#endif
 
     struct LFGDungeonEntry
     {

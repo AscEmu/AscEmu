@@ -156,10 +156,6 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellTotemsEntry> sSpellTotemsSto
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::TalentTreePrimarySpells> sTalentTreePrimarySpellsStore;
 
-#ifdef AE_CATA
-SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemReforgeEntry> sItemReforgeStore;
-#endif
-
 SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetSpeciesEntry> sBattlePetSpeciesStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetBreedStateEntry> sBattlePetBreedStateStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::BattlePetSpeciesStateEntry> sBattlePetSpeciesStateStore;
@@ -1636,9 +1632,17 @@ bool loadDBCs()
         }
     );
 
-#ifdef AE_CATA
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemReforgeStore, dbc_path, "ItemReforge.dbc");
-#endif
+    WDB::loadUnifiedWDBStore<WDB::Structures::ItemReforgeEntry>(
+        bad_dbc_files, sItemReforgeStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::ItemReforgeEntry& entry)
+        {
+            entry.id = raw.id;
+            entry.sourceStat = raw.sourceStat;
+            entry.sourceMultiplier = raw.sourceMultiplier;
+            entry.finalStat = raw.finalStat;
+            entry.finalMultiplier = raw.finalMultiplier;
+        }
+    );
 
     WDB::loadUnifiedWDBStore<WDB::Structures::SpellMiscEntry>(
         bad_dbc_files, sSpellMiscStore, dbc_path,

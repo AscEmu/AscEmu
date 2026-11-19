@@ -96,10 +96,6 @@ namespace WDB::Structures
     struct SpellReagentsEntry;
 #endif
 
-#ifdef AE_CATA
-    struct ItemReforgeEntry;
-#endif
-
 #if VERSION_STRING >= Mop
     struct BattlePetSpeciesEntry;
     struct BattlePetBreedStateEntry;
@@ -292,9 +288,7 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellTotemsEntry> sSpellTo
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::TalentTreePrimarySpells> sTalentTreePrimarySpellsStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellReagentsEntry> sSpellReagentsStore;
 
-#ifdef AE_CATA
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemReforgeEntry> sItemReforgeStore;
-#endif
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemReforgeEntry> sItemReforgeStore;
 
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::SpellMiscEntry> sSpellMiscStore;
 

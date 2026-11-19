@@ -10351,221 +10351,66 @@ void Player::setVisibleItemFields(uint32_t slot, Item* item)
     }
 }
 
-#if VERSION_STRING == Cata
 void Player::applyReforgeEnchantment(Item* item, bool apply)
 {
-    if (!item)
+    // Reforge is only available in Cataclysm and later expansions
+    if (!WoW::isServerExpansion(WoW::Expansion::_Cata) || item == nullptr) // TODO: Add MoP
         return;
 
-    WDB::Structures::ItemReforgeEntry const* reforge = sItemReforgeStore.lookupEntry(item->getEnchantmentId(REFORGE_ENCHANTMENT_SLOT));
-    if (!reforge)
+    const auto* reforge = sItemReforgeStore.lookupEntry(item->getEnchantmentId(REFORGE_ENCHANTMENT_SLOT));
+    if (reforge == nullptr)
         return;
 
-    auto removeValue = static_cast<int32_t>(item->getReforgableStat(ItemModType(reforge->SourceStat)) * reforge->SourceMultiplier);
-    auto addValue = static_cast<int32_t>(removeValue * reforge->FinalMultiplier);
+    auto removeValue = static_cast<int32_t>(item->getReforgableStat(ItemModType(reforge->sourceStat)) * reforge->sourceMultiplier);
+    auto addValue = static_cast<int32_t>(removeValue * reforge->finalMultiplier);
 
-    switch (reforge->SourceStat)
+    auto applyStatModifier = [this, apply](uint32_t stat, int32_t value)
     {
-    case ITEM_MOD_MANA:
-        modifyBonuses(ITEM_MOD_MANA, -removeValue, apply);
-        break;
-    case ITEM_MOD_HEALTH:
-        modifyBonuses(ITEM_MOD_HEALTH, -removeValue, apply);
-        break;
-    case ITEM_MOD_AGILITY:
-        modifyBonuses(ITEM_MOD_AGILITY, -removeValue, apply);
-        break;
-    case ITEM_MOD_STRENGTH:
-        modifyBonuses(ITEM_MOD_STRENGTH, -removeValue, apply);
-        break;
-    case ITEM_MOD_INTELLECT:
-        modifyBonuses(ITEM_MOD_INTELLECT, -removeValue, apply);
-        break;
-    case ITEM_MOD_SPIRIT:
-        modifyBonuses(ITEM_MOD_SPIRIT, -removeValue, apply);
-        break;
-    case ITEM_MOD_STAMINA:
-        modifyBonuses(ITEM_MOD_STAMINA, -removeValue, apply);
-        break;
-    case ITEM_MOD_DEFENSE_RATING:
-        modifyBonuses(ITEM_MOD_DEFENSE_RATING, -removeValue, apply);
-        break;
-    case  ITEM_MOD_DODGE_RATING:
-        modifyBonuses(ITEM_MOD_DODGE_RATING, -removeValue, apply);
-        break;
-    case ITEM_MOD_PARRY_RATING:
-        modifyBonuses(ITEM_MOD_PARRY_RATING, -removeValue, apply);
-        break;
-    case ITEM_MOD_SHIELD_BLOCK_RATING:
-        modifyBonuses(ITEM_MOD_SHIELD_BLOCK_RATING, -removeValue, apply);
-        break;
-    case ITEM_MOD_MELEE_HIT_RATING:
-        modifyBonuses(ITEM_MOD_MELEE_HIT_RATING, -removeValue, apply);
-        break;
-    case ITEM_MOD_RANGED_HIT_RATING:
-        modifyBonuses(ITEM_MOD_RANGED_HIT_RATING, -removeValue, apply);
-        break;
-    case ITEM_MOD_SPELL_HIT_RATING:
-        modifyBonuses(ITEM_MOD_SPELL_HIT_RATING, -removeValue, apply);
-        break;
-    case ITEM_MOD_MELEE_CRITICAL_STRIKE_RATING:
-        modifyBonuses(ITEM_MOD_MELEE_CRITICAL_STRIKE_RATING, -removeValue, apply);
-        break;
-    case ITEM_MOD_RANGED_CRITICAL_STRIKE_RATING:
-        modifyBonuses(ITEM_MOD_RANGED_CRITICAL_STRIKE_RATING, -removeValue, apply);
-        break;
-    case ITEM_MOD_SPELL_CRITICAL_STRIKE_RATING:
-        modifyBonuses(ITEM_MOD_SPELL_CRITICAL_STRIKE_RATING, -removeValue, apply);
-        break;
-    case ITEM_MOD_SPELL_HASTE_RATING:
-        modifyBonuses(ITEM_MOD_SPELL_HASTE_RATING, -removeValue, apply);
-        break;
-    case ITEM_MOD_HIT_RATING:
-        modifyBonuses(ITEM_MOD_HIT_RATING, -removeValue, apply);
-        break;
-    case ITEM_MOD_CRITICAL_STRIKE_RATING:
-        modifyBonuses(ITEM_MOD_CRITICAL_STRIKE_RATING, -removeValue, apply);
-        break;
-    case ITEM_MOD_RESILIENCE_RATING:
-        modifyBonuses(ITEM_MOD_RESILIENCE_RATING, -removeValue, apply);
-        break;
-    case ITEM_MOD_HASTE_RATING:
-        modifyBonuses(ITEM_MOD_HASTE_RATING, -removeValue, apply);
-        break;
-    case ITEM_MOD_EXPERTISE_RATING:
-        modifyBonuses(ITEM_MOD_EXPERTISE_RATING, -removeValue, apply);
-        break;
-    case ITEM_MOD_ATTACK_POWER:
-        modifyBonuses(ITEM_MOD_ATTACK_POWER, -removeValue, apply);
-        break;
-    case ITEM_MOD_RANGED_ATTACK_POWER:
-        modifyBonuses(ITEM_MOD_RANGED_ATTACK_POWER, -removeValue, apply);
-        break;
-    case ITEM_MOD_MANA_REGENERATION:
-        modifyBonuses(ITEM_MOD_MANA_REGENERATION , -removeValue, apply);
-        break;
-    case ITEM_MOD_ARMOR_PENETRATION_RATING:
-        modifyBonuses(ITEM_MOD_ARMOR_PENETRATION_RATING, -removeValue, apply);
-        break;
-    case ITEM_MOD_SPELL_POWER:
-        modifyBonuses(ITEM_MOD_SPELL_POWER , -removeValue, apply);
-        break;
-    /*case ITEM_MOD_HEALTH_REGEN:   // todo dunno where these are handled
-        -int32_t(removeValue)
-        break;
-    case ITEM_MOD_SPELL_PENETRATION:
-        -int32_t(removeValue)
-        break;
-    case ITEM_MOD_BLOCK_VALUE:
-        -removeValue
-        break;*/
-    }
+        switch (stat)
+        {
+            case ITEM_MOD_MANA:
+            case ITEM_MOD_HEALTH:
+            case ITEM_MOD_AGILITY:
+            case ITEM_MOD_STRENGTH:
+            case ITEM_MOD_INTELLECT:
+            case ITEM_MOD_SPIRIT:
+            case ITEM_MOD_STAMINA:
+            case ITEM_MOD_DEFENSE_RATING:
+            case ITEM_MOD_DODGE_RATING:
+            case ITEM_MOD_PARRY_RATING:
+            case ITEM_MOD_SHIELD_BLOCK_RATING:
+            case ITEM_MOD_MELEE_HIT_RATING:
+            case ITEM_MOD_RANGED_HIT_RATING:
+            case ITEM_MOD_SPELL_HIT_RATING:
+            case ITEM_MOD_MELEE_CRITICAL_STRIKE_RATING:
+            case ITEM_MOD_RANGED_CRITICAL_STRIKE_RATING:
+            case ITEM_MOD_SPELL_CRITICAL_STRIKE_RATING:
+            case ITEM_MOD_SPELL_HASTE_RATING:
+            case ITEM_MOD_HIT_RATING:
+            case ITEM_MOD_CRITICAL_STRIKE_RATING:
+            case ITEM_MOD_RESILIENCE_RATING:
+            case ITEM_MOD_HASTE_RATING:
+            case ITEM_MOD_EXPERTISE_RATING:
+            case ITEM_MOD_ATTACK_POWER:
+            case ITEM_MOD_RANGED_ATTACK_POWER:
+            case ITEM_MOD_MANA_REGENERATION:
+            case ITEM_MOD_ARMOR_PENETRATION_RATING:
+            case ITEM_MOD_SPELL_POWER:
+                modifyBonuses(static_cast<ItemModType>(stat), value, apply);
+                break;
+            default:
+                break;
+        }
+    };
 
-    switch (reforge->FinalStat)
-    {
-    case ITEM_MOD_MANA:
-        modifyBonuses(ITEM_MOD_MANA, addValue, apply);
-        break;
-    case ITEM_MOD_HEALTH:
-        modifyBonuses(ITEM_MOD_HEALTH, addValue, apply);
-        break;
-    case ITEM_MOD_AGILITY:
-        modifyBonuses(ITEM_MOD_AGILITY, addValue, apply);
-        break;
-    case ITEM_MOD_STRENGTH:
-        modifyBonuses(ITEM_MOD_STRENGTH, addValue, apply);
-        break;
-    case ITEM_MOD_INTELLECT:
-        modifyBonuses(ITEM_MOD_INTELLECT, addValue, apply);
-        break;
-    case ITEM_MOD_SPIRIT:
-        modifyBonuses(ITEM_MOD_SPIRIT, addValue, apply);
-        break;
-    case ITEM_MOD_STAMINA:
-        modifyBonuses(ITEM_MOD_STAMINA, addValue, apply);
-        break;
-    case ITEM_MOD_DEFENSE_RATING:
-        modifyBonuses(ITEM_MOD_DEFENSE_RATING, addValue, apply);
-        break;
-    case  ITEM_MOD_DODGE_RATING:
-        modifyBonuses(ITEM_MOD_DODGE_RATING, addValue, apply);
-        break;
-    case ITEM_MOD_PARRY_RATING:
-        modifyBonuses(ITEM_MOD_PARRY_RATING, addValue, apply);
-        break;
-    case ITEM_MOD_SHIELD_BLOCK_RATING:
-        modifyBonuses(ITEM_MOD_SHIELD_BLOCK_RATING, addValue, apply);
-        break;
-    case ITEM_MOD_MELEE_HIT_RATING:
-        modifyBonuses(ITEM_MOD_MELEE_HIT_RATING, addValue, apply);
-        break;
-    case ITEM_MOD_RANGED_HIT_RATING:
-        modifyBonuses(ITEM_MOD_RANGED_HIT_RATING, addValue, apply);
-        break;
-    case ITEM_MOD_SPELL_HIT_RATING:
-        modifyBonuses(ITEM_MOD_SPELL_HIT_RATING, addValue, apply);
-        break;
-    case ITEM_MOD_MELEE_CRITICAL_STRIKE_RATING:
-        modifyBonuses(ITEM_MOD_MELEE_CRITICAL_STRIKE_RATING, addValue, apply);
-        break;
-    case ITEM_MOD_RANGED_CRITICAL_STRIKE_RATING:
-        modifyBonuses(ITEM_MOD_RANGED_CRITICAL_STRIKE_RATING, addValue, apply);
-        break;
-    case ITEM_MOD_SPELL_CRITICAL_STRIKE_RATING:
-        modifyBonuses(ITEM_MOD_SPELL_CRITICAL_STRIKE_RATING, addValue, apply);
-        break;
-    case ITEM_MOD_SPELL_HASTE_RATING:
-        modifyBonuses(ITEM_MOD_SPELL_HASTE_RATING, addValue, apply);
-        break;
-    case ITEM_MOD_HIT_RATING:
-        modifyBonuses(ITEM_MOD_HIT_RATING, addValue, apply);
-        break;
-    case ITEM_MOD_CRITICAL_STRIKE_RATING:
-        modifyBonuses(ITEM_MOD_CRITICAL_STRIKE_RATING, addValue, apply);
-        break;
-    case ITEM_MOD_RESILIENCE_RATING:
-        modifyBonuses(ITEM_MOD_RESILIENCE_RATING, addValue, apply);
-        break;
-    case ITEM_MOD_HASTE_RATING:
-        modifyBonuses(ITEM_MOD_HASTE_RATING, addValue, apply);
-        break;
-    case ITEM_MOD_EXPERTISE_RATING:
-        modifyBonuses(ITEM_MOD_EXPERTISE_RATING, addValue, apply);
-        break;
-    case ITEM_MOD_ATTACK_POWER:
-        modifyBonuses(ITEM_MOD_ATTACK_POWER, addValue, apply);
-        break;
-    case ITEM_MOD_RANGED_ATTACK_POWER:
-        modifyBonuses(ITEM_MOD_RANGED_ATTACK_POWER, addValue, apply);
-        break;
-    case ITEM_MOD_MANA_REGENERATION:
-        modifyBonuses(ITEM_MOD_MANA_REGENERATION, addValue, apply);
-        break;
-    case ITEM_MOD_ARMOR_PENETRATION_RATING:
-        modifyBonuses(CR_ARMOR_PENETRATION, addValue, apply);
-        break;
-    case ITEM_MOD_SPELL_POWER:
-        modifyBonuses(ITEM_MOD_SPELL_POWER, addValue, apply);
-        break;
-    /*case ITEM_MOD_HEALTH_REGEN:   // todo dunno where these are handled
-        int32_t(addValue)
-        break;
-    case ITEM_MOD_SPELL_PENETRATION:
-        int32_t(addValue)
-        break;
-    case ITEM_MOD_BLOCK_VALUE:
-        addValue
-        break;*/
-    }
+    // TODO: Handle other stats like health regen, spell penetration, block value, etc. if needed
+    // Check: ITEM_MOD_HEALTH_REGEN, ITEM_MOD_SPELL_PENETRATION, ITEM_MOD_BLOCK_VALUE:
+
+    applyStatModifier(reforge->sourceStat, -removeValue);
+    applyStatModifier(reforge->finalStat, addValue);
 
     updateStats();
 }
-#elif VERSION_STRING > Cata
-void Player::applyReforgeEnchantment(Item* /*item*/, bool /*apply*/)
-{
-    // TODO mop
-}
-#endif
 
 bool Player::isAtGroupRewardDistance(Object* pRewardSource)
 {

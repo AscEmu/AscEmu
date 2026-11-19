@@ -1945,9 +1945,7 @@ public:
     void sendRaidGroupOnly(uint32_t timeInMs, uint32_t type);
 
     void setVisibleItemFields(uint32_t slot, Item* item);
-#if VERSION_STRING >= Cata
     void applyReforgeEnchantment(Item* item, bool apply);
-#endif
 
     bool isAtGroupRewardDistance(Object* pRewardSource);
 

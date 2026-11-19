@@ -421,192 +421,160 @@ void Item::applyEnchantmentBonus(EnchantmentSlot slot, bool apply)
     if (m_owner == nullptr)
         return;
 
-    const auto enchantment = m_enchantments.find(slot);
-    if (enchantment == m_enchantments.end())
+    const auto it = m_enchantments.find(slot);
+    if (it == m_enchantments.end())
         return;
 
-    WDB::Structures::SpellItemEnchantmentEntry const* Entry = enchantment->second.Enchantment;
-    const uint32_t RandomSuffixAmount = enchantment->second.RandomSuffix;
-
-    if (enchantment->second.BonusApplied == apply)
+    auto& enchantment = it->second;
+    const auto* entry = enchantment.Enchantment;
+    if (entry == nullptr || enchantment.BonusApplied == apply)
         return;
 
-    enchantment->second.BonusApplied = apply;
+    enchantment.BonusApplied = apply;
 
     if (apply)
     {
-        if (const auto duration = getEnchantmentDuration(enchantment->second.Slot) / 1000)
-            sendEnchantTimeUpdate(enchantment->second.Slot, duration);
+        if (const auto duration = getEnchantmentDuration(enchantment.Slot) / 1000; duration != 0)
+            sendEnchantTimeUpdate(enchantment.Slot, duration);
     }
 
-    uint32_t itemSlot = m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid());
+    const uint32_t itemSlot = m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid());
     if (itemSlot < EQUIPMENT_SLOT_END)
     {
-#if VERSION_STRING >= WotLK
-        if (slot == PERM_ENCHANTMENT_SLOT || slot == TEMP_ENCHANTMENT_SLOT)
-#else
-        if (slot < MAX_INSPECTED_ENCHANTMENT_SLOT)
-#endif
-            m_owner->setVisibleItemEnchantment(itemSlot, slot, (apply ? static_cast<uint16_t>(Entry->id) : 0));
+        const bool isVisibleSlot = WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK)
+                                       ? (slot == PERM_ENCHANTMENT_SLOT || slot == TEMP_ENCHANTMENT_SLOT)
+                                       : (slot < MAX_INSPECTED_ENCHANTMENT_SLOT);
+
+        if (isVisibleSlot)
+            m_owner->setVisibleItemEnchantment(itemSlot, slot, apply ? static_cast<uint16_t>(entry->id) : 0);
     }
     else if (apply)
     {
         sLogger.failure("Item::applyEnchantmentBonus : Tried to apply visual enchantment but equipment slot {} is invalid", itemSlot);
     }
 
-#if VERSION_STRING >= Cata
-    if (slot == REFORGE_ENCHANTMENT_SLOT)
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata) && slot == REFORGE_ENCHANTMENT_SLOT)
         m_owner->applyReforgeEnchantment(this, apply);
-#endif
 
-    for (uint32_t c = 0; c < 3; c++)
+    const uint32_t randomSuffixAmount = enchantment.RandomSuffix;
+    const auto calcBonusValue = [this, randomSuffixAmount](int32_t baseValue) -> int32_t
     {
-        if (Entry->type[c])
+        if (randomSuffixAmount != 0)
+            return RANDOM_SUFFIX_MAGIC_CALCULATION(randomSuffixAmount, getPropertySeed());
+
+        return baseValue;
+    };
+
+    for (size_t c = 0; c < std::size(entry->type); ++c)
+    {
+        if (entry->type[c] == 0)
+            continue;
+
+        switch (entry->type[c])
         {
-            switch (Entry->type[c])
-            {
-                case ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL:
+            case ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL:
                 {
                     if (apply)
                     {
-                        if (Entry->spell[c] != 0)
+                        if (entry->spell[c] != 0)
                         {
-                            const auto procChance = Entry->min[c] == 0 ? Util::float2int32(static_cast<float>(getItemProperties()->Delay) * 0.001f / 60.0f * 100.0f) : Entry->min[c];
-                            switch (m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid()))
+                            const auto procChance = entry->min[c] == 0 ? Util::float2int32(static_cast<float>(getItemProperties()->Delay) * 0.001f / 60.0f * 100.0f) : entry->min[c];
+                            switch (itemSlot)
                             {
                                 case EQUIPMENT_SLOT_MAINHAND:
-                                    m_owner->addProcTriggerSpell(Entry->spell[c], 0, m_owner->getGuid(), procChance, static_cast<SpellProcFlags>(PROC_ON_DONE_MELEE_HIT | PROC_ON_DONE_MELEE_SPELL_HIT), EXTRA_PROC_ON_MAIN_HAND_HIT_ONLY, nullptr, nullptr, nullptr, this);
+                                    m_owner->addProcTriggerSpell(entry->spell[c], 0, m_owner->getGuid(), procChance, static_cast<SpellProcFlags>(PROC_ON_DONE_MELEE_HIT | PROC_ON_DONE_MELEE_SPELL_HIT), EXTRA_PROC_ON_MAIN_HAND_HIT_ONLY, nullptr, nullptr, nullptr, this);
                                     break;
                                 case EQUIPMENT_SLOT_OFFHAND:
-                                    m_owner->addProcTriggerSpell(Entry->spell[c], 0, m_owner->getGuid(), procChance, static_cast<SpellProcFlags>(PROC_ON_DONE_MELEE_HIT | PROC_ON_DONE_MELEE_SPELL_HIT | PROC_ON_DONE_OFFHAND_ATTACK), EXTRA_PROC_ON_OFF_HAND_HIT_ONLY, nullptr, nullptr, nullptr, this);
+                                    m_owner->addProcTriggerSpell(entry->spell[c], 0, m_owner->getGuid(), procChance, static_cast<SpellProcFlags>(PROC_ON_DONE_MELEE_HIT | PROC_ON_DONE_MELEE_SPELL_HIT | PROC_ON_DONE_OFFHAND_ATTACK), EXTRA_PROC_ON_OFF_HAND_HIT_ONLY, nullptr, nullptr, nullptr, this);
                                     break;
                                 case EQUIPMENT_SLOT_RANGED:
-                                    m_owner->addProcTriggerSpell(Entry->spell[c], 0, m_owner->getGuid(), procChance, static_cast<SpellProcFlags>(PROC_ON_DONE_RANGED_HIT | PROC_ON_DONE_RANGED_SPELL_HIT), EXTRA_PROC_NULL, nullptr, nullptr, nullptr, this);
+                                    m_owner->addProcTriggerSpell(entry->spell[c], 0, m_owner->getGuid(), procChance, static_cast<SpellProcFlags>(PROC_ON_DONE_RANGED_HIT | PROC_ON_DONE_RANGED_SPELL_HIT), EXTRA_PROC_NULL, nullptr, nullptr, nullptr, this);
                                     break;
                                 default:
-                                    m_owner->addProcTriggerSpell(Entry->spell[c], 0, m_owner->getGuid(), procChance, static_cast<SpellProcFlags>(PROC_ON_DONE_MELEE_HIT | PROC_ON_DONE_MELEE_SPELL_HIT), EXTRA_PROC_NULL, nullptr, nullptr, nullptr, this);
+                                    m_owner->addProcTriggerSpell(entry->spell[c], 0, m_owner->getGuid(), procChance, static_cast<SpellProcFlags>(PROC_ON_DONE_MELEE_HIT | PROC_ON_DONE_MELEE_SPELL_HIT), EXTRA_PROC_NULL, nullptr, nullptr, nullptr, this);
                                     break;
                             }
                         }
                     }
                     else
                     {
-                        m_owner->removeProcTriggerSpell(Entry->spell[c], m_owner->getGuid(), getGuid());
+                        m_owner->removeProcTriggerSpell(entry->spell[c], m_owner->getGuid(), getGuid());
                     }
+                    break;
                 }
-                break;
 
-                case ITEM_ENCHANTMENT_TYPE_DAMAGE:
+            case ITEM_ENCHANTMENT_TYPE_DAMAGE:
                 {
-                    int32_t val = Entry->min[c];
-                    if (RandomSuffixAmount)
-                        val = RANDOM_SUFFIX_MAGIC_CALCULATION(RandomSuffixAmount, getPropertySeed());
-
-                    if (apply)
-                        m_owner->modModDamageDonePositive(SCHOOL_NORMAL, val);
-                    else
-                        m_owner->modModDamageDonePositive(SCHOOL_NORMAL, -val);
-
+                    const int32_t val = calcBonusValue(entry->min[c]);
+                    m_owner->modModDamageDonePositive(SCHOOL_NORMAL, apply ? val : -val);
                     m_owner->calculateDamage();
+                    break;
                 }
-                break;
 
-                case ITEM_ENCHANTMENT_TYPE_EQUIP_SPELL:
+            case ITEM_ENCHANTMENT_TYPE_EQUIP_SPELL:
                 {
+                    if (entry->spell[c] == 0)
+                        break;
+
                     if (apply)
                     {
+                        SpellInfo const* sp = sSpellMgr.getSpellInfo(entry->spell[c]);
+                        if (sp == nullptr)
+                            continue;
+
                         SpellCastTargets targets(m_owner->getGuid());
-
-                        if (Entry->spell[c] != 0)
-                        {
-                            SpellInfo const* sp = sSpellMgr.getSpellInfo(Entry->spell[c]);
-                            if (sp == nullptr)
-                                continue;
-
-                            Spell* spell = sSpellMgr.newSpell(m_owner, sp, true, nullptr);
-                            spell->setItemCaster(this);
-                            spell->prepare(&targets);
-                        }
+                        Spell* spell = sSpellMgr.newSpell(m_owner, sp, true, nullptr);
+                        spell->setItemCaster(this);
+                        spell->prepare(&targets);
                     }
                     else
                     {
-                        if (Entry->spell[c] != 0)
-                            m_owner->removeAuraByItemGuid(Entry->spell[c], getGuid());
+                        m_owner->removeAuraByItemGuid(entry->spell[c], getGuid());
                     }
+                    break;
                 }
-                break;
 
-                case ITEM_ENCHANTMENT_TYPE_RESISTANCE:
+            case ITEM_ENCHANTMENT_TYPE_RESISTANCE:
                 {
-                    int32_t val = Entry->min[c];
-                    if (RandomSuffixAmount)
-                        val = RANDOM_SUFFIX_MAGIC_CALCULATION(RandomSuffixAmount, getPropertySeed());
-
-                    if (apply)
-                        m_owner->m_flatResistanceModifierPos[Entry->spell[c]] += val;
-                    else
-                        m_owner->m_flatResistanceModifierPos[Entry->spell[c]] -= val;
-
-                    m_owner->calcResistance(static_cast<uint8_t>(Entry->spell[c]));
+                    const int32_t val = calcBonusValue(entry->min[c]);
+                    m_owner->m_flatResistanceModifierPos[entry->spell[c]] += apply ? val : -val;
+                    m_owner->calcResistance(static_cast<uint8_t>(entry->spell[c]));
+                    break;
                 }
-                break;
 
-                case ITEM_ENCHANTMENT_TYPE_STAT:
+            case ITEM_ENCHANTMENT_TYPE_STAT:
                 {
-                    int32_t val = Entry->min[c];
-                    if (RandomSuffixAmount)
-                        val = RANDOM_SUFFIX_MAGIC_CALCULATION(RandomSuffixAmount, getPropertySeed());
-
-                    m_owner->modifyBonuses(Entry->spell[c], val, apply);
+                    const int32_t val = calcBonusValue(entry->min[c]);
+                    m_owner->modifyBonuses(entry->spell[c], val, apply);
                     m_owner->updateStats();
+                    break;
                 }
-                break;
 
-                case ITEM_ENCHANTMENT_TYPE_TOTEM:
+            case ITEM_ENCHANTMENT_TYPE_TOTEM:
                 {
-                    if (apply)
-                    {
-                        int32_t val = Entry->min[c];
-                        if (RandomSuffixAmount)
-                            val = RANDOM_SUFFIX_MAGIC_CALCULATION(RandomSuffixAmount, getPropertySeed());
-
-                        int32_t value = static_cast<int32_t>(getItemProperties()->Delay) * val / 1000;
-                        m_owner->modModDamageDonePositive(SCHOOL_NORMAL, value);
-                    }
-                    else
-                    {
-                        int32_t val = Entry->min[c];
-                        if (RandomSuffixAmount)
-                            val = RANDOM_SUFFIX_MAGIC_CALCULATION(RandomSuffixAmount, getPropertySeed());
-
-                        int32_t value = -static_cast<int32_t>(getItemProperties()->Delay * val / 1000);
-                        m_owner->modModDamageDonePositive(SCHOOL_NORMAL, value);
-                    }
+                    const int32_t val = calcBonusValue(entry->min[c]);
+                    const int32_t value = static_cast<int32_t>(getItemProperties()->Delay) * val / 1000;
+                    m_owner->modModDamageDonePositive(SCHOOL_NORMAL, apply ? value : -value);
                     m_owner->calculateDamage();
+                    break;
                 }
+
+
+            case ITEM_ENCHANTMENT_TYPE_USE_SPELL:
+                {
+                    for (size_t i = 0; i < 3; ++i)
+                        m_onUseSpellIds[i] = apply ? entry->spell[i] : 0;
+                    break;
+                }
+
+            case ITEM_ENCHANTMENT_TYPE_PRISMATIC_SOCKET:
+                {
+                    break;
+                }
+
+            default:
+                sLogger.failure("Unknown enchantment type: {} ({})", entry->type[c], entry->id);
                 break;
-
-                case ITEM_ENCHANTMENT_TYPE_USE_SPELL:
-                {
-                    for (uint8_t i = 0; i < 3; ++i)
-                    {
-                        if (apply)
-                            m_onUseSpellIds[i] = Entry->spell[i];
-                        else
-                            m_onUseSpellIds[i] = 0;
-                    }
-                    break;
-                }
-
-                case ITEM_ENCHANTMENT_TYPE_PRISMATIC_SOCKET:
-                {
-                    break;
-                }
-
-                default:
-                    sLogger.failure("Unknown enchantment type: {} ({})", Entry->type[c], Entry->id);
-                    break;
-                }
         }
     }
 }

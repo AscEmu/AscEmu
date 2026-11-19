@@ -918,6 +918,15 @@ namespace WDB::Structures::Raw
         uint32_t prefixes[5];
     };
 
+    struct ItemReforgeEntryCata
+    {
+        uint32_t id;
+        uint32_t sourceStat;
+        float sourceMultiplier;
+        uint32_t finalStat;
+        float finalMultiplier;
+    };
+
     struct ItemSetEntryClassic
     {
         uint32_t id;
