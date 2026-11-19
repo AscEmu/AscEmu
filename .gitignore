@@ -49,3 +49,4 @@ CMakeUserPresets.json
 
 # Local ReSharper user settings
 *.DotSettings.user
+/dep/launcher
