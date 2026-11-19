@@ -574,6 +574,23 @@ namespace WDB::Structures
         uint32_t socketMask{0};
     };
 
+    constexpr uint32_t MAX_HOLIDAY_DURATIONS = 10;
+    constexpr uint32_t MAX_HOLIDAY_DATES = 26;
+    constexpr uint32_t MAX_HOLIDAY_FLAGS = 10;
+
+    struct HolidaysEntry
+    {
+        uint32_t id = 0;
+        std::array<uint32_t, MAX_HOLIDAY_DURATIONS> duration{};
+        std::array<uint32_t, MAX_HOLIDAY_DATES> date{};
+        uint32_t region = 0;
+        uint32_t looping = 0;
+        std::array<uint32_t, MAX_HOLIDAY_FLAGS> calendarFlags{};
+        char const* textureFilename = "";
+        uint32_t priority = 0;
+        uint32_t calendarFilterType = 0;
+    };
+
     struct ItemDisplayInfoEntry
     {
         uint32_t id = 0;
@@ -1477,28 +1494,6 @@ namespace WDB::Structures
         //uint32_t Id;                                              // 0
         uint32_t Level;                                             // 1
         uint32_t SpellId;                                           // 2
-    };
-
-#define MAX_HOLIDAY_DURATIONS 10
-#define MAX_HOLIDAY_DATES 26
-#define MAX_HOLIDAY_FLAGS 10
-
-    struct HolidaysEntry
-    {
-        uint32_t Id;                                                // 0
-#if VERSION_STRING <= Cata
-        uint32_t Duration[MAX_HOLIDAY_DURATIONS];                   // 1-10
-        uint32_t Date[MAX_HOLIDAY_DATES];                           // 11-36
-        uint32_t Region;                                            // 37
-        uint32_t Looping;                                           // 38
-        uint32_t CalendarFlags[MAX_HOLIDAY_FLAGS];                  // 39-48
-        //uint32_t holidayNameId;                                   // 49 HolidayNames.dbc
-        //uint32_t holidayDescriptionId;                            // 50 HolidayDescriptions.dbc
-        char* TextureFilename;                                      // 51
-        uint32_t Priority;                                          // 52
-        uint32_t CalendarFilterType;                                // 53
-        //uint32_t flags;                                           // 54
-#endif
     };
 
     struct ItemCurrencyCostEntry

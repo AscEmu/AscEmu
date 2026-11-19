@@ -429,6 +429,17 @@ namespace WDB
     {};
 
     template <>
+    struct DbcTraits<Structures::HolidaysEntry> :
+        DbcVersionLayouts<
+            UnsupportedVersion,
+            UnsupportedVersion,
+            Structures::Raw::HolidaysEntryWotlkCata,
+            Structures::Raw::HolidaysEntryWotlkCata,
+            Structures::Raw::HolidaysEntryMop>,
+        StandardDbcFile<"Holidays">
+    {};
+
+    template <>
     struct DbcTraits<Structures::ItemDisplayInfoEntry> :
         DbcVersionLayouts<
             UnsupportedVersion,

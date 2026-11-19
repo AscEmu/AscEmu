@@ -793,6 +793,24 @@ namespace WDB::Structures::Raw
         uint32_t socketMask;
     };
 
+    struct HolidaysEntryWotlkCata
+    {
+        uint32_t id;
+        uint32_t duration[MAX_HOLIDAY_DURATIONS];
+        uint32_t date[MAX_HOLIDAY_DATES];
+        uint32_t region;
+        uint32_t looping;
+        uint32_t calendarFlags[MAX_HOLIDAY_FLAGS];
+        char const* textureFilename;
+        uint32_t priority;
+        uint32_t calendarFilterType;
+    };
+
+    struct HolidaysEntryMop
+    {
+        uint32_t id;
+    };
+
     struct ItemDisplayInfoEntryTbc
     {
         uint32_t id;

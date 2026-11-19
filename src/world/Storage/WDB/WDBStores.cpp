@@ -110,8 +110,6 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::TransportRotationEntry> sTranspor
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GlyphSlotEntry> sGlyphSlotStore;
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GtBarberShopCostBaseEntry> sBarberShopCostBaseStore;
 
-SERVER_DECL WDB::WDBContainer<WDB::Structures::HolidaysEntry> sHolidaysStore;
-
 SERVER_DECL WDB::WDBContainer<WDB::Structures::QuestXP> sQuestXPStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ScalingStatDistributionEntry> sScalingStatDistributionStore;
@@ -1847,13 +1845,31 @@ bool loadDBCs()
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // Load multi version specific dbcs available since WotLK
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::HolidaysEntry>(
+        bad_dbc_files, sHolidaysStore, dbc_path,
+        []<typename RawType>(const RawType& raw, WDB::Structures::HolidaysEntry& entry) {
+            entry.id = raw.id;
+
+            if constexpr (requires { raw.duration; }) {
+                std::ranges::copy(raw.duration, entry.duration.begin());
+                std::ranges::copy(raw.date, entry.date.begin());
+                entry.region = raw.region;
+                entry.looping = raw.looping;
+                std::ranges::copy(raw.calendarFlags, entry.calendarFlags.begin());
+                entry.textureFilename = raw.textureFilename;
+                entry.priority = raw.priority;
+                entry.calendarFilterType = raw.calendarFilterType;
+            }
+        }
+    );
+
 #if VERSION_STRING >= WotLK
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sDungeonEncounterStore, dbc_path, "DungeonEncounter.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sTransportRotationStore, dbc_path, "TransportRotation.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGlyphPropertiesStore, dbc_path, "GlyphProperties.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGlyphSlotStore, dbc_path, "GlyphSlot.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sBarberShopCostBaseStore, dbc_path, "gtBarberShopCostBase.dbc");
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sHolidaysStore, dbc_path, "Holidays.dbc");
     
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sQuestXPStore, dbc_path, "QuestXP.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sScalingStatDistributionStore, dbc_path, "ScalingStatDistribution.dbc");

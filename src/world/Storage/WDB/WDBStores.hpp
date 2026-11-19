@@ -62,7 +62,6 @@ namespace WDB::Structures
     struct GlyphPropertiesEntry;
     struct GlyphSlotEntry;
     struct GtBarberShopCostBaseEntry;
-    struct HolidaysEntry;
     struct QuestXP;
     struct ScalingStatDistributionEntry;
     struct ScalingStatValuesEntry;
@@ -247,7 +246,7 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::DungeonEncounterEntry> sDu
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::TransportRotationEntry> sTransportRotationStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GlyphSlotEntry> sGlyphSlotStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtBarberShopCostBaseEntry> sBarberShopCostBaseStore;
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::HolidaysEntry> sHolidaysStore;
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::HolidaysEntry> sHolidaysStore;
 
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::QuestXP> sQuestXPStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ScalingStatDistributionEntry> sScalingStatDistributionStore;

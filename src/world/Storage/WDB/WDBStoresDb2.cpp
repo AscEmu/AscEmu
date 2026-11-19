@@ -688,9 +688,9 @@ namespace
             entry.map = row.i16(9);
             entry.difficulty = row.i16(10);
             entry.flags = row.i32(32, 0);
-            entry.type = row.u8(2);             // TypeID
-            entry.expansion = row.u8(8);        // ExpansionLevel
-            entry.grouptype = row.u8(12);       // GroupID
+            entry.type = row.u8(2); // TypeID
+            entry.expansion = row.u8(8); // ExpansionLevel
+            entry.grouptype = row.u8(12); // GroupID
             if (const auto itLevels = tuningLevels.find(row.u32(31)); itLevels != tuningLevels.end())
             {
                 entry.minlevel = itLevels->second.first;
@@ -756,14 +756,14 @@ namespace
             entry.departureEventId = row.i32(8);
         });
 
-        fillContainer(sHolidaysStore, holidays, [](WDB::Structures::HolidaysEntry& entry, Row const& row)
+        fillStore(sHolidaysStore, holidays, [](WDB::Structures::HolidaysEntry& entry, Row const& row)
         {
-            entry.Id = row.id();
+            entry.id = row.id();
         });
 
         sLogger.info("DB2: world stores ready (maps={}, mapDifficulties={}, areas={}, areaTriggers={}, taxiNodes={}, taxiPaths={}).",
-            sMapStore.getNumRows(), sMapDifficultyStore.getNumRows(), sAreaStore.getNumRows(), sAreaTriggerStore.getNumRows(),
-            taxiNodes.getRecordCount(), taxiPath.getRecordCount());
+                     sMapStore.getNumRows(), sMapDifficultyStore.getNumRows(), sAreaStore.getNumRows(), sAreaTriggerStore.getNumRows(),
+                     taxiNodes.getRecordCount(), taxiPath.getRecordCount());
         return sMapStore.lookupEntry(0) != nullptr;
     }
 
@@ -777,16 +777,16 @@ namespace
         WDC5File guildPerkSpells, glyphProperties, achievement, criteria, criteriaTree, modifierTree;
         WDC5File achievementCategory, friendshipRepReaction, friendshipReputation, worldStateExpression, playerCondition;
         if (!loadTables(errors, dbcPath, {
-            { chatChannels, Layout::ChatChannels }, { auctionHouse, Layout::AuctionHouse }, { bankBagSlotPrices, Layout::BankBagSlotPrices },
-            { mailTemplate, Layout::MailTemplate }, { emotes, Layout::Emotes }, { emotesText, Layout::EmotesText }, { questXP, Layout::QuestXP },
-            { questSort, Layout::QuestSort }, { bannedAddons, Layout::BannedAddons }, { lock, Layout::Lock },
-            { gameObjectDisplayInfo, Layout::GameObjectDisplayInfo }, { totemCategory, Layout::TotemCategory }, { gemProperties, Layout::GemProperties },
-            { mountCapability, Layout::MountCapability }, { mountTypeXCapability, Layout::MountTypeXCapability }, { currencyTypes, Layout::CurrencyTypes },
-            { guildPerkSpells, Layout::GuildPerkSpells }, { glyphProperties, Layout::GlyphProperties }, { achievement, Layout::Achievement },
-            { criteria, Layout::Criteria }, { criteriaTree, Layout::CriteriaTree }, { modifierTree, Layout::ModifierTree },
-            { achievementCategory, Layout::AchievementCategory }, { friendshipRepReaction, Layout::FriendshipRepReaction },
-            { friendshipReputation, Layout::FriendshipReputation }, { worldStateExpression, Layout::WorldStateExpression },
-            { playerCondition, Layout::PlayerCondition } }))
+                            {chatChannels, Layout::ChatChannels}, {auctionHouse, Layout::AuctionHouse}, {bankBagSlotPrices, Layout::BankBagSlotPrices},
+                            {mailTemplate, Layout::MailTemplate}, {emotes, Layout::Emotes}, {emotesText, Layout::EmotesText}, {questXP, Layout::QuestXP},
+                            {questSort, Layout::QuestSort}, {bannedAddons, Layout::BannedAddons}, {lock, Layout::Lock},
+                            {gameObjectDisplayInfo, Layout::GameObjectDisplayInfo}, {totemCategory, Layout::TotemCategory}, {gemProperties, Layout::GemProperties},
+                            {mountCapability, Layout::MountCapability}, {mountTypeXCapability, Layout::MountTypeXCapability}, {currencyTypes, Layout::CurrencyTypes},
+                            {guildPerkSpells, Layout::GuildPerkSpells}, {glyphProperties, Layout::GlyphProperties}, {achievement, Layout::Achievement},
+                            {criteria, Layout::Criteria}, {criteriaTree, Layout::CriteriaTree}, {modifierTree, Layout::ModifierTree},
+                            {achievementCategory, Layout::AchievementCategory}, {friendshipRepReaction, Layout::FriendshipRepReaction},
+                            {friendshipReputation, Layout::FriendshipReputation}, {worldStateExpression, Layout::WorldStateExpression},
+                            {playerCondition, Layout::PlayerCondition} }))
             return false;
 
         fillStore(sChatChannelsStore, chatChannels, [](WDB::Structures::ChatChannelsEntry& entry, Row const& row)
@@ -944,18 +944,18 @@ namespace
         {
             entry.ID = row.id();
             entry.factionFlag = row.i8(5);
-            entry.mapID = row.i16(4);               // InstanceID
-            entry.parentAchievement = row.i32(6);   // Supercedes
+            entry.mapID = row.i16(4); // InstanceID
+            entry.parentAchievement = row.i32(6); // Supercedes
             entry.name = row.str(1);
             entry.description = row.str(0);
             entry.categoryId = row.i16(7);
             entry.points = row.u8(9);
-            entry.orderInCategory = row.i16(11);    // UiOrder
+            entry.orderInCategory = row.i16(11); // UiOrder
             entry.flags = row.i32(10);
-            entry.icon = row.i32(12);               // IconFileID
+            entry.icon = row.i32(12); // IconFileID
             entry.rewardName = row.str(2);
-            entry.count = row.u8(8);                // MinimumCriteria
-            entry.refAchievement = row.i16(15);     // SharesCriteria
+            entry.count = row.u8(8); // MinimumCriteria
+            entry.refAchievement = row.i16(15); // SharesCriteria
             entry.criteriaTreeID = row.u32(14);
         });
 
@@ -1088,10 +1088,10 @@ namespace
             record.id = row.id();
             record.type = static_cast<uint16_t>(row.i16(1));
             record.asset = row.i32(2);
-            record.conditionTreeId = row.u32(3);    // ModifierTreeId
+            record.conditionTreeId = row.u32(3); // ModifierTreeId
             record.startEvent = row.u8(4);
             record.startAsset = row.i32(5);
-            record.timeLimit = row.u16(6);          // StartTimer
+            record.timeLimit = row.u16(6); // StartTimer
             record.failEvent = row.u8(7);
             record.failAsset = row.i32(8);
             record.flags = row.u8(9);
@@ -1107,9 +1107,9 @@ namespace
             record.description = std::string(row.str(0));
             record.parentId = row.u32(1);
             record.amount = row.u32(2);
-            record.rule = static_cast<uint8_t>(row.i8(3));     // Operator
+            record.rule = static_cast<uint8_t>(row.i8(3)); // Operator
             record.criteriaId = row.u32(4);
-            record.order = row.i32(5);              // OrderIndex
+            record.order = row.i32(5); // OrderIndex
             record.flags = static_cast<uint32_t>(row.i32(6));
             sAchievementTrees.addProgressNode(std::move(record));
         }
@@ -1119,7 +1119,7 @@ namespace
             Achievements::ConditionRecord record;
             record.id = row.id();
             record.parentId = row.u32(0);
-            record.rule = static_cast<uint8_t>(row.i8(1));     // Operator
+            record.rule = static_cast<uint8_t>(row.i8(1)); // Operator
             record.amount = row.i8(2);
             record.type = static_cast<uint32_t>(row.i32(3));
             record.asset = row.i32(4);
@@ -1129,8 +1129,8 @@ namespace
         }
 
         sLogger.info("DB2: misc stores ready (achievements={}, criteria={}, criteria trees={}, modifier trees={}, currencies={}, locks={}, mountTypes={}).",
-            achievement.getRecordCount(), criteria.getRecordCount(), criteriaTree.getRecordCount(), modifierTree.getRecordCount(),
-            currencyTypes.getRecordCount(), lock.getRecordCount(), sMountTypeStore.getNumRows());
+                     achievement.getRecordCount(), criteria.getRecordCount(), criteriaTree.getRecordCount(), modifierTree.getRecordCount(),
+                     currencyTypes.getRecordCount(), lock.getRecordCount(), sMountTypeStore.getNumRows());
         return true;
     }
 
@@ -1142,11 +1142,11 @@ namespace
         WDC5File item, itemAppearance, itemModifiedAppearance, itemEffect, itemXItemEffect, itemExtendedCost, itemSet, itemSetSpell, itemCurrencyCost, itemLimitCategory;
         WDC5File durabilityCosts, durabilityQuality;
         if (!loadTables(errors, dbcPath, {
-            { item, Layout::Item }, { itemAppearance, Layout::ItemAppearance }, { itemModifiedAppearance, Layout::ItemModifiedAppearance },
-            { itemEffect, Layout::ItemEffect }, { itemXItemEffect, Layout::ItemXItemEffect },
-            { itemExtendedCost, Layout::ItemExtendedCost }, { itemSet, Layout::ItemSet }, { itemSetSpell, Layout::ItemSetSpell },
-            { itemCurrencyCost, Layout::ItemCurrencyCost }, { itemLimitCategory, Layout::ItemLimitCategory },
-            { durabilityCosts, Layout::DurabilityCosts }, { durabilityQuality, Layout::DurabilityQuality } }))
+                            {item, Layout::Item}, {itemAppearance, Layout::ItemAppearance}, {itemModifiedAppearance, Layout::ItemModifiedAppearance},
+                            {itemEffect, Layout::ItemEffect}, {itemXItemEffect, Layout::ItemXItemEffect},
+                            {itemExtendedCost, Layout::ItemExtendedCost}, {itemSet, Layout::ItemSet}, {itemSetSpell, Layout::ItemSetSpell},
+                            {itemCurrencyCost, Layout::ItemCurrencyCost}, {itemLimitCategory, Layout::ItemLimitCategory},
+                            {durabilityCosts, Layout::DurabilityCosts}, {durabilityQuality, Layout::DurabilityQuality} }))
             return false;
 
         // the display id of an item is its unmodified appearance
@@ -1228,7 +1228,7 @@ namespace
         std::unordered_map<uint32_t, uint32_t> bonusCountBySet;
         for (Row const row : rows(itemSetSpell))
         {
-            if (row.u16(0) != 0 || row.u16(2) != 0)    // ChrSpecID, TraitSubTreeID
+            if (row.u16(0) != 0 || row.u16(2) != 0) // ChrSpecID, TraitSubTreeID
                 continue;
 
             auto const set = sItemSetStore.find(row.parent());
@@ -1240,7 +1240,7 @@ namespace
                 continue;
 
             set->second.spellId[bonusIndex] = row.u32(1);
-            set->second.itemsCount[bonusIndex] = row.u8(3);     // Threshold
+            set->second.itemsCount[bonusIndex] = row.u8(3); // Threshold
             ++bonusIndex;
         }
 
@@ -1272,7 +1272,7 @@ namespace
         });
 
         // random properties and suffixes do not exist in the modern item system, the empty stores are
-        // filled from the world tables item_randomprop and item_randomsuffix afterwards
+        // filled from the world tables item_randomprop and item_randomsuffix afterward
         sItemRandomPropertiesStore.clear();
         sItemRandomSuffixStore.clear();
 
