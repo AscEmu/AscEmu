@@ -574,6 +574,12 @@ namespace WDB::Structures
         uint32_t socketMask{0};
     };
 
+    struct ItemDisplayInfoEntry
+    {
+        uint32_t id = 0;
+        uint32_t randomPropertyChance = 0;
+    };
+
     inline constexpr std::size_t MAX_ITEM_SET_ITEMS = 10;
     inline constexpr std::size_t MAX_ITEM_SET_SPELLS = 8;
 
@@ -1500,14 +1506,6 @@ namespace WDB::Structures
         //uint32_t id;                                              // 0
         uint32_t itemid;                                            // 1
     };
-
-#if VERSION_STRING == TBC
-    struct ItemDisplayInfo
-    {
-        uint32_t ID;                                                // 0
-        uint32_t randomPropertyChance;                              // 1
-    };
-#endif
 
     struct ItemRandomPropertiesEntry
     {

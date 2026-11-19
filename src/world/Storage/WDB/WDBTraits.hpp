@@ -429,6 +429,17 @@ namespace WDB
     {};
 
     template <>
+    struct DbcTraits<Structures::ItemDisplayInfoEntry> :
+        DbcVersionLayouts<
+            UnsupportedVersion,
+            Structures::Raw::ItemDisplayInfoEntryTbc,
+            UnsupportedVersion,
+            UnsupportedVersion,
+            UnsupportedVersion>,
+        StandardDbcFile<"ItemDisplayInfo">
+    {};
+
+    template <>
     struct DbcTraits<Structures::ItemEntry> :
         DbcVersionLayouts<
             UnsupportedVersion,

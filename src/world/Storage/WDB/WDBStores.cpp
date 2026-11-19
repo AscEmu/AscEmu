@@ -98,11 +98,6 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTRegenHPEntry> sGtOCTRegenHPS
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GtRegenHPPerSptEntry> sGtRegenHPPerSptStore; // todo: available for versions > Classic
 #endif
 
-#ifdef AE_TBC
-SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemDisplayInfo> sItemDisplayInfoStore;
-#endif
-
-
 SERVER_DECL WDB::WDBContainer<WDB::Structures::ChrSpecializationEntry> sChrSpecializationStore;
 
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GlyphPropertiesEntry> sGlyphPropertiesStore;
@@ -1636,9 +1631,13 @@ bool loadDBCs()
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // Load single version specific dbcs
-#ifdef AE_TBC
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemDisplayInfoStore, dbc_path, "ItemDisplayInfo.dbc");
-#endif
+    WDB::loadUnifiedWDBStore<WDB::Structures::ItemDisplayInfoEntry>(
+        bad_dbc_files, sItemDisplayInfoStore, dbc_path,
+        []<typename RawType>(const RawType& raw, WDB::Structures::ItemDisplayInfoEntry& entry) {
+            entry.id = raw.id;
+            entry.randomPropertyChance = raw.randomPropertyChance;
+        }
+    );
 
 #ifdef AE_CATA
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemReforgeStore, dbc_path, "ItemReforge.dbc");

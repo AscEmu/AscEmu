@@ -793,6 +793,12 @@ namespace WDB::Structures::Raw
         uint32_t socketMask;
     };
 
+    struct ItemDisplayInfoEntryTbc
+    {
+        uint32_t id;
+        uint32_t randomPropertyChance;
+    };
+
     struct ItemEntryTbc
     {
         uint32_t id;

@@ -54,10 +54,6 @@ namespace WDB::Structures
     struct GtRegenHPPerSptEntry;
 #endif
 
-#ifdef AE_TBC
-    struct ItemDisplayInfo;
-#endif
-
     struct ChrSpecializationEntry;
 
 #if VERSION_STRING >= WotLK
@@ -233,9 +229,7 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtRegenHPPerSptEntry> sGtR
 
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::StableSlotPricesEntry> sStableSlotPricesStore;
 
-#ifdef AE_TBC
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemDisplayInfo> sItemDisplayInfoStore;
-#endif
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemDisplayInfoEntry> sItemDisplayInfoStore;
 
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::CharTitlesEntry> sCharTitlesStore;
 inline SERVER_DECL WDB::WDBStore<WDB::Structures::GemPropertiesEntry> sGemPropertiesStore;
