@@ -28,6 +28,26 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+            if (m_protocol.isForever())
+            {
+                packet << realmId;
+                packet << static_cast<uint8_t>(found ? 0 : 1);
+
+                if (found)
+                {
+                    packet.writeBit(isLocalRealm);
+                    packet.writeBit(0); // IsInternalRealm
+                    packet.writeBits(realmName.size(), 8);
+                    packet.writeBits(realmName.size(), 8);
+                    packet.flushBits();
+
+                    packet.writeString(realmName);
+                    packet.writeString(realmName);
+                }
+
+                return true;
+            }
+
             if (!m_protocol.isMop())
                 return false;
 

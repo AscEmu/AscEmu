@@ -22,7 +22,7 @@ namespace WoW::Build {
     inline constexpr uint32_t WOTLK_BUILD = 12340;
     inline constexpr uint32_t CATA_BUILD = 15595;
     inline constexpr uint32_t MOP_BUILD = 18414;
-    inline constexpr uint32_t FOREVER_BUILD = 70374;
+    inline constexpr uint32_t FOREVER_BUILD = 70959;
 }
 
 namespace WoW {

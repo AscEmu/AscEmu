@@ -88,15 +88,34 @@ void WorldSession::handleRealmNameQueryOpcode(WorldPacket& recvData)
     SmsgRealmNameQueryResponse response;
     response.realmId = srlPacket.realmId;
 
-    const auto realmName = sLogonCommHandler.getRealmName(srlPacket.realmId);
+    uint32_t lookupRealmId = srlPacket.realmId;
+    if (getClientProtocol().isForever())
+    {
+        if (srlPacket.realmId != getClientProtocol().getVirtualRealmAddress())
+        {
+            sendManagedPacket(response);
+            return;
+        }
+
+        lookupRealmId = getClientProtocol().realmId;
+    }
+
+    const auto realmName = sLogonCommHandler.getRealmName(lookupRealmId);
     if (!realmName.empty())
     {
         response.found = true;
         response.realmName = realmName;
-        response.isLocalRealm = srlPacket.realmId == sLogonCommHandler.getRealmId();
+        response.isLocalRealm = getClientProtocol().isForever()
+            ? srlPacket.realmId == getClientProtocol().getVirtualRealmAddress()
+            : srlPacket.realmId == sLogonCommHandler.getRealmId();
     }
 
     sendManagedPacket(response);
+}
+
+void WorldSession::handleKeepAliveOpcode(WorldPacket& /*recvData*/)
+{
+    // No payload and no response are required.
 }
 
 void WorldSession::handleGameObjectQueryOpcode(WorldPacket& recvData)
