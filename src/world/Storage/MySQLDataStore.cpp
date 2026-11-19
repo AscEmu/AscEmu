@@ -289,31 +289,25 @@ void MySQLDataStore::loadItemRandomPropertiesTables()
         }
         else
         {
-            sItemRandomSuffixStore.reserveManualEntries(result->fetch()[0].asUint32(), result->getRowCount());
+            sItemRandomSuffixStore.reserve(result->getRowCount());
 
             uint32_t count = 0;
             do
             {
                 Field* fields = result->fetch();
 
-                auto* entry = sItemRandomSuffixStore.addManualEntry(fields[0].asUint32());
-                if (entry == nullptr)
-                    continue;
+                WDB::Structures::ItemRandomSuffixEntry entry{};
+                entry.id = fields[0].asUint32();
+                entry.nameSuffix = std::string(fields[1].asStringView());
 
-                entry->id = fields[0].asUint32();
-
-                char* name = pooledRandomPropertyName(fields[1].asCString());
-                for (auto& localeName : entry->name_suffix)
-                    localeName = name;
-
-                // the structure holds three slots up to WotLK and five from Cata on
-                for (std::size_t i = 0; i < std::size(entry->enchantments); ++i)
+                for (std::size_t i = 0; i < entry.enchantments.size(); ++i)
                 {
-                    entry->enchantments[i] = fields[2 + i].asUint32();
-                    entry->prefixes[i] = fields[7 + i].asUint32();
+                    entry.enchantments[i] = fields[2 + i].asUint32();
+                    entry.prefixes[i] = fields[7 + i].asUint32();
                 }
 
-                ++count;
+                if (sItemRandomSuffixStore.try_emplace(entry.id, std::move(entry)).second)
+                    ++count;
             } while (result->nextRow());
 
             sLogger.info("MySQLDataLoads : Loaded {} random suffixes from `item_randomsuffix` table in {} ms!", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));

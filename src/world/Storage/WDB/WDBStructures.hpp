@@ -580,21 +580,21 @@ namespace WDB::Structures
 
     struct HolidaysEntry
     {
-        uint32_t id = 0;
+        uint32_t id{0};
         std::array<uint32_t, MAX_HOLIDAY_DURATIONS> duration{};
         std::array<uint32_t, MAX_HOLIDAY_DATES> date{};
-        uint32_t region = 0;
-        uint32_t looping = 0;
+        uint32_t region{0};
+        uint32_t looping{0};
         std::array<uint32_t, MAX_HOLIDAY_FLAGS> calendarFlags{};
-        char const* textureFilename = "";
-        uint32_t priority = 0;
-        uint32_t calendarFilterType = 0;
+        std::string textureFilename;
+        uint32_t priority{0};
+        uint32_t calendarFilterType{0};
     };
 
     struct ItemDisplayInfoEntry
     {
-        uint32_t id = 0;
-        uint32_t randomPropertyChance = 0;
+        uint32_t id{0};
+        uint32_t randomPropertyChance{0};
     };
 
     inline constexpr std::size_t MAX_ITEM_SET_ITEMS = 10;
@@ -630,6 +630,14 @@ namespace WDB::Structures
         uint32_t id{0};
         uint32_t maxAmount{0};
         uint32_t equippedFlag{0};
+    };
+
+    struct ItemRandomSuffixEntry
+    {
+        uint32_t id{0};
+        std::string nameSuffix;
+        std::array<uint32_t, 5> enchantments{};
+        std::array<uint32_t, 5> prefixes{};
     };
 
     struct ItemSetEntry
@@ -1511,21 +1519,6 @@ namespace WDB::Structures
         //uint32_t unk2;                                            // 6
         char* name_suffix[NAME_PATTERN];                            // 7-22
         //uint32_t name_suffix_flags;                               // 23
-    };
-
-    struct ItemRandomSuffixEntry
-    {
-        uint32_t id;                                                // 0
-        char* name_suffix[NAME_PATTERN];                            // 1-16
-        //uint32_t name_suffix_flags;                               // 17
-        //uint32_t unk1;                                            // 18
-#if VERSION_STRING <= WotLK
-        uint32_t enchantments[3];                                   // 19-21
-        uint32_t prefixes[3];                                       // 24-26
-#else
-        uint32_t enchantments[5];                                   // 3-7
-        uint32_t prefixes[5];                                       // 8-12
-#endif
     };
 
 #if VERSION_STRING == Cata

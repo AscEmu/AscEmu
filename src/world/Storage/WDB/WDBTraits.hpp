@@ -496,6 +496,17 @@ namespace WDB
     {};
 
     template <>
+    struct DbcTraits<Structures::ItemRandomSuffixEntry> :
+        DbcVersionLayouts<
+            UnsupportedVersion,
+            Structures::Raw::ItemRandomSuffixEntryTbcWotlk,
+            Structures::Raw::ItemRandomSuffixEntryTbcWotlk,
+            Structures::Raw::ItemRandomSuffixEntryCataMop,
+            Structures::Raw::ItemRandomSuffixEntryCataMop>,
+        StandardDbcFile<"ItemRandomSuffix">
+    {};
+
+    template <>
     struct DbcTraits<Structures::ItemSetEntry> :
         DbcVersionLayouts<
             Structures::Raw::ItemSetEntryClassic,

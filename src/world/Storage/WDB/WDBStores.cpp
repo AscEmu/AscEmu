@@ -88,7 +88,6 @@ SERVER_DECL WDB::WDBContainer<WDB::Structures::GtChanceToSpellCritBaseEntry> sGt
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GtCombatRatingsEntry> sGtCombatRatingsStore; // todo: available for versions > Classic
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTRegenMPEntry> sGtOCTRegenMPStore; // todo: available for versions > Classic
 SERVER_DECL WDB::WDBContainer<WDB::Structures::GtRegenMPPerSptEntry> sGtRegenMPPerSptStore; // todo: available for versions > Classic
-SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemRandomSuffixEntry> sItemRandomSuffixStore; // todo: available for versions > Classic
 SERVER_DECL WDB::WDBContainer<WDB::Structures::SummonPropertiesEntry> sSummonPropertiesStore; // todo: available for versions > Classic
 SERVER_DECL WDB::WDBContainer<WDB::Structures::VehicleEntry> sVehicleStore; // todo: available for versions > WotLK
 SERVER_DECL WDB::WDBContainer<WDB::Structures::VehicleSeatEntry> sVehicleSeatStore; // todo: available for versions > WotLK
@@ -1770,6 +1769,18 @@ bool loadDBCs()
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // Load multi version specific dbcs available since TBC
+
+    WDB::loadUnifiedWDBStore<WDB::Structures::ItemRandomSuffixEntry>(
+        bad_dbc_files, sItemRandomSuffixStore, dbc_path,
+        []<typename RawType>(RawType const& raw, WDB::Structures::ItemRandomSuffixEntry& entry)
+        {
+            entry.id = raw.id;
+            entry.nameSuffix = localizedText(raw.nameSuffix);
+            std::ranges::copy(raw.enchantments, entry.enchantments.begin());
+            std::ranges::copy(raw.prefixes, entry.prefixes.begin());
+        }
+    );
+
 #if VERSION_STRING >= TBC
 
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtChanceToMeleeCritStore, dbc_path, "gtChanceToMeleeCrit.dbc");
@@ -1778,7 +1789,7 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtChanceToSpellCritBaseStore, dbc_path, "gtChanceToSpellCritBase.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtCombatRatingsStore, dbc_path, "gtCombatRatings.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sGtRegenMPPerSptStore, dbc_path, "gtRegenMPPerSpt.dbc"); // loaded but not used
-    WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemRandomSuffixStore, dbc_path, "ItemRandomSuffix.dbc");
+
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sSummonPropertiesStore, dbc_path, "SummonProperties.dbc");
 
 #if VERSION_STRING < Cata
@@ -1851,13 +1862,14 @@ bool loadDBCs()
         []<typename RawType>(const RawType& raw, WDB::Structures::HolidaysEntry& entry) {
             entry.id = raw.id;
 
-            if constexpr (requires { raw.duration; }) {
+            if constexpr (requires { raw.duration; })
+            {
                 std::ranges::copy(raw.duration, entry.duration.begin());
                 std::ranges::copy(raw.date, entry.date.begin());
                 entry.region = raw.region;
                 entry.looping = raw.looping;
                 std::ranges::copy(raw.calendarFlags, entry.calendarFlags.begin());
-                entry.textureFilename = raw.textureFilename;
+                entry.textureFilename = raw.textureFilename != nullptr ? raw.textureFilename : "";
                 entry.priority = raw.priority;
                 entry.calendarFilterType = raw.calendarFilterType;
             }

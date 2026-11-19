@@ -902,6 +902,22 @@ namespace WDB::Structures::Raw
         uint32_t equippedFlag;
     };
 
+    struct ItemRandomSuffixEntryTbcWotlk
+    {
+        uint32_t id;
+        char const* nameSuffix[namePatternTbcWotlk];
+        uint32_t enchantments[3];
+        uint32_t prefixes[3];
+    };
+
+    struct ItemRandomSuffixEntryCataMop
+    {
+        uint32_t id;
+        char const* nameSuffix;
+        uint32_t enchantments[5];
+        uint32_t prefixes[5];
+    };
+
     struct ItemSetEntryClassic
     {
         uint32_t id;

@@ -22,7 +22,6 @@ namespace WDB::Structures
     struct VehicleSeatEntry;
     struct VehicleEntry;
     struct SummonPropertiesEntry;
-    struct ItemRandomSuffixEntry;
     struct GtRegenMPPerSptEntry;
     struct GtOCTRegenMPEntry;
     struct GtCombatRatingsEntry;
@@ -213,7 +212,7 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtChanceToSpellCritBaseEnt
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtCombatRatingsEntry> sGtCombatRatingsStore; // todo: available for versions > Classic
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtOCTRegenMPEntry> sGtOCTRegenMPStore; // todo: available for versions > Classic
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::GtRegenMPPerSptEntry> sGtRegenMPPerSptStore; // todo: available for versions > Classic
-extern SERVER_DECL WDB::WDBContainer<WDB::Structures::ItemRandomSuffixEntry> sItemRandomSuffixStore; // todo: available for versions > Classic
+inline SERVER_DECL WDB::WDBStore<WDB::Structures::ItemRandomSuffixEntry> sItemRandomSuffixStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SummonPropertiesEntry> sSummonPropertiesStore; // todo: available for versions > Classic
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::VehicleEntry> sVehicleStore; // todo: available for versions > WotLK
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::VehicleSeatEntry> sVehicleSeatStore; // todo: available for versions > WotLK

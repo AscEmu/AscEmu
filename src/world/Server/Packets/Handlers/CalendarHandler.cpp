@@ -320,18 +320,21 @@ namespace
     std::vector<CalendarHolidayData> scheduledHolidays(WoW::ClientProtocol const& protocol, time_t now)
     {
         std::vector<CalendarHolidayData> result;
-#if VERSION_STRING >= WotLK && VERSION_STRING <= Cata
+
+        if (!WoW::isServerExpansionBetween(WoW::Expansion::_WotLK, WoW::Expansion::_Cata))
+            return result;
+
         constexpr size_t maxDates = 26;
 
         std::map<uint32_t, std::vector<time_t>> startsByHoliday;
         std::map<uint32_t, uint32_t> lengthByHoliday;
-        for (const auto& [_, gameEvent] : sGameEventMgr.mGameEvents)
+        for (const auto& gameEvent : sGameEventMgr.mGameEvents | std::views::values)
         {
             const auto holidayId = static_cast<uint32_t>(gameEvent->holiday_id);
             if (holidayId == 0 || gameEvent->start == 0 || sHolidaysStore.lookupEntry(holidayId) == nullptr)
                 continue;
 
-            const time_t length = time_t(gameEvent->length) * 60;
+            const time_t length = static_cast<time_t>(gameEvent->length) * 60;
             auto& starts = startsByHoliday[holidayId];
             lengthByHoliday[holidayId] = std::max(lengthByHoliday[holidayId], gameEvent->length);
 
@@ -343,7 +346,7 @@ namespace
             }
 
             // the running or next run first, then the following ones
-            const time_t period = time_t(gameEvent->occurence) * 60;
+            const time_t period = static_cast<time_t>(gameEvent->occurence) * 60;
             const time_t passed = now - length - gameEvent->start;
             time_t start = gameEvent->start + (passed < 0 ? 0 : (passed / period + 1) * period);
             for (; starts.size() < maxDates && (gameEvent->end == 0 || start < gameEvent->end); start += period)
@@ -355,26 +358,27 @@ namespace
             if (starts.empty())
                 continue;
 
-            std::sort(starts.begin(), starts.end());
-            starts.erase(std::unique(starts.begin(), starts.end()), starts.end());
+            std::ranges::sort(starts);
+            const auto [first, last] = std::ranges::unique(starts);
+            starts.erase(first, last);
 
             const auto* entry = sHolidaysStore.lookupEntry(holidayId);
             CalendarHolidayData holiday;
-            holiday.id = entry->Id;
-            holiday.region = entry->Region;
-            holiday.looping = entry->Looping;
-            holiday.priority = entry->Priority;
-            holiday.filterType = static_cast<int32_t>(entry->CalendarFilterType);
-            holiday.texture = entry->TextureFilename != nullptr ? entry->TextureFilename : "";
+            holiday.id = entry->id;
+            holiday.region = entry->region;
+            holiday.looping = entry->looping;
+            holiday.priority = entry->priority;
+            holiday.filterType = static_cast<int32_t>(entry->calendarFilterType);
+            holiday.texture = entry->textureFilename;
 
-            for (size_t i = 0; i < MAX_HOLIDAY_FLAGS; ++i)
-                holiday.flags[i] = entry->CalendarFlags[i];
+            for (size_t i = 0; i < entry->calendarFlags.size(); ++i)
+                holiday.flags[i] = entry->calendarFlags[i];
 
             // rotating holidays keep their stages, the others last as long as the event
-            if (entry->Looping != 0)
+            if (entry->looping != 0)
             {
-                for (size_t i = 0; i < MAX_HOLIDAY_DURATIONS; ++i)
-                    holiday.durations[i] = entry->Duration[i];
+                for (size_t i = 0; i < entry->duration.size(); ++i)
+                    holiday.durations[i] = entry->duration[i];
             }
             else
             {
@@ -386,10 +390,7 @@ namespace
 
             result.push_back(std::move(holiday));
         }
-#else
-        (void)protocol;
-        (void)now;
-#endif
+
         return result;
     }
 
