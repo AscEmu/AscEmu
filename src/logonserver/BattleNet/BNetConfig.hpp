@@ -26,6 +26,8 @@ namespace AscEmu::Battlenet
             std::string certificatesFile = "certs/bnetserver.cert.pem";
             std::string privateKeyFile = "certs/bnetserver.key.pem";
             std::string privateKeyPassword;
+            // names and addresses a created certificate covers, separated by spaces
+            std::string hostNames = "bnet.ascemu.local localhost 127.0.0.1";
         } tls;
 
         struct WebAuthSettings

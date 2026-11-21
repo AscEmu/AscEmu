@@ -18,6 +18,8 @@ namespace AscEmu::Battlenet
         Config.MainConfig.tryGetString("TLS", "CertificatesFile", &tls.certificatesFile);
         Config.MainConfig.tryGetString("TLS", "PrivateKeyFile", &tls.privateKeyFile);
         Config.MainConfig.tryGetString("TLS", "PrivateKeyPassword", &tls.privateKeyPassword);
+        // optional, an older logon.conf has no HostNames
+        tls.hostNames = Config.MainConfig.getStringDefault("TLS", "HostNames", tls.hostNames);
 
         Config.MainConfig.tryGetString("WebAuth", "Host", &webAuth.host);
         Config.MainConfig.tryGetInt("WebAuth", "Port", &webAuth.port);

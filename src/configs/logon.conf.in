@@ -157,7 +157,14 @@
 #    PrivateKeyPassword
 #        Password for an encrypted PEM private key or the PFX/P12 archive.
 #
+#    HostNames
+#        Names and addresses a certificate created by the server covers,
+#        separated by spaces; the ExternalAddress of <WebAuth> is added.
+#        Clients that are not patched only accept the server under one of
+#        these names (their portal). An existing certificate is not changed.
+#
 
 <TLS CertificatesFile   = "certs/bnetserver.cert.pem"
      PrivateKeyFile     = "certs/bnetserver.key.pem"
-     PrivateKeyPassword = "">
+     PrivateKeyPassword = ""
+     HostNames          = "bnet.ascemu.local localhost 127.0.0.1">

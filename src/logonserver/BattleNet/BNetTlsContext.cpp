@@ -16,7 +16,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include <algorithm>
 #include <cctype>
 #include <filesystem>
+#include <sstream>
 #include <string>
+#include <vector>
 
 namespace AscEmu::Battlenet
 {
@@ -141,6 +143,19 @@ namespace AscEmu::Battlenet
             return true;
         }
 
+        // hosts of a created certificate: <TLS HostNames> and the address of the web login
+        std::vector<std::string> getCertificateHostNames()
+        {
+            std::vector<std::string> hostNames;
+            std::istringstream stream(bnetConfig.tls.hostNames + ' ' + bnetConfig.webAuth.externalAddress);
+            for (std::string host; stream >> host;)
+            {
+                if (std::find(hostNames.begin(), hostNames.end(), host) == hostNames.end())
+                    hostNames.push_back(host);
+            }
+            return hostNames;
+        }
+
         // first start: without a certificate and a key the server creates its own
         bool ensurePemCertificate(const std::string& certificateFile, const std::string& privateKeyFile)
         {
@@ -161,7 +176,7 @@ namespace AscEmu::Battlenet
             }
 
             sLogger.info("BNet TLS: no certificate found, creating '{}' and '{}'", certificateFile, privateKeyFile);
-            if (!generateServerCertificate(certificateFile, privateKeyFile))
+            if (!generateServerCertificate(certificateFile, privateKeyFile, getCertificateHostNames()))
                 return false;
 
             sLogger.info("BNet TLS: new certificate created. Clients only trust this server after they were patched with it:");

@@ -16,7 +16,7 @@
         <Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="92"/></Grid.RowDefinitions>
         <Border Grid.Row="0"><Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#172A46" Offset="0"/><GradientStop Color="#0E1724" Offset="0.58"/><GradientStop Color="#0A0E15" Offset="1"/></LinearGradientBrush></Border.Background>
             <Grid Margin="34,28">
-                <StackPanel VerticalAlignment="Center"><TextBlock Text="WORLD OF WARCRAFT" FontSize="12" Foreground="#AFCBEE" FontWeight="SemiBold"/><TextBlock Text="Forever" FontSize="54" FontWeight="Bold" Margin="0,2,0,0"/><TextBlock Text="Powered by AscEmu" FontSize="17" Foreground="{StaticResource MutedBrush}" Margin="0,5,0,0"/><TextBlock Text="Forever client support · builds 69893–70862" FontSize="12" Foreground="{StaticResource MutedBrush}" Margin="0,24,0,0"/></StackPanel>
+                <StackPanel VerticalAlignment="Center"><TextBlock Text="WORLD OF WARCRAFT" FontSize="12" Foreground="#AFCBEE" FontWeight="SemiBold"/><TextBlock Text="Forever" FontSize="54" FontWeight="Bold" Margin="0,2,0,0"/><TextBlock Text="Powered by AscEmu" FontSize="17" Foreground="{StaticResource MutedBrush}" Margin="0,5,0,0"/><TextBlock x:Name="ClientSupportText" FontSize="12" Foreground="{StaticResource MutedBrush}" Margin="0,24,0,0"/></StackPanel>
             </Grid>
         </Border>
         <Border Grid.Row="1" Background="#0D141E" BorderBrush="#1B2738" BorderThickness="0,1,0,0">

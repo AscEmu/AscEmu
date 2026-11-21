@@ -59,6 +59,23 @@ namespace AscEmu::Battlenet
             return added;
         }
 
+        // subjectAltName of the hosts, clients that are not patched compare the name they connect to with it
+        std::string buildSubjectAltName(const std::vector<std::string>& hostNames)
+        {
+            std::string value;
+            for (const std::string& host : hostNames)
+            {
+                if (host.empty() || host.find(',') != std::string::npos)
+                    continue;
+
+                ASN1_OCTET_STRING* address = a2i_IPADDRESS(host.c_str());
+                value += value.empty() ? "" : ",";
+                value += (address != nullptr ? "IP:" : "DNS:") + host;
+                ASN1_OCTET_STRING_free(address);
+            }
+            return value;
+        }
+
         // certificate with a random serial, valid from yesterday (clocks of clients may be behind)
         CertificatePtr createCertificate(EVP_PKEY* publicKey, const char* commonName)
         {
@@ -117,7 +134,7 @@ namespace AscEmu::Battlenet
         }
     }
 
-    bool generateServerCertificate(const std::string& certificateFile, const std::string& privateKeyFile)
+    bool generateServerCertificate(const std::string& certificateFile, const std::string& privateKeyFile, const std::vector<std::string>& hostNames)
     {
         KeyPtr rootKey(EVP_RSA_gen(KeyBits), EVP_PKEY_free);
         KeyPtr serverKey(EVP_RSA_gen(KeyBits), EVP_PKEY_free);
@@ -141,7 +158,8 @@ namespace AscEmu::Battlenet
             return false;
         }
 
-        // server: the name matches every host the clients connect to
+        // server: patched clients take any name, the others need the host in the subjectAltName
+        const std::string subjectAltName = buildSubjectAltName(hostNames);
         CertificatePtr server = createCertificate(serverKey.get(), "*.*");
         if (!server
             || X509_set_issuer_name(server.get(), X509_get_subject_name(root.get())) != 1
@@ -150,6 +168,7 @@ namespace AscEmu::Battlenet
             || !addExtension(server.get(), root.get(), NID_ext_key_usage, "serverAuth")
             || !addExtension(server.get(), root.get(), NID_subject_key_identifier, "hash")
             || !addExtension(server.get(), root.get(), NID_authority_key_identifier, "keyid:always")
+            || (!subjectAltName.empty() && !addExtension(server.get(), root.get(), NID_subject_alt_name, subjectAltName.c_str()))
             || X509_sign(server.get(), rootKey.get(), EVP_sha256()) == 0)
         {
             sLogger.failure("BNet TLS: cannot create the server certificate: {}", lastOpenSslError());

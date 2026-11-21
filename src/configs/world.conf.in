@@ -109,7 +109,7 @@
 #        3 = 15595 (Cata)       4 = 18414 (Mop)     5 = 21742 (WoD)
 #        6 = 26972 (Legion)     7 = 35662 (BfA)     8 = 45745 (Shadowlands)
 #        9 = 55664 (Dragonflight)    10 = 65299 (TWW)    11 = 70783 (Midnight)
-#        F = 70862 (Forever)
+#        F = 70959 (Forever)
 #
 
 <Realm1 Id            = "1"

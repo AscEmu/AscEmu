@@ -1,5 +1,7 @@
 {
-  "Portal": "127.0.0.1:1119",
+  "Portal": "bnet.ascemu.local:1119",
   "ClearCacheBeforeLaunch": true,
-  "PlayPatchSound": true
+  "PlayPatchSound": true,
+  "ServerAddress": "127.0.0.1",
+  "AutoConfigureHosts": true
 }

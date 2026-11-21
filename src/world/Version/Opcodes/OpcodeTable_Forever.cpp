@@ -3,7 +3,7 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-// Hex values of the internal opcode ids for Forever 1.60.1 clients (build 70862): the 12.x numbering with the groups and
+// Hex values of the internal opcode ids for Forever 1.60.1 clients (build 70959): the 12.x numbering with the groups and
 // indices shifted the way the 1.60 client numbers them. Opcodes without an entry do not exist in this version.
 
 #include "Version/OpcodeTable.hpp"

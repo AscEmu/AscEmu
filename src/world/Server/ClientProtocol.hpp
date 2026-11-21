@@ -33,7 +33,7 @@ namespace WoW::Build {
     inline constexpr uint32_t SHADOWLANDS_BUILD = 45745; // 9.2.7
     inline constexpr uint32_t DRAGONFLIGHT_BUILD = 55664; // 10.2.7
     inline constexpr uint32_t TWW_BUILD = 65299; // 11.2.7
-    inline constexpr uint32_t MIDNIGHT_BUILD = 70783; // 12.1.5, the build of the world data rows; the client builds 70391, 70529, 70575 and 70688 share the protocol
+    inline constexpr uint32_t MIDNIGHT_BUILD = 70783; // 12.1.5, the build of the world data rows; the client builds 70391, 70529, 70575, 70688 and 70961 share the protocol
     inline constexpr uint32_t MIDNIGHT_FIRST_BUILD = 70391; // the first 12.x client build, the character layouts of 12.x begin with it
 
     // TODO: Check versions and builds for the following expansions, they are not final and may change in the future
@@ -45,7 +45,7 @@ namespace WoW::Build {
     inline constexpr uint32_t MOP_CLASSIC_BUILD = 70579; //  5.5.4
 
     // WoW Forever (1.60) is a special case, it is a modern client with a legacy major version (1.x) and a build higher than the last MoP build (5.4.8)
-    inline constexpr uint32_t FOREVER_BUILD = 70862; // 1.60.1 (live since 2026-11-07)
+    inline constexpr uint32_t FOREVER_BUILD = 70959; // 1.60.1 (live since 2026-11-17)
 }
 
 namespace WoW {
@@ -394,7 +394,9 @@ namespace WoW {
             case 70391:
             case 70529:
             case 70575:
-            case 70688: return Expansion::_Midnight;
+            case 70688:
+            case 70961: return Expansion::_Midnight;
+            case 70862:
             case Build::FOREVER_BUILD: return Expansion::_WoWForever;
             default:                   return Expansion::Unknown;
         }

@@ -75,8 +75,19 @@ Settings are read from `launcher.json` next to `AscEmu Launcher.exe` first, then
 %LOCALAPPDATA%\AscEmu\Launcher\launcher.json
 ```
 
-Without a file the launcher uses the portal `127.0.0.1:1119`. The service line shows the checked portal and the
+Without a file the launcher uses the portal `bnet.ascemu.local:1119`. The service line shows the checked portal and the
 reason when it is offline; its tooltip names the settings file in use.
+
+## Host and certificate setup
+
+When the portal host is a name that does not resolve (e.g. the default `bnet.ascemu.local`), the launcher maps it to
+`ServerAddress` (default `127.0.0.1`) in the Windows hosts file on first start, asking once through UAC. Set
+`AutoConfigureHosts` to `false` to manage the entry yourself, or point `ServerAddress` at the server when it is not local.
+Set `CaCertificatePath` to a CA `.pem` to also trust it in the machine root store in the same elevation; left empty the
+CA is not touched.
+
+The client only accepts the logonserver when its certificate names the portal host (logon.conf `<TLS HostNames>`,
+written into a newly created certificate) and the root of that certificate is trusted in the machine root store.
 
 ## account UI / launcher backend
 

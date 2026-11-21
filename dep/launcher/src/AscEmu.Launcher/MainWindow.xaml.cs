@@ -18,10 +18,12 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        ClientSupportText.Text = $"Forever client support · builds {BuildProfiles.MinSupportedBuild}–{BuildProfiles.MaxSupportedBuild}";
         _settings = SettingsService.Load();
         Loaded += async (_, _) =>
         {
             RefreshClient();
+            await EnsureSystemTrustAsync();
             await RefreshServerAsync();
             _ = MonitorBattleNetAsync(_statusCancellation.Token);
         };
@@ -80,6 +82,15 @@ public partial class MainWindow : Window
     void UpdatePlayButtonState() => PlayButton.IsEnabled = _clientReady && _battleNetOnline && !_launchInProgress;
 
     void SetPatchStatus(string text) => Dispatcher.Invoke(() => PatchStatusText.Text = text);
+
+    async Task EnsureSystemTrustAsync()
+    {
+        if (!_settings.AutoConfigureHosts)
+            return;
+        var (host, _) = BattleNetStatusService.ParsePortal(_settings.Portal);
+        var caPath = string.IsNullOrWhiteSpace(_settings.CaCertificatePath) ? null : _settings.CaCertificatePath;
+        await Task.Run(() => SystemTrust.Ensure(host, _settings.ServerAddress, caPath, SetPatchStatus));
+    }
 
     void Play_Click(object sender, RoutedEventArgs e)
     {
