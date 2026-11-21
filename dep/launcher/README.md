@@ -19,7 +19,7 @@ The launcher does not store or search for a World of Warcraft path. It always us
 
 ## Current Forever profile
 
-The launcher accepts Forever builds **69893-70959**; 70959 is the live client of 2026-11-21. The runtime region-key patch was verified with the beta builds 69893-70205 and the live client 70959.
+The launcher accepts Forever builds **69893-71037**; 71037 is the live client of 2026-11-21. The runtime region-key patch was verified with the beta builds 69893-70205 and the live client 70959.
 
 For a supported build the launcher:
 

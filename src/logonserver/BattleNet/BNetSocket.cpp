@@ -524,7 +524,7 @@ namespace AscEmu::Battlenet
                    command.compare(0, semanticPrefix.size(), semanticPrefix) == 0;
         }
 
-        [[nodiscard]] constexpr bool usesForever1601Transport(uint32_t build) { return build == 69893u || build == 70009u || build == 70862u || build == 70959u; }
+        [[nodiscard]] constexpr bool usesForever1601Transport(uint32_t build) { return build == 69893u || build == 70009u || build == 70862u || build == 70959u || build == 71037u; }
         // 10.x clients and the Forever client verify the web login certificate against the system store and drop the
         // connection after the TLS handshake with a self signed certificate; they log in over plain http
         [[nodiscard]] constexpr bool usesPlainWebAuth(uint32_t build) { return build >= 55664u; }
@@ -547,7 +547,8 @@ namespace AscEmu::Battlenet
                 case 69893u:
                 case 70009u:
                 case 70862u:
-                case 70959u: return { 1u, 60u, 1u };
+                case 70959u:
+                case 71037u: return { 1u, 60u, 1u };
                 case 21742u: return { 6u, 2u, 4u };
                 case 26972u: return { 7u, 3u, 5u };
                 case 35662u: return { 8u, 3u, 7u };
@@ -592,7 +593,7 @@ namespace AscEmu::Battlenet
             // Forever rulesets PvE, PvP, Roleplay and Hardcore; the DB2 relationship known so far:
             // SuperDistrictSetCollection 1 -> SuperDistrictSet 36, AvailableSuperDistrict 2 = PvP, 3 = PvE
             // Roleplay, Hardcore and the ContentSet selector are not verified yet and stay unset
-            if (clientBuild == 70009u || clientBuild == 70862u || clientBuild == 70959u)
+            if (clientBuild == 70009u || clientBuild == 70862u || clientBuild == 70959u || clientBuild == 71037u)
             {
                 return {
                     .build = clientBuild,
