@@ -676,12 +676,14 @@ namespace AscEmu::Packets
 
             packet.writeBits(static_cast<uint32_t>(data.name.length()), 6);
             if (forever)
-                packet.writeBits(0, 6);                         // 1.60: length of the surname
+                packet.writeBits(static_cast<uint32_t>(data.surname.length()), 6); // 1.60: length of the surname
             packet.writeBit(data.loginFlags & 0x20);            // first login
             packet.writeBit(regionwide);                        // 12.x: realm info found
             packet.writeBit(0);                                 // 12.x: realm offline
             packet.flushBits();
             packet.append(data.name.c_str(), data.name.length());
+            if (forever)
+                packet.append(data.surname.c_str(), data.surname.length());
 
             // region wide entry: money, item level, mythic plus score, pvp rating with its bracket and specialization
             if (regionwide)

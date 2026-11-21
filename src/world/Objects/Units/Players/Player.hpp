@@ -712,6 +712,7 @@ private:
     uint32_t m_classicMaxLevel = 60;
 
     utf8_string m_name;
+    std::string m_surname;
 
     uint32_t m_loginFlag = LOGIN_NO_FLAG;
 

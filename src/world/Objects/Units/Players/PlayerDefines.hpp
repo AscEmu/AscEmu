@@ -747,6 +747,7 @@ struct CharEnumData
     uint32_t bytes2;
     std::vector<CharacterCustomizations::ChrCustomizationChoice> customizations;    // 9.x+: the stored choices, empty for a look converted from the bytes
     std::string name;
+    std::string surname;
     float x;
     float y;
     float z;
@@ -876,6 +877,7 @@ struct PlayerCreateInfo
 struct CharCreate
 {
     utf8_string name;
+    std::string surname;
     uint8_t _race;
     uint8_t _class;
     uint8_t gender;
@@ -899,6 +901,7 @@ public:
     uint32_t guid = 0;
     uint32_t acct = 0;
     std::string name;
+    std::string surname;
     uint8_t race = 0;
     uint8_t gender = 0;
     uint8_t cl = 0;

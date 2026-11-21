@@ -273,6 +273,7 @@ CachedCharacterInfo::CachedCharacterInfo(Field const* fields)
     AscEmu::Util::Strings::capitalize(characterNameDB);
 
     name = characterNameDB;
+    surname = fields[9].asCString();
     race = fields[2].asUint8();
     cl = fields[3].asUint8();
     lastLevel = fields[4].asUint32();
@@ -2511,6 +2512,8 @@ bool Player::create(CharCreate& charCreateContent)
 {
     m_name = charCreateContent.name;
     AscEmu::Util::Strings::capitalize(m_name);
+    m_surname = charCreateContent.surname;
+    AscEmu::Util::Strings::capitalize(m_surname);
 
     //\todo: Zyres: we already have a method to check if the race/class combination is valid (somewhere in the char list generation).
     m_playerCreateInfo = sMySQLStore.getPlayerCreateInfo(charCreateContent._race, charCreateContent._class);
@@ -14772,6 +14775,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
 
     // the build of the client the character is played with, the CharacterBuildUpdater takes it at the start
     ss << ", " << uint32_t(getSession()->GetClientBuild());
+    ss << ", '" << CharacterDatabase.escapeString(m_surname) << "'";
 
     ss << ")";
 
@@ -14930,7 +14934,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
         return;
     }
 
-    const uint32_t fieldcount = 97;
+    const uint32_t fieldcount = 98;
     if (result->getFieldCount() != fieldcount)
     {
         sLogger.failure("Expected {} fields from the database, but received {}!  You may need to update your character database.", fieldcount, uint32_t(result->getFieldCount()));
@@ -14955,6 +14959,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     }
 
     m_name = field[2].asCString();
+    m_surname = field[97].asCString();
 
     // Load race/class from fields
     setRace(field[3].asUint8());

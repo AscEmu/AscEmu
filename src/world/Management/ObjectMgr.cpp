@@ -409,7 +409,7 @@ Charter* ObjectMgr::getCharterByItemGuid(const WoWGuid& _itemGuid) const
 // CachedCharacterInfo
 void ObjectMgr::loadCharacters()
 {
-    auto result = CharacterDatabase.query("SELECT guid, name, race, class, level, gender, zoneid, timestamp, acct FROM characters");
+    auto result = CharacterDatabase.query("SELECT guid, name, race, class, level, gender, zoneid, timestamp, acct, surname FROM characters");
     if (result)
     {
         do
@@ -455,6 +455,27 @@ CachedCharacterInfo* ObjectMgr::getCachedCharacterInfoByName(std::string _player
         std::string characterName = characterPair.second->name;
         AscEmu::Util::Strings::toLowerCase(characterName);
         if (characterName == searchName)
+            return characterPair.second.get();
+    }
+
+    return nullptr;
+}
+
+CachedCharacterInfo* ObjectMgr::getCachedCharacterInfoByNameAndSurname(std::string _playerName, std::string _playerSurname) const
+{
+    AscEmu::Util::Strings::toLowerCase(_playerName);
+    AscEmu::Util::Strings::toLowerCase(_playerSurname);
+
+    std::lock_guard guard(m_cachedCharacterLock);
+
+    for (const auto& characterPair : m_cachedCharacterInfo)
+    {
+        std::string characterName = characterPair.second->name;
+        std::string characterSurname = characterPair.second->surname;
+        AscEmu::Util::Strings::toLowerCase(characterName);
+        AscEmu::Util::Strings::toLowerCase(characterSurname);
+
+        if (characterName == _playerName && characterSurname == _playerSurname)
             return characterPair.second.get();
     }
 

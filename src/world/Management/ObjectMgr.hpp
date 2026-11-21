@@ -216,6 +216,7 @@ public:
     CachedCharacterInfo* addCachedCharacterInfo(std::unique_ptr<CachedCharacterInfo> _characterInfo);
     CachedCharacterInfo* getCachedCharacterInfo(uint32_t _playerGuid) const;
     CachedCharacterInfo* getCachedCharacterInfoByName(std::string _playerName) const;
+    CachedCharacterInfo* getCachedCharacterInfoByNameAndSurname(std::string _playerName, std::string _playerSurname) const;
     void updateCachedCharacterInfoName(const CachedCharacterInfo* _characterInfo, const std::string& _newName) const;
     void deleteCachedCharacterInfo(uint32_t _playerGuid);
 

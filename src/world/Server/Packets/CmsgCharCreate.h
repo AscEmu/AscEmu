@@ -74,7 +74,7 @@ namespace AscEmu::Packets
                 createStruct.outfitId = 0;
                 createStruct.name = packet.readString(nameLength);
                 if (surnameLength != 0)
-                    packet.readString(surnameLength);   // the surname is not stored
+                    createStruct.surname = packet.readString(surnameLength);
 
                 if (hasTemplateSet)
                     packet.read<int32_t>();
