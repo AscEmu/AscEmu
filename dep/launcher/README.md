@@ -37,7 +37,7 @@ For a supported build the launcher:
 ## Build requirements
 
 - Windows 10/11 x64
-- Visual Studio 2022 with CMake tools (optional but recommended)
+- Visual Studio 18 2026 with CMake tools (optional but recommended)
 - CMake 3.24+
 - .NET 8 SDK
 
