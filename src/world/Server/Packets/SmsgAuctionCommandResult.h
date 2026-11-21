@@ -26,8 +26,8 @@ namespace AscEmu::Packets
         }
 
         SmsgAuctionCommandResult(uint32_t auctionId, uint32_t command, uint32_t error,
-            uint64_t outBid = 0, uint64_t highestBid = 0, uint32_t bidError = 0,
-            uint64_t highestBidderGuid = 0) :
+                                 uint64_t outBid = 0, uint64_t highestBid = 0, uint32_t bidError = 0,
+                                 uint64_t highestBidderGuid = 0) :
             ManagedPacket(SMSG_AUCTION_COMMAND_RESULT, 0),
             auctionId(auctionId),
             command(command),
@@ -40,9 +40,14 @@ namespace AscEmu::Packets
         }
 
     protected:
+        bool uses64BitGold() const noexcept
+        {
+            return m_protocol.isContentAtLeast(WoW::Expansion::_Cata);
+        }
+
         size_t expectedSize() const override
         {
-            return m_protocol.expansion < WoW::Expansion::_Cata ? 28 : 36;
+            return uses64BitGold() ? 36 : 28;
         }
 
         bool internalSerialise(WorldPacket& packet) override
@@ -51,22 +56,22 @@ namespace AscEmu::Packets
 
             const auto writeBidAmount = [this, &packet](uint64_t amount)
             {
-                if (m_protocol.expansion < WoW::Expansion::_Cata)
-                    packet << static_cast<uint32_t>(amount);
-                else
+                if (uses64BitGold())
                     packet << amount;
+                else
+                    packet << static_cast<uint32_t>(amount);
             };
 
             switch (error)
             {
-                case 0:     // AUCTION_ERROR_NONE
-                    if (command == 2)   // AUCTION_ACTION_BID
+                case 0: // AUCTION_ERROR_NONE
+                    if (command == 2) // AUCTION_ACTION_BID
                         writeBidAmount(outBid);
                     break;
-                case 1:     // AUCTION_ERROR_INVENTORY
+                case 1: // AUCTION_ERROR_INVENTORY
                     packet << bidError;
                     break;
-                case 5:     // AUCTION_ERROR_HIGHER_BID
+                case 5: // AUCTION_ERROR_HIGHER_BID
                     packet << highestBidderGuid;
                     writeBidAmount(highestBid);
                     writeBidAmount(outBid);

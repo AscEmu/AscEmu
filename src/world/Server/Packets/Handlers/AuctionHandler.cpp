@@ -95,7 +95,9 @@ void WorldSession::handleAuctionListBidderItems(WorldPacket& recvPacket)
 
 void WorldSession::handleAuctionListPendingSales([[maybe_unused]] WorldPacket& recvPacket)
 {
-#if VERSION_STRING > TBC
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+        return;
+
     CmsgAuctionListIPendingSales srlPacket;
     if (!parsePacket(recvPacket, srlPacket))
         return;
@@ -103,7 +105,6 @@ void WorldSession::handleAuctionListPendingSales([[maybe_unused]] WorldPacket& r
     sLogger.debugOpcode("Received CMSG_AUCTION_LIST_PRENDING_SALES {} (lowguid).", srlPacket.guid.getCounter());
 
     //\todo SMSG_AUCTION_LIST_PENDING_SALES needs to be researched!
-#endif
 }
 
 void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
@@ -117,20 +118,28 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
     if (!srlPacket.bidMoney || !srlPacket.expireTime)
         return;
 
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata))
+    {
+        constexpr uint64_t maxPreCataMoney = std::numeric_limits<int32_t>::max();
+        if (srlPacket.bidMoney > maxPreCataMoney || srlPacket.buyoutPrice > maxPreCataMoney)
+            return;
+    }
+
     const auto creature = _player->getWorldMapCreature(srlPacket.auctioneerGuid.getRawGuid());
     if (creature == nullptr || creature->auctionHouse == nullptr)
         return;
 
     const auto auctionHouse = creature->auctionHouse;
 
-    switch (srlPacket.expireTime * MINUTE)
+    const bool isTbcOrNewer = WoW::isServerExpansionAtLeast(WoW::Expansion::_TBC);
+    const uint32_t minAuctionTime = getMinAuctionTime(isTbcOrNewer);
+    const uint32_t auctionDuration = srlPacket.expireTime * MINUTE;
+
+    if (auctionDuration != minAuctionTime &&
+        auctionDuration != 2 * minAuctionTime &&
+        auctionDuration != 4 * minAuctionTime)
     {
-        case 1 * MIN_AUCTION_TIME:
-        case 2 * MIN_AUCTION_TIME:
-        case 4 * MIN_AUCTION_TIME:
-            break;
-        default:
-            return;
+        return;
     }
 
     Item* items[MAX_AUCTION_ITEMS];
@@ -146,6 +155,12 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
             return;
         }
 
+        if (item->getStackCount() < srlPacket.count[i])
+        {
+            _player->sendAuctionCommandResult(nullptr, AUCTION_ACTION_CREATE, AUCTION_ERROR_INTERNAL);
+            return;
+        }
+
         items[i] = item;
         finalCount += srlPacket.count[i];
     }
@@ -158,38 +173,30 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
 
     for (uint32_t i = 0; i < srlPacket.itemsCount; ++i)
     {
-        if (items[i] == nullptr || items[i]->getStackCount() < finalCount)
-        {
-            _player->sendAuctionCommandResult(nullptr, AUCTION_ACTION_CREATE, AUCTION_ERROR_INTERNAL);
-            return;
-        }
-    }
-
-    for (uint32_t i = 0; i < srlPacket.itemsCount; ++i)
-    {
         if (items[i] == nullptr)
         {
             _player->sendAuctionCommandResult(nullptr, AUCTION_ACTION_CREATE, AUCTION_ERROR_INTERNAL);
             return;
         }
 
-        const uint32_t item_worth = items[i]->getItemProperties()->SellPrice * items[i]->getStackCount();
-        const uint32_t item_deposit = static_cast<uint32_t>(item_worth * auctionHouse->depositPercent) * static_cast<uint32_t>(srlPacket.expireTime / 240.0f);
+        const uint64_t itemWorth = static_cast<uint64_t>(items[i]->getItemProperties()->SellPrice) * items[i]->getStackCount();
+        const uint32_t durationMultiplier = srlPacket.expireTime / (isTbcOrNewer ? 240u : 120u);
+        const uint32_t itemDeposit = static_cast<uint32_t>(static_cast<double>(itemWorth) * auctionHouse->depositPercent * durationMultiplier);
 
-        if (!_player->hasEnoughCoinage(item_deposit))
+        if (!_player->hasEnoughCoinage(itemDeposit))
         {
             _player->sendAuctionCommandResult(nullptr, AUCTION_ACTION_CREATE, AUCTION_ERROR_MONEY);
             return;
         }
 
-        _player->modCoinage(-int32_t(item_deposit));
+        _player->modCoinage(-static_cast<int64_t>(itemDeposit));
 
         auto item = _player->getItemInterface()->SafeRemoveAndRetreiveItemByGuid(srlPacket.itemGuids[i], false);
         if (!item)
         {
             _player->sendAuctionCommandResult(nullptr, AUCTION_ACTION_CREATE, AUCTION_ERROR_ITEM);
             return;
-        };
+        }
 
         if (item->IsInWorld())
             item->removeFromWorld();
@@ -209,7 +216,7 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
         auction->auctionItem = std::move(item);
         auction->isRemoved = false;
         auction->removedType = AUCTION_REMOVE_EXPIRED;
-        auction->depositAmount = item_deposit;
+        auction->depositAmount = itemDeposit;
 
         auction->saveToDB(auctionHouse->getId());
         auctionHouse->addAuction(std::move(auction));
@@ -228,6 +235,12 @@ void WorldSession::handleAuctionPlaceBid(WorldPacket& recvPacket)
 
     sLogger.debugOpcode("Received CMSG_AUCTION_PLACE_BID: {} (auctionId), {} (price).", srlPacket.auctionId, srlPacket.price);
 
+    if (!srlPacket.price)
+        return;
+
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_Cata) && srlPacket.price > std::numeric_limits<int32_t>::max())
+        return;
+
     const auto creature = _player->getWorldMapCreature(srlPacket.guid.getRawGuid());
     if (creature == nullptr || creature->auctionHouse == nullptr)
         return;
@@ -236,33 +249,35 @@ void WorldSession::handleAuctionPlaceBid(WorldPacket& recvPacket)
     const auto auction = auctionHouse->getAuction(srlPacket.auctionId);
     if (auction == nullptr || !auction->ownerGuid)
     {
-        SmsgAuctionCommandResult managedPacket(0, AUCTION_ACTION_BID, AUCTION_ERROR_INTERNAL, 0);
-        sendManagedPacket(managedPacket);
+        _player->sendAuctionCommandResult(nullptr, AUCTION_ACTION_BID, AUCTION_ERROR_INTERNAL, 0);
         return;
     }
 
     if (auction->ownerGuid == _player->getGuid())
     {
-        SmsgAuctionCommandResult managedPacket(0, AUCTION_ACTION_BID, AUCTION_ERROR_BID_OWN_AUCTION, 0);
-        sendManagedPacket(managedPacket);
+        _player->sendAuctionCommandResult(nullptr, AUCTION_ACTION_BID, AUCTION_ERROR_BID_OWN_AUCTION, 0);
         return;
     }
 
-    if (auction->highestBid > srlPacket.price && srlPacket.price != auction->buyoutPrice)
+    const uint64_t minRequiredBid = auction->highestBid ? (auction->highestBid + auction->getAuctionOutBid()) : auction->startPrice;
+    if (srlPacket.price < minRequiredBid && srlPacket.price != auction->buyoutPrice)
     {
-        SmsgAuctionCommandResult managedPacket(0, AUCTION_ACTION_BID, AUCTION_ERROR_INTERNAL, 0);
-        sendManagedPacket(managedPacket);
+        _player->sendAuctionCommandResult(auction, AUCTION_ACTION_BID, AUCTION_ERROR_INTERNAL, 0);
         return;
     }
+
+    if (auction->buyoutPrice > 0 && srlPacket.price > auction->buyoutPrice)
+        srlPacket.price = auction->buyoutPrice;
 
     if (!_player->hasEnoughCoinage(srlPacket.price))
     {
-        SmsgAuctionCommandResult managedPacket(0, AUCTION_ACTION_BID, AUCTION_ERROR_MONEY, 0);
-        sendManagedPacket(managedPacket);
+        _player->sendAuctionCommandResult(nullptr, AUCTION_ACTION_BID, AUCTION_ERROR_MONEY, 0);
         return;
     }
 
-    _player->modCoinage(-static_cast<int32_t>(srlPacket.price));
+    _player->modCoinage(-static_cast<int64_t>(srlPacket.price));
+
+
     if (auction->highestBidderGuid.getLowGuid() != 0)
     {
         char subject[100];
@@ -280,8 +295,7 @@ void WorldSession::handleAuctionPlaceBid(WorldPacket& recvPacket)
 
         auctionHouse->queueDeletion(auction, AUCTION_REMOVE_WON);
 
-        SmsgAuctionCommandResult managedPacket(auction->Id, AUCTION_ACTION_BID, AUCTION_ERROR_NONE, 0);
-        sendManagedPacket(managedPacket);
+        _player->sendAuctionCommandResult(auction, AUCTION_ACTION_BID, AUCTION_ERROR_NONE, 0);
         auctionHouse->sendAuctionBuyOutNotificationPacket(auction);
     }
     else
@@ -290,7 +304,6 @@ void WorldSession::handleAuctionPlaceBid(WorldPacket& recvPacket)
         auction->highestBid = srlPacket.price;
         auction->updateInDB();
 
-        SmsgAuctionCommandResult managedPacket(auction->Id, AUCTION_ACTION_BID, AUCTION_ERROR_NONE, 0);
-        sendManagedPacket(managedPacket);
+        _player->sendAuctionCommandResult(auction, AUCTION_ACTION_BID, AUCTION_ERROR_NONE, 0);
     }
 }

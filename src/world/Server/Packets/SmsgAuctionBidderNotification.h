@@ -38,16 +38,21 @@ namespace AscEmu::Packets
         }
 
     protected:
+        bool uses64BitGold() const noexcept
+        {
+            return m_protocol.isContentAtLeast(WoW::Expansion::_Cata);
+        }
+
         size_t expectedSize() const override
         {
-            return m_protocol.expansion < WoW::Expansion::_Cata ? 32 : 40;
+            return uses64BitGold() ? 32 : 40;
         }
 
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << houseId << auctionId << newBidderGuid;
 
-            if (m_protocol.expansion < WoW::Expansion::_Cata)
+            if (uses64BitGold())
             {
                 packet << static_cast<uint32_t>(newHighestBid);
                 packet << static_cast<uint32_t>(outBid);

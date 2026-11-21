@@ -42,20 +42,8 @@ namespace AscEmu::Packets
         {
             packet << listItemCount;
 
-            for (auto itemList : auctionPacketList)
-            {
-                packet << itemList.Id << itemList.itemEntry;
-
-                for (auto enchantments : itemList.itemEnchantment)
-                    packet << enchantments.Id << enchantments.duration << enchantments.charges;
-
-                if (m_protocol.isMop())
-                    packet << int32_t(0);
-
-                packet << itemList.propertiesId << itemList. propertySeed << itemList.stackCount << itemList.chargesLeft;
-                packet << itemList.unknown << itemList.ownerGuid << itemList.startPrice << itemList.outBid << itemList.buyoutPrice;
-                packet << itemList.expireTime << itemList.highestBidderGuid << itemList.highestBid;
-            }
+            for (const auto& itemList : auctionPacketList)
+                itemList.serialise(packet, m_protocol);
 
             packet << totalCount;
             packet << unknown;

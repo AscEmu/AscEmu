@@ -16,93 +16,46 @@ namespace AscEmu::Packets
     public:
         WoWGuid auctioneerGuid;
 
-        uint64_t bidMoney64 = 0;        //Cata
-        uint64_t buyoutPrice64 = 0;     //Cata
-
-        uint32_t bidMoney;
-        uint32_t buyoutPrice;
-
-        uint32_t itemsCount;
-        uint32_t expireTime;
+        uint64_t bidMoney = 0;
+        uint64_t buyoutPrice = 0;
+        uint32_t itemsCount = 0;
+        uint32_t expireTime = 0;
 
         uint64_t itemGuids[MAX_AUCTION_ITEMS];
         uint32_t count[MAX_AUCTION_ITEMS];
 
         CmsgAuctionSellItem() : CmsgAuctionSellItem(0, 0, 0, 0, 0)
-        {
-        }
+        {}
 
-        CmsgAuctionSellItem(uint64_t auctioneerGuid, uint32_t bidMoney, uint32_t buyoutPrice, uint32_t itemsCount, uint32_t expireTime) :
+        CmsgAuctionSellItem(uint64_t auctioneerGuid, uint64_t bidMoney, uint64_t buyoutPrice, uint32_t itemsCount, uint32_t expireTime) :
             ManagedPacket(CMSG_AUCTION_SELL_ITEM, 0),
             auctioneerGuid(auctioneerGuid),
             bidMoney(bidMoney),
             buyoutPrice(buyoutPrice),
             itemsCount(itemsCount),
             expireTime(expireTime)
-        {
-        }
+        {}
 
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion < WoW::Expansion::_Cata)
+            if (!m_protocol.isValid())
+                return false;
+
+            if (m_protocol.isMop())
             {
-                uint64_t unpacked_guid;
-                packet >> unpacked_guid >> itemsCount;
-                auctioneerGuid.init(unpacked_guid);
-
-                for (uint32_t i = 0; i < itemsCount; ++i)
-                {
-                    packet >> itemGuids[i];
-                    packet >> count[i];
-
-                    if (!itemGuids[i] || !count[i] || count[i] > 1000)
-                        return false;
-                }
-
-                packet >> bidMoney >> buyoutPrice;
-                packet >> expireTime;
-                return true;
-            }
-            else if (m_protocol.isCata())
-            {
-                uint64_t unpacked_guid;
-                packet >> unpacked_guid >> itemsCount;
-                auctioneerGuid.init(unpacked_guid);
-
-                for (uint32_t i = 0; i < itemsCount; ++i)
-                {
-                    packet >> itemGuids[i];
-                    packet >> count[i];
-
-                    if (!itemGuids[i] || !count[i] || count[i] > 1000)
-                        return false;
-                }
-
-                packet >> bidMoney64 >> buyoutPrice64;
-                bidMoney = static_cast<uint32_t>(bidMoney64);
-                buyoutPrice = static_cast<uint32_t>(buyoutPrice64);
-                packet >> expireTime;
-                return true;
-            }
-            else if (m_protocol.isMop())
-            {
-                packet >> buyoutPrice64 >> bidMoney64;
-                bidMoney = static_cast<uint32_t>(bidMoney64);
-                buyoutPrice = static_cast<uint32_t>(buyoutPrice64);
-
+                packet >> buyoutPrice >> bidMoney;
                 packet >> expireTime;
 
                 auctioneerGuid[3] = packet.readBit();
                 itemsCount = static_cast<uint32_t>(packet.readBits(5));
 
-                if (itemsCount > MAX_AUCTION_ITEMS)
+                if (!itemsCount || itemsCount > MAX_AUCTION_ITEMS)
                     return false;
 
                 auctioneerGuid[0] = packet.readBit();
 
                 WoWGuid itemGuidsLocal[MAX_AUCTION_ITEMS];
-
                 for (uint32_t i = 0; i < itemsCount; ++i)
                 {
                     itemGuidsLocal[i][4] = packet.readBit();
@@ -152,7 +105,37 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            return false;
+            uint64_t unpacked_guid = 0;
+            packet >> unpacked_guid >> itemsCount;
+            auctioneerGuid.init(unpacked_guid);
+
+            if (!itemsCount || itemsCount > MAX_AUCTION_ITEMS)
+                return false;
+
+            for (uint32_t i = 0; i < itemsCount; ++i)
+            {
+                packet >> itemGuids[i];
+                packet >> count[i];
+
+                if (!itemGuids[i] || !count[i] || count[i] > 1000)
+                    return false;
+            }
+
+            if (m_protocol.isContentAtLeast(WoW::Expansion::_Cata))
+            {
+                packet >> bidMoney >> buyoutPrice;
+            }
+            else
+            {
+                uint32_t bidMoney32 = 0;
+                uint32_t buyoutPrice32 = 0;
+                packet >> bidMoney32 >> buyoutPrice32;
+                bidMoney = bidMoney32;
+                buyoutPrice = buyoutPrice32;
+            }
+
+            packet >> expireTime;
+            return true;
         }
     };
 }

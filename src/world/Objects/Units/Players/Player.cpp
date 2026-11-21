@@ -6722,13 +6722,8 @@ void Player::sendAuctionCommandResult(Auction* auction, uint32_t action, uint32_
 {
     const auto auctionId = auction ? auction->Id : 0;
 
-#if VERSION_STRING >= Cata
     uint64_t outBid = 0;
     uint64_t highestBid = 0;
-#else
-    uint32_t outBid = 0;
-    uint32_t highestBid = 0;
-#endif
     uint64_t highestBidderGuid = 0;
 
     if (auction)

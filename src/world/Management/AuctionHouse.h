@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "AEVersion.hpp"
 #include "Objects/Item.hpp"
 #include <unordered_map>
 
@@ -34,8 +33,12 @@ enum AuctionAction
     AUCTION_ACTION_BUYOUT
 };
 
-#define MIN_AUCTION_TIME (12 * HOUR)
-#define MAX_AUCTION_ITEMS 160
+inline constexpr uint32_t MAX_AUCTION_ITEMS = 160;
+
+[[nodiscard]] inline uint32_t getMinAuctionTime(bool isTbcOrNewer) noexcept
+{
+    return isTbcOrNewer ? (12 * HOUR) : (2 * HOUR);
+}
 
 enum AuctionResultError
 {
@@ -82,25 +85,43 @@ struct AuctionPacketList
 
     uint64_t ownerGuid;
 
-#if VERSION_STRING < Cata
-    uint32_t startPrice;
-    uint32_t outBid;
-    uint32_t buyoutPrice;
-#else
     uint64_t startPrice;
     uint64_t outBid;
     uint64_t buyoutPrice;
-#endif
 
     uint32_t expireTime;
 
     uint64_t highestBidderGuid;
 
-#if VERSION_STRING < Cata
-    uint32_t highestBid;
-#else
     uint64_t highestBid;
-#endif
+
+    void serialise(WorldPacket& packet, const WoW::ClientProtocol& protocol) const
+    {
+        packet << Id << itemEntry;
+
+        for (const auto& enchantment : itemEnchantment)
+            packet << enchantment.Id << enchantment.duration << enchantment.charges;
+
+        if (protocol.isMop())
+            packet << int32_t(0);
+
+        packet << propertiesId << propertySeed << stackCount << chargesLeft;
+        packet << unknown << ownerGuid;
+
+        if (protocol.isContentAtLeast(WoW::Expansion::_Cata))
+        {
+            packet << startPrice << outBid << buyoutPrice;
+            packet << expireTime << highestBidderGuid << highestBid;
+        }
+        else
+        {
+            packet << static_cast<uint32_t>(startPrice)
+                << static_cast<uint32_t>(outBid)
+                << static_cast<uint32_t>(buyoutPrice);
+            packet << expireTime << highestBidderGuid
+                << static_cast<uint32_t>(highestBid);
+        }
+    }
 };
 
 struct Auction
@@ -113,15 +134,9 @@ struct Auction
     WoWGuid ownerGuid;
     WoWGuid highestBidderGuid;
 
- #if VERSION_STRING < Cata
-    uint32_t highestBid;
-    uint32_t startPrice;
-    uint32_t buyoutPrice;
-#else
     uint64_t highestBid;
     uint64_t startPrice;
     uint64_t buyoutPrice;
-#endif
 
     uint32_t depositAmount;
 
@@ -132,11 +147,7 @@ struct Auction
     void saveToDB(uint32_t auctionHouseId);
     void updateInDB();
 
-#if VERSION_STRING < Cata
-    uint32_t getAuctionOutBid() const;
-#else
     uint64_t getAuctionOutBid() const;
-#endif
 
     bool isRemoved;
     uint32_t removedType;
@@ -165,7 +176,7 @@ public:
     void updateOwner(uint32_t oldGuid, uint32_t newGuid);
     void sendBidListPacket(Player* player);
     void sendAuctionBuyOutNotificationPacket(Auction* auction);
-    void sendAuctionOutBidNotificationPacket(Auction* auction, uint64_t newBidder, uint32_t newHighestBid);
+    void sendAuctionOutBidNotificationPacket(Auction* auction, uint64_t newBidder, uint64_t newHighestBid);
     void sendAuctionExpiredNotificationPacket(Auction* auction);
     void sendAuctionList(Player* player, AscEmu::Packets::CmsgAuctionListItems srlPacket);
 

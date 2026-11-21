@@ -14,49 +14,30 @@ namespace AscEmu::Packets
     {
     public:
         WoWGuid guid;
-        uint32_t auctionId;
-        uint32_t price;
-
-        // used since Cata
-        uint64_t price64 = 0;
+        uint32_t auctionId = 0;
+        uint64_t price = 0;
 
         CmsgAuctionPlaceBid() : CmsgAuctionPlaceBid(0, 0, 0)
         {
         }
 
-        CmsgAuctionPlaceBid(uint64_t guid, uint32_t auctionId, uint32_t price) :
+        CmsgAuctionPlaceBid(uint64_t guid, uint32_t auctionId, uint64_t price) :
             ManagedPacket(CMSG_AUCTION_PLACE_BID, 0),
             guid(guid),
             auctionId(auctionId),
             price(price)
-        {
-        }
+        {}
 
     protected:
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (m_protocol.expansion < WoW::Expansion::_Cata)
-            {
-                uint64_t unpacked_guid;
-                packet >> unpacked_guid >> auctionId;
-                packet >> price;
-                guid.init(unpacked_guid);
-                return true;
-            }
-            else if (m_protocol.isCata())
-            {
-                uint64_t unpacked_guid;
-                packet >> unpacked_guid >> auctionId;
-                packet >> price64;
-                price = static_cast<uint32_t>(price64);
-                guid.init(unpacked_guid);
-                return true;
-            }
-            else if (m_protocol.isMop())
+            if (!m_protocol.isValid())
+                return false;
+
+            if (m_protocol.isMop())
             {
                 packet >> auctionId;
-                packet >> price64;
-                price = static_cast<uint32_t>(price64);
+                packet >> price;
 
                 guid[1] = packet.readBit();
                 guid[6] = packet.readBit();
@@ -78,7 +59,22 @@ namespace AscEmu::Packets
                 return true;
             }
 
-            return false;
+            uint64_t unpacked_guid = 0;
+            packet >> unpacked_guid >> auctionId;
+            guid.init(unpacked_guid);
+
+            if (m_protocol.isContentAtLeast(WoW::Expansion::_Cata))
+            {
+                packet >> price;
+            }
+            else
+            {
+                uint32_t price32 = 0;
+                packet >> price32;
+                price = price32;
+            }
+
+            return true;
         }
     };
 }

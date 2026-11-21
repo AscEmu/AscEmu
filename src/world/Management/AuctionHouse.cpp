@@ -27,19 +27,22 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Strings.hpp"
 
+#include <cinttypes>
+
 using namespace AscEmu::Packets;
 
 Auction::Auction() = default;
+
 Auction::Auction(Field const* fields, std::unique_ptr<Item> pItem)
 {
     Id = fields[0].asUint32();
     auctionItem = std::move(pItem);
     ownerGuid = fields[3].asUint32();
-    startPrice = fields[4].asUint32();
-    buyoutPrice = fields[5].asUint32();
+    startPrice = fields[4].asUint64();
+    buyoutPrice = fields[5].asUint64();
     expireTime = fields[6].asUint32();
     highestBidderGuid = fields[7].asUint32();
-    highestBid = fields[8].asUint32();
+    highestBid = fields[8].asUint64();
     depositAmount = fields[9].asUint32();
 
     removedType = AUCTION_REMOVE_EXPIRED;
@@ -53,14 +56,14 @@ void Auction::deleteFromDB()
 
 void Auction::saveToDB(uint32_t auctionHouseId)
 {
-    CharacterDatabase.execute("INSERT INTO auctions VALUES(%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)", 
-        Id, auctionHouseId, auctionItem->getGuidLow(), ownerGuid.getLowGuid(), startPrice, buyoutPrice, expireTime, highestBidderGuid.getLowGuid(), 
-        highestBid, depositAmount);
+    CharacterDatabase.execute("INSERT INTO auctions VALUES(%u, %u, %u, %u, %" PRIu64 ", %" PRIu64 ", %u, %u, %" PRIu64 ", %u)",
+                              Id, auctionHouseId, auctionItem->getGuidLow(), ownerGuid.getLowGuid(), startPrice, buyoutPrice, expireTime, highestBidderGuid.getLowGuid(),
+                              highestBid, depositAmount);
 }
 
 void Auction::updateInDB()
 {
-    CharacterDatabase.execute("UPDATE auctions SET bidder = %u, bid = %u WHERE auctionId = %u", highestBidderGuid.getLowGuid(), highestBid, Id);
+    CharacterDatabase.execute("UPDATE auctions SET bidder = %u, bid = %" PRIu64 " WHERE auctionId = %u", highestBidderGuid.getLowGuid(), highestBid, Id);
 }
 
 AuctionPacketList Auction::getListMember()
@@ -88,7 +91,7 @@ AuctionPacketList Auction::getListMember()
     auctionList.outBid = (highestBid ? getAuctionOutBid() : 0);
     auctionList.buyoutPrice = buyoutPrice;
 
-    auctionList.expireTime = static_cast<uint32_t>(((expireTime - UNIXTIME) * 1000));
+    auctionList.expireTime = (expireTime > UNIXTIME) ? static_cast<uint32_t>((expireTime - UNIXTIME) * 1000) : 0;
     auctionList.highestBidderGuid = highestBidderGuid;
     auctionList.highestBid = highestBid;
 
@@ -96,19 +99,11 @@ AuctionPacketList Auction::getListMember()
 }
 
 /// the sum of outbid is (1% from current bid)*5, if bid is very small, it is 1c
-#if VERSION_STRING < Cata
-uint32_t Auction::getAuctionOutBid() const
-{
-    uint32_t outbid = highestBid * 5 / 100;
-    return outbid ? outbid : 1;
-}
-#else
 uint64_t Auction::getAuctionOutBid() const
 {
     uint64_t outbid = highestBid * 5 / 100;
     return outbid ? outbid : 1;
 }
-#endif
 
 AuctionHouse::AuctionHouse(uint32_t id)
 {
@@ -264,7 +259,6 @@ void AuctionHouse::removeAuction(Auction* auction)
             {
                 sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, getId(), auction->highestBidderGuid, subject, "", static_cast<uint32_t>(auction->highestBid), 0, 0, MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
             }
-
         }
         break;
     }
@@ -373,7 +367,7 @@ void AuctionHouse::sendBidListPacket(Player* player)
     }
 
     SmsgAuctionBidderListResult managedPacket(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList,
-        static_cast<uint32_t>(auctionPacketList.size()), 300);
+                                              static_cast<uint32_t>(auctionPacketList.size()), 300);
     player->getSession()->sendManagedPacket(managedPacket);
 }
 
@@ -387,7 +381,7 @@ void AuctionHouse::sendAuctionBuyOutNotificationPacket(Auction* auction)
             outbid = 1;
 
         SmsgAuctionBidderNotification managedPacket(getId(), auction->Id, auction->highestBidderGuid,
-            0, outbid, auction->auctionItem->getEntry());
+                                                    0, outbid, auction->auctionItem->getEntry());
         bidder->getSession()->sendManagedPacket(managedPacket);
     }
 
@@ -395,22 +389,18 @@ void AuctionHouse::sendAuctionBuyOutNotificationPacket(Auction* auction)
     if (owner && owner->IsInWorld())
     {
         SmsgAuctionOwnerNotification managedPacket(auction->Id, static_cast<uint32_t>(auction->highestBid),
-            auction->auctionItem->getEntry());
+                                                   auction->auctionItem->getEntry());
         owner->getSession()->sendManagedPacket(managedPacket);
     }
 }
 
-void AuctionHouse::sendAuctionOutBidNotificationPacket(Auction* auction, uint64_t newBidder, uint32_t newHighestBid)
+void AuctionHouse::sendAuctionOutBidNotificationPacket(Auction* auction, uint64_t newBidder, uint64_t newHighestBid)
 {
     Player* bidder = sObjectMgr.getPlayer(auction->highestBidderGuid.getLowGuid());
     if (bidder && bidder->IsInWorld())
     {
-        auto outbid = (auction->highestBid / 100) * 5;
-        if (!outbid)
-            outbid = 1;
-
-        SmsgAuctionBidderNotification managedPacket(getId(), auction->Id, newBidder, newHighestBid, outbid,
-            auction->auctionItem->getEntry());
+        SmsgAuctionBidderNotification managedPacket(getId(), auction->Id, newBidder, newHighestBid, auction->getAuctionOutBid(),
+                                                    auction->auctionItem->getEntry());
         bidder->getSession()->sendManagedPacket(managedPacket);
     }
 }
@@ -423,7 +413,7 @@ void AuctionHouse::sendAuctionExpiredNotificationPacket(Auction* auction)
         if (owner && owner->getSession())
         {
             SmsgAuctionRemovedNotification managedPacket(auction->Id, auction->auctionItem->getEntry(),
-                auction->auctionItem->getRandomPropertiesId());
+                                                         auction->auctionItem->getRandomPropertiesId());
             owner->getSession()->sendManagedPacket(managedPacket);
         }
     }
