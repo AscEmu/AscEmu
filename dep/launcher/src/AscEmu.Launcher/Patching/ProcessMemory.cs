@@ -2,7 +2,9 @@ namespace AscEmu.Launcher.Patching;
 
 internal sealed class ProcessMemory(nint processHandle)
 {
-    public bool Read(nint address, byte[] buffer) => NativeMethods.ReadProcessMemory(processHandle, address, buffer, buffer.Length, out var read) && read == buffer.Length;
+    public bool Read(nint address, byte[] buffer) => Read(address, buffer, buffer.Length);
+
+    public bool Read(nint address, byte[] buffer, int count) => NativeMethods.ReadProcessMemory(processHandle, address, buffer, count, out var read) && read == count;
 
     public bool Write(nint address, ReadOnlySpan<byte> data)
     {

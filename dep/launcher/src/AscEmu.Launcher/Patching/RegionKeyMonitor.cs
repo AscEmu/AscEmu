@@ -1,24 +1,31 @@
 using System.Diagnostics;
 using System.Media;
+using System.Runtime.InteropServices;
+using AscEmu.Launcher.Services;
 
 namespace AscEmu.Launcher.Patching;
 
+// Writes the AscEmu public key into every region-key table of the client and keeps scanning: the client holds a
+// table when it reaches the logon and may build or renew one before it connects to the world server.
 public sealed class RegionKeyMonitor : IDisposable
 {
     const int RecordSize = 0x28;
+    const int RecordWords = RecordSize / sizeof(uint);
     const int KeyOffset = 0x04;
     const int KeySize = 32;
     const int FlagOffset = 0x24;
     const int MinRecordCount = 8;
     const int MaxRecordCount = 32;
     const long MaximumRegionSize = 64L * 1024L * 1024L;
-    int _recordCount;
 
     readonly nint _processHandle;
     readonly int _processId;
     readonly bool _playSound;
     readonly CancellationTokenSource _cts = new();
+    readonly Dictionary<nint, int> _tables = new();
+    byte[] _buffer = new byte[1024 * 1024];
     bool _playedPatchSound;
+    bool _loggedScanTime;
 
     public event Action<string>? StatusChanged;
     public event Action? Patched;
@@ -41,65 +48,53 @@ public sealed class RegionKeyMonitor : IDisposable
     async Task RunAsync(CancellationToken token)
     {
         var memory = new ProcessMemory(_processHandle);
-        nint tableBase = 0;
-        var announcedWaiting = false;
-
-        StatusChanged?.Invoke("Attached to the client; waiting for region-key table...");
+        Report("Attached to the client; waiting for region-key tables...");
 
         while (!token.IsCancellationRequested)
         {
             try
             {
                 if (!IsProcessAlive())
+                {
+                    LauncherLog.Write("Client process ended");
                     return;
-
-                if (tableBase != 0 && !ValidateTableAt(memory, tableBase))
-                {
-                    StatusChanged?.Invoke("Region-key table moved/rebuilt; rescanning...");
-                    tableBase = 0;
-                    announcedWaiting = false;
                 }
 
-                if (tableBase == 0)
+                var scanStart = Stopwatch.GetTimestamp();
+                var writtenKeys = 0;
+                foreach (var (tableBase, count) in FindTables(memory))
                 {
-                    var matches = FindTables(memory);
-                    if (matches.Count == 1)
+                    if (!_tables.TryGetValue(tableBase, out var known) || known != count)
                     {
-                        tableBase = matches[0].Base;
-                        _recordCount = matches[0].Count;
-                        StatusChanged?.Invoke($"Found RegionGroup 1..{_recordCount} table at 0x{tableBase.ToInt64():X}");
-                        announcedWaiting = false;
+                        _tables[tableBase] = count;
+                        LauncherLog.Write($"Region-key table with ids 1..{count} at 0x{tableBase.ToInt64():X}");
                     }
-                    else if (matches.Count > 1)
-                    {
-                        StatusChanged?.Invoke($"Refusing to patch: found {matches.Count} exact region-key tables");
-                    }
-                    else if (!announcedWaiting)
-                    {
-                        StatusChanged?.Invoke("Region keys are not built yet; listener is waiting...");
-                        announcedWaiting = true;
-                    }
+
+                    var written = PatchTable(memory, tableBase, count);
+                    if (written > 0)
+                        LauncherLog.Write($"Wrote {written} of {count} keys at 0x{tableBase.ToInt64():X}");
+                    writtenKeys += written;
                 }
 
-                if (tableBase != 0 && TableNeedsPatch(memory, tableBase))
+                var scanMs = Stopwatch.GetElapsedTime(scanStart).TotalMilliseconds;
+                if (writtenKeys > 0 || !_loggedScanTime)
                 {
-                    if (PatchTable(memory, tableBase))
-                    {
-                        StatusChanged?.Invoke($"Patched all {_recordCount} Forever region public keys");
-                        if (_playSound && !_playedPatchSound)
-                        {
-                            try { SystemSounds.Asterisk.Play(); } catch { }
-                            _playedPatchSound = true;
-                        }
-                        Patched?.Invoke();
-                    }
-                    else
-                    {
-                        tableBase = 0;
-                    }
+                    LauncherLog.Write($"Scan took {scanMs:F0} ms");
+                    _loggedScanTime = true;
                 }
 
-                await Task.Delay(250, token);
+                if (writtenKeys > 0)
+                {
+                    Report($"Patched {writtenKeys} region public keys ({_tables.Count} table(s) found)");
+                    if (_playSound && !_playedPatchSound)
+                    {
+                        try { SystemSounds.Asterisk.Play(); } catch { }
+                        _playedPatchSound = true;
+                    }
+                    Patched?.Invoke();
+                }
+
+                await Task.Delay(100, token);
             }
             catch (OperationCanceledException)
             {
@@ -107,38 +102,49 @@ public sealed class RegionKeyMonitor : IDisposable
             }
             catch
             {
-                tableBase = 0;
                 await Task.Delay(500, token);
             }
         }
     }
 
+    void Report(string text)
+    {
+        LauncherLog.Write(text);
+        StatusChanged?.Invoke(text);
+    }
+
     List<(nint Base, int Count)> FindTables(ProcessMemory memory)
     {
-        var matches = new List<(nint Base, int Count)>();
+        var tables = new List<(nint Base, int Count)>();
         foreach (var region in memory.ReadableRegions())
         {
             if (!IsWritable(region.Protect) || region.Size < MinRecordCount * RecordSize || region.Size > MaximumRegionSize)
                 continue;
 
-            if (region.Size > int.MaxValue)
+            var size = (int)region.Size;
+            if (_buffer.Length < size)
+                _buffer = new byte[size];
+            if (!memory.Read(region.Base, _buffer, size))
                 continue;
 
-            var bytes = new byte[(int)region.Size];
-            if (!memory.Read(region.Base, bytes))
-                continue;
-
-            for (var offset = 0; offset + MinRecordCount * RecordSize <= bytes.Length; offset += 4)
+            var bytes = _buffer.AsSpan(0, size);
+            var words = MemoryMarshal.Cast<byte, uint>(bytes);
+            var lastStart = words.Length - MinRecordCount * RecordWords;
+            for (var index = 0; index <= lastStart; ++index)
             {
-                var count = CountRecords(bytes.AsSpan(offset));
+                // ids 1 and 2 one record apart, the full check only then
+                if (words[index] != 1 || words[index + RecordWords] != 2)
+                    continue;
+
+                var count = CountRecords(bytes[(index * sizeof(uint))..]);
                 if (count < MinRecordCount)
                     continue;
 
-                matches.Add((region.Base + offset, count));
-                offset += count * RecordSize - 4;
+                tables.Add((region.Base + index * sizeof(uint), count));
+                index += count * RecordWords - 1;
             }
         }
-        return matches;
+        return tables;
     }
 
     // records with the ids 1..n in a row; the table ends where the next id does not follow
@@ -155,33 +161,21 @@ public sealed class RegionKeyMonitor : IDisposable
         return count;
     }
 
-    bool ValidateTableAt(ProcessMemory memory, nint tableBase)
+    // number of keys that were replaced
+    static int PatchTable(ProcessMemory memory, nint tableBase, int count)
     {
-        var bytes = new byte[(_recordCount + 1) * RecordSize];
-        return memory.Read(tableBase, bytes) && CountRecords(bytes) == _recordCount;
-    }
-
-    bool TableNeedsPatch(ProcessMemory memory, nint tableBase)
-    {
-        for (var index = 0; index < _recordCount; ++index)
-        {
-            var current = new byte[KeySize];
-            var keyAddress = tableBase + index * RecordSize + KeyOffset;
-            if (!memory.Read(keyAddress, current) || !current.SequenceEqual(ForeverPatchProfile.AscEmuEd25519PublicKey))
-                return true;
-        }
-        return false;
-    }
-
-    bool PatchTable(ProcessMemory memory, nint tableBase)
-    {
-        for (var index = 0; index < _recordCount; ++index)
+        var written = 0;
+        var current = new byte[KeySize];
+        for (var index = 0; index < count; ++index)
         {
             var keyAddress = tableBase + index * RecordSize + KeyOffset;
-            if (!memory.Write(keyAddress, ForeverPatchProfile.AscEmuEd25519PublicKey))
-                return false;
+            if (!memory.Read(keyAddress, current) || current.AsSpan().SequenceEqual(ForeverPatchProfile.AscEmuEd25519PublicKey))
+                continue;
+
+            if (memory.Write(keyAddress, ForeverPatchProfile.AscEmuEd25519PublicKey))
+                ++written;
         }
-        return true;
+        return written;
     }
 
     static bool IsWritable(uint protection)

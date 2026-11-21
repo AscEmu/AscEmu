@@ -592,8 +592,9 @@ void WorldSocket::handleAesAuthSession(WorldPacket& packet)
 namespace
 {
     // the 1.60 client verifies the signature with the key its launcher writes into the key store while it logs in;
-    // sent at once the packet can arrive before that and the client leaves with reason 24
-    constexpr uint32_t EncryptionDelayMs = Profile::Expansion == WoW::Expansion::_WoWForever ? 1500 : 0;
+    // the launcher only builds the final 12-entry region table at the world connect and needs seconds to patch it, so
+    // the server waits before it sends the signature; sent too early the client leaves with reason 24
+    constexpr uint32_t EncryptionDelayMs = Profile::Expansion == WoW::Expansion::_WoWForever ? 8000 : 0;
 
     // the key store slot the client takes the public key from, the 1.60 client uses slot 8
     constexpr int32_t EncryptionKeySlot = Profile::Expansion == WoW::Expansion::_WoWForever ? 8 : 0;

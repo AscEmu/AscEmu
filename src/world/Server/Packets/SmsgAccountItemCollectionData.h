@@ -32,7 +32,7 @@ namespace AscEmu::Packets
             if (!m_protocol.isTheWarWithinOrLater())
                 return false;
 
-            packet << uint32_t(0);
+            packet << uint32_t(m_protocol.isForever() ? 0x08ECBD10 : 0);    // 1.60: the value of the official list
             packet << collectionType;
             packet << uint32_t(0);                  // items: id, type, 64 bit value, flags
             packet.writeBit(0);

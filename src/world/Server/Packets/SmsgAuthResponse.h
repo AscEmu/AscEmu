@@ -336,7 +336,8 @@ namespace AscEmu::Packets
                     { 9, 0 }, { 10, 4 }, { 11, 0 }, { 12, 6 }
                 };
 
-                const uint8_t expansion = static_cast<uint8_t>(m_protocol.expansion);
+                // 1.60: the content level of the classic client
+                const uint8_t expansion = m_protocol.isForever() ? 0 : static_cast<uint8_t>(m_protocol.expansion);
                 const uint32_t realmAddress = m_protocol.getVirtualRealmAddress();
 
                 std::string normalizedName = realmName;
@@ -347,6 +348,7 @@ namespace AscEmu::Packets
 
                 // 12.x: the game time info and the virtual realms precede the time and the race class availabilities
                 const bool midnight = m_protocol.isMidnight();
+                const auto raceList = raceClassesOf(m_protocol.isForever());
                 const auto writeGameTimeInfo = [&packet]()
                 {
                     packet << uint32_t(0);              // billing plan
@@ -376,7 +378,7 @@ namespace AscEmu::Packets
                 packet << expansion;                    // account expansion
                 packet << uint32_t(0);                  // seconds until pc kick
                 if (midnight)
-                    packet << uint32_t(sizeof(midnightRaceClasses) / sizeof(midnightRaceClasses[0]));
+                    packet << uint32_t(raceList.size());
                 else if (m_protocol.isBfA() || m_protocol.isShadowlands() || m_protocol.isDragonflight() || m_protocol.isTheWarWithinOrLater())
                     packet << uint32_t(sizeof(races) / sizeof(races[0]));
                 else
@@ -395,7 +397,7 @@ namespace AscEmu::Packets
                 if (midnight)
                 {
                     // 12.x: every race with its classes and the expansion they need (active, account, minimum active)
-                    for (const auto& raceClasses : midnightRaceClasses)
+                    for (const auto& raceClasses : raceList)
                     {
                         packet << uint8_t(raceClasses.race);
                         const uint32_t classCount = classCountOf(raceClasses);

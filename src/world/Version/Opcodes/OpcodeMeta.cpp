@@ -2599,5 +2599,6 @@ namespace Version::Tables
         { "SMSG_PLAY_SPELL_VISUAL_TARGETED", OpcodeDevelopmentState::Okay },
         { "CMSG_CALENDAR_EVENT_INVITE_NOTES", OpcodeDevelopmentState::Unchecked },
         { "SMSG_MIRROR_VARS", OpcodeDevelopmentState::Unchecked },
+        { "SMSG_REGIONWIDE_CHARACTER_RESTRICTIONS_DATA", OpcodeDevelopmentState::Unchecked },
     };
 }

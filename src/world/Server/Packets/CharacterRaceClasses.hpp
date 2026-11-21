@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include <cstdint>
+#include <span>
 
 namespace AscEmu::Packets
 {
@@ -51,6 +52,30 @@ namespace AscEmu::Packets
         { 86, { 1, 3, 4, 5, 7, 8, 9, 10, 11, 0, 0 } },     // haranir alliance
         { 91, { 1, 3, 4, 5, 7, 8, 9, 10, 11, 0, 0 } },     // haranir horde
     };
+
+    // The races of the 1.60 client with their classes, the two skyborne races first.
+    inline constexpr RaceClasses foreverRaceClasses[] = {
+        { 95, { 3, 4, 1, 8, 11, 0, 0, 0, 0, 0, 0 } },      // skyborne alliance
+        { 96, { 3, 4, 7, 1, 11, 0, 0, 0, 0, 0, 0 } },      // skyborne horde
+        { 1, { 1, 2, 4, 5, 8, 9, 3, 0, 0, 0, 0 } },        // human
+        { 2, { 1, 3, 4, 7, 9, 8, 0, 0, 0, 0, 0 } },        // orc
+        { 3, { 1, 2, 3, 5, 4, 7, 0, 0, 0, 0, 0 } },        // dwarf
+        { 4, { 1, 3, 4, 5, 11, 0, 0, 0, 0, 0, 0 } },       // night elf
+        { 5, { 1, 4, 5, 8, 9, 2, 0, 0, 0, 0, 0 } },        // undead
+        { 6, { 1, 3, 7, 11, 0, 0, 0, 0, 0, 0, 0 } },       // tauren
+        { 7, { 1, 4, 8, 9, 5, 0, 0, 0, 0, 0, 0 } },        // gnome
+        { 8, { 1, 4, 3, 5, 7, 8, 9, 0, 0, 0, 0 } },        // troll
+    };
+
+    // the race list a client gets
+    inline constexpr std::span<const RaceClasses> raceClassesOf(bool forever)
+    {
+        return forever ? std::span<const RaceClasses>(foreverRaceClasses) : std::span<const RaceClasses>(midnightRaceClasses);
+    }
+
+    // the logonserver announces the 1.60 realm with this super district and content set
+    inline constexpr uint32_t foreverSuperDistrictId = 2;
+    inline constexpr int32_t foreverContentSetId = 137;
 
     inline constexpr uint32_t classCountOf(RaceClasses const& entry)
     {

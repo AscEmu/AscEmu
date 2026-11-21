@@ -226,7 +226,9 @@ namespace WoW {
 
         [[nodiscard]] bool isMainlineAtLeast(Expansion exp) const noexcept
         {
-            return isValid() && expansion >= exp && expansion < Expansion::_Classic_Era;
+            // the Forever client compares like Midnight, it takes the 12.x layouts
+            const Expansion layout = expansion == Expansion::_WoWForever ? Expansion::_Midnight : expansion;
+            return isValid() && layout >= exp && layout < Expansion::_Classic_Era;
         }
 
         [[nodiscard]] bool isMainlineAtMost(Expansion exp) const noexcept

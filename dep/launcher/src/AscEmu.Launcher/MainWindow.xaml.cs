@@ -87,9 +87,9 @@ public partial class MainWindow : Window
     {
         if (!_settings.AutoConfigureHosts)
             return;
-        var (host, _) = BattleNetStatusService.ParsePortal(_settings.Portal);
+        var (host, port) = BattleNetStatusService.ParsePortal(_settings.Portal);
         var caPath = string.IsNullOrWhiteSpace(_settings.CaCertificatePath) ? null : _settings.CaCertificatePath;
-        await Task.Run(() => SystemTrust.Ensure(host, _settings.ServerAddress, caPath, SetPatchStatus));
+        await Task.Run(() => SystemTrust.Ensure(host, _settings.ServerAddress, port, caPath, SetPatchStatus));
     }
 
     void Play_Click(object sender, RoutedEventArgs e)

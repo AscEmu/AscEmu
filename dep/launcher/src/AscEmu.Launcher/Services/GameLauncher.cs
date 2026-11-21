@@ -27,6 +27,7 @@ public static class GameLauncher
             throw new System.ComponentModel.Win32Exception(System.Runtime.InteropServices.Marshal.GetLastWin32Error(), $"Could not launch {Path.GetFileName(client.BinaryPath)}.");
         try
         {
+            LauncherLog.Write($"Started {Path.GetFileName(client.BinaryPath)} build {client.Build}, process {process.dwProcessId}, portal {settings.Portal}");
             status("Forever launch mode: none (no pre-launch memory patches)");
             var monitor = new RegionKeyMonitor(process.hProcess, (int)process.dwProcessId, settings.PlayPatchSound);
             monitor.StatusChanged += status;

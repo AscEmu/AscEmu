@@ -348,28 +348,35 @@ namespace AscEmu::Packets
                 // 11.x: success, realmless, list of deleted characters, new player restrictions ignored, restricted
                 // new player, newcomer chat completed, restricted trial, unused, has a mask of disabled classes,
                 // no character displays
+                // 1.60: a filled list is realmless with region wide characters, the mask of disabled classes is always sent
+                const bool forever = m_protocol.isForever();
+                const bool regionwide = forever && !enum_data.empty();
+                const auto raceList = raceClassesOf(forever);
+
                 packet.writeBit(1);
+                packet.writeBit(regionwide);
                 packet.writeBit(0);
                 packet.writeBit(0);
                 packet.writeBit(0);
                 packet.writeBit(0);
                 packet.writeBit(0);
                 packet.writeBit(0);
-                packet.writeBit(0);
-                packet.writeBit(0);
+                packet.writeBit(forever);
                 packet.writeBit(0);
                 packet.flushBits();
-                packet << uint32_t(enum_data.size());
-                packet << uint32_t(0);                          // regionwide characters
+                packet << uint32_t(regionwide ? 0 : enum_data.size());
+                packet << uint32_t(regionwide ? enum_data.size() : 0);  // regionwide characters
                 packet << maxCharacterLevel;
-                packet << uint32_t(m_protocol.isMidnight() ? sizeof(midnightRaceClasses) / sizeof(midnightRaceClasses[0]) : sizeof(unlockedRaces) / sizeof(unlockedRaces[0]));
+                packet << uint32_t(m_protocol.isMidnight() ? raceList.size() : sizeof(unlockedRaces) / sizeof(unlockedRaces[0]));
                 packet << uint32_t(0);                          // unlocked conditional appearances
                 packet << uint32_t(0);                          // race limit disables
                 packet << uint32_t(0);                          // warband groups
+                if (forever)
+                    packet << uint32_t(0);                      // disabled classes
 
                 uint16_t listPosition = 0;
                 for (auto const& data : enum_data)
-                    writeCharacterTheWarWithin(packet, data, listPosition++);
+                    writeCharacterTheWarWithin(packet, data, listPosition++, regionwide);
 
                 // the unlock state of a race: license, achievement, heritage armor achievement, entitlement (11.x
                 // unused), hidden on the client; 12.x adds faction balance disabled and no available classes
@@ -392,7 +399,7 @@ namespace AscEmu::Packets
                 {
                     // 12.x: every race with its classes and their unlock state (expansion, achievement, entitlement),
                     // the client offers a race only with them
-                    for (const auto& raceClasses : midnightRaceClasses)
+                    for (const auto& raceClasses : raceList)
                     {
                         packet << raceClasses.race;
                         const uint32_t classCount = classCountOf(raceClasses);
@@ -583,7 +590,7 @@ namespace AscEmu::Packets
         }
 
         // character of the 11.x list: the basic data, then the restrictions and mails
-        void writeCharacterTheWarWithin(WorldPacket& packet, CharEnumData const& data, uint16_t listPosition) const
+        void writeCharacterTheWarWithin(WorldPacket& packet, CharEnumData const& data, uint16_t listPosition, bool regionwide) const
         {
             packet << WoWGuid128::realmSpecific(HighGuid128::Player, m_protocol.realmId, WoWGuid::getLowGuidFromRaw(data.guid));
             packet << uint32_t(m_protocol.getVirtualRealmAddress());
@@ -625,6 +632,7 @@ namespace AscEmu::Packets
             // item, transmogrified item; 12.x: item, transmogrified item, subclass, inventory type, display,
             // enchantment, secondary appearance, sheathe category
             const bool midnight = m_protocol.isMidnight();
+            const bool forever = m_protocol.isForever();
             for (uint8_t i = 0; i < 19; ++i)
             {
                 if (midnight)
@@ -649,10 +657,10 @@ namespace AscEmu::Packets
                 packet << uint32_t(0);                          // transmogrified item
             }
 
-            packet << int32_t(0);                               // save version
+            packet << int32_t(forever ? 49 : 0);                // save version, the 1.60 character services need 49
             packet << int64_t(0);                               // creation time
             packet << int64_t(0);                               // last active time
-            packet << uint32_t(m_protocol.expansion == WoW::Expansion::_Midnight ? WoW::Build::MIDNIGHT_BUILD : WoW::Build::TWW_BUILD); // build of the last login
+            packet << uint32_t(forever ? WoW::Build::FOREVER_BUILD : m_protocol.expansion == WoW::Expansion::_Midnight ? WoW::Build::MIDNIGHT_BUILD : WoW::Build::TWW_BUILD); // build of the last login
             for (uint8_t i = 0; i < 5; ++i)
                 packet << int32_t(-1);                          // personal tabard (none)
             packet << uint32_t(0);                              // profession 1
@@ -660,16 +668,32 @@ namespace AscEmu::Packets
             packet << int32_t(0);                               // timerunning season
             packet << uint32_t(0);                              // override of the select screen file
             packet << uint32_t(0);                              // 12.x: realm queue
+            if (forever)
+                packet << foreverSuperDistrictId;               // 1.60: super district of the realm
 
             for (const auto& customization : customizations)
                 packet << customization.optionId << customization.choiceId;
 
             packet.writeBits(static_cast<uint32_t>(data.name.length()), 6);
+            if (forever)
+                packet.writeBits(0, 6);                         // 1.60: length of the surname
             packet.writeBit(data.loginFlags & 0x20);            // first login
-            packet.writeBit(0);                                 // 12.x: realm info found
+            packet.writeBit(regionwide);                        // 12.x: realm info found
             packet.writeBit(0);                                 // 12.x: realm offline
             packet.flushBits();
             packet.append(data.name.c_str(), data.name.length());
+
+            // region wide entry: money, item level, mythic plus score, pvp rating with its bracket and specialization
+            if (regionwide)
+            {
+                packet << uint64_t(0);
+                packet << float(0.0f);
+                packet << float(0.0f);
+                packet << int32_t(0);
+                packet << int8_t(-1);
+                packet << int16_t(0);
+                return;
+            }
 
             // restrictions and mails: boost in progress, rpe available; restriction flags, mail senders, mail sender types,
             // 12.x: the reason rpe is not available
