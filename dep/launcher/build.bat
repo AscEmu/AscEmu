@@ -1,4 +1,5 @@
 @echo off
+set VSLANG=1033
 setlocal
 if not exist build\CMakeCache.txt call configure.bat
 if not exist build\CMakeCache.txt exit /b 1
