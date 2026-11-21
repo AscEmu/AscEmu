@@ -354,7 +354,8 @@ namespace WoW {
     }
 
     /// Expansion of the client data (dbc, maps) the server loads for an expansion.
-    /// WoD, Legion, BfA, Shadowlands, Dragonflight, The War Within, Midnight and Forever run on the Mop client data until their own data is available.
+    /// WoD, Legion, BfA, Shadowlands, Dragonflight and The War Within run on the Mop client data until their own data is available,
+    /// Midnight and Forever load their own tables (hasOwnClientData) and keep the Mop layouts only for the shared dbc code.
     /// The database rows are filtered with the build of the expansion itself, see getDBDataBuildExpansion().
     [[nodiscard]] constexpr Expansion getDataExpansion(Expansion const expansion) noexcept
     {
@@ -367,7 +368,13 @@ namespace WoW {
     /// Expansions whose own DB2 tables the server loads (data_<expansion>/dbc) instead of the Mop dbc files.
     [[nodiscard]] constexpr bool hasOwnClientData(Expansion const expansion) noexcept
     {
-        return expansion == Expansion::_Midnight;
+        return expansion == Expansion::_Midnight || expansion == Expansion::_WoWForever;
+    }
+
+    /// The expansion a server is compared as: Forever runs on the 12.x engine and compares like Midnight.
+    [[nodiscard]] constexpr Expansion getComparedExpansion(Expansion const expansion) noexcept
+    {
+        return expansion == Expansion::_WoWForever ? Expansion::_Midnight : expansion;
     }
 
     /// Build the database rows (properties, spawns, quests, events, ...) are filtered with for an expansion:
@@ -420,7 +427,7 @@ namespace WoW {
 
     [[nodiscard]] inline bool isServerExpansionAtLeast(Expansion const expansion) noexcept
     {
-        Expansion const serverExpansion = getServerExpansion();
+        Expansion const serverExpansion = getComparedExpansion(getServerExpansion());
         if (serverExpansion == Expansion::Unknown || expansion == Expansion::Unknown)
         {
             return false;
@@ -435,7 +442,7 @@ namespace WoW {
 
     [[nodiscard]] inline bool isServerExpansionBetween(Expansion const minExpansion, Expansion const maxExpansion) noexcept
     {
-        Expansion const serverExpansion = getServerExpansion();
+        Expansion const serverExpansion = getComparedExpansion(getServerExpansion());
         if (serverExpansion == Expansion::Unknown || minExpansion == Expansion::Unknown || maxExpansion == Expansion::Unknown)
         {
             return false;

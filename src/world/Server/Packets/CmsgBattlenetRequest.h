@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include <cstdint>
+#include <vector>
 
 namespace AscEmu::Packets
 {
@@ -19,6 +20,7 @@ namespace AscEmu::Packets
         uint64_t objectId = 0;
         uint32_t token = 0;
         uint32_t dataSize = 0;
+        std::vector<uint8_t> data;
 
         CmsgBattlenetRequest() : ManagedPacket(CMSG_BATTLENET_REQUEST, 24) {}
 
@@ -34,6 +36,10 @@ namespace AscEmu::Packets
             packet >> methodType >> objectId >> token >> dataSize;
             if (dataSize > 0xFFFF || packet.rpos() + dataSize > packet.size())
                 return false;
+
+            data.resize(dataSize);
+            if (dataSize != 0)
+                packet.read(data.data(), dataSize);
 
             return true;
         }

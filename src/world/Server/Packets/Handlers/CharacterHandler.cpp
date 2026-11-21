@@ -27,6 +27,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgCharCreate.h"
 #include "Server/Packets/CmsgCheckCharacterNameAvailability.h"
 #include "Server/Packets/SmsgCheckCharacterNameAvailabilityResult.h"
+#include "Server/Packets/CmsgGetRegionwideCharacterRestrictionAndMailData.h"
+#include "Server/Packets/CmsgSetForeverExperiencePreset.h"
+#include "Server/Packets/CmsgSelectForeverExperiencePreset.h"
 #include "Server/Packets/CmsgCharCustomize.h"
 #include "Server/Packets/SmsgCharCustomize.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
@@ -513,6 +516,38 @@ void WorldSession::handleCheckCharacterNameAvailabilityOpcode(WorldPacket& recvP
     sendManagedPacket(managedPacket);
 }
 
+void WorldSession::handleGetRegionwideCharacterDataOpcode(WorldPacket& recvPacket)
+{
+    CmsgGetRegionwideCharacterRestrictionAndMailData srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    // the restriction data already follows every list; a list sent right after a creation is sent once more
+    if (!m_characterListRefreshPending)
+        return;
+
+    m_characterListRefreshPending = false;
+    handleCharEnumOpcode(recvPacket);
+}
+
+void WorldSession::handleSetForeverExperiencePresetOpcode(WorldPacket& recvPacket)
+{
+    CmsgSetForeverExperiencePreset srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    m_classicExperiencePreset = srlPacket.classic;
+}
+
+void WorldSession::handleSelectForeverExperiencePresetOpcode(WorldPacket& recvPacket)
+{
+    CmsgSelectForeverExperiencePreset srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    m_classicExperiencePreset = srlPacket.classic;
+}
+
 void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
 {
     CmsgCharCreate srlPacket;
@@ -672,6 +707,8 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
 
     newPlayer->m_isReadyToBeRemoved = true;
     delete newPlayer;
+
+    m_characterListRefreshPending = getClientProtocol().isForever();
 
     SmsgCharCreate managedPacket(E_CHAR_CREATE_SUCCESS);
     sendManagedPacket(managedPacket);

@@ -93,6 +93,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgConquestFormulaConstants.h"
 #include "Server/Packets/SmsgServerTimeOffset.h"
 #include "Server/Packets/SmsgSocialContractRequestResponse.h"
+#include "Server/Packets/SmsgLastCatalogFetchResponse.h"
+#include "Server/BattlenetRpc.hpp"
+#include "ForeverRealmEntry.hpp"
 #include "Server/Packets/CmsgBattlenetRequest.h"
 #include "Server/Packets/SmsgBattlenetResponse.h"
 #include "Server/Packets/CmsgSaveCufProfiles.h"
@@ -1335,6 +1338,13 @@ void WorldSession::handleNoResponseOpcode(WorldPacket& /*recvPacket*/)
     // notifications of the client the server has nothing to answer to
 }
 
+void WorldSession::handleGetLastCatalogFetchOpcode(WorldPacket& /*recvPacket*/)
+{
+    // no shop catalog was fetched
+    SmsgLastCatalogFetchResponse managedPacket(0);
+    sendManagedPacket(managedPacket);
+}
+
 void WorldSession::handleRequestLatestSplashScreenOpcode(WorldPacket& /*recvPacket*/)
 {
     // no splash screen to show
@@ -1376,7 +1386,26 @@ void WorldSession::handleBattlenetRequestOpcode(WorldPacket& recvPacket)
 
     sLogger.debugOpcode("Received CMSG_BATTLENET_REQUEST service 0x{:08X} method {} token {}.", srlPacket.getServiceHash(), srlPacket.getMethodId(), srlPacket.token);
 
-    // no Battle.net service is served through the world connection, the call is answered as not implemented
+    // the 1.60 character screen asks its realm connection for the realm of its characters before it creates one
+    namespace Rpc = AscEmu::BattlenetRpc;
+    if (getClientProtocol().isForever() && srlPacket.getServiceHash() == Rpc::GameUtilitiesService &&
+        (srlPacket.getMethodId() & Rpc::MethodIdMask) == Rpc::ClientRequestMethod)
+    {
+        const auto request = Rpc::readRequest(srlPacket.data);
+        if (request.command.starts_with("Command_LastCharPlayedRequest"))
+        {
+            std::vector<uint8_t> answer;
+            Rpc::writeBlobAttribute(answer, "Param_RealmEntry", Rpc::compressText(AscEmu::Forever::LastPlayedRealmEntry));
+            Rpc::writeIntAttribute(answer, "Param_LastPlayedTime", static_cast<uint64_t>(UNIXTIME));
+            Rpc::writeBlobAttribute(answer, "Param_UtilityInfo", Rpc::compressText("JSONUtilityInfo:{\"realmPermissions\":512}"));
+
+            SmsgBattlenetResponse response(SmsgBattlenetResponse::StatusOk, srlPacket.methodType, srlPacket.token, std::move(answer));
+            sendManagedPacket(response);
+            return;
+        }
+    }
+
+    // no other Battle.net service is served through the world connection, the call is answered as not implemented
     SmsgBattlenetResponse response(SmsgBattlenetResponse::StatusNotImplemented, srlPacket.methodType, srlPacket.token);
     sendManagedPacket(response);
 }

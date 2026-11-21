@@ -49,6 +49,26 @@ namespace
     // the client whose column layout is loaded (see WoW::hasOwnClientData)
     namespace Layout = WDB::Formats::MidnightClient;
 
+    // the 1.60 client: a few tables carry one column more than the 12.1.5 ones
+    [[nodiscard]] bool isForeverData() noexcept { return WoW::isServerExpansion(WoW::Expansion::_WoWForever); }
+
+    // 1 for the columns behind the added one of such a table
+    [[nodiscard]] uint32_t addedColumn() noexcept { return isForeverData() ? 1 : 0; }
+
+    // the schema of a table for the client that is loaded
+    [[nodiscard]] WDC5TableSchema const& clientSchema(WDC5TableSchema const& schema)
+    {
+        if (isForeverData())
+        {
+            for (WDC5TableSchema const* const table : WDB::Formats::ForeverClient::Tables)
+            {
+                if (std::string_view(table->filename) == schema.filename)
+                    return *table;
+            }
+        }
+        return schema;
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Access helpers
 
@@ -129,8 +149,9 @@ namespace
     bool loadTables(WDB::StoreProblemList& errors, std::string const& dbcPath, std::initializer_list<TableLoad> tables)
     {
         bool ok = true;
-        for (auto const& [file, schema] : tables)
+        for (auto const& [file, tableSchema] : tables)
         {
+            WDC5TableSchema const& schema = clientSchema(tableSchema);
             std::string error;
             if (file.load(dbcPath + schema.filename, schema, &error))
             {
@@ -262,20 +283,22 @@ namespace
         // 64 bit of which the runtime consumes the low half.
         fillStore(sFactionStore, faction, [](WDB::Structures::FactionEntry& entry, Row const& row)
         {
+            // 1.60 has the renown curve in front of the reputation columns
+            const uint32_t added = addedColumn();
             entry.id = row.id();
             entry.reputationIndex = row.i16(2);
             entry.parentFactionId = row.u16(3);
             entry.expansion = row.u8(4);
             for (uint32_t i = 0; i < 4; ++i)
             {
-                entry.reputationClassMask[i] = row.i16(10, i);
-                entry.reputationFlags[i] = row.u16(11, i);
-                entry.reputationBase[i] = row.i32(12, i);
-                entry.reputationRaceMask[i] = row.i32(16 + i, 0);
+                entry.reputationClassMask[i] = row.i16(10 + added, i);
+                entry.reputationFlags[i] = row.u16(11 + added, i);
+                entry.reputationBase[i] = row.i32(12 + added, i);
+                entry.reputationRaceMask[i] = row.i32(16 + added + i, 0);
             }
-            entry.spilloverRateIn = row.f32(14, 0);
-            entry.spilloverRateOut = row.f32(14, 1);
-            entry.spilloverMaxIn = row.u8(15, 0);
+            entry.spilloverRateIn = row.f32(14 + added, 0);
+            entry.spilloverRateOut = row.f32(14 + added, 1);
+            entry.spilloverMaxIn = row.u8(15 + added, 0);
             entry.name = row.str(0);
         });
 
@@ -321,7 +344,9 @@ namespace
                 continue;
 
             uint8_t const classId = row.i8(0);
-            uint64_t const raceMask = makeUInt64(row.i32(3, 0), row.i32(3, 1));
+            // 1.60 has a column in front of the race mask
+            uint32_t const raceMaskField = 3 + addedColumn();
+            uint64_t const raceMask = makeUInt64(row.i32(raceMaskField, 0), row.i32(raceMaskField, 1));
             for (uint32_t raceBit = 0; raceBit < 64; ++raceBit)
             {
                 if ((raceMask & (uint64_t{ 1 } << raceBit)) == 0)
@@ -605,12 +630,16 @@ namespace
             entry.map_id = row.u16(2);              // ContinentID
             entry.zone = row.u16(3);                // ParentAreaID
             entry.explore_flag = row.i16(4);        // AreaBit
-            entry.flags = row.i32(21, 0);
-            // the level range moved to ContentTuning, area_level stays 0
+            // 1.60 has the exploration level in column 11
+            const uint32_t added = addedColumn();
+            entry.flags = row.i32(21 + added, 0);
+            // the level range moved to ContentTuning, area_level stays 0 without the exploration level
+            if (added != 0)
+                entry.area_level = row.i8(11);
             entry.area_name = row.str(1);
-            entry.team = row.u8(13);                // FactionGroupMask
+            entry.team = row.u8(13 + added);        // FactionGroupMask
             for (uint32_t i = 0; i < 4; ++i)
-                entry.liquid_type_override[i] = row.u16(22, i);
+                entry.liquid_type_override[i] = row.u16(22 + added, i);
         });
         MapManagement::AreaManagement::AreaStorage::initialise(&sAreaStore);
 
@@ -924,7 +953,7 @@ namespace
             entry.name = row.str(0);
             entry.TotalCap = row.u32(6); // MaxQty
             entry.WeekCap = row.u32(7); // MaxEarnablePerWeek
-            entry.Flags = row.i32(21, 0);
+            entry.Flags = row.i32(21 + addedColumn(), 0); // 1.60 has a column in front of it
         });
 
         fillContainer(sGuildPerkSpellsStore, guildPerkSpells, [](WDB::Structures::GuildPerkSpellsEntry& entry, Row const& row)
@@ -1171,7 +1200,7 @@ namespace
             entry.id = row.id();
             entry.itemClass = row.i32(0);
             entry.itemSubClass = row.u8(1);
-            entry.soundOverrideSubclass = row.i8(5);
+            entry.soundOverrideSubclass = row.i8(5 + addedColumn()); // 1.60 has the pet food in column 5
             entry.material = row.u8(2);
             if (auto const display = displayInfoByItem.find(entry.id); display != displayInfoByItem.end())
                 entry.displayId = display->second;
@@ -1322,7 +1351,7 @@ namespace
             entry.Id = row.id();
             entry.skilline = row.parentOr(3);
             entry.spell = row.i32(4);
-            entry.race_mask = row.i32(16, 0);
+            entry.race_mask = row.i32(16 + addedColumn(), 0); // 1.60 has a column in front of it
             entry.class_mask = row.i32(6);
             entry.minSkillLineRank = row.i16(5);
             entry.next = row.i32(7); // SupercedesSpell
@@ -1438,8 +1467,8 @@ namespace
         {
             entry.ID = row.id();
             entry.Duration1 = row.i32(0); // Duration
-            entry.Duration2 = row.i32(1); // MaxDuration
-            entry.Duration3 = row.i32(2); // DurationPerResource
+            entry.Duration2 = row.i32(1); // MaxDuration, in 1.60 the duration per level
+            entry.Duration3 = row.i32(2); // DurationPerResource, in 1.60 the maximum
         });
 
         // Only the effects of the base difficulty are kept: the effect map holds one

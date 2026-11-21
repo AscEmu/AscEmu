@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "BNetTlsContext.hpp"
 #include "BNetProtocol.hpp"
 #include "LogonCommDefines.hpp"
+#include "ForeverRealmEntry.hpp"
 #include "Realm/RealmManager.hpp"
 #include "Server/AccountMgr.h"
 #include "Server/AccountService.hpp"
@@ -2346,28 +2347,7 @@ namespace AscEmu::Battlenet
             // to RealmListRequest.
             //
             // Values below mirror the observed Classic Beta PvE context.
-            const std::string realmEntryJson =
-                "JamJSONRealmEntry:{"
-                "\"wowRealmAddress\":1174470658,"
-                "\"useBleepChance\":0.0,"
-                "\"cfgTimezonesID\":1,"
-                "\"populationState\":2,"
-                "\"cfgCategoriesID\":26,"
-                "\"version\":{"
-                    "\"versionMajor\":1,"
-                    "\"versionBuild\":69800,"
-                    "\"versionMinor\":60,"
-                    "\"versionRevision\":1"
-                "},"
-                "\"cfgRealmsID\":4618,"
-                "\"gameServiceRegionId\":98,"
-                "\"flags\":0,"
-                "\"name\":\"Classic Beta PvE\","
-                "\"cfgConfigsID\":1,"
-                "\"cfgContentSetID\":137,"
-                "\"cfgLanguagesID\":1,"
-                "\"superDistrictID\":2"
-                "}";
+            const std::string realmEntryJson(AscEmu::Forever::LastPlayedRealmEntry);
 
             const std::string utilityInfoJson =
                 "JSONUtilityInfo:{"

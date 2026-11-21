@@ -2602,5 +2602,11 @@ namespace Version::Tables
         { "SMSG_REGIONWIDE_CHARACTER_RESTRICTIONS_DATA", OpcodeDevelopmentState::Unchecked },
         { "CMSG_CHECK_CHARACTER_NAME_AVAILABILITY", OpcodeDevelopmentState::Unchecked },
         { "SMSG_CHECK_CHARACTER_NAME_AVAILABILITY_RESULT", OpcodeDevelopmentState::Unchecked },
+        { "CMSG_UPDATE_LAST_CATALOG_FETCH", OpcodeDevelopmentState::Unchecked },
+        { "SMSG_LAST_CATALOG_FETCH_RESPONSE", OpcodeDevelopmentState::Unchecked },
+        { "CMSG_ACCEPT_SOCIAL_CONTRACT", OpcodeDevelopmentState::Unchecked },
+        { "CMSG_GET_REGIONWIDE_CHARACTER_RESTRICTION_AND_MAIL_DATA", OpcodeDevelopmentState::Unchecked },
+        { "CMSG_SET_FOREVER_EXPERIENCE_PRESET", OpcodeDevelopmentState::Unchecked },
+        { "CMSG_SELECT_FOREVER_EXPERIENCE_PRESET", OpcodeDevelopmentState::Unchecked },
     };
 }

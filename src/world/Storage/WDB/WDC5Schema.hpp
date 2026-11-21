@@ -185,4 +185,20 @@ namespace WDB
         inline const WDC5TableSchema SpellItemEnchantment = makeSchemaWithArrays("SpellItemEnchantment.db2", 0x952B72B2, -1, 24, { { 4, 3 }, { 5, 3 }, { 6, 3 }, { 8, 3 } });
         inline const WDC5TableSchema SpellXSpellVisual = makeScalarSchema("SpellXSpellVisual.db2", 0x7994A890, 0, 12);
     }
+
+    // Column layouts of the 1.60.1 client (build 70959): the 12.1.5 ones, these tables carry one column more.
+    namespace Formats::ForeverClient
+    {
+        inline const WDC5TableSchema Faction = makeSchemaWithArrays("Faction.db2", 0x6D443C38, -1, 21, { { 11, 4 }, { 12, 4 }, { 13, 4 }, { 14, 4 }, { 15, 2 }, { 16, 2 }, { 17, 2 }, { 18, 2 }, { 19, 2 }, { 20, 2 } });
+        inline const WDC5TableSchema CharacterLoadout = makeSchemaWithArrays("CharacterLoadout.db2", 0x713CE8BB, -1, 5, { { 4, 2 } });
+        inline const WDC5TableSchema NameGen = makeScalarSchema("NameGen.db2", 0x584300FA, -1, 4);
+        inline const WDC5TableSchema Map = makeSchemaWithArrays("Map.db2", 0xD43AFAC3, -1, 26, { { 6, 2 }, { 25, 3 } });
+        inline const WDC5TableSchema AreaTable = makeSchemaWithArrays("AreaTable.db2", 0x9995B797, -1, 24, { { 22, 2 }, { 23, 4 } });
+        inline const WDC5TableSchema CurrencyTypes = makeSchemaWithArrays("CurrencyTypes.db2", 0xEBEAF439, -1, 23, { { 22, 2 } });
+        inline const WDC5TableSchema Item = makeScalarSchema("Item.db2", 0x9A2A4834, -1, 16);
+        inline const WDC5TableSchema SkillLineAbility = makeSchemaWithArrays("SkillLineAbility.db2", 0x224F7EA0, 2, 18, { { 16, 2 }, { 17, 2 } });
+        inline const WDC5TableSchema SpellDuration = makeScalarSchema("SpellDuration.db2", 0x4FDF0951, -1, 4);
+
+        inline const WDC5TableSchema* const Tables[] = { &Faction, &CharacterLoadout, &NameGen, &Map, &AreaTable, &CurrencyTypes, &Item, &SkillLineAbility, &SpellDuration };
+    }
 }

@@ -413,6 +413,10 @@ protected:
         void handleCharRenameOpcode(WorldPacket& recvPacket);
         void handleCharCreateOpcode(WorldPacket& recvPacket);
         void handleCheckCharacterNameAvailabilityOpcode(WorldPacket& recvPacket);   // Forever
+        void handleGetRegionwideCharacterDataOpcode(WorldPacket& recvPacket);       // Forever
+        void handleSetForeverExperiencePresetOpcode(WorldPacket& recvPacket);       // Forever
+        void handleSelectForeverExperiencePresetOpcode(WorldPacket& recvPacket);    // Forever
+        void handleGetLastCatalogFetchOpcode(WorldPacket& /*recvPacket*/);          // Forever
         void handleSetPlayerDeclinedNamesOpcode(WorldPacket& recvPacket); // declined names (Cyrillic client)
         void handleCharEnumOpcode(WorldPacket& /*recvPacket*/);
 
@@ -1079,6 +1083,11 @@ protected:
 
         bool has_level_55_char{false}; // death knights
         bool has_dk{false};
+
+        // 1.60: the list is sent once more when the client names its characters after a creation
+        bool m_characterListRefreshPending{false};
+        // 1.60: experience preset picked on the character screen
+        bool m_classicExperiencePreset{false};
 
         // uint16_t _TEMP_ERR_CREATE_CODE; // increments
         uint8_t _side;

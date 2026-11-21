@@ -775,6 +775,9 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode<STATUS_AUTHED>(CMSG_ENUM_CHARACTERS, &WorldSession::handleCharEnumOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_CHAR_CREATE, &WorldSession::handleCharCreateOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_CHECK_CHARACTER_NAME_AVAILABILITY, &WorldSession::handleCheckCharacterNameAvailabilityOpcode, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_GET_REGIONWIDE_CHARACTER_RESTRICTION_AND_MAIL_DATA, &WorldSession::handleGetRegionwideCharacterDataOpcode, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_SET_FOREVER_EXPERIENCE_PRESET, &WorldSession::handleSetForeverExperiencePresetOpcode, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_SELECT_FOREVER_EXPERIENCE_PRESET, &WorldSession::handleSelectForeverExperiencePresetOpcode, false, false, false, false, false, false, false, false, false, false, false, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_CHAR_DELETE, &WorldSession::handleCharDeleteOpcode, true, true, true, true, true, true, true, true, true, true, true, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_CHAR_RENAME, &WorldSession::handleCharRenameOpcode, true, true, true, true, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_CHAR_CUSTOMIZE, &WorldSession::handleCharCustomizeLooksOpcode, false, false, true, true, false);
@@ -820,7 +823,12 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_GET_CHARACTER_CURRENCY_TRANSFER_LOG, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_GET_LANDING_PAGE_SHIPMENTS, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, false, false, true, true, true, true);
     registry.registerOpcode(CMSG_BATTLEMASTER_JOIN_SKIRMISH, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, true, true, true, true, true, true, true);
-    registry.registerOpcode<STATUS_AUTHED>(CMSG_GET_LAST_CATALOG_FETCH, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_GET_LAST_CATALOG_FETCH, &WorldSession::handleGetLastCatalogFetchOpcode, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_UPDATE_LAST_CATALOG_FETCH, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_ACCEPT_SOCIAL_CONTRACT, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, false, false, false, false, false, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_KEEP_ALIVE, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, false, false, false, false, false, true);
+    // no hotfixes are announced, a request has nothing to deliver
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_HOTFIX_REQUEST, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, false, false, false, false, false, true);
     registry.registerOpcode(CMSG_OPEN_TRADESKILL_NPC, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, true, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_GET_GARRISON_INFO, &WorldSession::handleGetGarrisonInfoOpcode, false, false, false, false, false, false, true, true, true, true, true, true);
     registry.registerOpcode(CMSG_OVERRIDE_SCREEN_FLASH, &WorldSession::handleNoResponseOpcode, false, false, false, false, false, false, false, false, true, true, true, true);
