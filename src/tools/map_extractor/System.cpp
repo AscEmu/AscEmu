@@ -2097,7 +2097,8 @@ int main(int argc, char* arg[])
     auto detected = mpqlib::detectClientVersion(input_path);
     if (!detected)
     {
-        printf("Fatal Error: No wow.exe found in %s!\n", input_path);
+        printf("Fatal Error: No client found in %s!\n", input_path);
+        printf("Start the tool in the client folder: the one with .build.info and Data (WoD and later) or with wow.exe (up to Mop).\n");
         std::cin.get();
         return 0;
     }
@@ -2139,7 +2140,7 @@ int main(int argc, char* arg[])
         if (uint32_t const storageBuild = storage->buildNumber(); storageBuild != 0)
             buildNumber = storageBuild;
 
-        if ((CONF_extract & EXTRACT_DBC) && !CascExtractor::run(*storage, versionName, buildNumber, CONF_fullDb2Scan))
+        if ((CONF_extract & EXTRACT_DBC) && !CascExtractor::run(*storage, gClientVersion, buildNumber, CONF_fullDb2Scan))
         {
             printf("Error: CASC extraction failed!\n");
             return 1;

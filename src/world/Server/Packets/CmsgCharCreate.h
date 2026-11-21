@@ -50,19 +50,31 @@ namespace AscEmu::Packets
             {
                 // 10.x and 11.x: name length, template set, trial boost, new player experience, hardcore self found; race,
                 // class, sex; the customization choices; the timerunning season; the name; the template set; the choices
+                // 1.60: two more flag bits and the surname length, a value before the season, the surname behind the name
+                const bool forever = m_protocol.isForever();
                 const uint32_t nameLength = packet.readBits(6);
                 const bool hasTemplateSet = packet.readBit();
                 packet.readBit();                       // trial boost
                 packet.readBit();                       // new player experience
                 packet.readBit();                       // hardcore self found
+                uint32_t surnameLength = 0;
+                if (forever)
+                {
+                    packet.readBits(2);
+                    surnameLength = packet.readBits(6);
+                }
                 packet.resetBitPos();
 
                 packet >> createStruct._race >> createStruct._class >> createStruct.gender;
                 const uint32_t customizationCount = packet.read<uint32_t>();
+                if (forever)
+                    packet.read<int32_t>();
                 packet.read<int32_t>();                 // timerunning season
                 createStruct.skin = createStruct.face = createStruct.hairStyle = createStruct.hairColor = createStruct.facialHair = 0;
                 createStruct.outfitId = 0;
                 createStruct.name = packet.readString(nameLength);
+                if (surnameLength != 0)
+                    packet.readString(surnameLength);   // the surname is not stored
 
                 if (hasTemplateSet)
                     packet.read<int32_t>();

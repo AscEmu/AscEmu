@@ -25,6 +25,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/SmsgCharCreate.h"
 #include "Server/Packets/CmsgCharCreate.h"
+#include "Server/Packets/CmsgCheckCharacterNameAvailability.h"
+#include "Server/Packets/SmsgCheckCharacterNameAvailabilityResult.h"
 #include "Server/Packets/CmsgCharCustomize.h"
 #include "Server/Packets/SmsgCharCustomize.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
@@ -492,6 +494,23 @@ uint8_t WorldSession::deleteCharacter(WoWGuid guid)
         return E_CHAR_DELETE_SUCCESS;
     }
     return E_CHAR_DELETE_FAILED;
+}
+
+void WorldSession::handleCheckCharacterNameAvailabilityOpcode(WorldPacket& recvPacket)
+{
+    CmsgCheckCharacterNameAvailability srlPacket;
+    if (!parsePacket(recvPacket, srlPacket))
+        return;
+
+    // the client asks before it sends the character itself, the same checks as on creation
+    auto errorCode = VerifyName(srlPacket.name);
+    if (errorCode == E_CHAR_NAME_SUCCESS && !sMySQLStore.isCharacterNameAllowed(srlPacket.name))
+        errorCode = E_CHAR_NAME_PROFANE;
+    if (errorCode == E_CHAR_NAME_SUCCESS && sObjectMgr.getCachedCharacterInfoByName(srlPacket.name) != nullptr)
+        errorCode = E_CHAR_CREATE_NAME_IN_USE;
+
+    SmsgCheckCharacterNameAvailabilityResult managedPacket(srlPacket.sequenceIndex, errorCode);
+    sendManagedPacket(managedPacket);
 }
 
 void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)

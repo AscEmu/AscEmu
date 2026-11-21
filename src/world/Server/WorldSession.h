@@ -412,6 +412,7 @@ protected:
         void handleConnectToFailedOpcode(WorldPacket& recvPacket);
         void handleCharRenameOpcode(WorldPacket& recvPacket);
         void handleCharCreateOpcode(WorldPacket& recvPacket);
+        void handleCheckCharacterNameAvailabilityOpcode(WorldPacket& recvPacket);   // Forever
         void handleSetPlayerDeclinedNamesOpcode(WorldPacket& recvPacket); // declined names (Cyrillic client)
         void handleCharEnumOpcode(WorldPacket& /*recvPacket*/);
 

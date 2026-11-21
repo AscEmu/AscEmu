@@ -17,6 +17,23 @@ namespace MapExtractor::DB2
 {
     namespace
     {
+        constexpr BuildDefinition MIDNIGHT_DEFINITION =
+        {
+            "Midnight",
+            70300, // 12.1.5 and later
+            75000,
+            MidnightDefinition::DB2_FILES
+        };
+
+        // the tables of the 1.60 line on top of the 12.x list, its builds start below the 12.x range
+        constexpr BuildDefinition FOREVER_DEFINITION =
+        {
+            "Forever",
+            69876, // 1.60.1 first build 2026-09-16
+            75000,
+            ForeverDefinition::DB2_FILES
+        };
+
         // Central table of known build definitions, each with its own range and associated DB2 files.
         // This allows for easy extension as new expansions are released.
         // The file data ids are stable within an expansion, the ranges start a few patches
@@ -59,30 +76,21 @@ namespace MapExtractor::DB2
                 65299, // 11.2.7
                 TheWarWithinDefinition::DB2_FILES
             },
-            {
-                "Midnight",
-                70300, // 12.1.5 and later
-                75000,
-                MidnightDefinition::DB2_FILES
-            },
-            {
-                "Forever",
-                69876, // 1.60.1 first build 2026-09-16
-                70170, // 1.60.1 current build 2026-10-01
-                ForeverDefinition::DB2_FILES
-            },
+            MIDNIGHT_DEFINITION,
         };
     }
 
-    const BuildDefinition* findBuildDefinition(uint32_t buildNumber)
+    std::vector<const BuildDefinition*> findBuildDefinitions(uint32_t buildNumber, bool foreverClient)
     {
+        // the 1.60 line shares the builds and the file data ids with 12.x, the product version tells them apart
+        if (foreverClient)
+            return { &MIDNIGHT_DEFINITION, &FOREVER_DEFINITION };
+
         for (const auto& def : KNOWN_DEFINITIONS)
         {
             if (buildNumber >= def.minBuild && buildNumber <= def.maxBuild)
-            {
-                return &def;
-            }
+                return { &def };
         }
-        return nullptr;
+        return {};
     }
 }

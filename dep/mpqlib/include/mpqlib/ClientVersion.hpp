@@ -47,8 +47,8 @@ namespace mpqlib
     enum class ClientSupportStatus
     {
         Unsupported, // no extraction path at all
-        Db2Only,     // DB2 extraction only, no table layouts known (Forever)
-        Full         // DBC/DB2, Maps, VMaps, MMaps (Vanilla to Midnight; see isTestedClient)
+        Db2Only,     // DB2 extraction only, no table layouts known
+        Full         // DBC/DB2, Maps, VMaps, MMaps (Vanilla to Midnight and Forever; see isTestedClient)
     };
 
     [[nodiscard]] constexpr std::string_view getClientVersionName(ClientVersion version) noexcept
@@ -136,10 +136,8 @@ namespace mpqlib
             case ClientVersion::Dragonflight:
             case ClientVersion::TheWarWithin:
             case ClientVersion::Midnight:
-                return ClientSupportStatus::Full;
-
             case ClientVersion::Forever:
-                return ClientSupportStatus::Db2Only;
+                return ClientSupportStatus::Full;
 
             default:
                 return ClientSupportStatus::Unsupported;

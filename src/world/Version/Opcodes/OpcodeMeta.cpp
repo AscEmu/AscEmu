@@ -2600,5 +2600,7 @@ namespace Version::Tables
         { "CMSG_CALENDAR_EVENT_INVITE_NOTES", OpcodeDevelopmentState::Unchecked },
         { "SMSG_MIRROR_VARS", OpcodeDevelopmentState::Unchecked },
         { "SMSG_REGIONWIDE_CHARACTER_RESTRICTIONS_DATA", OpcodeDevelopmentState::Unchecked },
+        { "CMSG_CHECK_CHARACTER_NAME_AVAILABILITY", OpcodeDevelopmentState::Unchecked },
+        { "SMSG_CHECK_CHARACTER_NAME_AVAILABILITY_RESULT", OpcodeDevelopmentState::Unchecked },
     };
 }

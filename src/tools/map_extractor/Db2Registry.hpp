@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 #include <string_view>
 #include <span>
+#include <vector>
 
 namespace MapExtractor::DB2
 {
@@ -26,6 +27,6 @@ namespace MapExtractor::DB2
         std::span<const Db2Entry> files;
     };
 
-    // List of known build definitions by build number ranges. This list should be updated as new builds are released.
-    const BuildDefinition* findBuildDefinition(uint32_t buildNumber);
+    // The table lists of a client: the one of its build range, for the 1.60 line the 12.x list and its own tables.
+    std::vector<const BuildDefinition*> findBuildDefinitions(uint32_t buildNumber, bool foreverClient);
 }

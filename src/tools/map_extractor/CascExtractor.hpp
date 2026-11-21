@@ -6,10 +6,10 @@ This file is released under the MIT license.See README - MIT for more informatio
 #pragma once
 
 #include "mpqlib/CascStorage.hpp"
+#include "mpqlib/ClientVersion.hpp"
 
 #include <cstdint>
 #include <filesystem>
-#include <string_view>
 
 namespace fs = std::filesystem;
 
@@ -17,5 +17,5 @@ class CascExtractor
 {
 public:
     // fullScan: scan the whole archive instead of the indexed table list of the build
-    static bool run(mpqlib::CascStorage const& storage, std::string_view expansionName, uint32_t buildNumber, bool fullScan = false);
+    static bool run(mpqlib::CascStorage const& storage, mpqlib::ClientVersion version, uint32_t buildNumber, bool fullScan = false);
 };

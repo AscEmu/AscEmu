@@ -149,6 +149,16 @@ namespace mpqlib
         { { 0x16D1DD61, kGameObjectDisplayInfoFileDataId, nullptr }, 1, 0 },
     };
 
+    // 1.60.1: the 12.1.5 tables, the map table with one more column behind the WDT file data id
+    inline constexpr ClientDb2Layouts kForeverDb2Layouts =
+    {
+        { { 0xD43AFAC3, kMapFileDataId, nullptr }, 0, 1, 21 },
+        kMidnightDb2Layouts.liquidType,
+        kMidnightDb2Layouts.liquidMaterial,
+        kMidnightDb2Layouts.liquidObject,
+        kMidnightDb2Layouts.gameObjectDisplayInfo,
+    };
+
     inline std::optional<ClientDb2Layouts> clientDb2LayoutsFor(ClientVersion version)
     {
         switch (version)
@@ -160,6 +170,7 @@ namespace mpqlib
             case ClientVersion::Dragonflight:       return kDragonflightDb2Layouts;
             case ClientVersion::TheWarWithin:       return kTheWarWithinDb2Layouts;
             case ClientVersion::Midnight:           return kMidnightDb2Layouts;
+            case ClientVersion::Forever:            return kForeverDb2Layouts;
             default:                                return std::nullopt;
         }
     }

@@ -331,8 +331,9 @@ namespace
     }
 }
 
-bool CascExtractor::run(mpqlib::CascStorage const& storage, std::string_view expansionName, uint32_t buildNumber, bool fullScan)
+bool CascExtractor::run(mpqlib::CascStorage const& storage, mpqlib::ClientVersion version, uint32_t buildNumber, bool fullScan)
 {
+    std::string_view const expansionName = mpqlib::getClientVersionName(version);
     printf("Extracting DB2 files for %.*s (Build: %u)...\n",
            static_cast<int>(expansionName.length()), expansionName.data(), buildNumber);
 
@@ -341,19 +342,25 @@ bool CascExtractor::run(mpqlib::CascStorage const& storage, std::string_view exp
     fs::path dbcOutputDir = fs::current_path() / "dbc";
     fs::create_directories(dbcOutputDir);
 
-    // Check if there's a pre-indexed definition for the given build number
-    const auto* buildDef = MapExtractor::DB2::findBuildDefinition(buildNumber);
+    // Check if there are pre-indexed definitions for the given client and build number
+    auto const definitions = MapExtractor::DB2::findBuildDefinitions(buildNumber, version == mpqlib::ClientVersion::Forever);
 
     if (fullScan)
     {
         printf("Full CASC scan requested (-s 1), the indexed table list of this build is not used.\n");
         performFullScan(storageHandle, buildNumber, dbcOutputDir);
     }
-    else if (buildDef != nullptr)
+    else if (!definitions.empty())
     {
-        size_t count = extractPreindexedDb2(storageHandle, *buildDef, dbcOutputDir);
+        size_t count = 0;
+        size_t total = 0;
+        for (auto const* definition : definitions)
+        {
+            count += extractPreindexedDb2(storageHandle, *definition, dbcOutputDir);
+            total += definition->files.size();
+        }
         printf("Instant extraction complete: %zu / %zu DB2 files written to '%s'.\n",
-               count, buildDef->files.size(), dbcOutputDir.string().c_str());
+               count, total, dbcOutputDir.string().c_str());
     }
     else
     {

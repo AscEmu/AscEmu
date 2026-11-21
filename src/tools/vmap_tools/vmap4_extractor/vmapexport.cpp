@@ -910,7 +910,8 @@ int main(int argc, char** argv)
     auto detected = mpqlib::detectClientVersion(fs::current_path());
     if (!detected)
     {
-        printf("Fatal Error: No wow.exe found in current directory!\n");
+        printf("Fatal Error: No client found in the current directory!\n");
+        printf("Start the tool in the client folder: the one with .build.info and Data (WoD and later) or with wow.exe (up to Mop).\n");
         return 1;
     }
     gClientVersion = *detected;
