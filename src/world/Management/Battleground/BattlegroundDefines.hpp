@@ -9,8 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace BattlegroundDef
 {
-    const uint8_t MAX_LEVEL_GROUP = 9;
-    const uint32_t LEVEL_GROUP_70 = 8;
+    inline constexpr uint8_t MAX_LEVEL_GROUP = 13;
 
     enum Sounds : uint32_t
     {
@@ -66,7 +65,7 @@ namespace BattlegroundDef
     };
 
     // BattlemasterList.dbc entry the client uses for every arena queue (2v2, 3v3 and 5v5)
-    const uint32_t BATTLEMASTER_LIST_ALL_ARENAS = 6;
+    inline constexpr uint32_t BATTLEMASTER_LIST_ALL_ARENAS = 6;
 
     // SMSG_GROUP_JOINED_BATTLEGROUND (Classic - WotLK)
     enum GroupJoinStatus : int32_t
@@ -123,8 +122,8 @@ namespace BattlegroundDef
     {
         STATUS_NOFLAGS = 0, // wtfbbq, why aren't there any flags?
         STATUS_INQUEUE = 1, // Battleground has a queue, player is now in queue
-        STATUS_READY = 2,   // Battleground is ready to join
-        STATUS_TIME = 3     // Ex. Wintergrasp time remaining
+        STATUS_READY = 2, // Battleground is ready to join
+        STATUS_TIME = 3 // Ex. Wintergrasp time remaining
     };
 
     //\todo: Zyres: move this to scripts
@@ -144,17 +143,3 @@ namespace BattlegroundDef
         IOC_BASES_DEFENDED = 1
     };
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////
-//based on BattlemasterList.dbc (BATTLEGROUND_NUM_TYPES = Max entry's +1)
-#if VERSION_STRING == Classic
-#define BATTLEGROUND_NUM_TYPES 8
-#elif VERSION_STRING == TBC
-#define BATTLEGROUND_NUM_TYPES 8
-#elif VERSION_STRING == WotLK
-#define BATTLEGROUND_NUM_TYPES 33
-#elif VERSION_STRING == Cata
-#define BATTLEGROUND_NUM_TYPES 657
-#elif VERSION_STRING >= Mop
-#define BATTLEGROUND_NUM_TYPES 758
-#endif

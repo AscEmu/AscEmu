@@ -60,8 +60,8 @@ bool ChatCommandHandler::HandleBGMenuCommand(const char* args, WorldSession* m_s
     if (!*args)
         return false;
 
-    uint32_t type = atoi(args);
-    if (type >= BATTLEGROUND_NUM_TYPES)
+    const uint32_t type = static_cast<uint32_t>(atoi(args));
+    if (!sBattlegroundManager.isValidBattlegroundType(type))
         return false;
 
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
@@ -69,7 +69,7 @@ bool ChatCommandHandler::HandleBGMenuCommand(const char* args, WorldSession* m_s
         return true;
 
     WoWGuid guid;
-    guid.init(uint64_t(0));
+    guid.init(static_cast<uint64_t>(0));
     sBattlegroundManager.handleBattlegroundListPacket(guid, selected_player->getSession(), type);
 
     return true;

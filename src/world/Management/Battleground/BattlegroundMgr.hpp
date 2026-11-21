@@ -65,9 +65,9 @@ public:
 
     void deleteBattleground(Battleground* battleground);
 
-    uint32_t getArenaGroupQInfo(Group* group, uint8_t type, uint32_t* averageRating);
+    uint32_t getArenaGroupQInfo(Group* group, uint32_t type, uint32_t* averageRating);
 
-    int createArenaType(uint8_t type, Group* group1, Group* group2);
+    int createArenaType(uint32_t type, Group* group1, Group* group2);
 
     void addPlayerToBgTeam(Battleground* battleground, std::deque<uint32_t>* playerVec, uint32_t type, uint32_t levelGroup, uint32_t team);
 
@@ -79,15 +79,20 @@ public:
 
     uint32_t getMaximumPlayers(uint32_t dbcIndex);
 
+    [[nodiscard]] bool isValidBattlegroundType(uint32_t bgType) const noexcept
+    {
+        return bgType != 0 && (m_bgMaps.contains(bgType) || bgType == BattlegroundDef::TYPE_RANDOM);
+    }
+
 private:
-    std::map<uint32_t, Battleground*> m_instances[BATTLEGROUND_NUM_TYPES];
+    std::unordered_map<uint32_t, std::map<uint32_t, Battleground*>> m_instances;
     std::mutex m_instanceLock;
 
-    uint32_t m_maxBattlegroundId[BATTLEGROUND_NUM_TYPES] = {0};
+    std::unordered_map<uint32_t, uint32_t> m_maxBattlegroundId;
 
-    std::list<uint32_t> m_queuedPlayers[BATTLEGROUND_NUM_TYPES][BattlegroundDef::MAX_LEVEL_GROUP];
+    std::unordered_map<uint32_t, std::array<std::list<uint32_t>, BattlegroundDef::MAX_LEVEL_GROUP>> m_queuedPlayers;
 
-    std::list<uint32_t> m_queuedGroups[BATTLEGROUND_NUM_TYPES];
+    std::unordered_map<uint32_t, std::list<uint32_t>> m_queuedGroups;
 
     std::mutex m_queueLock;
 

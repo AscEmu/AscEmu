@@ -204,6 +204,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <algorithm>
 #include <sstream>
 #include <vector>
+
+#include "Management/Battleground/BattlegroundDefines.hpp"
 #include "Version/ObjectLayout.hpp"
 
 using Version::GameObjectField;
@@ -8409,9 +8411,18 @@ void Player::setArenaTeam(uint8_t type, ArenaTeam* arenaTeam)
         getSession()->systemMessage("You are now a member of the arena team '{}'.", arenaTeam->m_name);
 }
 
-ArenaTeam* Player::getArenaTeam(uint8_t type) { return m_arenaTeams[type]; }
+ArenaTeam* Player::getArenaTeam(uint8_t type)
+{
+    if (type >= std::size(m_arenaTeams))
+        return nullptr;
 
-bool Player::isInArenaTeam(uint8_t type) const { return m_arenaTeams[type] != nullptr; }
+    return m_arenaTeams[type];
+}
+
+bool Player::isInArenaTeam(uint8_t type) const
+{
+    return type < std::size(m_arenaTeams) && m_arenaTeams[type] != nullptr;
+}
 
 void Player::initialiseArenaTeam()
 {
@@ -8971,28 +8982,14 @@ void Player::applyRandomBattlegroundReward(bool wonBattleground)
 #endif
 }
 
-uint32_t Player::getLevelGrouping()
+uint32_t Player::getLevelGrouping(uint32_t level) noexcept
 {
-    uint32_t level = getLevel();
+    return std::min<uint32_t>(level / 10, BattlegroundDef::MAX_LEVEL_GROUP - 1);
+}
 
-    if (level < 10)
-        return 0;
-    if (level < 20)
-        return 1;
-    if (level < 30)
-        return 2;
-    if (level < 40)
-        return 3;
-    if (level < 50)
-        return 4;
-    if (level < 60)
-        return 5;
-    if (level < 70)
-        return 6;
-    if (level < 80)
-        return 7;
-
-    return 8;
+uint32_t Player::getLevelGrouping() const noexcept
+{
+    return getLevelGrouping(getLevel());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

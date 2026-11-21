@@ -1378,7 +1378,7 @@ public:
     uint32_t getInviteArenaTeamId() const;
 
 private:
-    std::array<ArenaTeam*, NUM_ARENA_TEAM_TYPES> m_arenaTeams = { nullptr };
+    std::array<ArenaTeam*, NUM_ARENA_TEAM_TYPES> m_arenaTeams = {nullptr};
     uint32_t m_arenaPoints = 0;
     uint32_t m_inviteArenaTeamId = 0;
 
@@ -1475,7 +1475,8 @@ public:
     void fillRandomBattlegroundReward(bool wonBattleground, uint32_t& honorPoints, uint32_t& arenaPoints);
     void applyRandomBattlegroundReward(bool wonBattleground);
 
-    uint32_t getLevelGrouping();
+    [[nodiscard]] static uint32_t getLevelGrouping(uint32_t level) noexcept;
+    [[nodiscard]] uint32_t getLevelGrouping() const noexcept;
 
     BGScore m_bgScore;
 
