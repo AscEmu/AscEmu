@@ -423,9 +423,11 @@ InstanceMap* MapMgr::createInstance(uint32_t mapId, uint32_t InstanceId, Instanc
     }
 
     // some instances only have one difficulty
-#if VERSION_STRING > TBC
-    getDownscaledMapDifficultyData(mapId, difficulty);
-#endif
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
+        getDownscaledMapDifficultyData(mapId, difficulty);
+    }
+
     sLogger.debug("MapMgr::createInstance Create {} map instance {} for {} created with difficulty {}", save ? "" : "new ", InstanceId, mapId, difficulty ? "heroic" : "normal");
 
     auto map = std::make_unique<InstanceMap>(baseMap, mapId, worldConfig.server.mapUnloadTime * 1000, InstanceId, difficulty, InstanceTeam);
@@ -439,7 +441,7 @@ InstanceMap* MapMgr::createInstance(uint32_t mapId, uint32_t InstanceId, Instanc
     // Load Saved Data when possible
     bool load_data = save != nullptr;
     map->createInstanceData(load_data);
-    
+
     // Instance scripts may address objects anywhere on the map, so keep every
     // terrain-backed grid loaded. Client visibility remains distance based.
     map->setAllGridsForcedActive(true);
@@ -551,14 +553,14 @@ EnterState MapMgr::canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* pla
 
     const auto group = player->getGroup();
     InstanceDifficulty::Difficulties targetDifficulty = group
-        ? group->getDifficulty(entry->isRaid())
-        : player->getDifficulty(entry->isRaid());
+                                                            ? group->getDifficulty(entry->isRaid())
+                                                            : player->getDifficulty(entry->isRaid());
 
-#if VERSION_STRING > TBC
-    WDB::Structures::MapDifficulty const* mapDiff = getDownscaledMapDifficultyData(entry->id, targetDifficulty);
-    if (!mapDiff)
-        return CANNOT_ENTER_DIFFICULTY_UNAVAILABLE;
-#endif
+    if (WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
+        if (!getDownscaledMapDifficultyData(entry->id, targetDifficulty))
+            return CANNOT_ENTER_DIFFICULTY_UNAVAILABLE;
+    }
 
     if (player->isGMFlagSet())
         return CAN_ENTER;
@@ -603,7 +605,7 @@ EnterState MapMgr::canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* pla
     if (InstanceDifficulty::isHeroicDungeonDifficulty(player->getDungeonDifficulty()) &&
         mapInfo->isMultimodeDungeon() &&
         ((mapInfo->heroic_key_1 > 0 && !player->getItemInterface()->GetItemCount(mapInfo->heroic_key_1, false)) &&
-         (mapInfo->heroic_key_2 > 0 && !player->getItemInterface()->GetItemCount(mapInfo->heroic_key_2, false))))
+            (mapInfo->heroic_key_2 > 0 && !player->getItemInterface()->GetItemCount(mapInfo->heroic_key_2, false))))
     {
         return CANNOT_ENTER_KEY;
     }

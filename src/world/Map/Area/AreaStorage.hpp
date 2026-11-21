@@ -23,7 +23,7 @@ namespace MapManagement::AreaManagement
     typedef std::map<uint32_t, uint32_t> AreaFlagByAreaID;
     typedef std::map<uint32_t, uint32_t> AreaIdByMapId;
 
-    // Temporary 
+    // Temporary
     typedef std::map<uint32_t, uint32_t> MapEntryPair;
 
     class AreaStorage

@@ -196,13 +196,14 @@ namespace MapManagement::AreaManagement
         if (exploreFlag == 0 || !m_areaContainer)
             return nullptr;
 
-#if VERSION_STRING <= WotLK
-        // Legacy maps store explore_flag in terrain .map files
-        if (const auto it = m_areaByFlagCollection.find(exploreFlag); it != m_areaByFlagCollection.end())
+        // Legacy maps (Classic - WotLK) store exploreFlag in terrain .map files
+        if (WoW::getServerExpansion() <= WoW::Expansion::_WotLK)
         {
-            return it->second;
+            if (const auto it = m_areaByFlagCollection.find(exploreFlag); it != m_areaByFlagCollection.end())
+            {
+                return it->second;
+            }
         }
-#endif
 
         // Fallback for missing entries or Cata/MoP direct ID lookups
         return m_areaContainer->lookupEntry(exploreFlag);

@@ -2040,9 +2040,13 @@ WDB::Structures::SpellPowerEntry const* getSpellPowerEntry(uint32_t spellId)
     return itr->second;
 }
 
-#if VERSION_STRING >= WotLK
 WDB::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties& difficulty)
 {
+    if (!WoW::isServerExpansionAtLeast(WoW::Expansion::_WotLK))
+    {
+        return nullptr;
+    }
+
     // 5.x: difficulty ids, the fallbacks are followed until the map knows one
     if (InstanceDifficulty::usesDifficultyIds())
     {
@@ -2062,6 +2066,9 @@ WDB::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t ma
     WDB::Structures::MapDifficulty const* mapDiff = getMapDifficultyData(mapId, InstanceDifficulty::Difficulties(tmpDiff));
     if (!mapDiff)
     {
+        if (tmpDiff == 0)
+            return nullptr;
+
         if (tmpDiff > 1) // heroic, downscale to normal
             tmpDiff -= 2;
         else
@@ -2079,7 +2086,6 @@ WDB::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t ma
     difficulty = InstanceDifficulty::Difficulties(tmpDiff);
     return mapDiff;
 }
-#endif
 
 WDB::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32_t root_id, int32_t adt_id, int32_t group_id)
 {
