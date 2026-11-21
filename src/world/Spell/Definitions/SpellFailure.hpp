@@ -1246,7 +1246,8 @@ namespace SpellFailureClient
         if (result >= Count)
             return result;
 
-        switch (protocol.expansion)
+        // the 1.60 client takes the 12.x values
+        switch (WoW::getComparedExpansion(protocol.expansion))
         {
             case WoW::Expansion::_WoD:
                 return wod[result];

@@ -25,6 +25,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Objects/Units/Unit.hpp"
+#include "Server/ClientProtocol.hpp"
 #include "Server/UpdateMask.h"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
@@ -37,6 +38,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <algorithm>
 #include <array>
+#include <cstdint>
 #include <cstring>
 #include <string>
 
@@ -85,6 +87,12 @@ namespace
         FlagEmpath = 0x08
     };
 
+    // 1.60 carries the 12.x structures with fields of its own
+    bool isForever()
+    {
+        return WoW::isServerExpansion(WoW::Expansion::_WoWForever);
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // change mask of a structure: one bit per field, 32 bit blocks, one mask bit per non empty block
     template <size_t Bits>
@@ -109,6 +117,12 @@ namespace
         {
             for (size_t bit = 0; bit < Bits; ++bit)
                 set(bit);
+        }
+
+        void clear(size_t bit)
+        {
+            if (bit < Bits)
+                m_blocks[bit / 32] &= ~(1u << (bit % 32));
         }
 
         bool operator[](size_t bit) const
@@ -172,6 +186,71 @@ namespace
     private:
         std::array<uint32_t, BlockCount> m_blocks{};
     };
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // 1.60 mask numbering: a run of 12.x bits moves by one shift, the group bits follow their members
+    struct MaskRun { uint16_t last; int16_t shift; };
+    struct MaskGroup { uint16_t parent; uint16_t last; };
+    constexpr int16_t NoWireBit = INT16_MIN;
+
+    template <size_t WireBlocks>
+    using WireMask = std::array<uint32_t, WireBlocks>;
+
+    template <size_t WireBlocks>
+    bool wireBit(WireMask<WireBlocks> const& wire, size_t bit)
+    {
+        return bit < WireBlocks * 32 && ((wire[bit / 32] >> (bit % 32)) & 1u) != 0;
+    }
+
+    template <size_t WireBlocks, size_t Bits, size_t RunCount, size_t GroupCount>
+    WireMask<WireBlocks> renumberMask(ChangeMask<Bits> const& mask, const MaskRun (&runs)[RunCount], const MaskGroup (&groups)[GroupCount])
+    {
+        WireMask<WireBlocks> wire{};
+
+        size_t run = 0;
+        for (size_t bit = 0; bit < Bits; ++bit)
+        {
+            while (run + 1 < RunCount && bit > runs[run].last)
+                ++run;
+
+            if (!mask[bit] || runs[run].shift == NoWireBit)
+                continue;
+
+            const size_t moved = static_cast<size_t>(static_cast<int32_t>(bit) + runs[run].shift);
+            if (moved < WireBlocks * 32)
+                wire[moved / 32] |= 1u << (moved % 32);
+        }
+
+        for (const MaskGroup& group : groups)
+        {
+            wire[group.parent / 32] &= ~(1u << (group.parent % 32));
+            for (size_t bit = group.parent + 1u; bit <= group.last; ++bit)
+            {
+                if (wireBit<WireBlocks>(wire, bit))
+                {
+                    wire[group.parent / 32] |= 1u << (group.parent % 32);
+                    break;
+                }
+            }
+        }
+
+        return wire;
+    }
+
+    // the blocks header of a renumbered mask
+    template <size_t WireBlocks>
+    void writeWireBlocks(ByteBuffer& data, WireMask<WireBlocks> const& wire)
+    {
+        uint32_t blocks = 0;
+        for (size_t i = 0; i < WireBlocks; ++i)
+            if (wire[i] != 0)
+                blocks |= 1u << i;
+
+        data.writeBits(blocks, static_cast<uint32_t>(WireBlocks));
+        for (const uint32_t block : wire)
+            if (block != 0)
+                data.writeBits(block, 32);
+    }
 
     // the size of a dynamic field with every element changed, the size takes 32 bits unless the field says otherwise
     void writeDynamicMask(ByteBuffer& data, uint32_t size, uint32_t sizeBits = 32)
@@ -394,6 +473,8 @@ namespace
         data << itemId;
         data << int32_t(0);                                                 // secondary item modified appearance
         data << int32_t(0);                                                 // conditional item appearance
+        if (isForever())
+            data << int32_t(0);                                             // 1.60 value without a name
         data << appearanceModId << itemVisual;
         data << uint32_t(0);                                                // item modified appearance
         data << uint8_t(0);                                                 // transmog slot option
@@ -408,10 +489,19 @@ namespace
         data.flushBits();
     }
 
+    // the mask of a visible item with every field, 1.60 has one field more
+    void visibleItemMask(ByteBuffer& data)
+    {
+        if (isForever())
+            data.writeBits(0xFFF, 12);
+        else
+            data.writeBits(0x7FF, 11);
+    }
+
     // the visible item with its own mask: every field, the bits precede the fields
     void unitVisibleItemUpdate(Unit* unit, uint8_t slot, ByteBuffer& data)
     {
-        data.writeBits(0x7FF, 11);
+        visibleItemMask(data);
         data.writeBit(false);                                               // has transmog
         data.writeBit(false);                                               // has illusion
         data.flushBits();
@@ -451,6 +541,7 @@ namespace
     void unitCreate(Unit* unit, Context const& ctx)
     {
         ByteBuffer& data = ctx.data;
+        const bool forever = isForever();
         const uint64_t channelObject = unit->getChannelObjectGuid();
         int32_t creatureFamily;
         uint8_t creatureType;
@@ -548,19 +639,24 @@ namespace
         data << uint8_t(unit->getPetTalentPoints());
         data << uint8_t(unit->getStandStateFlags());
         data << uint8_t(unit->getAnimationFlags());
+        if (forever)
+            data << int8_t(0);                                              // 1.60 value without a name
         data << uint32_t(unit->getPetNumber());
         data << uint32_t(unit->getField<uint32_t>(UnitField::PetNameTimestamp));
         data << uint32_t(unit->getField<uint32_t>(UnitField::PetExperience));
         data << uint32_t(unit->getField<uint32_t>(UnitField::PetNextLevelExperience));
         data << float(unit->getModCastSpeed());
-        data << float(0.0f);                                                // mod casting speed neg, no server value
-        data << unit->getField<float>(UnitField::ModCastHaste);             // mod spell haste
+        data << float(forever ? 1.0f : 0.0f);                               // mod casting speed neg, no server value
+        if (!forever || ctx.owner())
+            data << unit->getField<float>(UnitField::ModCastHaste);         // mod spell haste, 1.60 shows it to the owner
         data << unit->getField<float>(UnitField::ModHaste);
         data << unit->getField<float>(UnitField::ModRangedHaste);
         data << unit->getField<float>(UnitField::ModHasteRegen);
         data << float(1.0f);                                                // mod time rate
         data << int32_t(unit->getCreatedBySpellId());
         data << int32_t(unit->getEmoteState());
+        if (forever)
+            data << int16_t(0) << int16_t(0);                               // pet training points: used, total
 
         if (ctx.owner())
         {
@@ -610,14 +706,20 @@ namespace
             data << int32_t(unit->getField<uint32_t>(UnitField::RangedAttackPowerModsNeg));
             data << float(unit->getRangedAttackPowerMultiplier());
             data << int32_t(0);                                             // ranged attack power mod support
+            if (forever)
+                data << int32_t(0);                                         // 1.60 value without a name
             data << int32_t(0);                                             // main hand weapon attack power
             data << int32_t(0);                                             // off hand weapon attack power
             data << int32_t(0);                                             // ranged weapon attack power
             data << int32_t(0);                                             // set attack speed aura
+            if (forever)
+                data << int32_t(0);                                         // 1.60 value without a name
             data << float(0.0f);                                            // lifesteal
             data << float(unit->getMinRangedDamage());
             data << float(unit->getMaxRangedDamage());
             data << float(0.0f);                                            // mana cost multiplier, no server value
+            if (forever)
+                data << int32_t(0) << int32_t(0) << int32_t(0);             // three 1.60 values without a name
         }
 
         data << unit->getField<float>(UnitField::MaxHealthModifier);
@@ -646,7 +748,14 @@ namespace
         data << int32_t(0);                                                 // max health modifier flat neg
         data << int32_t(0);                                                 // max health modifier flat pos
         data << uint32_t(0);                                                // silenced school mask
+        if (forever && ctx.owner())
+            data << float(0.0f) << uint32_t(0);                             // 1.60 value without a name and an empty list
         data << uint32_t(0);                                                // current area
+        if (forever && ctx.owner())
+        {
+            data << WoWGuid128();                                           // combo target
+            data << int32_t(0) << float(0.0f);                              // two 1.60 values without a name
+        }
         data << float(0.0f);                                                // nameplate distance mod
         data << float(0.0f);                                                // auto attack range mod
         data << WoWGuid128();                                               // nameplate attach to
@@ -779,17 +888,48 @@ namespace
             allowed[6] |= 0x00FF0000;
         }
         mask.filter(allowed);
+
+        // 1.60 shows the spell haste to the owner
+        if (isForever() && !(flags & FlagOwner))
+            mask.clear(78);
     }
+
+    // 1.60: eight blocks, fields of its own behind 71, 84, 101, 105, 109, 133 and 134
+    constexpr MaskRun UnitWireRuns[] =
+    {
+        { 69, 0 }, { 70, 1 }, { 71, -1 }, { 84, 1 }, { 92, 3 }, { 95, 4 }, { 96, 0 }, { 101, 3 }, { 105, 4 }, { 109, 5 },
+        { 119, 8 }, { 127, 9 }, { 128, 0 }, { 133, 8 }, { 134, 10 }, { 229, 13 }
+    };
+    constexpr MaskGroup UnitWireGroups[] =
+    {
+        { 0, 31 }, { 32, 63 }, { 64, 95 }, { 96, 127 }, { 128, 151 }, { 152, 192 }, { 193, 196 }, { 197, 199 }, { 200, 220 }, { 221, 242 }
+    };
+    constexpr size_t UnitWireBlocks = 8;
+    constexpr size_t UnitWireLateGroup = 128;
 
     void unitUpdate(Unit* unit, Context const& ctx, UnitMask const& mask)
     {
         ByteBuffer& data = ctx.data;
+        const bool forever = isForever();
         const uint64_t channelObject = unit->getChannelObjectGuid();
         int32_t creatureFamily;
         uint8_t creatureType;
         unitCreatureInfo(unit, creatureFamily, creatureType);
 
-        mask.writeBlocks(data);
+        // the assist action bit closes the fifth block, 1.60 holds other fields in it
+        bool lateGroup = mask[128];
+        if (forever)
+        {
+            const auto wire = renumberMask<UnitWireBlocks>(mask, UnitWireRuns, UnitWireGroups);
+            writeWireBlocks<UnitWireBlocks>(data, wire);
+            data.writeBit(false);                                           // 1.60 bit without a name
+            lateGroup = wireBit<UnitWireBlocks>(wire, UnitWireLateGroup);
+        }
+        else
+        {
+            mask.writeBlocks(data);
+        }
+
         if (mask[0])
         {
             if (mask[1])
@@ -936,9 +1076,12 @@ namespace
                 data << uint8_t(unit->getStandState());
             if (mask[69])
                 data << uint8_t(unit->getPetTalentPoints());
+            // 1.60 reads the anim tier first
+            if (forever && mask[71])
+                data << uint8_t(unit->getAnimationFlags());
             if (mask[70])
                 data << uint8_t(unit->getStandStateFlags());
-            if (mask[71])
+            if (!forever && mask[71])
                 data << uint8_t(unit->getAnimationFlags());
             if (mask[72])
                 data << uint32_t(unit->getPetNumber());
@@ -951,7 +1094,7 @@ namespace
             if (mask[76])
                 data << float(unit->getModCastSpeed());
             if (mask[77])
-                data << float(0.0f);
+                data << float(forever ? 1.0f : 0.0f);
             if (mask[78])
                 data << unit->getField<float>(UnitField::ModCastHaste);
             if (mask[79])
@@ -1060,8 +1203,9 @@ namespace
                 data << float(0.0f);
             if (mask[137])
                 data << WoWGuid128();
-            data.writeBits(0, 1);                                           // has assist action data
         }
+        if (lateGroup)
+            data.writeBits(0, 1);                                           // has assist action data
         data.flushBits();
 
         if (mask[139])
@@ -1188,6 +1332,8 @@ namespace
         data << int32_t(player->getVisibleItemEntry(slot));
         data << int32_t(0);                                                 // secondary item modified appearance
         data << int32_t(0);                                                 // conditional item appearance
+        if (isForever())
+            data << int32_t(0);                                             // 1.60 value without a name
         data << uint16_t(0);                                                // appearance modifier
         data << uint16_t(player->getVisibleItemEnchantment(slot, 0));       // visual: the permanent enchantment
         data << uint32_t(0);                                                // item modified appearance
@@ -1206,7 +1352,7 @@ namespace
     // the visible item with its own mask: every field, the bits precede the fields
     void playerVisibleItemUpdate(Player* player, uint8_t slot, ByteBuffer& data)
     {
-        data.writeBits(0x7FF, 11);
+        visibleItemMask(data);
         data.writeBit(false);                                               // has transmog
         data.writeBit(false);                                               // has illusion
         data.flushBits();
@@ -1273,6 +1419,14 @@ namespace
         data << WoWGuid128();
     }
 
+    // the district of 1.60: id and four empty values
+    constexpr uint32_t ForeverDistrictId = 2;
+
+    void playerDistrictCreate(ByteBuffer& data)
+    {
+        data << uint32_t(ForeverDistrictId) << uint32_t(0) << uint32_t(0) << uint32_t(0) << int8_t(0);
+    }
+
     // the look of a player as customization choices, converted from the stored bytes
     static std::vector<CharacterCustomizations::ChrCustomizationChoice> playerCustomizations(Player* player)
     {
@@ -1291,6 +1445,7 @@ namespace
     void playerCreate(Player* player, Context const& ctx)
     {
         ByteBuffer& data = ctx.data;
+        const bool forever = isForever();
         const std::string name = player->getName();
         const uint32_t accountId = player->getSession() != nullptr ? player->getSession()->GetAccountId() : 0;
 
@@ -1304,6 +1459,8 @@ namespace
         data << uint32_t(player->getGuildRank());
         data << uint32_t(player->getField<uint32_t>(PlayerField::GuildDeleteDate));
         data << int32_t(player->getField<uint32_t>(PlayerField::GuildLevel));
+        if (forever)
+            playerDistrictCreate(data);
         const auto customizations = playerCustomizations(player);
         data << uint32_t(customizations.size());
         data << uint32_t(0);                                                // random customizations
@@ -1358,10 +1515,14 @@ namespace
             data << uint32_t(0);                                            // plunderstorm item display
         playerPersonalTabardCreate(data);
         playerNpcAsPlayerInfoCreate(data);
+        if (forever)
+            playerDistrictCreate(data);
         for (const auto& customization : customizations)
             data << customization.optionId << customization.choiceId;
 
         data.writeBits(static_cast<uint32_t>(name.size()), 6);
+        if (forever)
+            data.writeBits(0, 9);                                           // surname, not stored
         if (ctx.partyMember())
             data.writeBit(false);                                           // has a quest session
         data.writeBit(false);                                               // has a level link
@@ -1427,15 +1588,37 @@ namespace
         mask.filter(allowed);
     }
 
+    // 1.60: eleven blocks, fields of its own behind 18, 36, 47 and 49
+    constexpr MaskRun PlayerWireRuns[] = { { 18, 0 }, { 30, 1 }, { 31, 2 }, { 32, 0 }, { 36, 1 }, { 47, 2 }, { 49, 3 }, { 325, 4 } };
+    constexpr MaskGroup PlayerWireGroups[] =
+    {
+        { 0, 31 }, { 32, 53 }, { 54, 56 }, { 57, 232 }, { 233, 252 }, { 253, 259 }, { 260, 292 }, { 293, 309 }, { 310, 329 }
+    };
+    constexpr size_t PlayerWireBlocks = 11;
+    constexpr size_t PlayerWireLateGroup = 32;
+
     void playerUpdate(Player* player, Context const& ctx, PlayerMask const& mask)
     {
         ByteBuffer& data = ctx.data;
+        const bool forever = isForever();
         const std::string name = player->getName();
         const uint32_t accountId = player->getSession() != nullptr ? player->getSession()->GetAccountId() : 0;
 
         const auto customizations = mask[3] ? playerCustomizations(player) : std::vector<CharacterCustomizations::ChrCustomizationChoice>();
 
-        mask.writeBlocks(data);
+        // the declined names bit closes the second block, 1.60 holds the taxi mount anim kit in it
+        bool lateGroup = mask[32];
+        if (forever)
+        {
+            const auto wire = renumberMask<PlayerWireBlocks>(mask, PlayerWireRuns, PlayerWireGroups);
+            writeWireBlocks<PlayerWireBlocks>(data, wire);
+            lateGroup = wireBit<PlayerWireBlocks>(wire, PlayerWireLateGroup);
+        }
+        else
+        {
+            mask.writeBlocks(data);
+        }
+
         data.writeBit(false);                                               // the party member fields keep their change masks
         if (mask[0])
         {
@@ -1545,8 +1728,9 @@ namespace
                 playerNpcAsPlayerInfoCreate(data);
             if (mask[36])
                 data.writeBits(static_cast<uint32_t>(name.size()), 6);
-            data.writeBits(0, 1);                                           // has declined names
         }
+        if (lateGroup)
+            data.writeBits(0, 1);                                           // has declined names
         data.flushBits();
         if (mask[32])
         {
@@ -1659,6 +1843,20 @@ namespace
         }
 
         return false;
+    }
+
+    // 1.60: 145 slots, three more bank bags move every slot from the buyback on
+    constexpr uint8_t ForeverInvSlotCount = 145;
+    constexpr uint8_t ForeverInvSlotGapFirst = 69;
+    constexpr uint8_t ForeverInvSlotGapSize = 3;
+
+    uint64_t activeForeverInvSlot(Player* player, uint16_t slot)
+    {
+        if (slot < ForeverInvSlotGapFirst)
+            return activeInvSlot(player, slot);
+        if (slot < ForeverInvSlotGapFirst + ForeverInvSlotGapSize)
+            return 0;
+        return activeInvSlot(player, slot - ForeverInvSlotGapSize);
     }
 
     // the explored zones as 64 bit words, the server layout ends after 160 of the 240 words
@@ -1813,6 +2011,8 @@ namespace
         data.writeBits(1, 24);
         data.flushBits();
         data << uint64_t(0) << uint8_t(0) << uint64_t(0) << uint8_t(0) << uint8_t(0);
+        if (isForever())
+            data << WoWGuid128();                                           // 1.60 guid without a name
     }
 
     // the level link info: target and level
@@ -1861,9 +2061,18 @@ namespace
     void activePlayerCreate(Player* player, Context const& ctx)
     {
         ByteBuffer& data = ctx.data;
+        const bool forever = isForever();
 
-        for (uint8_t i = 0; i < InvSlotCount; ++i)
-            ctx.guid(activeInvSlot(player, i));
+        if (forever)
+        {
+            for (uint8_t i = 0; i < ForeverInvSlotCount; ++i)
+                ctx.guid(activeForeverInvSlot(player, i));
+        }
+        else
+        {
+            for (uint8_t i = 0; i < InvSlotCount; ++i)
+                ctx.guid(activeInvSlot(player, i));
+        }
         ctx.guid(player->getFarsightGuid());
         ctx.guid(player->getField<uint64_t>(PlayerField::SummonedBattlePetGuid));
         data << uint32_t(KnownTitleCount);
@@ -1915,6 +2124,8 @@ namespace
         data << uint8_t(player->getField<uint8_t>(PlayerField::PlayerFieldBytesMaxPvpRank));
         data << uint8_t(0);                                                 // respecs
         data << uint32_t(player->getField<uint32_t>(PlayerField::FieldPvpMedals));
+        if (forever)
+            data << uint32_t(0);                                            // 1.60 value without a name
 
         for (uint8_t i = 0; i < 12; ++i)
         {
@@ -1924,6 +2135,8 @@ namespace
 
         data << player->getField<uint16_t>(PlayerField::FieldKillsKillsToday);
         data << player->getField<uint16_t>(PlayerField::FieldKillsKillsYesterday);
+        if (forever)
+            data << float(0.0f);                                            // 1.60 value without a name
         data << player->getField<uint32_t>(PlayerField::FieldLifetimeHonorableKills);
         data << int32_t(player->getWatchedFaction());
 
@@ -1939,13 +2152,17 @@ namespace
         for (uint8_t i = 0; i < 4; ++i)
             data << player->getField<uint32_t>(PlayerField::NoReagentCost, i);
 
-        data << int32_t(player->getField<uint32_t>(PlayerField::PetSpellPower));
+        // 1.60 has no pet spell power
+        if (!forever)
+            data << int32_t(player->getField<uint32_t>(PlayerField::PetSpellPower));
 
         for (uint8_t i = 0; i < 2; ++i)
             data << int32_t(player->getProfessionSkillLine(i));
 
         data << player->getField<float>(PlayerField::UiHitMod);
         data << player->getField<float>(PlayerField::UiHitSpellMod);
+        if (forever)
+            data << float(0.0f) << float(0.0f);                             // two 1.60 values without a name
         data << int32_t(player->getField<uint32_t>(PlayerField::UiHomeRealmTimeOffset));
         data << player->getField<float>(PlayerField::ModPetHaste);
         data << int8_t(0);                                                  // jailers tower level max
@@ -1995,6 +2212,8 @@ namespace
         activeDungeonScoreCreate(data);
         writeMapFieldCreate(data);                                          // trait configs
         data << uint32_t(0);                                                // active combat trait config
+        if (forever)
+            data << uint8_t(0);                                             // 1.60 value without a name
         data << uint32_t(0);                                                // crafting orders
         data << uint32_t(0);                                                // personal crafting order counts
         data << uint32_t(0);                                                // npc crafting orders
@@ -2002,6 +2221,8 @@ namespace
         data << uint32_t(0);                                                // weekly spell uses
         activeItemUpgradeCreate(data);
         data << uint64_t(0);                                                // loot history instance
+        if (forever)
+            data << uint8_t(0);                                             // stable slots
         data << uint32_t(0);                                                // tracked collectable sources
         data << uint8_t(0);                                                 // required mount capability flags
         writeMapFieldCreate(data);                                          // delve data
@@ -2021,10 +2242,12 @@ namespace
         data.writeBit(false);                                               // has a perks program pending reward
         data.writeBits(0, 1);                                               // has a quest session
         data.writeBits(0, 1);                                               // has a pet stable
-        data.writeBits(0, 3);                                               // character bank tab settings
+        data.writeBits(0, forever ? 4u : 3u);                               // character bank tab settings
         data.writeBits(0, 3);                                               // account bank tab settings
         data.writeBits(0, 1);                                               // has walk in data
         data.writeBits(0, 1);                                               // has challenge mode data
+        if (forever)
+            data.writeBits(0, 1);                                           // 1.60 bit without a name
         data.flushBits();
     }
 
@@ -2051,6 +2274,10 @@ namespace
         for (const Single& single : singles)
             if (changed.changed(single.field))
                 mask.set(single.bit);
+
+        // 1.60 has no pet spell power
+        if (isForever())
+            mask.clear(116);
 
         if (changed.changed(PlayerField::PlayerFieldBytes))
             mask.setRange(103, 3);
@@ -2113,11 +2340,41 @@ namespace
                     mask.set(group.parent);
     }
 
+    // 1.60: fourteen blocks, fields of its own behind 107, 109, 118 and 148, 40 more inventory slots
+    constexpr MaskRun ActivePlayerWireRuns[] =
+    {
+        { 107, 0 }, { 109, 1 }, { 115, 2 }, { 116, NoWireBit }, { 118, 1 }, { 130, 3 }, { 133, 4 }, { 134, 0 }, { 148, 3 }, { 155, 4 },
+        { 160, 5 }, { 162, 6 }, { 232, 7 }, { 268, 10 }, { 397, 47 }
+    };
+    constexpr MaskGroup ActivePlayerWireGroups[] =
+    {
+        { 0, 31 }, { 32, 69 }, { 70, 101 }, { 102, 133 }, { 134, 165 }, { 166, 169 }, { 170, 315 }, { 316, 318 }, { 319, 347 },
+        { 348, 354 }, { 355, 379 }, { 380, 412 }, { 413, 417 }, { 418, 420 }, { 421, 426 }, { 427, 444 }
+    };
+    constexpr size_t ActivePlayerWireBlocks = 14;
+    constexpr size_t ActivePlayerWireLateGroup = 134;
+    constexpr size_t ActivePlayerWireOutfitGroup = 166;
+
     void activePlayerUpdate(Player* player, Context const& ctx, ActivePlayerMask const& mask)
     {
         ByteBuffer& data = ctx.data;
+        const bool forever = isForever();
 
-        mask.writeBlocks(data);
+        // the optional bits close the fifth block, 1.60 holds the bank counts in it and has a bit for the outfit block
+        bool lateGroup = mask[134];
+        bool outfitGroup = false;
+        if (forever)
+        {
+            const auto wire = renumberMask<ActivePlayerWireBlocks>(mask, ActivePlayerWireRuns, ActivePlayerWireGroups);
+            writeWireBlocks<ActivePlayerWireBlocks>(data, wire);
+            lateGroup = wireBit<ActivePlayerWireBlocks>(wire, ActivePlayerWireLateGroup);
+            outfitGroup = wireBit<ActivePlayerWireBlocks>(wire, ActivePlayerWireOutfitGroup);
+        }
+        else
+        {
+            mask.writeBlocks(data);
+        }
+
         if (mask[0])
         {
             for (uint8_t bit = 1; bit <= 6; ++bit)
@@ -2160,9 +2417,9 @@ namespace
         data.flushBits();
         if (mask[32])
         {
-            // the bank tab settings: the size takes three bits
+            // the bank tab settings: the size takes three bits, four for the character tabs of 1.60
             if (mask[48])
-                writeDynamicMask(data, 0, 3);
+                writeDynamicMask(data, 0, forever ? 4u : 3u);
             if (mask[49])
                 writeDynamicMask(data, 0, 3);
         }
@@ -2362,14 +2619,17 @@ namespace
             if (mask[162])
                 activeTransmogMetadataCreate(data);
         }
-        if (mask[134])
+        if (lateGroup)
         {
             data.writeBits(0, 1);                                           // has a quest session
             data.writeBits(0, 1);                                           // has a pet stable
             data.writeBits(0, 1);                                           // has walk in data
             data.writeBits(0, 1);                                           // has challenge mode data
-            data.flushBits();
         }
+        if (outfitGroup)
+            data.writeBits(0, 1);                                           // 1.60 bit without a name
+        if (lateGroup || outfitGroup)
+            data.flushBits();
 
         if (mask[163])
         {
@@ -2462,6 +2722,9 @@ namespace
 
     constexpr uint8_t EnchantmentCount = 13;
 
+    // the zone flags an item of 1.60 always carries
+    constexpr uint32_t ForeverItemZoneFlags = 0x4;
+
     void itemEnchantmentCreate(Item* item, uint8_t index, ByteBuffer& data)
     {
         data << int32_t(item->getEnchantmentId(index));
@@ -2494,6 +2757,7 @@ namespace
     void itemCreate(Item* item, Context const& ctx)
     {
         ByteBuffer& data = ctx.data;
+        const bool forever = isForever();
 
         ctx.guid(item->getOwnerGuid());
         ctx.guid(item->getContainerGuid());
@@ -2509,6 +2773,8 @@ namespace
         data << uint32_t(item->getFlags());
         for (uint8_t i = 0; i < EnchantmentCount; ++i)
             itemEnchantmentCreate(item, i, data);
+        if (forever)
+            data << int32_t(0) << uint32_t(0) << int16_t(0) << uint16_t(0); // 1.60 carries one enchantment more
         if (ctx.owner())
         {
             data << uint32_t(item->getDurability());
@@ -2526,7 +2792,7 @@ namespace
         data << uint32_t(0);                                                // artifact powers
         data << uint32_t(0);                                                // gems
         if (ctx.owner())
-            data << uint32_t(0);                                            // zone flags
+            data << uint32_t(forever ? ForeverItemZoneFlags : 0);           // zone flags
         itemBonusKeyCreate(item, data);
         if (ctx.owner())
             data << uint16_t(0);                                            // debug item level
@@ -2617,7 +2883,7 @@ namespace
             if (mask[17])
                 itemModifiersUpdate(data);
             if (mask[18])
-                data << uint32_t(0);
+                data << uint32_t(isForever() ? ForeverItemZoneFlags : 0);
             if (mask[19])
                 itemBonusKeyCreate(item, data);
             if (mask[20])
@@ -2716,6 +2982,8 @@ namespace
         for (uint8_t i = 0; i < 4; ++i)
             data << float(gameobject->getParentRotation(i));
         data << int32_t(gameobject->getFactionTemplate());
+        if (isForever())
+            data << int32_t(gameobject->getLevel());                        // 1.60 carries the level twice
         data << int8_t(gameobject->getClientState());
         data << int8_t(gameobject->getGoType());
         data << uint8_t(gameobject->getField<uint8_t>(GameObjectField::Bytes1Health));
@@ -2756,8 +3024,19 @@ namespace
     void gameObjectUpdate(GameObject* gameobject, Context const& ctx, GameObjectMask const& mask)
     {
         ByteBuffer& data = ctx.data;
+        const bool forever = isForever();
 
-        mask.writeSmall(data);
+        if (forever)
+        {
+            // 1.60: the second level is bit 16, the later bits move up
+            const uint32_t bits = mask.block(0);
+            data.writeBits((bits & 0xFFFFu) | ((bits & ~0xFFFFu) << 1) | (mask[21] ? 1u << 16 : 0u), 28);
+        }
+        else
+        {
+            mask.writeSmall(data);
+        }
+
         if (mask[0] && mask[1])
             data.writeBits(0, 32);                                          // state world effects
         data.flushBits();
@@ -2790,6 +3069,8 @@ namespace
                     data << float(gameobject->getParentRotation(i));
             if (mask[15])
                 data << int32_t(gameobject->getFactionTemplate());
+            if (forever && mask[21])
+                data << int32_t(gameobject->getLevel());
             if (mask[16])
                 data << int8_t(gameobject->getClientState());
             if (mask[17])
@@ -3110,7 +3391,8 @@ namespace ObjectUpdateMidnight
     // the vendor fragment of a creature: its vendor types and the petition flag, 0 without
     static int32_t vendorFragmentFlags(Object* object)
     {
-        if (object->getObjectTypeId() != TYPEID_UNIT)
+        // 1.60 creatures carry no vendor fragment
+        if (object->getObjectTypeId() != TYPEID_UNIT || isForever())
             return 0;
 
         const uint64_t npcFlags = static_cast<Unit*>(object)->getNpcFlags();

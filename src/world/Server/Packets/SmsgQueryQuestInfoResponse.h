@@ -140,6 +140,11 @@ namespace AscEmu::Packets
             packet.flushBits();
 
             packet << int32_t(input.questId);
+            if (m_protocol.isForever())
+            {
+                packet << int32_t(2);               // level type of 1.60
+                packet << int32_t(input.questLevel);
+            }
             packet << int32_t(2);                   // quest type: normal
             if (contentTuning)
             {

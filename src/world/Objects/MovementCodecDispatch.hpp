@@ -72,6 +72,7 @@ public:
 private:
     [[nodiscard]] static WoW::Expansion resolve(WoW::Expansion const expansion) noexcept
     {
-        return WoW::isSupportedExpansion(expansion) ? expansion : WoW::getServerExpansion();
+        // the 1.60 client takes the 12.x codec
+        return WoW::getComparedExpansion(WoW::isSupportedExpansion(expansion) ? expansion : WoW::getServerExpansion());
     }
 };

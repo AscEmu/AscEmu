@@ -69,12 +69,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ObjectUpdateTheWarWithin.hpp"
 #include "ObjectUpdateMidnight.hpp"
 
-// 8.x and 9.x send their values as update field structures, each version has its own serializer
+// 8.x and later send their values as update field structures, 1.60 shares the 12.x serializer
 namespace ObjectUpdateUF
 {
     inline uint8_t wireObjectTypeId(Object const* object, Player const* target)
     {
-        switch (WoW::getServerExpansion())
+        switch (WoW::getComparedExpansion(WoW::getServerExpansion()))
         {
             case WoW::Expansion::_BfA:          return ObjectUpdateBfA::wireObjectTypeId(object, target);
             case WoW::Expansion::_Shadowlands:  return ObjectUpdateShadowlands::wireObjectTypeId(object, target);
@@ -87,7 +87,7 @@ namespace ObjectUpdateUF
 
     inline void writeCreateValues(Object* object, Player* target, ByteBuffer& data)
     {
-        switch (WoW::getServerExpansion())
+        switch (WoW::getComparedExpansion(WoW::getServerExpansion()))
         {
             case WoW::Expansion::_BfA:          ObjectUpdateBfA::writeCreateValues(object, target, data); break;
             case WoW::Expansion::_Shadowlands:  ObjectUpdateShadowlands::writeCreateValues(object, target, data); break;
@@ -100,7 +100,7 @@ namespace ObjectUpdateUF
 
     inline void writeUpdateValues(Object* object, Player* target, UpdateMask const& mask, ByteBuffer& data)
     {
-        switch (WoW::getServerExpansion())
+        switch (WoW::getComparedExpansion(WoW::getServerExpansion()))
         {
             case WoW::Expansion::_BfA:          ObjectUpdateBfA::writeUpdateValues(object, target, mask, data); break;
             case WoW::Expansion::_Shadowlands:  ObjectUpdateShadowlands::writeUpdateValues(object, target, mask, data); break;
@@ -2280,7 +2280,7 @@ void Object::BuildFieldUpdatePacket(Player* Target, uint32_t Index, uint32_t Val
     buf << GetNewGUID();
 #endif
 
-#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
     // 8.x: the structure that holds the value
     (void)Value;
     UpdateMask fieldMask;
@@ -2298,7 +2298,7 @@ void Object::BuildFieldUpdatePacket(Player* Target, uint32_t Index, uint32_t Val
     buf << Value;
 #endif
 
-#if VERSION_STRING >= WoD && VERSION_STRING != BfA && VERSION_STRING != Shadowlands && VERSION_STRING != Dragonflight && VERSION_STRING != TheWarWithin && VERSION_STRING != Midnight
+#if VERSION_STRING >= WoD && VERSION_STRING != BfA && VERSION_STRING != Shadowlands && VERSION_STRING != Dragonflight && VERSION_STRING != TheWarWithin && VERSION_STRING < Midnight
     writeEmptyDynamicValues(buf, m_objectTypeId);
 #elif VERSION_STRING == Mop
     // Mop closes every values-update block with a dynamic-values section; for anything
@@ -2321,7 +2321,7 @@ void Object::BuildFieldUpdatePacket(ByteBuffer* buf, uint32_t Index, uint32_t Va
     *buf << GetNewGUID();
 #endif
 
-#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
     (void)Value;
     UpdateMask fieldMask;
     fieldMask.SetCount(m_valuesCount);
@@ -2338,7 +2338,7 @@ void Object::BuildFieldUpdatePacket(ByteBuffer* buf, uint32_t Index, uint32_t Va
     *buf << Value;
 #endif
 
-#if VERSION_STRING >= WoD && VERSION_STRING != BfA && VERSION_STRING != Shadowlands && VERSION_STRING != Dragonflight && VERSION_STRING != TheWarWithin && VERSION_STRING != Midnight
+#if VERSION_STRING >= WoD && VERSION_STRING != BfA && VERSION_STRING != Shadowlands && VERSION_STRING != Dragonflight && VERSION_STRING != TheWarWithin && VERSION_STRING < Midnight
     writeEmptyDynamicValues(*buf, m_objectTypeId);
 #elif VERSION_STRING == Mop
     // See the other BuildFieldUpdatePacket() overload above for why this is required.
@@ -2364,7 +2364,7 @@ uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* targe
                 *data << m_wowGuid;
 #endif
 
-#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
                 ObjectUpdateUF::writeUpdateValues(this, target, updateMask, *data);
 #else
                 buildValuesUpdate(UPDATETYPE_VALUES, data, &updateMask, target);
@@ -2394,7 +2394,7 @@ uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* ma
         *buf << m_wowGuid;
 #endif
 
-#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
         ObjectUpdateUF::writeUpdateValues(this, nullptr, *mask, *buf);
 #else
         buildValuesUpdate(UPDATETYPE_VALUES, buf, mask, nullptr);
@@ -3252,7 +3252,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     const bool serverTime = (updateFlags & UPDATEFLAG_TRANSPORT) != 0;
     const bool vehicle = (updateFlags & UPDATEFLAG_VEHICLE) != 0;
     const bool rotation = (updateFlags & UPDATEFLAG_ROTATION) != 0 && isGameObject();
-#if VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
     // 11.x: elevators and moving transports carry their progress in the game object block
     const GameObject* transportObject = isGameObject() ? static_cast<GameObject*>(this) : nullptr;
     const bool movingTransport = transportObject != nullptr && transportObject->getGoType() == GAMEOBJECT_TYPE_MO_TRANSPORT;
@@ -3261,7 +3261,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     const std::vector<uint32_t> pauseTimes = elevator ? transportObject->getTransportStopFrames() : std::vector<uint32_t>();
 #endif
 
-#if VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
     data->writeBit(!IsType(TYPE_ITEM));                 // 11.x: the object has a position in the world
 #endif
     data->writeBit(false);                              // no birth animation
@@ -3270,7 +3270,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 #if VERSION_STRING == WoD
     data->writeBit(false);                              // suppresses greetings
 #endif
-#if VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
     data->writeBit(updateFlags & UPDATEFLAG_SELF);      // 11.x: this is you, in front of the movement update
 #endif
     data->writeBit(living);
@@ -3281,7 +3281,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     data->writeBit(vehicle);
     data->writeBit(false);                              // anim kits
     data->writeBit(rotation);
-#if VERSION_STRING != TheWarWithin && VERSION_STRING != Midnight
+#if VERSION_STRING != TheWarWithin && VERSION_STRING < Midnight
     data->writeBit(false);                              // area trigger shape
     data->writeBit(false);                              // world effect of a gameobject
 #else
@@ -3297,14 +3297,14 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     *data << uint32_t(0);                               // pause times of a transport
 #else
     data->writeBit(false);                              // smooth phasing
-#if VERSION_STRING != TheWarWithin && VERSION_STRING != Midnight
+#if VERSION_STRING != TheWarWithin && VERSION_STRING < Midnight
     data->writeBit(updateFlags & UPDATEFLAG_SELF);
 #endif
     data->writeBit(false);                              // scene object
-#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
     data->writeBit(updateFlags & UPDATEFLAG_SELF);      // active player
     data->writeBit(false);                              // conversation
-#if VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
     data->writeBit(false);                              // 11.x: housing room
     data->writeBit(false);                              // housing decor
     data->writeBit(false);                              // mesh object
@@ -3314,7 +3314,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 #endif
     data->flushBits();
 #endif
-#if VERSION_STRING == Midnight
+#if VERSION_STRING >= Midnight
     *data << uint32_t(pauseTimes.size());               // 12.x: pause times of an elevator, the list closes the block
 #endif
 
@@ -3334,7 +3334,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         *data << uint32_t(movementFlags);
         *data << uint32_t(movementFlags2);
         *data << uint32_t(0);                           // flags 3
-#elif VERSION_STRING == Midnight
+#elif VERSION_STRING >= Midnight
         // 12.x: one 64 bit flag field
         *data << movementFlags64(movementFlags, static_cast<uint16_t>(movementFlags2));
 #endif
@@ -3347,11 +3347,11 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         *data << float(obj_movement_info.getSplineElevation());
         *data << uint32_t(0);                           // removed movement forces
         *data << uint32_t(0);                           // move index
-#if VERSION_STRING == Midnight
+#if VERSION_STRING >= Midnight
         *data << float(1.0f);                           // 12.x: gravity modifier
 #endif
 
-#if VERSION_STRING != Shadowlands && VERSION_STRING != Dragonflight && VERSION_STRING != TheWarWithin && VERSION_STRING != Midnight
+#if VERSION_STRING != Shadowlands && VERSION_STRING != Dragonflight && VERSION_STRING != TheWarWithin && VERSION_STRING < Midnight
         data->writeBits(movementFlags, 30);
 #if VERSION_STRING == WoD
         data->writeBits(movementFlags2, 16);
@@ -3359,7 +3359,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         data->writeBits(movementFlags2, 18);
 #endif
 #endif
-#if VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
         data->writeBit(false);                          // standing on a game object
 #endif
         data->writeBit(hasTransport);
@@ -3367,13 +3367,13 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         data->writeBit(false);                          // spline
         data->writeBit(false);                          // height change failed
         data->writeBit(false);                          // remote time valid
-#if VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
         data->writeBit(false);                          // inertia
 #endif
-#if VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
         data->writeBit(false);                          // advanced flying
 #endif
-#if VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
         data->writeBit(false);                          // 11.x: drive status
 #endif
         data->flushBits();
@@ -3407,10 +3407,10 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         *data << float(unit->getSpeedRate(TYPE_PITCH_RATE, true));
 
         *data << uint32_t(0);                           // movement forces
-#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
         *data << float(1.0f);                           // magnitude modifier of the movement forces
 #endif
-#if VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
         // 10.x: the advanced flying parameters of the mover
         *data << float(2.0f);                           // air friction
         *data << float(65.0f);                          // maximum velocity
@@ -3444,7 +3444,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         writeTransportInfo(*data, obj_movement_info, realmId, mapId);
 #elif VERSION_STRING == TheWarWithin
     *data << uint32_t(pauseTimes.size());               // pause times of an elevator, the list follows the rotation
-#elif VERSION_STRING == Midnight
+#elif VERSION_STRING >= Midnight
     // 12.x: the position on the transport follows the living block
     if (transportPosition)
         writeTransportInfo(*data, obj_movement_info, realmId, mapId);
@@ -3465,7 +3465,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
     if (serverTime)
     {
-#if VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
         // 11.x: the server time, the transport progress goes through the game object block
         *data << uint32_t(Util::getMSTime());
 #else
@@ -3497,12 +3497,12 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         *data << pauseTime;
 #endif
 
-#if VERSION_STRING != WoD && VERSION_STRING != Midnight
+#if VERSION_STRING != WoD && VERSION_STRING < Midnight
     if (transportPosition)
         writeTransportInfo(*data, obj_movement_info, realmId, mapId);
 #endif
 
-#if VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
     // 11.x: world effect, then the time offset of a moving transport or the path progress of an elevator
     if (gameObjectBlock)
     {
@@ -3537,7 +3537,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     }
 #endif
 
-#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
     // the active player block announced in the header: scene instances and the rune state of death knights
     if (updateFlags & UPDATEFLAG_SELF)
     {
@@ -3558,7 +3558,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         }
     }
 #endif
-#if VERSION_STRING == Midnight
+#if VERSION_STRING >= Midnight
     for (const uint32_t pauseTime : pauseTimes)
         *data << pauseTime;
 #endif

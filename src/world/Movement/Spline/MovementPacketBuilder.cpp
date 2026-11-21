@@ -692,12 +692,12 @@ namespace
     void writeMonsterSplineHeaderLegion(ByteBuffer& data, uint32_t splineId, [[maybe_unused]] uint8_t stopDistanceTolerance)
     {
         data << uint32_t(splineId);
-#if VERSION_STRING != Dragonflight && VERSION_STRING != TheWarWithin && VERSION_STRING != Midnight
+#if VERSION_STRING != Dragonflight && VERSION_STRING != TheWarWithin && VERSION_STRING < Midnight
         data << float(0.0f);                                    // destination, gone in 10.x
         data << float(0.0f);
         data << float(0.0f);
 #endif
-#if VERSION_STRING != WoD && VERSION_STRING != Midnight
+#if VERSION_STRING != WoD && VERSION_STRING < Midnight
         data.writeBit(false);                                   // cross realm teleport
 #if VERSION_STRING == TheWarWithin
         data.writeBit(false);                                   // 11.x: stop use face direction
@@ -706,7 +706,7 @@ namespace
 #endif
     }
 
-#if VERSION_STRING == Midnight
+#if VERSION_STRING >= Midnight
     // 12.x: the teleport, stop use face direction and stop style bits follow the movement spline, then the
     // position of the mover closes the packet
     void writeMonsterSplineTailMidnight(ByteBuffer& data, uint8_t stopDistanceTolerance, G3D::Vector3 const& position)
@@ -762,7 +762,7 @@ void PacketBuilder::WriteMonsterMoveLegion(MoveSpline const& moveSpline, ByteBuf
 
     G3D::Vector3 const& firstPoint = moveSpline.spline.getPoint(moveSpline.spline.first());
     data << unit->GetNewGUID().toGuid128(realmId, unit->GetMapId());
-#if VERSION_STRING != Midnight
+#if VERSION_STRING < Midnight
     data << float(firstPoint.x);
     data << float(firstPoint.y);
     data << float(firstPoint.z);
@@ -846,16 +846,16 @@ void PacketBuilder::WriteMonsterMoveLegion(MoveSpline const& moveSpline, ByteBuf
     const uint32_t splineFlags = legionSplineFlags(moveSpline.splineflags);
 
     data << uint32_t(splineFlags);
-#if VERSION_STRING != Shadowlands && VERSION_STRING != Dragonflight && VERSION_STRING != TheWarWithin && VERSION_STRING != Midnight
+#if VERSION_STRING != Shadowlands && VERSION_STRING != Dragonflight && VERSION_STRING != TheWarWithin && VERSION_STRING < Midnight
     data << uint8_t(animation ? moveSpline.splineflags.animTier : 0);
     data << uint32_t(animation ? moveSpline.effect_start_time : 0);   // tier transition start
 #endif
-#if VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
     data << uint8_t(face);                                            // 11.x: the face as byte behind the flags
 #endif
     data << int32_t(0);                                               // elapsed
     data << uint32_t(moveSpline.Duration());
-#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
     data << uint32_t(0);                                              // fade object time
 #else
     data << float(parabolic ? moveSpline.vertical_acceleration : 0.0f);
@@ -878,7 +878,7 @@ void PacketBuilder::WriteMonsterMoveLegion(MoveSpline const& moveSpline, ByteBuf
 
     writeFacing();
     writeMonsterSplineTailWoD(data, splineFlags);
-#elif VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#elif VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
     // 11.x: the facing follows the transport, the bit field carries the taxi smoothing and turn data bits
     data << uint8_t(0);                                               // mode
     writeTransportOfMoverLegion(data, unit, realmId);
@@ -906,7 +906,7 @@ void PacketBuilder::WriteMonsterMoveLegion(MoveSpline const& moveSpline, ByteBuf
         data << uint32_t(0);                                          // duration
     }
 
-#if VERSION_STRING == Midnight
+#if VERSION_STRING >= Midnight
     writeMonsterSplineTailMidnight(data, 0, firstPoint);
 #endif
 #elif VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight
@@ -1053,14 +1053,14 @@ void PacketBuilder::WriteCreateLegion(MoveSpline const& moveSpline, ByteBuffer& 
     writePoints();
 #else
     data << uint32_t(splineFlags);
-#if VERSION_STRING == Midnight
+#if VERSION_STRING >= Midnight
     data << uint8_t(face);                                            // 12.x: the face as byte behind the flags
 #endif
     data << int32_t(moveSpline.timePassed());
     data << uint32_t(moveSpline.Duration());
     data << float(1.0f);                                              // duration modifier
     data << float(1.0f);                                              // next duration modifier
-#if VERSION_STRING == Midnight
+#if VERSION_STRING >= Midnight
     writeFacing();
 #else
     data.writeBits(face, 2);
@@ -1088,7 +1088,7 @@ void PacketBuilder::WriteCreateLegion(MoveSpline const& moveSpline, ByteBuffer& 
     data.writeBit(false);                                             // spline filter
     data.writeBit(false);                                             // spell effect extra data
     data.writeBit(parabolic);                                         // jump extra data
-#if VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
     data.writeBit(false);                                             // turn data
 #endif
 #if VERSION_STRING != BfA
@@ -1096,7 +1096,7 @@ void PacketBuilder::WriteCreateLegion(MoveSpline const& moveSpline, ByteBuffer& 
     data.writeBit(false);                                             // 9.x: unknown block, 12.x: spell visual data
 #endif
     data.flushBits();
-#if VERSION_STRING != Midnight
+#if VERSION_STRING < Midnight
     writeFacing();
 #endif
     writePoints();
@@ -1108,7 +1108,7 @@ void PacketBuilder::WriteCreateLegion(MoveSpline const& moveSpline, ByteBuffer& 
 void PacketBuilder::WriteStopMovementLegion(G3D::Vector3 const& pos, uint32_t splineId, ByteBuffer& data, Unit* unit, uint32_t realmId)
 {
     data << unit->GetNewGUID().toGuid128(realmId, unit->GetMapId());
-#if VERSION_STRING != Midnight
+#if VERSION_STRING < Midnight
     data << float(pos.x);
     data << float(pos.y);
     data << float(pos.z);
@@ -1117,16 +1117,16 @@ void PacketBuilder::WriteStopMovementLegion(G3D::Vector3 const& pos, uint32_t sp
     writeMonsterSplineHeaderLegion(data, splineId, 2);
 
     data << uint32_t(0);                                              // flags
-#if VERSION_STRING != Shadowlands && VERSION_STRING != Dragonflight && VERSION_STRING != TheWarWithin && VERSION_STRING != Midnight
+#if VERSION_STRING != Shadowlands && VERSION_STRING != Dragonflight && VERSION_STRING != TheWarWithin && VERSION_STRING < Midnight
     data << uint8_t(0);                                               // animation tier
     data << uint32_t(0);                                              // tier transition start
 #endif
-#if VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
     data << uint8_t(0);                                               // face
 #endif
     data << int32_t(0);                                               // elapsed
     data << uint32_t(0);                                              // move time
-#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#if VERSION_STRING == BfA || VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight || VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
     data << uint32_t(0);                                              // fade object time
 #else
     data << float(0.0f);                                              // jump gravity
@@ -1145,7 +1145,7 @@ void PacketBuilder::WriteStopMovementLegion(G3D::Vector3 const& pos, uint32_t sp
     data.flushBits();
 
     writeMonsterSplineTailWoD(data, 0);
-#elif VERSION_STRING == TheWarWithin || VERSION_STRING == Midnight
+#elif VERSION_STRING == TheWarWithin || VERSION_STRING >= Midnight
     data << uint8_t(0);                                               // mode
     writeTransportOfMoverLegion(data, unit, realmId);
 
@@ -1161,7 +1161,7 @@ void PacketBuilder::WriteStopMovementLegion(G3D::Vector3 const& pos, uint32_t sp
     data.writeBit(false);                                             // unknown block
     data.flushBits();
 
-#if VERSION_STRING == Midnight
+#if VERSION_STRING >= Midnight
     writeMonsterSplineTailMidnight(data, 2, pos);
 #endif
 #elif VERSION_STRING == Shadowlands || VERSION_STRING == Dragonflight

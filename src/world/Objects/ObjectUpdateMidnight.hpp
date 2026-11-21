@@ -14,7 +14,7 @@ class UpdateMask;
 
 // Object values of 12.x clients: the server keeps its values in the 7.3.5 layout, the client receives them as
 // update field structures (object, unit, player, active player, item, container, gameobject, dynamic object,
-// corpse, area trigger) with a change mask per structure.
+// corpse, area trigger) with a change mask per structure. 1.60 takes the same structures with fields of its own.
 namespace ObjectUpdateMidnight
 {
     // object type byte of the create block
