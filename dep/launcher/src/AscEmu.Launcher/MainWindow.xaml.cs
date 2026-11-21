@@ -83,14 +83,7 @@ public partial class MainWindow : Window
 
     void SetPatchStatus(string text) => Dispatcher.Invoke(() => PatchStatusText.Text = text);
 
-    async Task EnsureSystemTrustAsync()
-    {
-        if (!_settings.AutoConfigureHosts)
-            return;
-        var (host, port) = BattleNetStatusService.ParsePortal(_settings.Portal);
-        var caPath = string.IsNullOrWhiteSpace(_settings.CaCertificatePath) ? null : _settings.CaCertificatePath;
-        await Task.Run(() => SystemTrust.Ensure(host, _settings.ServerAddress, port, caPath, SetPatchStatus));
-    }
+    Task EnsureSystemTrustAsync() => Task.CompletedTask;
 
     void Play_Click(object sender, RoutedEventArgs e)
     {
