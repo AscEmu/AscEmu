@@ -45,7 +45,7 @@ internal sealed class ProcessMemory(nint processHandle)
         return 0;
     }
 
-    public IEnumerable<(nint Base, long Size, uint Protect)> ReadableRegions()
+    public IEnumerable<(nint Base, long Size, uint Protect, uint Type)> ReadableRegions()
     {
         long address = 0x10000;
         const long maxAddress = 0x00007FFFFFFEFFFF;
@@ -54,7 +54,7 @@ internal sealed class ProcessMemory(nint processHandle)
             if (NativeMethods.VirtualQueryEx(processHandle, (nint)address, out var mbi, System.Runtime.InteropServices.Marshal.SizeOf<NativeMethods.MemoryBasicInformation>()) == 0) yield break;
             var regionBase = mbi.BaseAddress.ToInt64(); var regionSize = mbi.RegionSize.ToInt64();
             if (regionSize <= 0) yield break;
-            if (mbi.State == NativeMethods.MemCommit && IsReadable(mbi.Protect)) yield return ((nint)regionBase, regionSize, mbi.Protect);
+            if (mbi.State == NativeMethods.MemCommit && IsReadable(mbi.Protect)) yield return ((nint)regionBase, regionSize, mbi.Protect, mbi.Type);
             address = regionBase + regionSize;
         }
     }

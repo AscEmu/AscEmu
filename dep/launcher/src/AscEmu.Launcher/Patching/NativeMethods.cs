@@ -11,6 +11,7 @@ internal static class NativeMethods
     internal const uint ProcessQueryInformation = 0x0400;
     internal const uint PageExecuteReadWrite = 0x40;
     internal const uint MemCommit = 0x1000;
+    internal const uint MemPrivate = 0x20000;
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)] internal struct StartupInfo { public int cb; public string? lpReserved; public string? lpDesktop; public string? lpTitle; public int dwX; public int dwY; public int dwXSize; public int dwYSize; public int dwXCountChars; public int dwYCountChars; public int dwFillAttribute; public int dwFlags; public short wShowWindow; public short cbReserved2; public nint lpReserved2; public nint hStdInput; public nint hStdOutput; public nint hStdError; }
     [StructLayout(LayoutKind.Sequential)] internal struct ProcessInformation { public nint hProcess; public nint hThread; public uint dwProcessId; public uint dwThreadId; }

@@ -19,7 +19,7 @@ The launcher does not store or search for a World of Warcraft path. It always us
 
 ## Current Forever profile
 
-The launcher accepts Forever builds **69893-70862**; 70862 is the live client of 2026-11-07. The runtime region-key patch was verified with the beta builds 69893-70205, the live client uses the same runtime table scan and reports when the table layout differs.
+The launcher accepts Forever builds **69893-70959**; 70959 is the live client of 2026-11-21. The runtime region-key patch was verified with the beta builds 69893-70205 and the live client 70959.
 
 For a supported build the launcher:
 
@@ -27,9 +27,11 @@ For a supported build the launcher:
 - launches WoW with `-config Config.wtf` (the client resolves that name inside `WTF`, matching the known-good launcher behavior);
 - uses the known-good Forever `none` launch path: no pre-launch portal/registry/GameCrypto memory patches are applied;
 - starts the client suspended, attaches the region-key monitor and resumes it;
-- scans for the runtime `RegionGroup 1..n` table (ids 1..n in a row, 0x28 bytes per record, at least 8 records);
+- scans the heap of the client for the runtime `RegionGroup 1..n` table (ids 1..n in a row, 0x28 bytes per record, at least 8 records);
+- accepts a table only when its records hold Ed25519 public keys (or are empty) and record 8, the one the server signs for, holds a key; anything else with the same shape is model or layout data and stays untouched;
 - replaces all 32-byte region public keys of the table when it becomes available;
-- keeps monitoring and re-applies them if the client rebuilds the table;
+- keeps monitoring and patches the table the client builds for the next connect;
+- writes what it found, skipped and patched to `%LOCALAPPDATA%\AscEmu\Launcher\launcher.log`;
 - plays a Windows notification sound after a successful region-key patch.
 
 ## Build requirements

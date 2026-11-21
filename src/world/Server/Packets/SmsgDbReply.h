@@ -42,8 +42,8 @@ namespace AscEmu::Packets
             {
                 // table hash, record, time, status (valid or removed), size, data
                 packet << type << entry << hotfixTime;
-                // 10.x reports a record it does not have as invalid, 9.x as removed, 11.x leaves the status unset
-                packet.writeBits(bufferSize != 0 ? 1 : (m_protocol.isTheWarWithinOrLater() ? 0 : m_protocol.isDragonflight() ? 3 : 2), 3);
+                // a missing record: the 1.60 and 10.x client need invalid (3), 9.x removed (2), 11.x unset (0)
+                packet.writeBits(bufferSize != 0 ? 1 : (m_protocol.isForever() ? 3 : m_protocol.isTheWarWithinOrLater() ? 0 : m_protocol.isDragonflight() ? 3 : 2), 3);
                 packet.flushBits();
                 packet << bufferSize;
                 packet.append(buffer);
