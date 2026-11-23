@@ -1373,14 +1373,16 @@ namespace
         // One SpellEntry per SpellName row, the split tables link themselves to it
         // through their spell id (a column or the relation parent). Rows of a
         // difficulty other than the base one are kept but not linked.
-        std::unordered_map<uint32_t, WDB::Structures::SpellEntry*> spells;
-        spells.reserve(spellName.getRecordCount());
-        fillStore(sSpellStore, spellName, [&spells](WDB::Structures::SpellEntry& entry, Row const& row)
+        fillStore(sSpellStore, spellName, [](WDB::Structures::SpellEntry& entry, Row const& row)
         {
             entry.id = row.id();
             entry.name[0] = row.text(0);
-            spells.emplace(entry.id, &entry);
         });
+
+        std::unordered_map<uint32_t, WDB::Structures::SpellEntry*> spells;
+        spells.reserve(sSpellStore.size());
+        for (auto& [id, entry] : sSpellStore)
+            spells.emplace(id, &entry);
 
         auto const linkSpell = [&spells](uint32_t spellId, uint32_t rowId, uint32_t WDB::Structures::SpellEntry::* member)
         {

@@ -426,6 +426,13 @@ void ScriptMgr::LoadScripts()
 
     uint32_t dllCount = 0;
 
+    std::error_code ec;
+    if (!std::filesystem::is_directory(modulePath, ec))
+    {
+        sLogger.info("ScriptMgr : Modules directory not found, skipping external scripts.");
+        return;
+    }
+
     auto directoryContentMap = Util::getDirectoryContent(modulePath);
     for (const auto content : directoryContentMap)
     {
