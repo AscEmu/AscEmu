@@ -49,4 +49,9 @@ CMakeUserPresets.json
 
 # Local ReSharper user settings
 *.DotSettings.user
-/dep/launcher
+
+# Launcher output
+/dep/launcher/build
+/dep/launcher/out
+/dep/launcher/src/AscEmu.Launcher/bin/
+/dep/launcher/src/AscEmu.Launcher/obj/
