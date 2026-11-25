@@ -83,6 +83,7 @@ namespace visibility
         VisSnapshot snapshot() const;
         /// Logs the diagnostic snapshot with a reason label.
         void logMemoryDiagnostics(const char* reason) const;
+
         VisibilityPerformanceCounters takePerformanceCounters() noexcept
         {
             const auto counters = m_performanceCounters;
@@ -200,7 +201,7 @@ namespace visibility
         std::vector<ObjectHandle> m_cellRadiusPublishers;
 
         /// Scratch stamp used to dedupe candidates without allocations.
-        mutable std::uint64_t m_candidateQueryStamp{ 0 };
+        mutable std::uint64_t m_candidateQueryStamp{0};
 
         /// Grid unload checks only need to run from time to time.
         std::chrono::steady_clock::time_point m_lastGridUnloadScan{};
@@ -229,9 +230,9 @@ namespace visibility
         std::uint64_t nextCandidateQueryStamp() const;
         bool markCandidateOnce(ObjectHandle h, std::uint64_t stamp) const;
         void collectPlayerPublishersAroundCell(int gid, int lcx, int lcy, int radiusCells,
-            std::vector<ObjectHandle>& out, std::uint64_t stamp) const;
+                                               std::vector<ObjectHandle>& out, std::uint64_t stamp) const;
         void reconcilePublishedCandidateForViewerMove(ObjectHandle viewerH, const ObjectSlot& viewer, ObjectHandle objH,
-            int oldGid, int oldLcid, int newGid, int newLcid);
+                                                      int oldGid, int oldLcid, int newGid, int newLcid);
 
         /// Notifications
         void notifySpawn(ObjectHandle h);
@@ -272,5 +273,4 @@ namespace visibility
         /// reverse index (object GUID -> set of viewer GUIDs)
         std::unordered_map<uint64_t, std::unordered_set<uint64_t>> m_seenBy;
     };
-
 } /// namespace visibility

@@ -1642,8 +1642,9 @@ void WorldMap::queueVisibilityChange(const WoWGuid& viewer, const WoWGuid& objec
     if (!viewerRaw || !objectRaw)
         return;
 
+    std::scoped_lock lock(pendingVisibilityMutex_);
     auto& pending = pendingVisibilityByViewer_[viewerRaw];
-    pending[objectRaw] = { viewer, object, action };
+    pending[objectRaw] = {viewer, object, action};
 
     if (pendingVisibilityQueuedViewers_.insert(viewerRaw).second)
         pendingVisibilityViewers_.push_back(viewerRaw);
@@ -1984,25 +1985,41 @@ bool WorldMap::shouldSuppressInitialValueUpdateForViewer(uint64_t viewerRaw, uin
 
 void WorldMap::processPendingVisibilityChanges(std::size_t maxEvents, std::size_t maxCreatesPerPlayer, std::size_t maxDestroysPerPlayer)
 {
-    if (pendingVisibilityViewers_.empty() || maxEvents == 0)
+    if (maxEvents == 0)
+        return;
+
+    decltype(pendingVisibilityByViewer_) byViewer;
+    decltype(pendingVisibilityQueuedViewers_) queuedViewers;
+    decltype(pendingVisibilityViewers_) viewers;
+    {
+        std::scoped_lock lock(pendingVisibilityMutex_);
+        if (pendingVisibilityViewers_.empty())
+            return;
+
+        byViewer.swap(pendingVisibilityByViewer_);
+        queuedViewers.swap(pendingVisibilityQueuedViewers_);
+        viewers.swap(pendingVisibilityViewers_);
+    }
+
+    if (viewers.empty())
         return;
 
     std::size_t attempted = 0;
-    const std::size_t viewersToVisit = pendingVisibilityViewers_.size();
+    const std::size_t viewersToVisit = viewers.size();
 
-    for (std::size_t viewerIndex = 0; viewerIndex < viewersToVisit && attempted < maxEvents && !pendingVisibilityViewers_.empty(); ++viewerIndex)
+    for (std::size_t viewerIndex = 0; viewerIndex < viewersToVisit && attempted < maxEvents && !viewers.empty(); ++viewerIndex)
     {
-        const uint64_t viewerRaw = pendingVisibilityViewers_.front();
-        pendingVisibilityViewers_.pop_front();
-        pendingVisibilityQueuedViewers_.erase(viewerRaw);
+        const uint64_t viewerRaw = viewers.front();
+        viewers.pop_front();
+        queuedViewers.erase(viewerRaw);
 
         std::size_t creates = 0;
         std::size_t destroys = 0;
 
         while (attempted < maxEvents)
         {
-            auto viewerIt = pendingVisibilityByViewer_.find(viewerRaw);
-            if (viewerIt == pendingVisibilityByViewer_.end())
+            auto viewerIt = byViewer.find(viewerRaw);
+            if (viewerIt == byViewer.end())
                 break;
 
             auto& pending = viewerIt->second;
@@ -2028,7 +2045,7 @@ void WorldMap::processPendingVisibilityChanges(std::size_t maxEvents, std::size_
             pending.erase(eventIt);
 
             if (pending.empty())
-                pendingVisibilityByViewer_.erase(viewerIt);
+                byViewer.erase(viewerIt);
 
             const bool isCreate = event.action == PendingVisibilityAction::Visible;
             if (isCreate)
@@ -2045,9 +2062,28 @@ void WorldMap::processPendingVisibilityChanges(std::size_t maxEvents, std::size_
             ++attempted;
         }
 
-        auto viewerIt = pendingVisibilityByViewer_.find(viewerRaw);
-        if (viewerIt != pendingVisibilityByViewer_.end() && !viewerIt->second.empty())
+        auto viewerIt = byViewer.find(viewerRaw);
+        if (viewerIt != byViewer.end() && !viewerIt->second.empty())
         {
+            if (queuedViewers.insert(viewerRaw).second)
+                viewers.push_back(viewerRaw);
+        }
+    }
+
+    // Re-queue any remaining pending visibility events for the next tick.
+    if (!viewers.empty())
+    {
+        std::scoped_lock lock(pendingVisibilityMutex_);
+        for (const uint64_t viewerRaw : viewers)
+        {
+            auto it = byViewer.find(viewerRaw);
+            if (it == byViewer.end() || it->second.empty())
+                continue;
+
+            auto& targetPending = pendingVisibilityByViewer_[viewerRaw];
+            for (auto& [objectRaw, event] : it->second)
+                targetPending.try_emplace(objectRaw, std::move(event));
+
             if (pendingVisibilityQueuedViewers_.insert(viewerRaw).second)
                 pendingVisibilityViewers_.push_back(viewerRaw);
         }

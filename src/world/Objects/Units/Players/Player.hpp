@@ -548,7 +548,15 @@ public:
     uint8_t getTransferStatus() const;
     bool isTransferPending() const;
 
-    uint32_t getTeleportState() const;
+    enum class TeleportState : uint8_t
+    {
+        NONE = 0,
+        PENDING_ACK = 1,
+        ATTACHING = 2
+    };
+
+    TeleportState getTeleportState() const { return m_teleportState.load(); }
+    void setTeleportState(TeleportState state) { m_teleportState.store(state); }
 
     void setTeleportTransport(const WoWGuid& guid, const LocationVector& offset)
     {
@@ -598,7 +606,8 @@ protected:
     LocationVector m_teleportTransportOffset;
     bool m_hasTeleportTransport = false;
     uint8_t m_transferStatus = TRANSFER_NONE;
-    uint32_t m_teleportState = 1;
+
+    std::atomic<TeleportState> m_teleportState{TeleportState::PENDING_ACK};
 
     uint32_t m_indoorCheckTimer = 0;
 

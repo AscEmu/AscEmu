@@ -18,7 +18,7 @@ namespace AscEmu::Packets
         bool isTransport;
         uint32_t transportId;
         uint32_t oldMapId;
-        
+
         SmsgTransferPending() : SmsgTransferPending(0, false, 0, 0)
         {
         }

@@ -1112,7 +1112,7 @@ protected:
         // Ownership can move between the global world thread and a map thread
         // while an Update() call is still unwinding. Never execute two session
         // updates concurrently during that handoff.
-        std::atomic_bool m_updateInProgress{ false };
+        std::atomic_bool m_updateInProgress{false};
         uint32_t m_skippedUpdates = 0;
 
         std::unique_ptr<BattlePetCollection> m_battlePets;

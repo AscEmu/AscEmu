@@ -200,19 +200,19 @@ void Channel::leaveChannel(Player* plr, bool sendPacket/* = true*/)
         setOwner(nullptr, nullptr);
 
     // Do not send packet in teleport or logout
-    if (sendPacket && !(plr->getSession() && (plr->getSession()->IsLoggingOut() || plr->getTeleportState() == 1)))
-        {
-            SmsgChannelNotify notifyPacket(CHANNEL_NOTIFY_FLAG_YOULEFT, m_channelName, 0, 0, m_channelId);
-            if (auto* targetSession = plr->getSession())
-                targetSession->sendManagedPacket(notifyPacket);
-        }
+    if (sendPacket && !(plr->getSession() && (plr->getSession()->IsLoggingOut() || plr->getTeleportState() == Player::TeleportState::PENDING_ACK)))
+    {
+        SmsgChannelNotify notifyPacket(CHANNEL_NOTIFY_FLAG_YOULEFT, m_channelName, 0, 0, m_channelId);
+        if (auto* targetSession = plr->getSession())
+            targetSession->sendManagedPacket(notifyPacket);
+    }
 
     // Announce player leave to other members in channel
     if (m_announcePlayers)
-        {
-            SmsgChannelNotify notifyPacket(CHANNEL_NOTIFY_FLAG_LEFT, m_channelName, plr->getGuid());
-            PacketBroadcast::sendFromChannel(*this, notifyPacket);
-        }
+    {
+        SmsgChannelNotify notifyPacket(CHANNEL_NOTIFY_FLAG_LEFT, m_channelName, plr->getGuid());
+        PacketBroadcast::sendFromChannel(*this, notifyPacket);
+    }
 
     // If channel is now empty, delete it
     if (m_members.empty())

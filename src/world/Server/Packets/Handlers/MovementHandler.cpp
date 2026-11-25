@@ -691,6 +691,8 @@ bool WorldSession::recoverFailedWorldport(const char* reason)
     if (_player == nullptr)
         return false;
 
+    _player->setTeleportState(Player::TeleportState::NONE);
+
     const uint32_t failedMapId = _player->GetMapId();
     const uint32_t failedInstanceId = _player->GetInstanceID();
     const LocationVector failedPosition = _player->GetPosition();
@@ -715,7 +717,7 @@ bool WorldSession::recoverFailedWorldport(const char* reason)
         if (!failedAtEntryPoint && _player->safeTeleport(entryMapId, entryInstanceId, entryPosition))
         {
             sLogger.failure("{} for player GUID {} MapId {} InstanceId {}. Returning player to BG/instance entry point MapId {} InstanceId {}.",
-                reason, std::to_string(_player->getGuid()), failedMapId, failedInstanceId, entryMapId, entryInstanceId);
+                            reason, std::to_string(_player->getGuid()), failedMapId, failedInstanceId, entryMapId, entryInstanceId);
             return true;
         }
     }
@@ -727,19 +729,19 @@ bool WorldSession::recoverFailedWorldport(const char* reason)
         _player->safeTeleport(bindMapId, 0, bindPosition))
     {
         sLogger.failure("{} for player GUID {} MapId {} InstanceId {}. Returning player to bind map {}.",
-            reason, std::to_string(_player->getGuid()), failedMapId, failedInstanceId, bindMapId);
+                        reason, std::to_string(_player->getGuid()), failedMapId, failedInstanceId, bindMapId);
         return true;
     }
 
     sLogger.failure("{} for player GUID {} MapId {} InstanceId {} and recovery also failed. Disconnecting.",
-        reason, std::to_string(_player->getGuid()), failedMapId, failedInstanceId);
+                    reason, std::to_string(_player->getGuid()), failedMapId, failedInstanceId);
     Disconnect();
     return false;
 }
 
 void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)
 {
-    if (_player->IsInWorld())
+    if (_player == nullptr || _player->IsInWorld() || _player->m_teleportState.load() == Player::TeleportState::ATTACHING)
         return;
 
     sLogger.debugOpcode("Received CMSG_MOVE_WORLDPORT_ACK.");
@@ -774,8 +776,6 @@ void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)
         }
     }
 
-    _player->m_teleportState = 2;
-
     const auto mapInfo = sMySQLStore.getWorldMapInfo(_player->GetMapId());
     if (mapInfo == nullptr || _player->GetMapId() >= MAX_NUM_MAPS)
     {
@@ -790,45 +790,60 @@ void WorldSession::handleMoveWorldportAckOpcode(WorldPacket& /*recvPacket*/)
         return;
     }
 
-    // Preserve the transport relationship across world transfers. Resolve the
-    // transport by the GUID saved with the teleport destination, restore the
-    // passenger relation and derive the player's world position from the
-    // transport's current transform before attaching the player to the target map.
-    if (_player->hasTeleportTransport())
+    // Mark as pending so duplicate ACKs are ignored while queued
+    _player->m_teleportState.store(Player::TeleportState::ATTACHING);
+
+    const uint32_t accountId = GetAccountId();
+    const WoWGuid playerGuid = _player->getGuid();
+
+    world->queueMapTask([world, accountId, playerGuid]() // NOLINT(clang-diagnostic-padded)
     {
-        Transporter* transporter = sTransportHandler.getTransporter(_player->getTeleportTransportGuid());
-        if (transporter && transporter->IsInWorld() && transporter->getWorldMap() == world)
+        WorldSession* session = sWorld.getSessionByAccountId(accountId);
+        if (session == nullptr)
+            return;
+
+        Player* plr = session->GetPlayer();
+        if (plr == nullptr || plr->getGuid() != playerGuid)
+            return;
+
+        // Rebind passenger on the target map thread
+        // Preserve the transport relationship across world transfers. Resolve the
+        // transport by the GUID saved with the teleport destination, restore the
+        // passenger relation and derive the player's world position from the
+        // transport's current transform before attaching the player to the target map.
+        if (plr->hasTeleportTransport())
         {
-            const LocationVector transportOffset = _player->getTeleportTransportOffset();
-            transporter->RestorePassengerAfterTeleport(_player, transportOffset);
+            Transporter* transporter = sTransportHandler.getTransporter(plr->getTeleportTransportGuid());
+            if (transporter && transporter->IsInWorld() && transporter->getWorldMap() == world)
+            {
+                const LocationVector transportOffset = plr->getTeleportTransportOffset();
+                transporter->RestorePassengerAfterTeleport(plr, transportOffset);
 
-            LocationVector worldPosition = transportOffset;
-            transporter->calculatePassengerPosition(
-                worldPosition.x,
-                worldPosition.y,
-                worldPosition.z,
-                &worldPosition.o);
+                LocationVector worldPosition = transportOffset;
+                transporter->calculatePassengerPosition(
+                    worldPosition.x,
+                    worldPosition.y,
+                    worldPosition.z,
+                    &worldPosition.o);
 
-            _player->SetPosition(worldPosition);
+                plr->SetPosition(worldPosition);
+            }
+            else
+            {
+                sLogger.warning("Worldport transport rebind failed for player {}: transportGuid={} playerMap={} instance={}.",
+                                plr->getName(), plr->getTeleportTransportGuid().getRawGuid(), plr->GetMapId(), plr->GetInstanceID());
+            }
         }
-        else
-        {
-            sLogger.warning("Worldport transport rebind failed for player {}: transportGuid={} playerMap={} instance={}.", _player->getName(), _player->getTeleportTransportGuid().getRawGuid(), _player->GetMapId(), _player->GetInstanceID());
-        }
-    }
 
-    world->queueMapTask([this, world, player = _player]()
-    {
-        if (!world->onPlayerEnter(_player))
+        if (!world->onPlayerEnter(plr))
         {
-            recoverFailedWorldport("Worldport attach failed");
+            session->recoverFailedWorldport("Worldport attach failed");
             return;
         }
 
-        _player->setTransferStatus(TRANSFER_NONE);
-        _player->clearTeleportTransport();
-        _player->resetTimeSync();
-        _player->sendTimeSync();
+        plr->setTeleportState(Player::TeleportState::NONE);
+        plr->setTransferStatus(TRANSFER_NONE);
+        plr->clearTeleportTransport();
     });
 }
 
@@ -873,20 +888,23 @@ void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)
         if (_player->m_sentTeleportPosition.x != 999999.0f)
         {
             _player->m_position = _player->m_sentTeleportPosition;
-            _player->m_sentTeleportPosition.changeCoords({ 999999.0f, 999999.0f, 999999.0f });
+            _player->m_sentTeleportPosition.changeCoords({999999.0f, 999999.0f, 999999.0f});
         }
     }
 }
 
 void WorldSession::handleMoveNotActiveMoverOpcode(WorldPacket& recvPacket)
 {
+    if (_player == nullptr)
+        return;
+
     WoWGuid guid;
     recvPacket >> guid;
 
     if (guid == m_MoverWoWGuid)
         return;
 
-    if (guid != uint64_t(0) && guid == _player->getCharmGuid())
+    if (guid.getRawGuid() != 0 && guid == _player->getCharmGuid())
         m_MoverWoWGuid = guid;
     else
         m_MoverWoWGuid.init(_player->getGuid());

@@ -713,7 +713,7 @@ void Player::onAttachToWorld()
     resetTimeSync();
     sendTimeSync();
 
-    if (m_teleportState == 2)   // Worldport Ack
+    if (getTeleportState() == TeleportState::ATTACHING) // Worldport Ack
         onWorldPortAck();
 
     speedCheatReset();
@@ -728,7 +728,7 @@ void Player::onAttachToWorld()
     // Update PVP Situation
     setupPvPOnLogin();
 
-    if (m_playerInfo->lastOnline + 900 < UNIXTIME)    // did we logged out for more than 15 minutes?
+    if (m_playerInfo->lastOnline + 900 < UNIXTIME) // did we logged out for more than 15 minutes?
         getItemInterface()->RemoveAllConjured();
 
     sHookInterface.OnEnterWorld(this);
@@ -739,11 +739,11 @@ void Player::onAttachToWorld()
         m_WorldMap->getScript()->OnPlayerEnter(this);
     }
 
-    if (m_teleportState == 1 || m_enteringWorld)        // First world enter
+    if (getTeleportState() == TeleportState::PENDING_ACK || m_enteringWorld) // First world enter
         completeLoading();
 
     m_enteringWorld = false;
-    m_teleportState = 0;
+    setTeleportState(TeleportState::NONE);
 
     // can only fly in outlands or northrend (northrend requires cold weather flying)
     if (m_flyingAura && ((m_mapId != 530) && (m_mapId != 571 || !hasSpell(54197) && getDeathState() == ALIVE)))
@@ -1951,13 +1951,15 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
     if (!changesWorld && IsInWorld())
         resetVisibilityBeforeRelocation();
 
+    if (changesWorld)
+        setTeleportState(TeleportState::PENDING_ACK);
+
     _Relocate(mapId, vec, true, changesWorld, instanceId);
 
     speedCheatReset();
 
     if (!changesWorld)
     {
-        speedCheatReset();
         refreshVisibilityAfterRelocation();
         forceZoneUpdate();
     }
@@ -2024,6 +2026,10 @@ void Player::safeTeleport(WorldMap* mgr, const LocationVector& vec)
 
     SetMapId(mapId);
     SetInstanceID(instanceId);
+    setTransferStatus(TRANSFER_PENDING);
+    setTeleportState(TeleportState::PENDING_ACK);
+    m_sentTeleportPosition = vec;
+    SetPosition(vec);
 
     // Transporters already sent their own transfer-pending packet.
     if (!GetTransport())
@@ -2034,10 +2040,6 @@ void Player::safeTeleport(WorldMap* mgr, const LocationVector& vec)
 
     SmsgNewWorld managedPacket(mapId, vec);
     getSession()->sendManagedPacket(managedPacket);
-
-    setTransferStatus(TRANSFER_PENDING);
-    m_sentTeleportPosition = vec;
-    SetPosition(vec);
 
     speedCheatReset();
 
@@ -2052,8 +2054,6 @@ void Player::safeTeleport(WorldMap* mgr, const LocationVector& vec)
 void Player::setTransferStatus(uint8_t status) { m_transferStatus = status; }
 uint8_t Player::getTransferStatus() const { return m_transferStatus; }
 bool Player::isTransferPending() const { return getTransferStatus() == TRANSFER_PENDING; }
-
-uint32_t Player::getTeleportState() const { return m_teleportState; }
 
 void Player::sendTeleportPacket(LocationVector position)
 {

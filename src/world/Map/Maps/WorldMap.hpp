@@ -147,7 +147,7 @@ public:
     void drainDeferredDestroy();
 
     void hookVisibilityEvents();
-    bool onPlayerEnter(Player* plr);
+    [[nodiscard]] bool onPlayerEnter(Player* plr);
     void onPlayerLeave(Player* plr);
     void addSession(WorldSession* session);
     void removeSession(WorldSession* session);
@@ -207,6 +207,8 @@ private:
         WoWGuid object;
         PendingVisibilityAction action = PendingVisibilityAction::Visible;
     };
+
+    std::mutex pendingVisibilityMutex_;
 
     void queueVisibilityChange(const WoWGuid& viewer, const WoWGuid& object, PendingVisibilityAction action);
     void finalizeSpatialPerformanceSample(std::chrono::milliseconds diff);
