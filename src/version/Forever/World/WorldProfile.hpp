@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 #include <string_view>
 
-// world connection of the WoW Forever 1.60.1 client (build 70959), the wide V2 transport of the 12.x engine
+// world connection of the WoW Forever 1.60.1 client (build 71037), the wide V2 transport of the 12.x engine
 namespace AscEmu::Version::WorldProfile
 {
     inline constexpr WoW::Expansion Expansion = WoW::Expansion::_WoWForever;

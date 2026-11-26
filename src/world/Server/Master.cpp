@@ -98,7 +98,7 @@ namespace fs = std::filesystem;
 namespace
 {
     // DB version
-    constexpr std::string_view REQUIRED_CHAR_DB_VERSION = "20261024-00_character_customizations";
+    constexpr std::string_view REQUIRED_CHAR_DB_VERSION = "20261121-00_characters_surname";
     constexpr std::string_view REQUIRED_WORLD_DB_VERSION = "20261108-05_midnight_build_70783";
 
     void printBanner()

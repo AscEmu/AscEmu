@@ -506,10 +506,14 @@ void WorldSession::handleCheckCharacterNameAvailabilityOpcode(WorldPacket& recvP
         return;
 
     // the client asks before it sends the character itself, the same checks as on creation
+    if (srlPacket.surname.size() > 48)
+        srlPacket.surname.clear();
+
     auto errorCode = VerifyName(srlPacket.name);
     if (errorCode == E_CHAR_NAME_SUCCESS && !sMySQLStore.isCharacterNameAllowed(srlPacket.name))
         errorCode = E_CHAR_NAME_PROFANE;
-    if (errorCode == E_CHAR_NAME_SUCCESS && sObjectMgr.getCachedCharacterInfoByName(srlPacket.name) != nullptr)
+    if (errorCode == E_CHAR_NAME_SUCCESS &&
+        sObjectMgr.getCachedCharacterInfoByNameAndSurname(srlPacket.name, srlPacket.surname) != nullptr)
         errorCode = E_CHAR_CREATE_NAME_IN_USE;
 
     SmsgCheckCharacterNameAvailabilityResult managedPacket(srlPacket.sequenceIndex, errorCode);
@@ -566,6 +570,9 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
         srlPacket.createStruct.facialHair = look.facialStyle;
     }
 
+    if (getClientProtocol().isForever() && srlPacket.createStruct.surname.size() > 48)
+        srlPacket.createStruct.surname.clear();
+
     const auto loginErrorCode = VerifyName(srlPacket.createStruct.name);
     if (loginErrorCode != E_CHAR_NAME_SUCCESS)
     {
@@ -582,7 +589,10 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (sObjectMgr.getCachedCharacterInfoByName(srlPacket.createStruct.name) != nullptr)
+    const auto existingCharacter = getClientProtocol().isForever()
+        ? sObjectMgr.getCachedCharacterInfoByNameAndSurname(srlPacket.createStruct.name, srlPacket.createStruct.surname)
+        : sObjectMgr.getCachedCharacterInfoByName(srlPacket.createStruct.name);
+    if (existingCharacter != nullptr)
     {
         SmsgCharCreate managedPacket(E_CHAR_CREATE_NAME_IN_USE);
         sendManagedPacket(managedPacket);
@@ -692,6 +702,8 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     utf8_string name = newPlayer->getName();
     AscEmu::Util::Strings::capitalize(name);
     playerInfo->name = name;
+    playerInfo->surname = srlPacket.createStruct.surname;
+    AscEmu::Util::Strings::capitalize(playerInfo->surname);
     playerInfo->cl = newPlayer->getClass();
     playerInfo->race = newPlayer->getRace();
     playerInfo->gender = newPlayer->getGender();
@@ -1060,6 +1072,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
             charEnum.loginFlags = fields[16].asUint32();
             charEnum.flags = fields[17].asUint32();
             charEnum.guildId = fields[18].asUint32();
+            charEnum.surname = fields[19].asCString();
 
             if (_side == 255)
                 _side = getSideByRace(charEnum.race);
@@ -1249,7 +1262,7 @@ void WorldSession::handleCharEnumOpcode(WorldPacket& /*recvPacket*/)
         &World::sendCharacterEnumToAccountSession, GetAccountId()));
 
     asyncQuery->addQuery("SELECT guid, level, race, class, gender, bytes, bytes2, name, positionX, positionY, "
-        "positionZ, mapId, zoneId, banned, restState, deathstate, login_flags, player_flags, guild_members.guildId "
+        "positionZ, mapId, zoneId, banned, restState, deathstate, login_flags, player_flags, guild_members.guildId, characters.surname "
         "FROM characters LEFT JOIN guild_members ON characters.guid = guild_members.playerid WHERE acct=%u ORDER BY guid LIMIT 10",
         GetAccountId());
 

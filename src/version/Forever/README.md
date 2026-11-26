@@ -6,7 +6,7 @@ wide AES world transport of the 12.x engine (`src/version/Shared/World/WorldSock
 Pinned client:
 
 - Version: 1.60.1
-- Build: 70862
+- Build: 71037
 
 `World/WorldProfile.hpp` holds the values of this client. No build auth key of a Forever build is known, the
 seed list is empty and the session digest of CMSG_AUTH_SESSION is accepted unverified; the session key and
@@ -20,6 +20,6 @@ classic timeline, so the gameplay checks of the legacy expansions do not apply t
 
 ## Client
 
-The client is started through the AscEmu Launcher (aaron02/CustomLauncher) next to `Wow.exe`: it writes the
+The client is started through the AscEmu Launcher (dep/launcher) next to `Wow.exe`: it writes the
 portal into `WTF\Config.wtf` and replaces the Ed25519 region keys in memory with the public key of the pair in
 `src/version/Shared/World/WorldConnectKey.hpp`.
